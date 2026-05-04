@@ -2,25 +2,63 @@
 @using Cfo.Cats.Application.Features.ParticipantLabels.AddParticipantLabel
 @using Cfo.Cats.Domain.Labels
 @using Cfo.Cats.Domain.Participants
+@using Cfo.Cats.Server.UI.Components.Labels
 
 @inherits OwningComponentBase<IMediator>
 
-<MudMenu 
-    Label="Add"
-    StartIcon="@Icons.Material.Filled.Add" 
-    Color="Color.Primary"
-    Variant="Variant.Filled"
-    AriaLabel="Open add label menu">
-    
-    @foreach (var label in VisibleLabels.Where(v => v.Scope == LabelScope.User))
-    {
-        <MudMenuItem 
-            Label="@label.Name" 
-            Icon="@label.AppIcon.AsMudIcon()" 
-            Disabled="@(AlreadySelected.Any(l => l == label.Id))"
-            OnClick="@(() => AddLabel(label))"/>
-    }
+<MudButton 
+    Variant="Variant.Filled" 
+    Color="Color.Secondary" 
+    StartIcon="@Icons.Material.Filled.Label"
+    OnClick="@(() => _showDialog = true)">
+    Add Label
+</MudButton>
 
-</MudMenu>
-
-
+<MudDialog Visible="_showDialog" Options="@(new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true })">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Add a label
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable 
+            T="LabelDto" 
+            Hover="true"
+            Items="VisibleLabels"
+            RowDisabledFunc="@(ctx => ctx.Scope == LabelScope.System || AlreadySelected.Contains(ctx.Id))"
+            @bind-SelectedItem="_selectedItem"
+            RowClassFunc="@SelectedRowClassFunc"
+            Filter="new Func<LabelDto,bool>(FilterFunc1)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Labels</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchText" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Name)">Name</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Description)">Description</MudTableSortLabel>
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Label">
+                 <CatsChip Description="@context.Description" Label="@context.Name" Variant="@context.Variant" Colour="@context.Colour" Icon="@context.AppIcon"/>
+            </MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] {5 ,10}"></MudTablePager>
+        </PagerContent>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => { _showDialog = false; _selectedItem = null; } )">
+            Cancel
+        </MudButton>
+        <MudLoadingButton Loading="_saving" Disabled="@(_selectedItem is null)" Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" OnClick="@(() => AddLabel(_selectedItem))">
+            Save
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
