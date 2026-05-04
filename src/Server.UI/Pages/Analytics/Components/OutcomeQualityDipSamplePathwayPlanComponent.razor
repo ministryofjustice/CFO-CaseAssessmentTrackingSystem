@@ -23,7 +23,8 @@ else
         {
             <MudExpansionPanel>
                 <TitleContent>
-                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                         <MudStack Row="true" AlignItems="AlignItems.Center">
                             <MudText Typo="Typo.h4">
                                 Objective <strong>@objective.Index</strong> of
@@ -41,19 +42,21 @@ else
                                      Icon="@Icons.Material.Filled.Close"/>
                         }
                     </MudStack>
-                </TitleContent>
-                <ChildContent>
-                    <MudText Typo="Typo.h6" Class="ma-3">
+                    <MudText Typo="Typo.h6">
                         @objective.Description
                     </MudText>
+                </MudStack>
+                    
+                </TitleContent>
+                <ChildContent>
                     <MudText>
-                        Created by <strong>@objective.CreatedBy</strong> on <strong>@objective.Created</strong>
+                        Created by <strong>@objective.CreatedBy</strong> on <strong>@objective.Created.ToShortDateString()</strong> at <strong>@objective.Created.ToString("HH:mm")</strong>
                     </MudText>
-                    @if (objective.Status is not null)
+                    @if (objective.Status is not null && objective.Completed.HasValue)
                     {
                         <MudText Typo="Typo.subtitle2" Class="ma-3">
                             Completed (<strong>@objective.Status</strong>) by
-                            <strong>@objective.CompletedBy</strong> on <strong>@objective.Completed</strong>
+                            <strong>@objective.CompletedBy</strong> on <strong>@objective.Completed.ToShortDateOrEmptyString()</strong> at <strong>@objective.Completed.Value.ToString("HH:mm")</strong>
                         </MudText>
                     }
 
@@ -63,6 +66,10 @@ else
                             @objective.Justification
                         </MudText>
                     }
+
+                    <MudText Typo="Typo.h5" Class="mt-2">
+                        Tasks
+                    </MudText>
 
                     <MudExpansionPanels MultiExpansion="true">
                         @foreach (var task in objective.Tasks)
@@ -102,7 +109,7 @@ else
                                 </TitleContent>
                                 <ChildContent>
                                     <MudText>
-                                        Created by <strong>@task.CreatedBy</strong> on <strong>@task.Created</strong>
+                                        Created by <strong>@task.CreatedBy</strong> on <strong>@task.Created.ToShortDateString()</strong> at <strong>@task.Created.ToString("HH:mm")</strong>
                                     </MudText>
                                     @if (task.Completed.HasValue)
                                     {
@@ -115,58 +122,73 @@ else
                                             @task.Justification
                                         </MudText>
                                     }
-                                    <MudTable Items="@task.Activities" Context="a" Hover="true" Striped="true"
-                                              Breakpoint="Breakpoint.Sm" Elevation="0">
-                                        <HeaderContent>
-                                            <MudTh>Category</MudTh>
-                                            <MudTh>Created</MudTh>
-                                            <MudTh>Classification</MudTh>
-                                            <MudTh>Status</MudTh>
-                                            <MudTh>Location</MudTh>
-                                            <MudTh></MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd>
-                                                @a.Category.Name
-                                            </MudTd>
-                                            <MudTd>
-                                                <MudStack>
-                                                    <MudText>
-                                                        @a.Created
-                                                    </MudText>
-                                                    <MudText>
-                                                        @a.CreatedBy
-                                                    </MudText>
-                                                </MudStack>
-                                            </MudTd>
-                                            <MudTd>
-                                                <MudStack>
-                                                    <MudText>
-                                                        @a.Definition.Classification.Name
-                                                    </MudText>
-                                                    <MudText>
-                                                        @a.Type.Name
-                                                    </MudText>
-                                                </MudStack>
-                                            </MudTd>
-                                            <MudTd>
-                                                <MudStack>
-                                                    <MudText>@a.Status.Name</MudText>
-                                                    <MudText>@a.ApprovedOn</MudText>
-                                                </MudStack>
-                                            </MudTd>
-                                            <MudTd>
-                                                @a.Location
-                                            </MudTd>
-                                            <MudTd>
-                                                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(()=> DisplayActivity(a))">Details</MudButton>
-                                            </MudTd>
-                                        </RowTemplate>
-                                        <NoRecordsContent>
-                                            <MudIcon Icon="@Icons.Material.Filled.NoAccounts"></MudIcon>
-                                        </NoRecordsContent>
-                                    </MudTable>
                                     <MudText Class="ma-2">Due @task.Due.ToString("MMM, yyyy")</MudText>
+                                    @if(task.Activities is { Length: > 0})
+                                    {
+                                        <MudTable Items="@task.Activities" Context="a" Hover="true" Striped="true"
+                                                                                    Breakpoint="Breakpoint.Sm" Elevation="0">
+                                            <ToolBarContent>
+                                                <MudText Typo="Typo.h6">
+                                                    Activities
+                                                </MudText>
+                                            </ToolBarContent>
+                                            <HeaderContent>
+                                                <MudTh>Category</MudTh>
+                                                <MudTh>Created</MudTh>
+                                                <MudTh>Classification</MudTh>
+                                                <MudTh>Status</MudTh>
+                                                <MudTh>Location</MudTh>
+                                                <MudTh></MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd>
+                                                    @a.Category.Name
+                                                </MudTd>
+                                                <MudTd>
+                                                    <MudStack>
+                                                        <MudText>
+                                                            @a.Created
+                                                        </MudText>
+                                                        <MudText>
+                                                            @a.CreatedBy
+                                                        </MudText>
+                                                    </MudStack>
+                                                </MudTd>
+                                                <MudTd>
+                                                    <MudStack>
+                                                        <MudText>
+                                                            @a.Definition.Classification.Name
+                                                        </MudText>
+                                                        <MudText>
+                                                            @a.Type.Name
+                                                        </MudText>
+                                                    </MudStack>
+                                                </MudTd>
+                                                <MudTd>
+                                                    <MudStack>
+                                                        <MudText>@a.Status.Name</MudText>
+                                                        <MudText>@a.ApprovedOn</MudText>
+                                                    </MudStack>
+                                                </MudTd>
+                                                <MudTd>
+                                                    @a.Location
+                                                </MudTd>
+                                                <MudTd>
+                                                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(()=> DisplayActivity(a))">Details</MudButton>
+                                                </MudTd>
+                                            </RowTemplate>
+                                            <NoRecordsContent>
+                                                <MudIcon Icon="@Icons.Material.Filled.NoAccounts"></MudIcon>
+                                            </NoRecordsContent>
+                                        </MudTable>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.caption">
+                                            No Activities
+                                        </MudText>
+                                    }
+                                    
                                 </ChildContent>
                             </MudExpansionPanel>
                         }

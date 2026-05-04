@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
 public static class GetOutcomeQualityDipSamplePathwayPlan
 {
-    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<ParticipantDipSamplePathwayPlanDto>>
     {
         public required string ParticipantId { get; init; }
