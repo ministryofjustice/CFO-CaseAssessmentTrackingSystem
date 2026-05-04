@@ -19,7 +19,6 @@
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.33" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.21.2" />
-    <PackageVersion Include="Blazor-Analytics" Version="4.0.0" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />

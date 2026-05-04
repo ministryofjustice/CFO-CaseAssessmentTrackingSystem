@@ -16,7 +16,7 @@ public static class QueryableExtensions
         where T : class, IEntity =>
         SpecificationEvaluator.Default.GetQuery(query, spec, evaluateCriteriaOnly);
 
-    [Obsolete("This method relies on AutoMapper which is currently being removed. Use the override that accepts an expression", error: false)]
+    //[Obsolete("This method relies on AutoMapper which is currently being removed. Use the override that accepts an expression", error: false)]
     public static async Task<PaginatedData<TResult>> ProjectToPaginatedDataAsync<T, TResult>(
         this IOrderedQueryable<T> query,
         ISpecification<T> spec,

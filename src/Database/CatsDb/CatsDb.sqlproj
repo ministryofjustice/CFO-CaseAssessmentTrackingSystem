@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build">
-    <Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
-    <PropertyGroup>
-        <Name>CatsDb</Name>
-        <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
-        <ModelCollation>1033, CI</ModelCollation>
-        <RootNamespace>CatsDb</RootNamespace>
-        <AssemblyName>CatsDb</AssemblyName>
-        <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>        
-    </PropertyGroup>
+  <Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
+  <PropertyGroup>
+    <Name>CatsDb</Name>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+    <ModelCollation>1033, CI</ModelCollation>
+    <RootNamespace>CatsDb</RootNamespace>
+    <AssemblyName>CatsDb</AssemblyName>
+    <ProjectGuid>{87D60217-6E4F-4FE2-8E22-65EEF7E3AA00}</ProjectGuid>
+  </PropertyGroup>
 </Project>
