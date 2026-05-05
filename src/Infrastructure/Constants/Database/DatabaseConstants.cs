@@ -79,7 +79,8 @@ internal static class DatabaseConstants
         public const string PRI = nameof(PRI);
         
         public const string Label = nameof(Label);
-     
+
+        public const string InnovationFund = nameof(InnovationFund);
 
     }
     public static class Schemas
@@ -163,5 +164,15 @@ internal static class DatabaseConstants
         /// The medium length for Risk Text.
         /// </summary>     
         public const int RiskMediumText = 10000;
+
+        /// <summary>
+        /// The fixed length for an innovation fund code.
+        /// </summary>
+        public const int InnovationFundCode = 8;
+
+        /// <summary>
+        /// The maximum length for the description of an innovation fund.
+        /// </summary>
+        public const int InnovationFundDescription = 256;
     }
 }

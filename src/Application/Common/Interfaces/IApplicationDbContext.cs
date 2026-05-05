@@ -128,4 +128,6 @@ public interface IApplicationDbContext
     DbSet<ParticipantLabel> ParticipantLabels { get; }
     
     DbSet<ActivityFeedback> ActivityFeedbacks { get; }
+
+    DbSet<InnovationFund> InnovationFunds { get; }
 }
