@@ -11,7 +11,6 @@ public partial class PerformanceDashboard
     private MudDateRangePicker _picker = null!;
     private DateRange _dateRange { get; set; } = new DateRange(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today);
     private bool _visualMode = true;
-    private bool _downloading = false;
     public string? SelectedTenantId { get; set; }
     public string? SelectedDisplayName { get; set; }
 

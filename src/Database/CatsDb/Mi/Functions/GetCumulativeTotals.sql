@@ -1,4 +1,4 @@
-CREATE   FUNCTION mi.GetCumulativeTotals(
+CREATE   FUNCTION [Mi].GetCumulativeTotals(
                                         @StartDate DATE,
                                         @EndDate DATE
                                     )
@@ -8,7 +8,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                                     (
                                         WITH payment_summary AS (
                                             SELECT 
-                                                c.id AS contract_id,
+                                                [c].[Id] AS contract_id,
                                                 c.Description as [Description],
                                                 COALESCE(Custody.eligible_count, 0) AS custody_enrolments,
                                                 COALESCE(Community.eligible_count, 0) AS community_enrolments,
@@ -28,7 +28,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                                                 SELECT 
                                                     ContractId,
                                                     COUNT(*) AS eligible_count
-                                                FROM mi.EnrolmentPayment
+                                                FROM [Mi].EnrolmentPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND Approved BETWEEN @StartDate AND @EndDate  
                                                    AND LocationType IN ('Wing',
@@ -42,7 +42,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                                                 SELECT 
                                                     ContractId,
                                                     COUNT(*) AS eligible_count
-                                                FROM mi.EnrolmentPayment
+                                                FROM [Mi].EnrolmentPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND Approved BETWEEN @StartDate AND @EndDate  
                                                   AND LocationType IN ('Community',
@@ -55,7 +55,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                                                 SELECT 
                                                     ContractId,
                                                     COUNT(*) AS eligible_count
-                                                FROM mi.InductionPayment
+                                                FROM [Mi].InductionPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
                                                   AND LocationType IN ('Wing')
@@ -65,7 +65,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                                                 SELECT 
                                                     ContractId,
                                                     COUNT(*) AS eligible_count
-                                                FROM mi.InductionPayment
+                                                FROM [Mi].InductionPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
                                                   AND LocationType IN ('Hub')
@@ -75,7 +75,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
             SELECT 
                 ContractId,
                 COUNT(*) AS eligible_count
-            FROM mi.SupportAndReferralPayment
+            FROM [Mi].SupportAndReferralPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
               AND SupportType IN ('Pre-Release Support')
@@ -85,7 +85,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
             SELECT 
                 ContractId,
                 COUNT(*) AS eligible_count
-            FROM mi.SupportAndReferralPayment
+            FROM [Mi].SupportAndReferralPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
               AND SupportType IN ('Through the Gate')
@@ -95,7 +95,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
             SELECT 
                 ContractId,
                 COUNT(*) AS eligible_count
-            FROM mi.ActivityPayment
+            FROM [Mi].ActivityPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
               AND ActivityType IN ('Support Work')
@@ -105,7 +105,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
             SELECT 
                 ContractId,
                 COUNT(*) AS eligible_count
-            FROM mi.ActivityPayment
+            FROM [Mi].ActivityPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
               AND ActivityType IN ('Human Citizenship')
@@ -115,7 +115,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
             SELECT 
                 ContractId,
                 COUNT(*) AS eligible_count
-            FROM mi.ActivityPayment
+            FROM [Mi].ActivityPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
               AND ActivityType IN ('Community and Social')
@@ -125,7 +125,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                 SELECT 
                     ContractId,
                     COUNT(*) AS eligible_count
-                FROM mi.ActivityPayment
+                FROM [Mi].ActivityPayment
                 WHERE EligibleForPayment = 1  
                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
                   AND ActivityType IN ('ISW Support')
@@ -135,7 +135,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                 SELECT 
                     ContractId,
                     COUNT(*) AS eligible_count
-                FROM mi.EmploymentPayment
+                FROM [Mi].EmploymentPayment
                 WHERE EligibleForPayment = 1  
                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
                 GROUP BY ContractId
@@ -144,7 +144,7 @@ CREATE   FUNCTION mi.GetCumulativeTotals(
                     SELECT 
                         ContractId,
                         COUNT(*) AS eligible_count
-                    FROM mi.EducationPayment
+                    FROM [Mi].EducationPayment
                     WHERE EligibleForPayment = 1  
                       AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
                     GROUP BY ContractId

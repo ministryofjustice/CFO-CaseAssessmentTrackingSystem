@@ -1,4 +1,4 @@
-CREATE   PROCEDURE [mi].[RiskComplianceReport]
+CREATE   PROCEDURE [Mi].[RiskComplianceReport]
 (
     @Date DATE,
     @ContractId NVARCHAR(50) = NULL,
@@ -44,7 +44,7 @@ BEGIN
     FROM #Cohort p
     inner join (
 
-    SELECT ROW_NUMBER() OVER (partition by p.ParticipantId ORDER BY pl.[FROM] desc) AS [RowNum],
+    SELECT ROW_NUMBER() OVER (partition by p.ParticipantId ORDER BY pl.[From] desc) AS [RowNum],
         p.ParticipantId,
         l.Id AS LocationId,
         c.[Description] AS Contract
@@ -72,7 +72,7 @@ BEGIN
 
     -- throw away anyone who was only 'approved' on CATS within the preceeding 2 weeks.
     DELETE c FROM #Cohort c
-    INNER JOIN mi.EnrolmentPayment ep on c.ParticipantId = ep.ParticipantId
+    INNER JOIN [Mi].EnrolmentPayment ep on c.ParticipantId = ep.ParticipantId
     AND ep.Approved >= DATEADD(DAY, -14, @Date) AND EligibleForPayment = 1
 
     UPDATE c
