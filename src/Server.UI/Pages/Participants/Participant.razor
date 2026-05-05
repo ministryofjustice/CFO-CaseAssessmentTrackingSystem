@@ -99,7 +99,17 @@
                              </MudSwitch>
                              @if(_pathwaySummaryView)
                              {
-                                <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.Id" />   
+                                <MudStack Spacing="3">
+                                    <MudText Typo="Typo.h4">
+                                        Pathway Plan
+                                    </MudText>
+                                    <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.Id" />
+                                    <MudText Typo="Typo.h4">
+                                        Reviews
+                                    </MudText>
+                                    <PathwayPlanReviewHistory ParticipantId="@_participant.Id"/>   
+                                </MudStack>
+                                
                              }
                              else
                              {
