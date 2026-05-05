@@ -32,7 +32,7 @@ public static class GetInnovationFunds
                                     INNER JOIN [Configuration].[Contract] AS [c]
                                         ON [f].[ContractId] = [c].[Id]
                                     WHERE @IncludeExpired = 1 OR [f].[LifetimeEnd] >= GETUTCDATE()
-                                    ORDER BY [c].[Description], [f].[Code]
+                                    ORDER BY [f].[Created] desc
                                 """;
 
             var funds = await connection.QueryAsync<InnovationFundDto>(sql, new { request.IncludeExpired });
