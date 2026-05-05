@@ -36,4 +36,12 @@ public class InnovationFund : BaseAuditableEntity<Guid>, ILifetime
     public Lifetime Lifetime { get; private set; }
 
     public virtual Contract? Contract { get; private set; }
+
+    public void Edit(string code, string description, string contractId, DateTime startDate, DateTime endDate)
+    {
+        Code = code;
+        Description = description;
+        _contractId = contractId;
+        Lifetime = new Lifetime(startDate, endDate);
+    }
 }
