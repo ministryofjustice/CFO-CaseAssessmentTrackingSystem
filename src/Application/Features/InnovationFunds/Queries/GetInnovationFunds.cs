@@ -8,7 +8,10 @@ namespace Cfo.Cats.Application.Features.InnovationFunds.Queries;
 public static class GetInnovationFunds
 {
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-    public class Query : IRequest<Result<InnovationFundDto[]>>;
+    public class Query : IRequest<Result<InnovationFundDto[]>>
+    {
+        public bool IncludeExpired { get; init; }
+    }
 
     public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IRequestHandler<Query, Result<InnovationFundDto[]>>
     {
@@ -28,10 +31,11 @@ public static class GetInnovationFunds
                                     FROM [Configuration].[InnovationFund] AS [f]
                                     INNER JOIN [Configuration].[Contract] AS [c]
                                         ON [f].[ContractId] = [c].[Id]
+                                    WHERE @IncludeExpired = 1 OR [f].[LifetimeEnd] >= GETUTCDATE()
                                     ORDER BY [c].[Description], [f].[Code]
                                 """;
 
-            var funds = await connection.QueryAsync<InnovationFundDto>(sql);
+            var funds = await connection.QueryAsync<InnovationFundDto>(sql, new { request.IncludeExpired });
             return funds.ToArray();
         }
     }

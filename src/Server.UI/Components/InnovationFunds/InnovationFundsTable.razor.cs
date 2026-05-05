@@ -14,8 +14,10 @@ public partial class InnovationFundsTable
 {
     [Inject] private IContractService ContractService { get; set; } = null!;
 
+    private bool _showExpired = false;
+
     protected override IRequest<Result<InnovationFundDto[]>> CreateQuery()
-        => new GetInnovationFunds.Query();
+        => new GetInnovationFunds.Query { IncludeExpired = _showExpired };
 
     private async Task OnAdd()
     {

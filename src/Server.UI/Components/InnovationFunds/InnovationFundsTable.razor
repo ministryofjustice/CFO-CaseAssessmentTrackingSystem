@@ -17,6 +17,7 @@
         <ToolBarContent>
             <MudText Typo="Typo.h6">Innovation Funds</MudText>
             <MudSpacer />
+            <MudCheckBox @bind-Value="_showExpired" @bind-Value:after="RefreshAsync" Label="Show expired" Color="Color.Default" Size="Size.Small" Class="mr-2" />
             <MudButton Variant="Variant.Filled"
                        Size="Size.Small"
                        Disabled="@Loading"
@@ -43,6 +44,7 @@
             <MudTh>
                 <MudTableSortLabel SortBy="new Func<InnovationFundDto, object>(x => x.LifetimeEnd)">End Date</MudTableSortLabel>
             </MudTh>
+            <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>
@@ -55,9 +57,6 @@
                     <MudMenuItem OnClick="@(() => OnAmendLifetime(context))">
                         Amend Lifetime
                     </MudMenuItem>
-                    <MudMenuItem OnClick="@(() => OnDeactivate(context))">
-                        Deactivate
-                    </MudMenuItem>
                 </MudMenu>
             </MudTd>
             <MudTd DataLabel="Code">@context.Code</MudTd>
@@ -65,6 +64,17 @@
             <MudTd DataLabel="Contract">@context.Contract</MudTd>
             <MudTd DataLabel="Start Date">@context.LifetimeStart.ToShortDateString()</MudTd>
             <MudTd DataLabel="End Date">@context.LifetimeEnd.ToShortDateString()</MudTd>
+            <MudTd>
+                @{
+                    var now = DateTime.UtcNow;
+                    var (label, color) = context.LifetimeEnd < now
+                        ? ("Expired", Color.Error)
+                        : context.LifetimeEnd < now.AddDays(30)
+                            ? ("Expires soon", Color.Warning)
+                            : ("Active", Color.Success);
+                }
+                <MudChip T="string" Color="@color" Size="Size.Small">@label</MudChip>
+            </MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager />
