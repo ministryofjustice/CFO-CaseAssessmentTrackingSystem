@@ -12,7 +12,7 @@ public class AddInitiativeCommandHandler(IInitiativeRepository repository)
             request.Description,
             request.Contract!.Id,
             request.StartDate!.Value,
-            request.EndDate!.Value);
+            request.EndDate!.Value.Date.Add(new TimeSpan(23, 59, 59)));
 
         await repository.AddAsync(fund);
         return Result.Success();
