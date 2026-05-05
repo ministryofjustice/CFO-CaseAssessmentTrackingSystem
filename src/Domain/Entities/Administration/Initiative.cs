@@ -17,7 +17,7 @@ public class Initiative : BaseAuditableEntity<Guid>, ILifetime
 
     private Initiative(string code, string description, string contractId, DateTime startDate, DateTime endDate)
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         Code = code;
         Description = description;
         _contractId = contractId;
