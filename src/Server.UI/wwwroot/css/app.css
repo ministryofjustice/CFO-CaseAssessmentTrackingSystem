@@ -60,3 +60,15 @@
 .mud-rating-item.mud-disabled * {
     color: inherit !important;
 }
+
+.selected-table-row-primary {
+    background-color: var(--mud-palette-primary) !important;
+}
+
+.selected-table-row-primary > td {
+    color: white !important;
+}
+
+.selected-table-row-primary > td .mud-input {
+    color: white !important;
+}
