@@ -19,7 +19,7 @@ public class InitiativeObjectiveEntityTypeConfiguration : IEntityTypeConfigurati
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
-        builder.HasOne<Initiative>()
+        builder.HasOne<Initiative>(io => io.Initiative)
             .WithMany()
             .HasForeignKey(io => io.InitiativeId)
             .OnDelete(DeleteBehavior.Restrict);

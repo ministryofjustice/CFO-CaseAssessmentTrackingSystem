@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -22,6 +23,39 @@ public static class GetPathwayPlanByParticipantId
                 .Where(p => p.ParticipantId == request.ParticipantId)
                 .ProjectTo<PathwayPlanDto>(mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
+
+            if (pathwayPlan is null)
+            {
+                return null;
+            }
+
+            var linkedInitiatives = await unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ParticipantId == request.ParticipantId)
+                .Select(io => new
+                {
+                    io.ObjectiveId,
+                    io.Initiative.Id,
+                    io.Initiative.Code,
+                    io.Initiative.Description
+                })
+                .ToArrayAsync(cancellationToken);
+
+            if (linkedInitiatives.Length > 0)
+            {
+                foreach (var objective in pathwayPlan.Objectives)
+                {
+                    var link = linkedInitiatives.FirstOrDefault(l => l.ObjectiveId == objective.Id);
+                    if (link is not null)
+                    {
+                        objective.LinkedInitiative = new InitiativeSummaryDto
+                        {
+                            Id = link.Id,
+                            Code = link.Code,
+                            Description = link.Description
+                        };
+                    }
+                }
+            }
 
             return pathwayPlan;
         }

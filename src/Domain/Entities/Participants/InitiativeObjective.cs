@@ -1,3 +1,5 @@
+using Cfo.Cats.Domain.Entities.Administration;
+
 namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class InitiativeObjective
@@ -9,6 +11,7 @@ public class InitiativeObjective
     public Guid ObjectiveId { get; private set; }
     public Guid InitiativeId { get; private set; }
     public string ParticipantId { get; private set; }
+    public Initiative Initiative { get; private set; }
 
     public static InitiativeObjective Create(Guid objectiveId, Guid initiativeId, string participantId)
         => new() { ObjectiveId = objectiveId, InitiativeId = initiativeId, ParticipantId = participantId };

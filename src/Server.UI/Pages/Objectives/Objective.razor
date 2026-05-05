@@ -35,6 +35,12 @@
                     <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
                 }
             }
+
+            @if(Model.LinkedInitiative is not null)
+            {
+                <MudChip T="string" Text="@Model.LinkedInitiative.Code" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Link" />
+            }
+
         </div>
     </ChildContent>
     <NestedList>

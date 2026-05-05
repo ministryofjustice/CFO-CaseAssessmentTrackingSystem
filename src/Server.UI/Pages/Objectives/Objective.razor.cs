@@ -118,7 +118,7 @@ public partial class Objective
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
             Description = Model.Description,
-            InitiativeId = Model.LinkedInitiativeId
+            InitiativeId = Model.LinkedInitiative?.Id
         };
 
         var parameters = new DialogParameters<EditObjectiveDialog>()
