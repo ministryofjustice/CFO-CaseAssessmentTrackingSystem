@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+﻿using Cfo.Cats.Application.Features.Initiatives.DTOs;
+
+namespace Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 
 public class ParticipantDipSampleObjectiveDto
 {
@@ -12,6 +14,8 @@ public class ParticipantDipSampleObjectiveDto
     public string? CompletedBy { get; init; }
     
     public required int Index { get; init; }
+
+    public InitiativeSummaryDto? LinkedInitiative { get; init; }
 
     public ParticipantDipSampleObjectiveTaskDto[] Tasks { get; init; } = [];
 }

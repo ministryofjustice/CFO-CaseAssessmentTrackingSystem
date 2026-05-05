@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Activities;
@@ -30,6 +31,10 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                         join u in db.Users on obj.CreatedBy equals u.Id
                         join completedByGroup in db.Users on obj.CompletedBy equals completedByGroup.Id into completedByJoin
                         from completedBy in completedByJoin.DefaultIfEmpty()
+                        join ioGroup in db.InitiativeObjectives on obj.Id equals ioGroup.ObjectiveId into ioJoin
+                        from io in ioJoin.DefaultIfEmpty()
+                        join initiativeGroup in db.Initiatives on io.InitiativeId equals initiativeGroup.Id into initiativeJoin
+                        from initiative in initiativeJoin.DefaultIfEmpty()
                         where obj.PathwayPlanId == pp.Id
                         orderby obj.Index
                         select
@@ -43,6 +48,12 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                                 Justification = obj.Justification,
                                 CompletedBy = completedBy.DisplayName,
                                 Index = obj.Index,
+                                LinkedInitiative = initiative != null ? new InitiativeSummaryDto
+                                {
+                                    Id = initiative.Id,
+                                    Code = initiative.Code,
+                                    Description = initiative.Description
+                                } : null,
                                 Tasks = (
                                     from t in db.ObjectiveTasks
                                     join u in db.Users on t.CreatedBy equals u.Id
