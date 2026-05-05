@@ -48,8 +48,9 @@ else
                     @if (objective.LinkedInitiative is not null)
                     {
                         <MudStack Row="true" AlignItems="AlignItems.Center">
-                            <MudChip T="string" Text="@objective.LinkedInitiative.Code" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Link" />
-                            <MudText Typo="Typo.caption">@objective.LinkedInitiative.Description</MudText>
+                            <MudTooltip Text="@objective.LinkedInitiative.Description">
+                                <MudChip T="string" Text="@objective.LinkedInitiative.Code" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Link" />
+                            </MudTooltip>
                         </MudStack>
                     }
                 </MudStack>
