@@ -137,6 +137,8 @@ public class ApplicationDbContext
     
     public DbSet<ActivityFeedback> ActivityFeedbacks => Set<ActivityFeedback>(); 
     
+    public DbSet<Initiative> Initiatives => Set<Initiative>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

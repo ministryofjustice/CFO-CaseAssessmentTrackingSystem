@@ -79,7 +79,8 @@ internal static class DatabaseConstants
         public const string PRI = nameof(PRI);
         
         public const string Label = nameof(Label);
-     
+
+        public const string Initiative = nameof(Initiative);
 
     }
     public static class Schemas
@@ -163,5 +164,15 @@ internal static class DatabaseConstants
         /// The medium length for Risk Text.
         /// </summary>     
         public const int RiskMediumText = 10000;
+
+        /// <summary>
+        /// The fixed length for an initiative code.
+        /// </summary>
+        public const int InitiativeCode = 8;
+
+        /// <summary>
+        /// The maximum length for the description of an initiative.
+        /// </summary>
+        public const int InitiativeDescription = 256;
     }
 }

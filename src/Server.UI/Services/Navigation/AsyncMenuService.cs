@@ -117,6 +117,12 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
                                 Title = "Labels",
                                 Href = "/pages/labels",
                                 PageStatus = PageStatus.Wip
+                            },
+                            new MenuSectionSubItemModel()
+                            {
+                                Title = "Initiatives",
+                                Href = "/pages/initiatives",
+                                PageStatus = PageStatus.Wip
                             }
 
                        ] 
