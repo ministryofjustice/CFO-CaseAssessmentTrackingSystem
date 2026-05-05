@@ -29,16 +29,6 @@ public class EditInnovationFundCommandValidator : AbstractValidator<EditInnovati
             .NotNull()
             .WithMessage("A contract must be selected.");
 
-        RuleFor(x => x.StartDate)
-            .NotNull()
-            .WithMessage("Start date is required.");
-
-        RuleFor(x => x.EndDate)
-            .NotNull()
-            .WithMessage("End date is required.")
-            .GreaterThanOrEqualTo(x => x.StartDate)
-            .WithMessage("End date must be on or after start date.");
-
         RuleSet(ValidationConstants.RuleSet.MediatR, () =>
         {
             RuleFor(x => x)

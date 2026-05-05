@@ -52,6 +52,12 @@
                     <MudMenuItem OnClick="@(() => OnEdit(context))">
                         @ConstantString.Edit
                     </MudMenuItem>
+                    <MudMenuItem OnClick="@(() => OnAmendLifetime(context))">
+                        Amend Lifetime
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@(() => OnDeactivate(context))">
+                        Deactivate
+                    </MudMenuItem>
                 </MudMenu>
             </MudTd>
             <MudTd DataLabel="Code">@context.Code</MudTd>

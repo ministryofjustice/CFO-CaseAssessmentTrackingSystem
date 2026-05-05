@@ -18,10 +18,4 @@ public class EditInnovationFundCommand : IRequest<Result>
 
     [Display(Name = "Contract", Description = "The contract this innovation fund is associated with")]
     public ContractDto? Contract { get; set; }
-
-    [Display(Name = "Start Date", Description = "The date from which this innovation fund is active")]
-    public DateTime? StartDate { get; set; }
-
-    [Display(Name = "End Date", Description = "The date on which this innovation fund expires")]
-    public DateTime? EndDate { get; set; }
 }

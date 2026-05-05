@@ -38,22 +38,6 @@
                                               Label="@Model.LabelFor(x => x.Contract)"
                                               HelperText="@Model.HelperTextFor(x => x.Contract)" />
                     </MudItem>
-                    <MudItem xs="6">
-                        <MudDatePicker Label="@Model.LabelFor(x => x.StartDate)"
-                                       HelperText="@Model.HelperTextFor(x => x.StartDate)"
-                                       For="@(() => Model.StartDate)"
-                                       @bind-Date="Model.StartDate"
-                                       Required="true"
-                                       DateFormat="dd/MM/yyyy" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudDatePicker Label="@Model.LabelFor(x => x.EndDate)"
-                                       HelperText="@Model.HelperTextFor(x => x.EndDate)"
-                                       For="@(() => Model.EndDate)"
-                                       @bind-Date="Model.EndDate"
-                                       Required="true"
-                                       DateFormat="dd/MM/yyyy" />
-                    </MudItem>
                 </MudGrid>
             </MudForm>
         </MudPaper>
