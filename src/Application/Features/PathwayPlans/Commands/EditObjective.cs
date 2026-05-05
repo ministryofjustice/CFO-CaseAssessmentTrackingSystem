@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
@@ -17,6 +18,9 @@ public static class EditObjective
 
         [Description("Description")]
         public required string Description { get; set; }
+
+        [Description("Initiative")]
+        public Guid? InitiativeId { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -30,6 +34,23 @@ public static class EditObjective
                 ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
 
             objective.Rename(request.Description);
+
+            if (request.InitiativeId.HasValue)
+            {
+                if (objective.LinkedInitiative is null)
+                {
+                    var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId);
+                    await unitOfWork.DbContext.InitiativeObjectives.AddAsync(link, cancellationToken);
+                }
+                else if (objective.LinkedInitiative.InitiativeId != request.InitiativeId.Value)
+                {
+                    objective.LinkedInitiative.Update(request.InitiativeId.Value);
+                }
+            }
+            else if (objective.LinkedInitiative is not null)
+            {
+                unitOfWork.DbContext.InitiativeObjectives.Remove(objective.LinkedInitiative);
+            }
 
             return Result.Success();
         }

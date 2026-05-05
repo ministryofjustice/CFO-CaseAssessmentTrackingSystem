@@ -7,6 +7,7 @@ public record InitiativeDto
     public required string Description { get; init; }
     public required string ContractId { get; init; }
     public required string Contract { get; init; }
+    public string TenantId { get; init; } = string.Empty;
     public DateTime LifetimeStart { get; init; }
     public DateTime LifetimeEnd { get; init; }
 }

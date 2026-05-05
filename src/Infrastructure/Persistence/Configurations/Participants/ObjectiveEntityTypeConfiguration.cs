@@ -46,6 +46,12 @@ public class ObjectiveEntityTypeConfiguration : IEntityTypeConfiguration<Objecti
             .HasForeignKey(t => t.ObjectiveId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        objective.HasOne(o => o.LinkedInitiative)
+            .WithOne()
+            .HasForeignKey<InitiativeObjective>(io => io.ObjectiveId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         objective.Navigation(o => o.Tasks).AutoInclude();
+        objective.Navigation(o => o.LinkedInitiative).AutoInclude();
     }
 }

@@ -14,6 +14,7 @@ public class ObjectiveDto
     public required string CreatedBy { get; set; }
     public IEnumerable<ObjectiveTaskDto> Tasks { get; set; } = [];
     public string? Justification { get; set; }
+    public Guid? LinkedInitiativeId { get; set; }
     public required int Index { get; set; }
     public string DisplayName => $"{Index}. {Description}";
     public bool IsCompleted => Completed.HasValue;
@@ -22,6 +23,8 @@ public class ObjectiveDto
 
     public class Mapping : Profile
     {
-        public Mapping() => CreateMap<Objective, ObjectiveDto>();
+        public Mapping() => CreateMap<Objective, ObjectiveDto>()
+            .ForMember(target => target.LinkedInitiativeId,
+                opt => opt.MapFrom(src => src.LinkedInitiative != null ? src.LinkedInitiative.InitiativeId : (Guid?)null));
     }
 }

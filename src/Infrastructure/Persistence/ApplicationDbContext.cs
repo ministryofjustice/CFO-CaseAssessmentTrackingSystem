@@ -138,6 +138,7 @@ public class ApplicationDbContext
     public DbSet<ActivityFeedback> ActivityFeedbacks => Set<ActivityFeedback>(); 
     
     public DbSet<Initiative> Initiatives => Set<Initiative>();
+    public DbSet<InitiativeObjective> InitiativeObjectives => Set<InitiativeObjective>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

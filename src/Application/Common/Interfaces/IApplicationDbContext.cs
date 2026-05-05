@@ -130,4 +130,5 @@ public interface IApplicationDbContext
     DbSet<ActivityFeedback> ActivityFeedbacks { get; }
 
     DbSet<Initiative> Initiatives { get; }
+    DbSet<InitiativeObjective> InitiativeObjectives { get; }
 }

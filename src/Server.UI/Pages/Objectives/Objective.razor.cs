@@ -117,7 +117,8 @@ public partial class Objective
         {
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
-            Description = Model.Description
+            Description = Model.Description,
+            InitiativeId = Model.LinkedInitiativeId
         };
 
         var parameters = new DialogParameters<RenameObjectiveDialog>()
