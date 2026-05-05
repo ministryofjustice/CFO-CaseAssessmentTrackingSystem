@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
 namespace Cfo.Cats.Server.UI.Pages.Objectives;
 
-public partial class RenameObjectiveDialog
+public partial class EditObjectiveDialog
 {
     [Inject] private IInitiativeService InitiativeService { get; set; } = default!;
 

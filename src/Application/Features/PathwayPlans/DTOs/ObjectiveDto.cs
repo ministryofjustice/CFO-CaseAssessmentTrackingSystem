@@ -19,7 +19,7 @@ public class ObjectiveDto
     public string DisplayName => $"{Index}. {Description}";
     public bool IsCompleted => Completed.HasValue;
     public required bool IsMandatory { get; set; }
-    public bool CanBeRenamed => IsMandatory is false;
+    public bool CanBeEdited => IsMandatory is false;
 
     public class Mapping : Profile
     {
