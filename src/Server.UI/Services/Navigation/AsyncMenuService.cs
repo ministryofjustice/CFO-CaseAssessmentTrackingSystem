@@ -120,8 +120,8 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
                             },
                             new MenuSectionSubItemModel()
                             {
-                                Title = "Innovation Funds",
-                                Href = "/pages/innovation-funds",
+                                Title = "Initiatives",
+                                Href = "/pages/initiatives",
                                 PageStatus = PageStatus.Wip
                             }
 

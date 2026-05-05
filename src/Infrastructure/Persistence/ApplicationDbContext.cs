@@ -137,7 +137,7 @@ public class ApplicationDbContext
     
     public DbSet<ActivityFeedback> ActivityFeedbacks => Set<ActivityFeedback>(); 
     
-    public DbSet<InnovationFund> InnovationFunds => Set<InnovationFund>();
+    public DbSet<Initiative> Initiatives => Set<Initiative>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -1,0 +1,66 @@
+@inherits OwningComponentBase<IMediator>
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add Initiative</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper MinHeight="300px" Elevation="0" Class="pa-4">
+            <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField T="string"
+                                      @bind-Value="Model.Code"
+                                      For="@(() => Model.Code)"
+                                      Label="@Model.LabelFor(x => x.Code)"
+                                      HelperText="@Model.HelperTextFor(x => x.Code)"
+                                      Required="true"
+                                      MaxLength="8"
+                                      Counter="8"
+                                      data-1p-ignore />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField T="string"
+                                      @bind-Value="Model.Description"
+                                      For="@(() => Model.Description)"
+                                      Label="@Model.LabelFor(x => x.Description)"
+                                      HelperText="@Model.HelperTextFor(x => x.Description)"
+                                      Lines="3"
+                                      MaxLength="256"
+                                      Counter="256"
+                                      Required="true"
+                                      Immediate="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? string.Empty)"
+                                              @bind-Value="Model.Contract"
+                                              For="@(() => Model.Contract)"
+                                              Label="@Model.LabelFor(x => x.Contract)"
+                                              HelperText="@Model.HelperTextFor(x => x.Contract)"
+                                              Required="true" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudDatePicker Label="@Model.LabelFor(x => x.StartDate)"
+                                       HelperText="@Model.HelperTextFor(x => x.StartDate)"
+                                       For="@(() => Model.StartDate)"
+                                       @bind-Date="Model.StartDate"
+                                       Required="true"
+                                       DateFormat="dd/MM/yyyy" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudDatePicker Label="@Model.LabelFor(x => x.EndDate)"
+                                       HelperText="@Model.HelperTextFor(x => x.EndDate)"
+                                       For="@(() => Model.EndDate)"
+                                       @bind-Date="Model.EndDate"
+                                       Required="true"
+                                       DateFormat="dd/MM/yyyy" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="Save">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>

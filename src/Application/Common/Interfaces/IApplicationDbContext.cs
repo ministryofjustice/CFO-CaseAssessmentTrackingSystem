@@ -129,5 +129,5 @@ public interface IApplicationDbContext
     
     DbSet<ActivityFeedback> ActivityFeedbacks { get; }
 
-    DbSet<InnovationFund> InnovationFunds { get; }
+    DbSet<Initiative> Initiatives { get; }
 }

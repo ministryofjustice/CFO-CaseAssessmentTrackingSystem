@@ -80,7 +80,7 @@ internal static class DatabaseConstants
         
         public const string Label = nameof(Label);
 
-        public const string InnovationFund = nameof(InnovationFund);
+        public const string Initiative = nameof(Initiative);
 
     }
     public static class Schemas
@@ -166,13 +166,13 @@ internal static class DatabaseConstants
         public const int RiskMediumText = 10000;
 
         /// <summary>
-        /// The fixed length for an innovation fund code.
+        /// The fixed length for an initiative code.
         /// </summary>
-        public const int InnovationFundCode = 8;
+        public const int InitiativeCode = 8;
 
         /// <summary>
-        /// The maximum length for the description of an innovation fund.
+        /// The maximum length for the description of an initiative.
         /// </summary>
-        public const int InnovationFundDescription = 256;
+        public const int InitiativeDescription = 256;
     }
 }

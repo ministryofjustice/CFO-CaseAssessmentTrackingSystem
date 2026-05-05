@@ -190,7 +190,7 @@ public static class DependencyInjection
 
         services.AddScoped<ILabelRepository, LabelRepository>();
         services.AddScoped<IParticipantLabelRepository, ParticipantLabelRepository>();
-        services.AddScoped<IInnovationFundRepository, InnovationFundRepository>();
+        services.AddScoped<IInitiativeRepository, InitiativeRepository>();
         
         SqlMapper.AddTypeHandler(typeof(LabelScope), new SmartEnumIntHandler<LabelScope>());
         
