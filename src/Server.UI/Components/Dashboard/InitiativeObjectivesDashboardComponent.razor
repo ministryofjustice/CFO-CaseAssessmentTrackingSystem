@@ -1,6 +1,7 @@
+@using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 
-@inherits CatsComponent<Cfo.Cats.Application.Features.Dashboard.Queries.GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>
+@inherits CatsComponent<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>
 
 @if (Loading)
 {
@@ -14,104 +15,140 @@
     </MudAlert>
 }
 
-@if (Data is not null)
+@if (Data is not null && Data.Any())
 {
-    <MudTable Items="@FilteredRows"
-              Hover="true"
-              Striped="true"
-              Dense="true"
-              SortLabel="Sort By">
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Initiative Objectives</MudText>
-            <MudSpacer />
-            <MudSelect T="string" @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
-                       Label="Initiative" Clearable="true" AnchorOrigin="Origin.BottomLeft"
-                       Class="mr-2" Style="max-width: 260px;">
-                @foreach (var initiative in _initiatives)
-                {
-                    <MudSelectItem T="string" Value="@initiative.Code">@initiative.Code — @initiative.Description</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect T="string" @bind-Value="_statusFilter" @bind-Value:after="StateHasChanged"
-                       Label="Status" Clearable="true" AnchorOrigin="Origin.BottomLeft"
-                       Style="max-width: 180px;">
-                <MudSelectItem T="string" Value="@("active")">Active</MudSelectItem>
-                <MudSelectItem T="string" Value="@("completed")">Completed</MudSelectItem>
-            </MudSelect>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantName)">
-                    Participant
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ObjectiveDescription)">
-                    Objective
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.InitiativeCode)">
-                    Initiative
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.IsObjectiveCompleted)">
-                    Objective Status
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.CompletedTasks)">
-                    Task Status
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ActivityCount)">
-                    Activities
-                </MudTableSortLabel>
-            </MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Participant">
-                <MudStack AlignItems="AlignItems.Start" Spacing="0">
-                    <MudLink Href="@($"/pages/participants/{context.ParticipantId}")">
-                        @context.ParticipantName
-                    </MudLink>
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>
-                </MudStack>
-            </MudTd>
-            <MudTd DataLabel="Objective">
-                <MudText Typo="Typo.body2">@context.ObjectiveDescription</MudText>
-            </MudTd>
-            <MudTd DataLabel="Initiative">
-                <MudTooltip Text="@context.InitiativeDescription">
-                    <MudChip T="string" Color="Color.Info" Size="Size.Small">@context.InitiativeCode</MudChip>
-                </MudTooltip>
-            </MudTd>
-            <MudTd DataLabel="Objective Status">
-                @if (context.IsObjectiveCompleted)
-                {
-                    <MudChip T="string" Color="Color.Success" Size="Size.Small">Completed</MudChip>
-                }
-                else
-                {
-                    <MudChip T="string" Color="Color.Primary" Size="Size.Small">Active</MudChip>
-                }
-            </MudTd>
-            <MudTd DataLabel="Task Status">
-                <MudText Typo="Typo.body2">@context.TaskSummary</MudText>
-            </MudTd>
-            <MudTd DataLabel="Activities">
-                <MudText Typo="Typo.body2">@context.ActivityCount</MudText>
-            </MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50 }" />
-        </PagerContent>
-        <NoRecordsContent>
-            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
-                No objectives linked to initiatives.
-            </MudText>
-        </NoRecordsContent>
-    </MudTable>
+    <MudGrid Spacing="2" Class="mb-3">
+        <MudItem xs="12" sm="6">
+            <MudChip T="string">Active (@TotalActive)</MudChip>
+            <MudChip T="string">Completed (@TotalCompleted)</MudChip>
+        </MudItem>
+        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
+            <MudSwitch T="bool" @bind-Value="ShowCompletedOnly" Color="Color.Primary" Label="Show completed only" />
+        </MudItem>
+    </MudGrid>
+
+    @if (VisualMode)
+    {
+        <ApexCharts.ApexChart @key="ShowCompletedOnly" TItem="InitiativeChartPoint" Options="Options" Height="650" Width="@("100%")">
+            @if (!ShowCompletedOnly)
+            {
+                <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
+                                 Name="@($"Active ({TotalActive})")"
+                                 Items="FilteredChartData"
+                                 XValue="@(x => x.InitiativeCode)"
+                                 YValue="@(x => (decimal)x.ActiveCount)"
+                                 SeriesType="ApexCharts.SeriesType.Bar"
+                                 ShowDataLabels="true"
+                                 Color="#1976d2" />
+            }
+            <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
+                             Name="@($"Completed ({TotalCompleted})")"
+                             Items="FilteredChartData"
+                             XValue="@(x => x.InitiativeCode)"
+                             YValue="@(x => (decimal)x.CompletedCount)"
+                             SeriesType="ApexCharts.SeriesType.Bar"
+                             ShowDataLabels="true"
+                             Color="#5cb85c" />
+        </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudTable Items="@FilteredRows"
+                  Hover="true"
+                  Striped="true"
+                  Dense="true"
+                  SortLabel="Sort By">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Initiative Objectives</MudText>
+                <MudSpacer />
+                <MudSelect T="string" @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
+                           Label="Initiative" Clearable="true" AnchorOrigin="Origin.BottomLeft"
+                           Class="mr-2" Style="max-width: 260px;">
+                    @foreach (var initiative in _initiatives)
+                    {
+                        <MudSelectItem T="string" Value="@initiative.Code">@initiative.Code — @initiative.Description</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect T="string" @bind-Value="_statusFilter" @bind-Value:after="StateHasChanged"
+                           Label="Status" Clearable="true" AnchorOrigin="Origin.BottomLeft"
+                           Style="max-width: 180px;">
+                    <MudSelectItem T="string" Value="@("active")">Active</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("completed")">Completed</MudSelectItem>
+                </MudSelect>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantName)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ObjectiveDescription)">
+                        Objective
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.InitiativeCode)">
+                        Initiative
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.IsObjectiveCompleted)">
+                        Objective Status
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.CompletedTasks)">
+                        Task Status
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ActivityCount)">
+                        Activities
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Participant">
+                    <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                        <MudLink Href="@($"/pages/participants/{context.ParticipantId}")">
+                            @context.ParticipantName
+                        </MudLink>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Objective">
+                    <MudText Typo="Typo.body2">@context.ObjectiveDescription</MudText>
+                </MudTd>
+                <MudTd DataLabel="Initiative">
+                    <MudTooltip Text="@context.InitiativeDescription">
+                        <MudChip T="string" Color="Color.Info" Size="MudBlazor.Size.Small">@context.InitiativeCode</MudChip>
+                    </MudTooltip>
+                </MudTd>
+                <MudTd DataLabel="Objective Status">
+                    @if (context.IsObjectiveCompleted)
+                    {
+                        <MudChip T="string" Color="Color.Success" Size="MudBlazor.Size.Small">Completed</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Color="Color.Primary" Size="MudBlazor.Size.Small">Active</MudChip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Task Status">
+                    <MudText Typo="Typo.body2">@context.TaskSummary</MudText>
+                </MudTd>
+                <MudTd DataLabel="Activities">
+                    <MudText Typo="Typo.body2">@context.ActivityCount</MudText>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20, 30 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }

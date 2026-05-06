@@ -1,3 +1,4 @@
+using ApexCharts;
 using Cfo.Cats.Application.Common.Interfaces.Initiatives;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Initiatives.DTOs;
@@ -8,15 +9,21 @@ public partial class InitiativeObjectivesDashboardComponent
 {
     [Parameter]
     public string? UserId { get; set; }
-
     [Parameter]
     public string? TenantId { get; set; }
+
+    [EditorRequired, Parameter]
+    public bool VisualMode { get; set; }
+
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool IsDarkMode { get; set; }
 
     [Inject]
     private IInitiativeService InitiativeService { get; set; } = null!;
 
     private string _initiativeFilter = string.Empty;
     private string _statusFilter = string.Empty;
+    private bool ShowCompletedOnly { get; set; } = false;
 
     private IReadOnlyList<InitiativeDto> _initiatives = [];
 
@@ -27,39 +34,90 @@ public partial class InitiativeObjectivesDashboardComponent
     }
 
     protected override IRequest<Result<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>> CreateQuery()
-        => new GetInitiativeObjectivesDashboard.Query
-        {
-            UserId = UserId,
-            TenantId = TenantId,
-            CurrentUser = CurrentUser
-        };
+     => new GetInitiativeObjectivesDashboard.Query
+     {
+         CurrentUser = CurrentUser,
+         UserId = UserId,
+         TenantId = TenantId
+     };
 
-    private IEnumerable<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto> FilteredRows
+    private ApexCharts.ApexChartOptions<InitiativeChartPoint> Options => new()
     {
-        get
+        Chart = new ApexCharts.Chart
         {
-            if (Data is null)
+            Stacked = true
+        },
+        PlotOptions = new ApexCharts.PlotOptions
+        {
+            Bar = new ApexCharts.PlotOptionsBar
             {
-                return [];
-            }
-
-            var rows = Data.AsEnumerable();
-
-            if (!string.IsNullOrEmpty(_initiativeFilter))
+                Horizontal = false,
+                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                {
+                    Total = new ApexCharts.BarTotalDataLabels
+                    {
+                        Enabled = true,
+                        Style = new ApexCharts.BarDataLabelsStyle
+                        {
+                            FontWeight = "800",
+                            Color = IsDarkMode ? "#FFFFFF" : "#000000",
+                        }
+                    }
+                },
+            },
+        },
+        Yaxis = new List<YAxis>
+        {
+            new YAxis
             {
-                rows = rows.Where(r => r.InitiativeCode == _initiativeFilter);
+                Min = 0,
+                ForceNiceScale = true
             }
+        },
+        Theme = new ApexCharts.Theme
+        {
+            Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
+        },
+        Colors = new List<string> { "#1976d2", "#5cb85c" }
+    };
 
-            if (_statusFilter == "active")
-            {
-                rows = rows.Where(r => !r.IsObjectiveCompleted);
-            }
-            else if (_statusFilter == "completed")
-            {
-                rows = rows.Where(r => r.IsObjectiveCompleted);
-            }
+    private IEnumerable<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto> FilteredRows =>
+        Data is null
+            ? Array.Empty<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto>()
+            : Data
+                .Where(r => string.IsNullOrEmpty(_initiativeFilter) || r.InitiativeCode == _initiativeFilter)
+                .Where(r => _statusFilter == "active" ? !r.IsObjectiveCompleted
+                           : _statusFilter == "completed" ? r.IsObjectiveCompleted
+                           : true)
+                .Where(r => !ShowCompletedOnly || r.IsObjectiveCompleted);
 
-            return rows;
-        }
-    }
+    public record InitiativeChartPoint(string InitiativeCode, int ActiveCount, int CompletedCount);
+
+    private int TotalActive =>
+        ShowCompletedOnly && Data is not null
+            ? 0
+            : Data?.Count(r => !r.IsObjectiveCompleted) ?? 0;
+
+    private int TotalCompleted => Data?.Count(r => r.IsObjectiveCompleted) ?? 0;
+
+    private InitiativeChartPoint[] ChartData =>
+        Data?
+            .GroupBy(r => r.InitiativeCode)
+            .Select(g => new InitiativeChartPoint(
+                g.Key,
+                g.Count(r => !r.IsObjectiveCompleted),
+                g.Count(r => r.IsObjectiveCompleted)))
+            .OrderBy(p => p.InitiativeCode)
+            .ToArray()
+        ?? Array.Empty<InitiativeChartPoint>();
+
+    private InitiativeChartPoint[] FilteredChartData =>
+        ShowCompletedOnly && Data is not null
+            ? ChartData.Select(x => new InitiativeChartPoint(
+                x.InitiativeCode,
+                x.CompletedCount,
+                x.CompletedCount))
+              .Where(x => x.CompletedCount > 0)
+              .ToArray()
+            : ChartData ?? Array.Empty<InitiativeChartPoint>();
 }
