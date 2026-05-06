@@ -74,6 +74,14 @@ public partial class InitiativeObjectivesDashboardComponent
                 ForceNiceScale = true
             }
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true
+            }
+        },
         Theme = new ApexCharts.Theme
         {
             Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
