@@ -16,6 +16,9 @@ public static class AddObjective
         [Description("Description")]
         public string? Description { get; set; }
 
+        [Description("Initiative")]
+        public Guid? InitiativeId { get; set; }
+
         public class Mapping : Profile
         {
             public Mapping() =>
@@ -38,6 +41,12 @@ public static class AddObjective
             }
 
             pathwayPlan.AddObjective(objective);
+
+            if (request.InitiativeId.HasValue)
+            {
+                var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId);
+                await unitOfWork.DbContext.InitiativeObjectives.AddAsync(link, cancellationToken);
+            }
 
             return Result.Success();
         }

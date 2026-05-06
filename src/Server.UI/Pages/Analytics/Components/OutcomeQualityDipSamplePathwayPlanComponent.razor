@@ -45,6 +45,14 @@ else
                     <MudText Typo="Typo.h6">
                         @objective.Description
                     </MudText>
+                    @if (objective.LinkedInitiative is not null)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudTooltip Text="@objective.LinkedInitiative.Description">
+                                <MudChip T="string" Text="@objective.LinkedInitiative.Code" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Link" />
+                            </MudTooltip>
+                        </MudStack>
+                    }
                 </MudStack>
                     
                 </TitleContent>

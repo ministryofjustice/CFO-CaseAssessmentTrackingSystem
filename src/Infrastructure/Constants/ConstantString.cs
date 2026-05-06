@@ -216,8 +216,8 @@ public static class ConstantString
     public static string TaskSuccessfullyAddedToObjective =>
     Localize("Task Successfully Added To Objective");
 
-    public static string ObjectiveSuccessfullyRenamed =>
-    Localize("Objective Successfully Renamed");
+    public static string ObjectiveSuccessfullyEdited =>
+    Localize("Objective Successfully Edited");
 
     public static string ObjectiveSuccessfullyCompleted =>
     Localize("Objective Successfully Completed");

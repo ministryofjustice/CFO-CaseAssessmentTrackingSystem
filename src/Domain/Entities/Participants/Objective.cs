@@ -28,6 +28,8 @@ public class Objective : BaseAuditableEntity<Guid>
     
     public string? Justification { get; private set; }
 
+    public InitiativeObjective? LinkedInitiative { get; private set; }
+
     public IReadOnlyCollection<ObjectiveTask> Tasks => _tasks.AsReadOnly();
 
     public bool IsCompleted => Completed is not null;

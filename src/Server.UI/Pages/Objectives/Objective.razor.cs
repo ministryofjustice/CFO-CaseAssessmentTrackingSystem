@@ -111,23 +111,24 @@ public partial class Objective
         );
     }
 
-    private async Task Rename()
+    private async Task Edit()
     {
         var command = new EditObjective.Command()
         {
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
-            Description = Model.Description
+            Description = Model.Description,
+            InitiativeId = Model.LinkedInitiative?.Id
         };
 
-        var parameters = new DialogParameters<RenameObjectiveDialog>()
+        var parameters = new DialogParameters<EditObjectiveDialog>()
         {
             { x => x.Model, command }
         };
 
         var options = SetDialogOptions();
-        var dialogTitle = "Rename objective for " + ParticipantName + " Ref: " + ParticipantId;
-        var dialog = await DialogService.ShowAsync<RenameObjectiveDialog>(dialogTitle, parameters, options);
+        var dialogTitle = "Edit objective for " + ParticipantName + " Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<EditObjectiveDialog>(dialogTitle, parameters, options);
 
         var state = await dialog.Result;
 
@@ -137,7 +138,7 @@ public partial class Objective
 
             if (result.Succeeded)
             {                    
-                Snackbar.Add(ConstantString.ObjectiveSuccessfullyRenamed, Severity.Info);
+                Snackbar.Add(ConstantString.ObjectiveSuccessfullyEdited, Severity.Info);
                 await OnChange.InvokeAsync();
             }
             else

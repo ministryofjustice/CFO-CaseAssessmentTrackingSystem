@@ -1,6 +1,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
+using Cfo.Cats.Application.Common.Interfaces.Initiatives;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
@@ -25,6 +26,7 @@ using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Persistence.Repositories;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
+using Cfo.Cats.Infrastructure.Services.Initiatives;
 using Cfo.Cats.Infrastructure.Services.Delius;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MessageHandling;
@@ -233,6 +235,15 @@ public static class DependencyInjection
                 var logger = sp.GetRequiredService<ILogger<CachingContractService>>();
 
                 return new CachingContractService(cache, service, logger);
+            })
+            .AddSingleton<InitiativeService>()
+            .AddSingleton<IInitiativeService>(sp =>
+            {
+                var service = sp.GetRequiredService<InitiativeService>();
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingInitiativeService>>();
+
+                return new CachingInitiativeService(cache, service, logger);
             });
             
 
