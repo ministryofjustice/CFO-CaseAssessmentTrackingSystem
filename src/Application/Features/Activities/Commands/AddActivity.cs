@@ -284,6 +284,11 @@ public static class AddActivity
                     .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
                     .WithMessage("The activity cannot take place before the participant gave consent");
 
+                RuleFor(c => c.Location)
+                    .Must((command, location) => BelongToInitiativeContract(command.TaskId, location!))
+                    .When(c => c.Location is not null)
+                    .WithMessage("The selected location does not belong to the linked initiative's contract");
+
                 RuleFor(c => c.ISWTemplate.BaselineAchievedOn)
                 .Must((command, baselineAchievedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, baselineAchievedOn))
                 .When(c =>
@@ -385,6 +390,25 @@ public static class AddActivity
 
         private bool MustNotBeArchived(string participantId)
             => unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+
+        private bool BelongToInitiativeContract(Guid taskId, LocationDto location)
+        {
+            var initiativeContractId = (
+                from task in unitOfWork.DbContext.ObjectiveTasks
+                join io in unitOfWork.DbContext.InitiativeObjectives on task.ObjectiveId equals io.ObjectiveId
+                join initiative in unitOfWork.DbContext.Initiatives on io.InitiativeId equals initiative.Id
+                where task.Id == taskId
+                select initiative.Contract!.Id
+            ).FirstOrDefault();
+
+            if (initiativeContractId is null)
+            {
+                return true;
+            }
+
+            return unitOfWork.DbContext.Locations
+                .Any(l => l.Id == location.Id && l.Contract!.Id == initiativeContractId);
+        }
 
         private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? date)
               => unitOfWork.DbContext.HubInductions.Any(e => e.ParticipantId == participantId
