@@ -44,7 +44,5 @@ public class CachingInitiativeService(IFusionCache cache, IInitiativeService ini
     }
 
     public IEnumerable<InitiativeDto> GetActiveInitiatives(string tenantId) =>
-        DataSource.Where(i =>
-            i.TenantId.StartsWith(tenantId) &&
-            i.LifetimeEnd >= DateTime.UtcNow);
+        initiativeService.GetActiveInitiatives(tenantId);
 }
