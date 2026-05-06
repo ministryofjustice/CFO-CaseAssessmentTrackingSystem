@@ -11,13 +11,19 @@ public class InitiativeObjectiveEntityTypeConfiguration : IEntityTypeConfigurati
     {
         builder.ToTable(DatabaseConstants.Tables.InitiativeObjective, DatabaseConstants.Schemas.Participant);
 
-        builder.HasKey(io => io.ObjectiveId);
+        builder.HasKey(io => io.Id);
 
-        builder.Property(io => io.ObjectiveId).ValueGeneratedNever();
+        builder.Property(io => io.Id).ValueGeneratedNever();
+        builder.Property(io => io.ObjectiveId).IsRequired();
         builder.Property(io => io.InitiativeId).IsRequired();
         builder.Property(io => io.ParticipantId)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
+
+        builder.Property(io => io.CreatedBy).HasMaxLength(36);
+        builder.Property(io => io.LastModifiedBy).HasMaxLength(36);
+
+        builder.HasIndex(io => io.ObjectiveId).IsUnique();
 
         builder.HasOne<Initiative>(io => io.Initiative)
             .WithMany()

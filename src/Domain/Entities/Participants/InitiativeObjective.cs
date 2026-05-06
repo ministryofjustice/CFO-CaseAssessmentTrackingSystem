@@ -1,8 +1,9 @@
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
-public class InitiativeObjective
+public class InitiativeObjective : BaseAuditableEntity<Guid>
 {
 #pragma warning disable CS8618
     private InitiativeObjective() { }
@@ -14,7 +15,7 @@ public class InitiativeObjective
     public Initiative Initiative { get; private set; }
 
     public static InitiativeObjective Create(Guid objectiveId, Guid initiativeId, string participantId)
-        => new() { ObjectiveId = objectiveId, InitiativeId = initiativeId, ParticipantId = participantId };
+        => new() { Id = Guid.CreateVersion7(), ObjectiveId = objectiveId, InitiativeId = initiativeId, ParticipantId = participantId };
 
     public void Update(Guid initiativeId) => InitiativeId = initiativeId;
 }
