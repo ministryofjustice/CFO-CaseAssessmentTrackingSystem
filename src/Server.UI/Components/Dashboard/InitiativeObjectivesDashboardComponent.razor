@@ -23,32 +23,32 @@
             <MudChip T="string">Completed (@TotalCompleted)</MudChip>
         </MudItem>
         <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-            <MudSwitch T="bool" @bind-Value="ShowCompletedOnly" Color="Color.Primary" Label="Show completed only" />
+            <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show active only" />
         </MudItem>
     </MudGrid>
 
     @if (VisualMode)
     {
-        <ApexCharts.ApexChart @key="ShowCompletedOnly" TItem="InitiativeChartPoint" Options="Options" Height="650" Width="@("100%")">
-            @if (!ShowCompletedOnly)
-            {
-                <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
-                                 Name="@($"Active ({TotalActive})")"
-                                 Items="FilteredChartData"
-                                 XValue="@(x => x.InitiativeCode)"
-                                 YValue="@(x => (decimal)x.ActiveCount)"
-                                 SeriesType="ApexCharts.SeriesType.Bar"
-                                 ShowDataLabels="true"
-                                 Color="#1976d2" />
-            }
+        <ApexCharts.ApexChart @key="ShowActiveOnly" TItem="InitiativeChartPoint" Options="Options" Height="650" Width="@("100%")">
             <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
-                             Name="@($"Completed ({TotalCompleted})")"
+                             Name="@($"Active ({TotalActive})")"
                              Items="FilteredChartData"
                              XValue="@(x => x.InitiativeCode)"
-                             YValue="@(x => (decimal)x.CompletedCount)"
+                             YValue="@(x => (decimal)x.ActiveCount)"
                              SeriesType="ApexCharts.SeriesType.Bar"
                              ShowDataLabels="true"
-                             Color="#5cb85c" />
+                             Color="#1976d2" />
+            @if (!ShowActiveOnly)
+            {
+                <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
+                                 Name="@($"Completed ({TotalCompleted})")"
+                                 Items="FilteredChartData"
+                                 XValue="@(x => x.InitiativeCode)"
+                                 YValue="@(x => (decimal)x.CompletedCount)"
+                                 SeriesType="ApexCharts.SeriesType.Bar"
+                                 ShowDataLabels="true"
+                                 Color="#5cb85c" />
+            }
         </ApexCharts.ApexChart>
     }
     else
@@ -63,17 +63,11 @@
                 <MudSpacer />
                 <MudSelect T="string" @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
                            Label="Initiative" Clearable="true" AnchorOrigin="Origin.BottomLeft"
-                           Class="mr-2" Style="max-width: 260px;">
+                           Style="max-width: 260px;">
                     @foreach (var initiative in _initiatives)
                     {
                         <MudSelectItem T="string" Value="@initiative.Code">@initiative.Code — @initiative.Description</MudSelectItem>
                     }
-                </MudSelect>
-                <MudSelect T="string" @bind-Value="_statusFilter" @bind-Value:after="StateHasChanged"
-                           Label="Status" Clearable="true" AnchorOrigin="Origin.BottomLeft"
-                           Style="max-width: 180px;">
-                    <MudSelectItem T="string" Value="@("active")">Active</MudSelectItem>
-                    <MudSelectItem T="string" Value="@("completed")">Completed</MudSelectItem>
                 </MudSelect>
             </ToolBarContent>
             <HeaderContent>

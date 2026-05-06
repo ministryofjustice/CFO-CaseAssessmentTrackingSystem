@@ -22,8 +22,7 @@ public partial class InitiativeObjectivesDashboardComponent
     private IInitiativeService InitiativeService { get; set; } = null!;
 
     private string _initiativeFilter = string.Empty;
-    private string _statusFilter = string.Empty;
-    private bool ShowCompletedOnly { get; set; } = false;
+    private bool ShowActiveOnly { get; set; } = false;
 
     private IReadOnlyList<InitiativeDto> _initiatives = [];
 
@@ -94,17 +93,11 @@ public partial class InitiativeObjectivesDashboardComponent
             ? Array.Empty<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto>()
             : Data
                 .Where(r => string.IsNullOrEmpty(_initiativeFilter) || r.InitiativeCode == _initiativeFilter)
-                .Where(r => _statusFilter == "active" ? !r.IsObjectiveCompleted
-                           : _statusFilter == "completed" ? r.IsObjectiveCompleted
-                           : true)
-                .Where(r => !ShowCompletedOnly || r.IsObjectiveCompleted);
+                .Where(r => !ShowActiveOnly || !r.IsObjectiveCompleted);
 
     public record InitiativeChartPoint(string InitiativeCode, int ActiveCount, int CompletedCount);
 
-    private int TotalActive =>
-        ShowCompletedOnly && Data is not null
-            ? 0
-            : Data?.Count(r => !r.IsObjectiveCompleted) ?? 0;
+    private int TotalActive => Data?.Count(r => !r.IsObjectiveCompleted) ?? 0;
 
     private int TotalCompleted => Data?.Count(r => r.IsObjectiveCompleted) ?? 0;
 
@@ -120,12 +113,7 @@ public partial class InitiativeObjectivesDashboardComponent
         ?? Array.Empty<InitiativeChartPoint>();
 
     private InitiativeChartPoint[] FilteredChartData =>
-        ShowCompletedOnly && Data is not null
-            ? ChartData.Select(x => new InitiativeChartPoint(
-                x.InitiativeCode,
-                x.CompletedCount,
-                x.CompletedCount))
-              .Where(x => x.CompletedCount > 0)
-              .ToArray()
+        ShowActiveOnly && Data is not null
+            ? ChartData.Where(x => x.ActiveCount > 0).ToArray()
             : ChartData ?? Array.Empty<InitiativeChartPoint>();
 }
