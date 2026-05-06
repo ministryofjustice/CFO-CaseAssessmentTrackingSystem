@@ -58,7 +58,10 @@
                     </MudTabPanel>
                     <MudTabPanel Text="Pathway Plan Reviews" Class="pa-3">
                        <PathwayPlanReviewDashboardComponent UserId="@SelectedUserId" @key="@SelectedUserId" VisualMode="@_visualMode"/>
-                    </MudTabPanel>    
+                    </MudTabPanel>
+                    <MudTabPanel Text="Initiatives" Class="pa-3">
+                        <InitiativeObjectivesDashboardComponent UserId="@SelectedUserId" @key="@SelectedUserId" />
+                    </MudTabPanel>
                 </MudTabs>
             </MudTabPanel>
             <MudTabPanel Text="My Performance" Icon="@Icons.Material.Filled.Score">
