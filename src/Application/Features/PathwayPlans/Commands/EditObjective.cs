@@ -84,6 +84,10 @@ public static class EditObjective
                 RuleFor(x => x.PathwayPlanId)                    
                     .MustAsync(ParticipantMustNotBeArchived)
                     .WithMessage("Participant is archived");
+
+                RuleFor(x => x.InitiativeId)
+                    .MustAsync((command, initiativeId, token) => NotHaveActivitiesWhenChangingInitiative(command.ObjectiveId, initiativeId, token))
+                    .WithMessage("The initiative cannot be changed or removed because activities have already been recorded against this objective's tasks");
             });
         }
 
@@ -99,6 +103,24 @@ public static class EditObjective
                             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
+        }
+
+        private async Task<bool> NotHaveActivitiesWhenChangingInitiative(Guid objectiveId, Guid? newInitiativeId, CancellationToken cancellationToken)
+        {
+            var currentInitiativeId = await _unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ObjectiveId == objectiveId)
+                .Select(io => (Guid?)io.InitiativeId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // No existing link, or no change — nothing to validate
+            if (currentInitiativeId is null || currentInitiativeId == newInitiativeId)
+            {
+                return true;
+            }
+
+            // Changing or removing — block if any activities exist on this objective's tasks
+            return !await _unitOfWork.DbContext.Activities
+                .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
         }
     }
 }
