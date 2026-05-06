@@ -19,7 +19,7 @@ public static class GetActiveInitiativesForTenant
         {
             using var connection = sqlConnectionFactory.CreateOpenConnection();
 
-            var tenantPattern = (currentUserService.TenantId ?? string.Empty) + "%";
+            var tenantId = currentUserService.TenantId ?? string.Empty;
 
             const string sql = $"""
                 SELECT
@@ -34,11 +34,16 @@ public static class GetActiveInitiativesForTenant
                 INNER JOIN [Configuration].[Contract] AS [c]
                     ON [i].[ContractId] = [c].[Id]
                 WHERE [i].[LifetimeEnd] >= GETUTCDATE()
-                  AND [c].[TenantId] LIKE @TenantPattern
+                  AND [i].[ContractId] IN (
+                      SELECT DISTINCT [ContractId]
+                      FROM [Configuration].[Tenant]
+                      WHERE [Id] LIKE @TenantId + '%'
+                      AND [ContractId] IS NOT NULL
+                  )
                 ORDER BY [i].[Code]
                 """;
 
-            var initiatives = await connection.QueryAsync<InitiativeDto>(sql, new { TenantPattern = tenantPattern });
+            var initiatives = await connection.QueryAsync<InitiativeDto>(sql, new { TenantId = tenantId });
             return initiatives.ToArray();
         }
     }
