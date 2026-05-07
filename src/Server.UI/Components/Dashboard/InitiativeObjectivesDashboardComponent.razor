@@ -70,6 +70,7 @@
                     }
                 </MudSelect>
                 <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
+                                       ActiveOnly="false"
                                        Style="max-width: 260px;" 
                                        Label="Initiative" />
             </ToolBarContent>

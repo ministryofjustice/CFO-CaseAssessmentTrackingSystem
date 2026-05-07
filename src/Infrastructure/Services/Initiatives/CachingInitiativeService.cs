@@ -43,6 +43,6 @@ public class CachingInitiativeService(IFusionCache cache, IInitiativeService ini
         OnChange?.Invoke();
     }
 
-    public IEnumerable<InitiativeDto> GetActiveInitiatives(string tenantId) =>
-        initiativeService.GetActiveInitiatives(tenantId);
+    public IEnumerable<InitiativeDto> GetInitiatives(string tenantId, bool activeOnly = true) =>
+        initiativeService.GetInitiatives(tenantId, activeOnly);
 }
