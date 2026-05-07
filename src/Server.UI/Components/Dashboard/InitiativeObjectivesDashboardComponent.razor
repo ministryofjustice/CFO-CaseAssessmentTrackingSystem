@@ -69,14 +69,9 @@
                         <MudSelectItem T="string" Value="@tenant.Id">@tenant.Name</MudSelectItem>
                     }
                 </MudSelect>
-                <MudSelect T="string" @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
-                           Label="Initiative" Clearable="true" AnchorOrigin="Origin.BottomLeft"
-                           Style="max-width: 260px;">
-                    @foreach (var initiative in _initiatives)
-                    {
-                        <MudSelectItem T="string" Value="@initiative.Code">@initiative.Code — @initiative.Description</MudSelectItem>
-                    }
-                </MudSelect>
+                <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
+                                       Style="max-width: 260px;" 
+                                       Label="Initiative" />
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>

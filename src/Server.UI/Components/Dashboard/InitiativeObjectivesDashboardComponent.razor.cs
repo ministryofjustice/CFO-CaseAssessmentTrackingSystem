@@ -21,22 +21,17 @@ public partial class InitiativeObjectivesDashboardComponent
     public bool IsDarkMode { get; set; }
 
     [Inject]
-    private IInitiativeService InitiativeService { get; set; } = null!;
-
-    [Inject]
     private ITenantService TenantService { get; set; } = null!;
 
-    private string _initiativeFilter = string.Empty;
+    private InitiativeDto? _initiativeFilter;
     private string _tenantFilter = string.Empty;
     private bool ShowActiveOnly { get; set; } = false;
 
-    private IReadOnlyList<InitiativeDto> _initiatives = [];
     private IReadOnlyList<TenantDto> _tenants = [];
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _initiatives = InitiativeService.GetActiveInitiatives(CurrentUser.TenantId!).ToList();
         _tenants = TenantService.GetVisibleTenants(TenantId ?? CurrentUser.TenantId!).ToList();
     }
 
@@ -100,7 +95,7 @@ public partial class InitiativeObjectivesDashboardComponent
         Data is null
             ? Array.Empty<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto>()
             : Data
-                .Where(r => string.IsNullOrEmpty(_initiativeFilter) || r.InitiativeCode == _initiativeFilter)
+                .Where(r => _initiativeFilter is null || r.InitiativeCode == _initiativeFilter.Code)
                 .Where(r => string.IsNullOrEmpty(_tenantFilter) || r.OwnerTenantId == _tenantFilter)
                 .Where(r => !ShowActiveOnly || !r.IsObjectiveCompleted);
 
