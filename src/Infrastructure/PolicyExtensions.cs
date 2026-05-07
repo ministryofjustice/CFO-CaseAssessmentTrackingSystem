@@ -153,6 +153,20 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.ServiceDeskManagement);  
 
         });
+
+        options.AddPolicy(SecurityPolicies.Initiatives, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.Initiatives);
+        });
+
+        options.AddPolicy(SecurityPolicies.ManageInitiatives, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.ManageInitiatives);
+        });
         
     }
 }

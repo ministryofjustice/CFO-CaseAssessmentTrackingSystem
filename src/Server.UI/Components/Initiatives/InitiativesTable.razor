@@ -18,14 +18,16 @@
             <MudText Typo="Typo.h6">Initiatives</MudText>
             <MudSpacer />
             <MudCheckBox @bind-Value="_showExpired" @bind-Value:after="RefreshAsync" Label="Show expired" Color="Color.Default" Size="Size.Small" Class="mr-2" />
-            <MudButton Variant="Variant.Filled"
-                       Size="Size.Small"
-                       Disabled="@Loading"
-                       OnClick="@(() => OnAdd())"
-                       StartIcon="@Icons.Material.Filled.Add"
-                       Color="Color.Primary">
-                Add Initiative
-            </MudButton>
+            <AuthorizeView Policy="@SecurityPolicies.ManageInitiatives">
+                <MudButton Variant="Variant.Filled"
+                           Size="Size.Small"
+                           Disabled="@Loading"
+                           OnClick="@(() => OnAdd())"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Color="Color.Primary">
+                    Add Initiative
+                </MudButton>
+            </AuthorizeView>
         </ToolBarContent>
         <HeaderContent>
             <MudTh></MudTh>
@@ -48,16 +50,19 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                         Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                    <MudMenuItem OnClick="@(() => OnEdit(context))">
-                        @ConstantString.Edit
-                    </MudMenuItem>
-                    <MudMenuItem OnClick="@(() => OnAmendLifetime(context))">
-                        Amend Lifetime
-                    </MudMenuItem>
-                </MudMenu>
+                @{ var item = context; }
+                <AuthorizeView Policy="@SecurityPolicies.ManageInitiatives" Context="authContext">
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                             Dense="true"
+                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        <MudMenuItem OnClick="@(() => OnEdit(item))">
+                            @ConstantString.Edit
+                        </MudMenuItem>
+                        <MudMenuItem OnClick="@(() => OnAmendLifetime(item))">
+                            Amend Lifetime
+                        </MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
             </MudTd>
             <MudTd DataLabel="Code">@context.Code</MudTd>
             <MudTd DataLabel="Description">@context.Description</MudTd>
