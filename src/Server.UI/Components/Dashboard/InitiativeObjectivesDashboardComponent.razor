@@ -61,6 +61,14 @@
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Initiative Objectives</MudText>
                 <MudSpacer />
+                <MudSelect T="string" @bind-Value="_tenantFilter" @bind-Value:after="StateHasChanged"
+                           Label="Tenant" Clearable="true" AnchorOrigin="Origin.BottomLeft"
+                           Style="max-width: 260px;" Class="mr-2">
+                    @foreach (var tenant in _tenants)
+                    {
+                        <MudSelectItem T="string" Value="@tenant.Id">@tenant.Name</MudSelectItem>
+                    }
+                </MudSelect>
                 <MudSelect T="string" @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
                            Label="Initiative" Clearable="true" AnchorOrigin="Origin.BottomLeft"
                            Style="max-width: 260px;">
@@ -74,6 +82,11 @@
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantName)">
                         Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.OwnerDisplayName ?? string.Empty)">
+                        Assignee
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -109,6 +122,12 @@
                             @context.ParticipantName
                         </MudLink>
                         <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Assignee">
+                    <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                        <MudText Typo="Typo.body2">@context.OwnerDisplayName</MudText>
+                        <MudText Typo="Typo.caption">@context.OwnerTenantName</MudText>
                     </MudStack>
                 </MudTd>
                 <MudTd DataLabel="Objective">

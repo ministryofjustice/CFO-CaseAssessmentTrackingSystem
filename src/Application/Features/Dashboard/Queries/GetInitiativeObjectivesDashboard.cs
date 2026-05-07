@@ -23,11 +23,13 @@ public static class GetInitiativeObjectivesDashboard
             var baseQuery = from p in context.Participants
                             join pp in context.PathwayPlans on p.Id equals pp.ParticipantId
                             join u in context.Users on p.OwnerId equals u.Id
+                            join t in context.Tenants on u.TenantId equals t.Id into tenantJoin
+                            from t in tenantJoin.DefaultIfEmpty()
                             join o in context.Objectives on pp.Id equals o.PathwayPlanId
                             join io in context.InitiativeObjectives on o.Id equals io.ObjectiveId
                             join i in context.Initiatives on io.InitiativeId equals i.Id
                             where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
-                            select new { p, u, o, i };
+                            select new { p, u, t, o, i };
 
             baseQuery = request switch
             {
@@ -35,7 +37,7 @@ public static class GetInitiativeObjectivesDashboard
                     => baseQuery.Where(x => x.u.Id == userId),
 
                 { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
-                    => baseQuery.Where(x => x.u.TenantId!.StartsWith(tenantId)),
+                    => baseQuery.Where(x => context.Tenants.Any(t => t.Id.StartsWith(tenantId) && t.ContractId == x.i.Contract!.Id)),
 
                 _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
             };
@@ -45,6 +47,9 @@ public static class GetInitiativeObjectivesDashboard
                               {
                                   ParticipantId = data.p.Id,
                                   ParticipantName = data.p.FirstName + " " + data.p.LastName,
+                                  OwnerDisplayName = data.u.DisplayName,
+                                  OwnerTenantId = data.u.TenantId,
+                                  OwnerTenantName = data.t != null ? data.t.Name : null,
                                   ObjectiveId = data.o.Id,
                                   ObjectiveDescription = data.o.Description,
                                   IsObjectiveCompleted = data.o.Completed != null,
@@ -70,6 +75,9 @@ public static class GetInitiativeObjectivesDashboard
     {
         public required string ParticipantId { get; init; }
         public required string ParticipantName { get; init; }
+        public string? OwnerDisplayName { get; init; }
+        public string? OwnerTenantId { get; init; }
+        public string? OwnerTenantName { get; init; }
         public required Guid ObjectiveId { get; init; }
         public required string ObjectiveDescription { get; init; }
         public bool IsObjectiveCompleted { get; init; }
