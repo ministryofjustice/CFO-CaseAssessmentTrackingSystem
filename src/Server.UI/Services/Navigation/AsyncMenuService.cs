@@ -117,20 +117,26 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
                                 Title = "Labels",
                                 Href = "/pages/labels",
                                 PageStatus = PageStatus.Wip
-                            },
-                            new MenuSectionSubItemModel()
-                            {
-                                Title = "Initiatives",
-                                Href = "/pages/initiatives",
-                                PageStatus = PageStatus.Wip
                             }
-
                        ] 
                     });
                 }
 
                 menuItems.Add(management);
             }
+
+            if(await PassesPolicy(principal, SecurityPolicies.Initiatives))
+            {
+                management.SectionItems.Add(new()
+                {
+                   IsParent = false,
+                   Title = "Initiatives",
+                   Icon = Icons.Material.Filled.Lightbulb,
+                   Href = "/pages/initiatives",
+                   PageStatus = PageStatus.Wip
+                });
+            }
+
         }
 
         return menuItems;

@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Initiatives.Commands.AddInitiative;
 
-[RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
+[RequestAuthorize(Policy = SecurityPolicies.ManageInitiatives)]
 public class AddInitiativeCommand : IRequest<Result>
 {
     [Display(Name = "Code", Description = "A unique 8-character code identifying this initiative (e.g. IF-01-01)")]

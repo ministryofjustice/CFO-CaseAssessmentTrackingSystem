@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Initiatives.Queries;
 
 public static class GetInitiatives
 {
-    [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
+    [RequestAuthorize(Policy = SecurityPolicies.Initiatives)]
     public class Query : IRequest<Result<InitiativeDto[]>>
     {
         public bool IncludeExpired { get; init; }
