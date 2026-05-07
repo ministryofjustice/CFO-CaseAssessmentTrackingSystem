@@ -29,7 +29,7 @@ public static class GetInitiativeObjectivesDashboard
                             join io in context.InitiativeObjectives on o.Id equals io.ObjectiveId
                             join i in context.Initiatives on io.InitiativeId equals i.Id
                             where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
-                            select new { p, u, t, o, i };
+                            select new { p, u, t, o, io, i };
 
             baseQuery = request switch
             {
@@ -37,7 +37,7 @@ public static class GetInitiativeObjectivesDashboard
                     => baseQuery.Where(x => x.u.Id == userId),
 
                 { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
-                    => baseQuery.Where(x => context.Tenants.Any(t => t.Id.StartsWith(tenantId) && t.ContractId == x.i.Contract!.Id)),
+                    => baseQuery.Where(x => x.io.TenantId.StartsWith(tenantId)),
 
                 _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
             };

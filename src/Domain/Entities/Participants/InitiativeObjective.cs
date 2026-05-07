@@ -1,9 +1,10 @@
+using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
-public class InitiativeObjective : BaseAuditableEntity<Guid>
+public class InitiativeObjective : BaseAuditableEntity<Guid>, IMustHaveTenant
 {
 #pragma warning disable CS8618
     private InitiativeObjective() { }
@@ -12,6 +13,7 @@ public class InitiativeObjective : BaseAuditableEntity<Guid>
     public Guid ObjectiveId { get; private set; }
     public Guid InitiativeId { get; private set; }
     public string ParticipantId { get; private set; }
+    public string TenantId { get; set; } = null!;
     public Initiative Initiative { get; private set; }
 
     public static InitiativeObjective Create(Guid objectiveId, Guid initiativeId, string participantId)
