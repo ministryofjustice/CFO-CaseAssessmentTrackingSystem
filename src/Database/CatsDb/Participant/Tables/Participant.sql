@@ -32,8 +32,47 @@ CREATE TABLE [Participant].[Participant] (
 );
 GO
 
-CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId]
-    ON [Participant].[Participant]([OwnerId] ASC);
+-- this covers a lot of the owner id centric aggregate queries
+CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId_Covering]
+ON [Participant].[Participant] ([OwnerId])
+INCLUDE (    
+    [EnrolmentStatus],    
+    [CurrentLocationId],    
+    [EnrolmentLocationId],    
+    [Created],    
+    [LastModified],    
+    [FirstName],    
+    [LastName])
+    WITH (FILLFACTOR = 95);
+
+GO
+
+-- covers enrolment status queries and dashboards
+CREATE NONCLUSTERED INDEX [IX_Participant_EnrolmentStatus_Covering]
+ON [Participant].[Participant] ([EnrolmentStatus])
+INCLUDE (
+    [OwnerId],
+    [CurrentLocationId],
+    [EnrolmentLocationId],
+    [RiskDue],
+    [DeactivatedInFeed],
+    [FirstName],
+    [LastName]
+)
+WITH (FILLFACTOR = 95);
+GO
+
+-- Composite OwnerId + EnrolmentStatus (highest-value seek pattern)
+CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId_EnrolmentStatus]
+ON [Participant].[Participant] ([OwnerId], [EnrolmentStatus])
+INCLUDE (
+    [CurrentLocationId],
+    [EnrolmentLocationId],
+    [RiskDue],
+    [Created],
+    [LastModified]
+)
+WITH (FILLFACTOR = 95);
 GO
 
 ALTER TABLE [Participant].[Participant]
