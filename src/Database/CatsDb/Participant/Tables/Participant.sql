@@ -32,20 +32,8 @@ CREATE TABLE [Participant].[Participant] (
 );
 GO
 
-CREATE NONCLUSTERED INDEX [IX_Participant_CurrentLocationId]
-    ON [Participant].[Participant]([CurrentLocationId] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [IX_Participant_EnrolmentLocationId]
-    ON [Participant].[Participant]([EnrolmentLocationId] ASC);
-GO
-
 CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId]
     ON [Participant].[Participant]([OwnerId] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [IX_Participant_EditorId]
-    ON [Participant].[Participant]([EditorId] ASC);
 GO
 
 ALTER TABLE [Participant].[Participant]
