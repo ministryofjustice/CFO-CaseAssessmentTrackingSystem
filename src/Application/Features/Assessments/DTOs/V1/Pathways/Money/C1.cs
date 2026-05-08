@@ -10,6 +10,7 @@ public class C1() : SingleChoiceQuestion("How are you coping with money?",
         LivingComfortably
     ])
 {
+    public override string Code => nameof(C1);
     public const string FindingVeryDifficult = "Finding it very difficult";
     public const string FindingQuiteDifficult = "Finding it quite difficult";
     public const string JustAboutGettingBy= "Just about getting by";

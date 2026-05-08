@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
 
 public class F6() : SingleChoiceQuestion("On a scale 1 to 5, in general how much do you trust most people?",
     [
@@ -9,6 +9,7 @@ public class F6() : SingleChoiceQuestion("On a scale 1 to 5, in general how much
         Completely,
     ])
 {
+    public override string Code => nameof(F6);
     public const string NotAtAll = "1 Not at all";
     public const string ALittle = "2 A little";
     public const string Somewhat = "3 Somewhat";

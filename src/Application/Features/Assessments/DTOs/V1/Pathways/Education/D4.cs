@@ -15,6 +15,7 @@ public class D4() : MultipleChoiceQuestion("Do you have difficulty with any of t
         NoneOfThese,
     ])
 {
+    public override string Code => nameof(D4);
     public const string ReadingDifficulty = "Reading";
     public const string CoordinationDifficulty = "Coordination";
     public const string WritingDifficulty = "Writing";

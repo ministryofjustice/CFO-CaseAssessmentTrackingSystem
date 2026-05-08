@@ -7,6 +7,7 @@ public class E4() : SingleChoiceQuestion("Are you registered with a GP and denti
         NotRegisteredWithGPOrDentist
     ])
 {
+    public override string Code => nameof(E4);
     public const string RegisteredWithGPAndDentist = "Registered with both";
     public const string RegisteredWithGPOnly = "Registered with a GP only";
     public const string RegisteredWithDentistOnly = "Registered with a dentist only";

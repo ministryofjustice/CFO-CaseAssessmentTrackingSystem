@@ -7,6 +7,7 @@ public class A10() : SingleChoiceQuestion("Do you or your household have access 
     No,
 ])
 {
+    public override string Code => nameof(A10);
     public const string Yes = "Yes";
     public const string No = "No";
 }

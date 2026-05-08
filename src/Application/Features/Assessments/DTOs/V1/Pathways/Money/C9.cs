@@ -11,6 +11,7 @@ public class C9() : SingleChoiceQuestion(
     ]
 )
 {
+    public override string Code => nameof(C9);
     public const string Never = "Never";
     public const string OverYearAgo = "Over a year ago";
     public const string WithinTheLastYear = "Within the last year";

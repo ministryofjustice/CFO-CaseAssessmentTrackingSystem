@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
 
 public class F2() : SingleChoiceQuestion("How often do you feel lonely?",
     [
@@ -9,6 +9,7 @@ public class F2() : SingleChoiceQuestion("How often do you feel lonely?",
         Never,
     ])
 {
+    public override string Code => nameof(F2);
     public const string OftenOrAlways = "Often or always";
     public const string Sometimes = "Some of the time";
     public const string Occasionally = "Occasionally";

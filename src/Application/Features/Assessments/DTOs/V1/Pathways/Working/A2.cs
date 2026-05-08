@@ -9,6 +9,7 @@ public class A2() : SingleChoiceQuestion(
     CurrentlyWorking
 ])
 {
+    public override string Code => nameof(A2);
     public const string NeverWorked = "I have never worked";
     public const string OverAYearAgo = "Over a year ago";
     public const string InTheLastYear = "In the last year";

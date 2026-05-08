@@ -43,6 +43,12 @@ public abstract partial class QuestionBase
     public string[] Options { get; }
 
     /// <summary>
+    ///     A stable identifier for this question (e.g. "B1", "D3").
+    ///     Used as the key when persisting answers in tabular storage.
+    /// </summary>
+    public abstract string Code { get; }
+
+    /// <summary>
     ///     Is the answer valid
     /// </summary>
     /// <returns>True if the answer has a valid return value</returns>

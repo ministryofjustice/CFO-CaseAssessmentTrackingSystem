@@ -12,6 +12,7 @@ public class B2() : MultipleChoiceQuestion("Are you facing any of the following 
     NoneOftheGivenOptions
 ])
 {
+    public override string Code => nameof(B2);
     public const string BehindOnRentOrMortgage = "Behind on rent/mortgage";
     public const string FacingEviction = "Facing eviction";
     public const string LicenceRestrictionsForcedMove = "Having to move due to licence restrictions";

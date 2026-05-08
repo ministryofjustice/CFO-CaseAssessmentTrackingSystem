@@ -8,6 +8,7 @@ public class H11() : SingleChoiceQuestion("On a scale 1 to 5, overall how satisf
     Completely
 ])
 {
+    public override string Code => nameof(H11);
     public const string NotAtAll = "1 Not at all";
     public const string MostlyNot = "2 Mostly not";
     public const string Fairly  = "3 Fairly";

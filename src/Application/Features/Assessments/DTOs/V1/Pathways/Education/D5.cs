@@ -16,6 +16,7 @@ public class D5() : MultipleChoiceQuestion("In the last 12 months have you parti
         NoneOftheGivenOptions
     ])
 {
+    public override string Code => nameof(D5);
     public const string Painting = "Painting";
     public const string MakingFilms = "Making films";
     public const string Drawing = "Drawing";
