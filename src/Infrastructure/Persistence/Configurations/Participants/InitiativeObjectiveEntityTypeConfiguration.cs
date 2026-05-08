@@ -20,6 +20,10 @@ public class InitiativeObjectiveEntityTypeConfiguration : IEntityTypeConfigurati
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
+        builder.Property(io => io.TenantId)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
         builder.Property(io => io.CreatedBy).HasMaxLength(36);
         builder.Property(io => io.LastModifiedBy).HasMaxLength(36);
 

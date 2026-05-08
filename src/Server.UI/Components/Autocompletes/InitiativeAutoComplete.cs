@@ -9,6 +9,8 @@ public class InitiativeAutoComplete : MudAutocomplete<InitiativeDto>
     [Inject] private IInitiativeService InitiativeService { get; set; } = default!;
     [Inject] private ICurrentUserService CurrentUserService { get; set; } = default!;
 
+    [Parameter] public bool ActiveOnly { get; set; } = true;
+
     protected override void OnInitialized()
     {
         InitiativeService.OnChange += InitiativeService_OnChange;
@@ -35,7 +37,7 @@ public class InitiativeAutoComplete : MudAutocomplete<InitiativeDto>
     private Task<IEnumerable<InitiativeDto>> SearchInitiatives(string? text, CancellationToken token)
     {
         var tenantId = CurrentUserService.TenantId ?? string.Empty;
-        var source = InitiativeService.GetActiveInitiatives(tenantId);
+        var source = InitiativeService.GetInitiatives(tenantId, ActiveOnly);
 
         var results = string.IsNullOrWhiteSpace(text)
             ? source

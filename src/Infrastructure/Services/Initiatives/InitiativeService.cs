@@ -32,9 +32,9 @@ public class InitiativeService(IServiceScopeFactory scopeFactory, ILogger<Initia
         OnChange?.Invoke();
     }
 
-    public IEnumerable<InitiativeDto> GetActiveInitiatives(string tenantId)
+    public IEnumerable<InitiativeDto> GetInitiatives(string tenantId, bool activeOnly = true)
     {
-        logger.LogDebug("GetActiveInitiatives called, getting from the database");
+        logger.LogDebug("GetInitiatives called, getting from the database (activeOnly: {ActiveOnly})", activeOnly);
 
         using var scope = scopeFactory.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -42,7 +42,9 @@ public class InitiativeService(IServiceScopeFactory scopeFactory, ILogger<Initia
         var now = DateTime.UtcNow;
 
         var data = unitOfWork.DbContext.Initiatives
-            .Where(i => i.Lifetime.EndDate >= now && i.Contract!.Tenant!.Id.StartsWith(tenantId))
+            .Where(i => (!activeOnly || i.Lifetime.EndDate >= now)
+                && unitOfWork.DbContext.Tenants
+                    .Any(t => t.Id.StartsWith(tenantId) && t.ContractId == i.Contract!.Id))
             .OrderBy(i => i.Code)
             .Select(InitiativeMappings.ToDto)
             .ToList();

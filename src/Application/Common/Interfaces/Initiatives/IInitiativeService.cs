@@ -7,5 +7,5 @@ public interface IInitiativeService
     IReadOnlyList<InitiativeDto> DataSource { get; }
     event Action? OnChange;
     void Refresh();
-    IEnumerable<InitiativeDto> GetActiveInitiatives(string tenantId);
+    IEnumerable<InitiativeDto> GetInitiatives(string tenantId, bool activeOnly = true);
 }

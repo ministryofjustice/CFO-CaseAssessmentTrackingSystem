@@ -7,10 +7,13 @@ using Dapper;
 
 namespace Cfo.Cats.Application.Features.Initiatives.Queries;
 
-public static class GetActiveInitiativesForTenant
+public static class GetInitiativesForTenant
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<InitiativeDto[]>> { }
+    public class Query : IRequest<Result<InitiativeDto[]>>
+    {
+        public bool ActiveOnly { get; init; } = true;
+    }
 
     public class Handler(ISqlConnectionFactory sqlConnectionFactory, ICurrentUserService currentUserService)
         : IRequestHandler<Query, Result<InitiativeDto[]>>
@@ -19,7 +22,7 @@ public static class GetActiveInitiativesForTenant
         {
             using var connection = sqlConnectionFactory.CreateOpenConnection();
 
-            var tenantPattern = (currentUserService.TenantId ?? string.Empty) + "%";
+            var tenantId = currentUserService.TenantId ?? string.Empty;
 
             const string sql = $"""
                 SELECT
@@ -33,12 +36,17 @@ public static class GetActiveInitiativesForTenant
                 FROM [Configuration].[Initiative] AS [i]
                 INNER JOIN [Configuration].[Contract] AS [c]
                     ON [i].[ContractId] = [c].[Id]
-                WHERE [i].[LifetimeEnd] >= GETUTCDATE()
-                  AND [c].[TenantId] LIKE @TenantPattern
+                WHERE (@ActiveOnly = 0 OR [i].[LifetimeEnd] >= GETUTCDATE())
+                  AND [i].[ContractId] IN (
+                      SELECT DISTINCT [ContractId]
+                      FROM [Configuration].[Tenant]
+                      WHERE [Id] LIKE @TenantId + '%'
+                      AND [ContractId] IS NOT NULL
+                  )
                 ORDER BY [i].[Code]
                 """;
 
-            var initiatives = await connection.QueryAsync<InitiativeDto>(sql, new { TenantPattern = tenantPattern });
+            var initiatives = await connection.QueryAsync<InitiativeDto>(sql, new { TenantId = tenantId, request.ActiveOnly });
             return initiatives.ToArray();
         }
     }
