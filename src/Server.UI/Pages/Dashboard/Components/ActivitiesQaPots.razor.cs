@@ -15,71 +15,88 @@ public partial class ActivitiesQaPots
     private int _educationPqa;
     private int _employmentPqa;
     private int _supportWorkPqa;
-    
+
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-
+        
+        var userId = UserProfile.UserId;
+        
         var unitOfWork = GetNewUnitOfWork();
 
         var context = unitOfWork.DbContext;
-        
-        _educationCfo = await GetCfoActivityCountByType(ActivityType.EducationAndTraining, context);
-        _employmentCfo = await GetCfoActivityCountByType(ActivityType.Employment, context);
-        _supportWorkCfo = await GetCfoActivityCountByType(ActivityType.SupportWork, context);
 
-        _educationPqa = await GetPqaActivityCountByType(ActivityType.EducationAndTraining, context);
-        _employmentPqa = await GetPqaActivityCountByType(ActivityType.Employment, context);
-        _supportWorkPqa = await GetPqaActivityCountByType(ActivityType.SupportWork, context);
-        
+        var cfo = await GetCfoCounts(context, userId);
+        var pqa = await GetPqaCounts(context, userId);
+
+        _educationCfo = cfo.GetValueOrDefault(ActivityType.EducationAndTraining);
+        _employmentCfo = cfo.GetValueOrDefault(ActivityType.Employment);
+        _supportWorkCfo = cfo.GetValueOrDefault(ActivityType.SupportWork);
+
+        _educationPqa = pqa.GetValueOrDefault(ActivityType.EducationAndTraining);
+        _employmentPqa = pqa.GetValueOrDefault(ActivityType.Employment);
+        _supportWorkPqa = pqa.GetValueOrDefault(ActivityType.SupportWork);
+
         _loading = false;
     }
 
-    private async Task<int> GetPqaActivityCountByType(
-        ActivityType type,
-        IApplicationDbContext context) => await (
-            from q in context.ActivityPqaQueue.AsNoTracking()
-            join a in context.Activities.AsNoTracking() on q.ActivityId equals a.Id
-            where !q.IsCompleted
-                  && a.OwnerId == UserProfile.UserId
-                  && a.Type == type
-            select q
-        ).CountAsync();
+    private async Task<Dictionary<ActivityType, int>> GetPqaCounts(
+        IApplicationDbContext context,
+        string userId) => await (
+                from q in context.ActivityPqaQueue.AsNoTracking()
+                join a in context.Activities.AsNoTracking()
+                    on q.ActivityId equals a.Id
+                where !q.IsCompleted
+                      && a.OwnerId == userId
+                group q by a.Type
+                into grouped
+                select new
+                {
+                    grouped.Key,
+                    Count = grouped.Count()
+                }
+            )
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
 
-    private async Task<int> GetCfoActivityCountByType(
-        ActivityType type,
-        IApplicationDbContext context)
+    private async Task<Dictionary<ActivityType, int>> GetCfoCounts(
+        IApplicationDbContext context,
+        string userId)
     {
         var qa1 =
             from q in context.ActivityQa1Queue.AsNoTracking()
-            join a in context.Activities.AsNoTracking() on q.ActivityId equals a.Id
             where !q.IsCompleted
-                  && a.OwnerId == UserProfile.UserId
-                  && a.Type == type
             select q.ActivityId;
 
         var qa2 =
             from q in context.ActivityQa2Queue.AsNoTracking()
-            join a in context.Activities.AsNoTracking() on q.ActivityId equals a.Id
             where !q.IsCompleted
-                  && a.OwnerId == UserProfile.UserId
-                  && a.Type == type
             select q.ActivityId;
 
         var escalation =
             from q in context.ActivityEscalationQueue.AsNoTracking()
-            join a in context.Activities.AsNoTracking() on q.ActivityId equals a.Id
             where !q.IsCompleted
-                  && a.OwnerId == UserProfile.UserId
-                  && a.Type == type
             select q.ActivityId;
 
-        return await qa1
+        var combined = qa1
             .Concat(qa2)
-            .Concat(escalation)
-            .CountAsync();
+            .Concat(escalation);
+
+        return await (
+                from activityId in combined
+                join a in context.Activities.AsNoTracking()
+                    on activityId equals a.Id
+                where a.OwnerId == userId
+                group activityId by a.Type
+                into grouped
+                select new
+                {
+                    grouped.Key,
+                    Count = grouped.Count()
+                }
+            )
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
     }
 }
