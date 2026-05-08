@@ -1,0 +1,105 @@
+@inherits CatsComponentBase
+
+@if (_loading)
+{
+    <MudItem xs="12" md="6" lg="3">
+        <LoadingCard Title="Activities in QA Pots" />
+    </MudItem>
+}
+else
+{
+    <MudItem xs="12" lg="3" md="6">
+        <MudCard Style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">
+                        Activities in QA Pots
+                    </MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+
+            <MudCardContent>
+
+                <MudList T="string">
+                    <MudListSubheader>
+                        PQA
+                    </MudListSubheader>
+                    <MudListItem T="string">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText>Education</MudText>
+
+                            <MudText Color="@(_educationPqa == 0
+                                                ? Color.Success
+                                                : Color.Secondary)">
+                                @_educationPqa
+                            </MudText>
+                        </div>
+                    </MudListItem>
+
+                    <MudListItem T="string">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText>Employment</MudText>
+
+                            <MudText Color="@(_employmentPqa == 0
+                                                ? Color.Success
+                                                : Color.Secondary)">
+                                @_employmentPqa
+                            </MudText>
+                        </div>
+                    </MudListItem>
+
+                    <MudListItem T="string">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText>ISWS</MudText>
+
+                            <MudText Color="@(_supportWorkPqa == 0
+                                                ? Color.Success
+                                                : Color.Secondary)">
+                                @_supportWorkPqa
+                            </MudText>
+                        </div>
+                    </MudListItem>
+                    <MudDivider></MudDivider>
+                    <MudListSubheader>
+                        CFO
+                    </MudListSubheader>
+                    <MudListItem T="string">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText>Education</MudText>
+
+                            <MudText Color="@(_educationCfo == 0
+                                                ? Color.Success
+                                                : Color.Secondary)">
+                                @_educationCfo
+                            </MudText>
+                        </div>
+                    </MudListItem>
+
+                    <MudListItem T="string">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText>Employment</MudText>
+
+                            <MudText Color="@(_employmentCfo == 0
+                                                ? Color.Success
+                                                : Color.Secondary)">
+                                @_employmentCfo
+                            </MudText>
+                        </div>
+                    </MudListItem>
+
+                    <MudListItem T="string">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText>ISWS</MudText>
+
+                            <MudText Color="@(_supportWorkCfo == 0
+                                                ? Color.Success
+                                                : Color.Secondary)">
+                                @_supportWorkCfo
+                            </MudText>
+                        </div>
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+}
