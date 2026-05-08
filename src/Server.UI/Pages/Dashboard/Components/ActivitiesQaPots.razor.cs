@@ -34,11 +34,11 @@ public partial class ActivitiesQaPots
 
         _educationCfo = cfo.GetValueOrDefault(ActivityType.EducationAndTraining);
         _employmentCfo = cfo.GetValueOrDefault(ActivityType.Employment);
-        _supportWorkCfo = cfo.GetValueOrDefault(ActivityType.SupportWork);
+        _supportWorkCfo = cfo.GetValueOrDefault(ActivityType.InterventionsAndServicesWraparoundSupport);
 
         _educationPqa = pqa.GetValueOrDefault(ActivityType.EducationAndTraining);
         _employmentPqa = pqa.GetValueOrDefault(ActivityType.Employment);
-        _supportWorkPqa = pqa.GetValueOrDefault(ActivityType.SupportWork);
+        _supportWorkPqa = pqa.GetValueOrDefault(ActivityType.InterventionsAndServicesWraparoundSupport);
 
         _loading = false;
     }
