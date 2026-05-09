@@ -2,11 +2,27 @@
 
 @using Humanizer
 
+<MudPaper Class="pa-2">
+
+@if(FirstPassUser is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Success" Class="ma-2">
+        QA1 submitted by @FirstPassUser
+    </MudAlert>
+}
+
+@if(_notes is { Length: 0 })
+{
+    <MudText Typo="Typo.subtitle1">
+        No notes recorded
+    </MudText>
+}
+
 @if (_notes is { Length: > 0 })
 {
     <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
         @foreach (var note in _notes.OrderByDescending(n => n.Created))
-        {   
+        {
             <MudTimelineItem Size="Size.Medium" Color="Color.Success" Elevation="25">
                 <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
                     <MudCard Outlined="false" Elevation="25">
@@ -18,13 +34,13 @@
                             @if (_hideUser && _cfoTenantNames.Contains(note.TenantName))
                             {
                                 <MudText Typo="Typo.caption">
-                                    CFO User (@note.TenantName)  @note.Created.Humanize()
+                                    CFO User (@note.TenantName) @note.Created.Humanize()
                                 </MudText>
                             }
                             else
                             {
                                 <MudText Typo="Typo.caption">
-                                    @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
+                                    @note.CreatedBy (@note.TenantName) @note.Created.Humanize()
                                 </MudText>
                             }
 
@@ -35,3 +51,4 @@
         }
     </MudTimeline>
 }
+</MudPaper>

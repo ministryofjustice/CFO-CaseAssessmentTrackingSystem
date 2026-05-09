@@ -4,9 +4,9 @@
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
+
 @inherits CatsComponentBase
 
 @inject IRightToWorkSettings RightToWorkSettings;
@@ -46,121 +46,169 @@
 
         <MudItem xs="8" Style="height: 100%; width: 100%;">
             <MudTabs>
+
                 <MudTabPanel Text="QA Notes">
-                    <MudItem xs="12" md="9" xl="10">
-                        First Pass User:  @_queueEntry.Qa1CompletedBy
-                    </MudItem>
-                    <MudDivider/>
-                    <QaNotes ParticipantId="@_participantDto.Id"/>
+                    <QaNotes ParticipantId="@_participantDto.Id" FirstPassUser="@_queueEntry.Qa1CompletedBy"/>
                 </MudTabPanel>
 
                 <MudTabPanel Text="Consent" BadgeColor="Color.Info" BadgeData="@_participantDto.Consents.Length">
-                    <ConsentTabPanel ParticipantDto="_participantDto"/>
+                    <ConsentTabPanel ParticipantDto="_participantDto" />
                 </MudTabPanel>
+
                 <MudTabPanel Text="Right To Work" Style="min-width: 185px;" BadgeColor="Color.Info" BadgeData="@_participantDto.RightToWorks.Length">
-                    <RightToWorkTabPanel ParticipantDto="_participantDto"/>
+                    <RightToWorkTabPanel ParticipantDto="_participantDto" />
                 </MudTabPanel>
-                <MudTabPanel Text="Assessment" Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
-                    <AssessmentTabPanel ParticipantDto="_participantDto" ParticipantAssessmentDto="@_latestParticipantAssessmentDto"/>
+
+                <MudTabPanel Text="Assessment"
+                             Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)"
+                             IconColor="Color.Warning">
+                    <AssessmentTabPanel ParticipantDto="_participantDto"
+                                        ParticipantAssessmentDto="@_latestParticipantAssessmentDto" />
                 </MudTabPanel>
+
                 <MudTabPanel Text="Submission">
                     @if (_queueEntry.IsCompleted == false)
                     {
-                        <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
-                            <MudItem xs="12">
-                                <MudRadioGroup T="SubmitEscalationResponse.EscalationResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" @bind-Value:after="OnResponseChanged" Required="true">
-                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Accept" Color="Color.Primary">
+                        <MudForm Model="@Command"
+                                 @ref="_form"
+                                 Validation="@(Validator.ValidateValue(Command))">
+
+                            <MudStack>
+
+                                <MudRadioGroup T="SubmitEscalationResponse.EscalationResponse?"
+                                               @bind-Value="Command.Response"
+                                               For="@(() => Command.Response)"
+                                               @bind-Value:after="OnResponseChanged"
+                                               Required="true">
+
+                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?"
+                                              Value="SubmitEscalationResponse.EscalationResponse.Accept"
+                                              Color="Color.Primary">
                                         Accept
                                     </MudRadio>
-                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Return" Color="Color.Secondary">
+
+                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?"
+                                              Value="SubmitEscalationResponse.EscalationResponse.Return"
+                                              Color="Color.Secondary">
                                         Return
                                     </MudRadio>
-                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Comment" Color="Color.Secondary">
+
+                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?"
+                                              Value="SubmitEscalationResponse.EscalationResponse.Comment"
+                                              Color="Color.Secondary">
                                         Comment / Defer
                                     </MudRadio>
                                 </MudRadioGroup>
-                            </MudItem>
 
-                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-                                This comment will only be visible to internal members of CFO staff
-                            </MudAlert>
+                                <!-- Internal Comment -->
+                                <MudPaper Elevation="3" Class="pa-2 ma-2">
+                                    <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
+                                        This message will only be visible to CFO Staff
+                                    </MudAlert>
 
-                            <MudGrid Class="py-4">
-                                <MudItem xs="12" md="9" xl="10">
-                                    <MudTextField @bind-Value="Command.Message" Label="Internal Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                    <MudText Class="ml-2">Characters: @(Command.Message?.Length ?? 0) / 1000</MudText>
-                                </MudItem>
-                            </MudGrid>
+                                    <MudTextField @bind-Value="Command.Message"
+                                                  Label="Internal Message"
+                                                  Lines="5"
+                                                  For="() => Command.Message"
+                                                  MaxLength="@ValidationConstants.NotesLength"
+                                                  Immediate="true"
+                                                  Counter="@ValidationConstants.NotesLength" />
+                                </MudPaper>
 
-                            @if (Command.Response == SubmitEscalationResponse.EscalationResponse.Accept)
-                            {                                
-                                <MudDivider Class="py-4" />
-                                
-                                <MudItem xs="12">
-                                    <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.NotApplicable" Color="Color.Default">
-                                            N/A
-                                        </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Primary">
-                                            Advisory
-                                        </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary">
-                                            Accepted By Exception
-                                        </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
-                                            Returned
-                                        </MudRadio>  
-                                    </MudRadioGroup>
-                                </MudItem>
-                                
-                                <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-                                    This comment will be visible to PQA (and internal members of CFO staff)
-                                </MudAlert>
-                                
-                                <MudGrid Class="py-4">
-                                    <MudItem xs="12" md="9" xl="10">
-                                        <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                        <MudText Class="ml-2">Characters: @(Command.MessageToProvider?.Length ?? 0) / 1000</MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            }
-                            
-                            @if (Command.Response == SubmitEscalationResponse.EscalationResponse.Return)
-                            {
-                                <MudDivider Class="py-4" />
+                                @if (Command.Response == SubmitEscalationResponse.EscalationResponse.Accept
+                                    || Command.Response == SubmitEscalationResponse.EscalationResponse.Return)
+                                {
+                                    <MudPaper Elevation="3" Class="pa-2 ma-2">
+                                        <MudAlert Severity="Severity.Success"
+                                                  Variant="Variant.Filled"
+                                                  Icon="@Icons.Material.Filled.Feedback">
+                                            Optional anonymous internal feedback for @_queueEntry.Qa1CompletedBy
+                                        </MudAlert>
 
-                                <MudItem xs="12">
-                                    <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.NotApplicable" Color="Color.Default" Disabled="true">
-                                            N/A
-                                        </MudRadio>                                        
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Default" Disabled="true">
-                                            Advisory
-                                        </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary" Disabled="true">
-                                            Accepted By Exception
-                                        </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
-                                            Returned
-                                        </MudRadio>  
-                                    </MudRadioGroup>
-                                </MudItem>
-                                
-                                <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-                                    This comment will be visible to PQA (and internal members of CFO staff)
-                                </MudAlert>
-                                
-                                <MudGrid Class="py-4">
-                                    <MudItem xs="12" md="9" xl="10">
-                                        <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                        <MudText Class="ml-2">Characters: @(Command.MessageToProvider?.Length ?? 0) / 1000</MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            }
+                                        <MudTextField @bind-Value="Command.MessageToQa1"
+                                                      Label="@Command.GetMemberDescription(x => x.MessageToQa1)"
+                                                      Lines="5"
+                                                      For="() => Command.MessageToQa1"
+                                                      MaxLength="@ValidationConstants.NotesLength"
+                                                      Immediate="true"
+                                                      Counter="@ValidationConstants.NotesLength" />
+
+                                        <MudSelect @bind-Value="Command.EnrolmentFeedbackReason"
+                                                   For="() => Command.EnrolmentFeedbackReason"
+                                                   Label="@Command.GetMemberDescription(x => x.EnrolmentFeedbackReason)">
+
+                                            @foreach (var enrolmentFeedbackReason in PicklistService.DataSource
+                                                          .Where(c => c.Name == Picklist.QaFeedbackReason)
+                                                          .OrderBy(c => c.Text))
+                                            {
+                                                <MudSelectItem Value="@enrolmentFeedbackReason.Value">
+                                                    @enrolmentFeedbackReason.Text
+                                                </MudSelectItem>
+                                            }
+
+                                        </MudSelect>
+                                    </MudPaper>
+                                    
+                                    <!-- PQA Feedback -->
+                                    <MudPaper Elevation="3" Class="pa-2 ma-2">
+                                        <MudRadioGroup T="FeedbackType?"
+                                                       @bind-Value="Command.FeedbackType"
+                                                       For="@(() => Command.FeedbackType)">
+
+                                            <MudRadio T="FeedbackType?"
+                                                      Value="FeedbackType.NotApplicable"
+                                                      Color="Color.Default"
+                                                      Disabled="@(Command.Response == SubmitEscalationResponse.EscalationResponse.Return)">
+                                                N/A
+                                            </MudRadio>
+
+                                            <MudRadio T="FeedbackType?"
+                                                      Value="FeedbackType.Advisory"
+                                                      Color="Color.Primary"
+                                                      Disabled="@(Command.Response == SubmitEscalationResponse.EscalationResponse.Return)">
+                                                Advisory
+                                            </MudRadio>
+
+                                            <MudRadio T="FeedbackType?"
+                                                      Value="FeedbackType.AcceptedByException"
+                                                      Color="Color.Secondary"
+                                                      Disabled="@(Command.Response == SubmitEscalationResponse.EscalationResponse.Return)">
+                                                Accepted By Exception
+                                            </MudRadio>
+
+                                            <MudRadio T="FeedbackType?"
+                                                      Value="FeedbackType.Returned"
+                                                      Color="Color.Secondary"
+                                                      Disabled="@(Command.Response == SubmitEscalationResponse.EscalationResponse.Accept)">
+                                                Returned
+                                            </MudRadio>
+                                        </MudRadioGroup>
+
+                                        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
+                                            This comment will be visible to all users (including PQA)
+                                        </MudAlert>
+
+                                        <MudTextField @bind-Value="Command.MessageToProvider"
+                                                      Label="External Message"
+                                                      Lines="5"
+                                                      For="() => Command.MessageToProvider"
+                                                      MaxLength="@ValidationConstants.NotesLength"
+                                                      Immediate="true"
+                                                      Counter="@ValidationConstants.NotesLength" />
+                                    </MudPaper>
+                                }
+
+                            </MudStack>
+
                         </MudForm>
 
                         <MudContainer Class="d-flex px-0 pt-8">
-                            <MudLoadingButton Color="Color.Primary" OnClick="@SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
+                            <MudLoadingButton Color="Color.Primary"
+                                              OnClick="@SubmitToQa"
+                                              Variant="Variant.Filled"
+                                              Loading="_saving">
+                                Submit
+                            </MudLoadingButton>
                         </MudContainer>
                     }
                     else
@@ -170,7 +218,21 @@
                         </MudAlert>
                     }
                 </MudTabPanel>
+
             </MudTabs>
         </MudItem>
     </MudGrid>
+}
+
+@code {
+    private RenderFragment RenderFailure(string title, IResult result) =>
+        @<div>
+            <h2>@title</h2>
+            <ul>
+                @foreach (var e in result.Errors)
+                {
+                    <li>@e</li>
+                }
+            </ul>
+        </div>;
 }

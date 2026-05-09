@@ -58,7 +58,8 @@ internal static class DatabaseConstants
         public const string EnrolmentQa1Queue = "Qa1Queue";
         public const string EnrolmentQa2Queue = "Qa2Queue";
         public const string EnrolmentEscalationQueue = "EscalationQueue";
-
+        public const string EnrolmentFeedback = nameof(EnrolmentFeedback);
+        
         public const string PasswordHistory = nameof(PasswordHistory);
 
         public const string AccessAuditTrail = nameof(AccessAuditTrail);
@@ -84,6 +85,7 @@ internal static class DatabaseConstants
         public const string InitiativeObjective = nameof(InitiativeObjective);
 
     }
+    
     public static class Schemas
     {
         public const string Dms = nameof(Dms);
