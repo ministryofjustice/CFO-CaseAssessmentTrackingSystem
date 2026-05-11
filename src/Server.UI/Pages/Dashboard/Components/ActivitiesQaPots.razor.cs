@@ -10,11 +10,11 @@ public partial class ActivitiesQaPots
 
     private int _educationCfo;
     private int _employmentCfo;
-    private int _supportWorkCfo;
+    private int _iswSupportCfo;
 
     private int _educationPqa;
     private int _employmentPqa;
-    private int _supportWorkPqa;
+    private int _iswSupportPqa;
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
@@ -34,11 +34,11 @@ public partial class ActivitiesQaPots
 
         _educationCfo = cfo.GetValueOrDefault(ActivityType.EducationAndTraining);
         _employmentCfo = cfo.GetValueOrDefault(ActivityType.Employment);
-        _supportWorkCfo = cfo.GetValueOrDefault(ActivityType.InterventionsAndServicesWraparoundSupport);
+        _iswSupportCfo = cfo.GetValueOrDefault(ActivityType.InterventionsAndServicesWraparoundSupport);
 
         _educationPqa = pqa.GetValueOrDefault(ActivityType.EducationAndTraining);
         _employmentPqa = pqa.GetValueOrDefault(ActivityType.Employment);
-        _supportWorkPqa = pqa.GetValueOrDefault(ActivityType.InterventionsAndServicesWraparoundSupport);
+        _iswSupportPqa = pqa.GetValueOrDefault(ActivityType.InterventionsAndServicesWraparoundSupport);
 
         _loading = false;
     }
