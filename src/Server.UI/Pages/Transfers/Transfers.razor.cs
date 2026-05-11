@@ -2,7 +2,6 @@ using Cfo.Cats.Application.Features.Transfers.Commands;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.Features.Transfers.Queries;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Components.Dialogs;
 using Cfo.Cats.Server.UI.Pages.Transfers.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Transfers;
@@ -76,12 +75,13 @@ public partial class Transfers
 
     private async Task Dismiss(IncomingTransferDto incomingTransfer)
     {
-        var parameters = new DialogParameters<ConfirmationDialog>
+        var parameters = new DialogParameters<DismissTransferDialog>
         {
-            { x => x.ContentText, $"Are you sure you want to dismiss the incoming transfer for {incomingTransfer.ParticipantFullName}? This cannot be undone." }
+            { x => x.Model, incomingTransfer }
         };
 
-        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Dismiss Transfer", parameters);
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = await DialogService.ShowAsync<DismissTransferDialog>("Dismiss Transfer", parameters, options);
         var result = await dialog.Result;
 
         if (result is not { Canceled: false })
