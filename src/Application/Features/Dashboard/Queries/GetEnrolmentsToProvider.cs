@@ -44,6 +44,7 @@ public static class GetEnrolmentsToProvider
                     CfoUser = cfoUser.DisplayName,
                     PqaSubmittedDate = pfe.PqaSubmittedDate,
                     PqaUser = submittedByUser.DisplayName,
+                    ReturnReason = pfe.ReturnReason,
                     ReturnedDate = pfe.ActionDate,
                     Message = (pfe.Message ?? "").Replace("\r", " ").Replace("\n", " ")
                 };
@@ -114,6 +115,7 @@ public static class GetEnrolmentsToProvider
         public string? PqaUser { get; set; }
         public string? CfoUser { get; set; }
         public DateTime? PqaSubmittedDate { get; set; }
+        public string? ReturnReason { get; set; }
         public DateTime? ReturnedDate { get; set; }
         public string? Message { get; set; }
     }
