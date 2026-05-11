@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Features.Transfers.Commands;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.Features.Transfers.Queries;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Components.Dialogs;
 using Cfo.Cats.Server.UI.Pages.Transfers.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Transfers;
@@ -70,6 +71,35 @@ public partial class Transfers
 
             // Remove dto from UI
             incomingTransfers.Remove(incomingTransfer);
+        }
+    }
+
+    private async Task Dismiss(IncomingTransferDto incomingTransfer)
+    {
+        var parameters = new DialogParameters<ConfirmationDialog>
+        {
+            { x => x.ContentText, $"Are you sure you want to dismiss the incoming transfer for {incomingTransfer.ParticipantFullName}? This cannot be undone." }
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Dismiss Transfer", parameters);
+        var result = await dialog.Result;
+
+        if (result is not { Canceled: false })
+        {
+            return;
+        }
+
+        var command = new DismissIncomingTransfer.Command { IncomingTransfer = incomingTransfer };
+        var dismissResult = await GetNewMediator().Send(command);
+
+        if (dismissResult.Succeeded)
+        {
+            incomingTransfers.Remove(incomingTransfer);
+            Snackbar.Add("Transfer dismissed successfully.", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add(dismissResult.ErrorMessage, Severity.Error);
         }
     }
 
