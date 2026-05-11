@@ -36,6 +36,7 @@
     <HeaderContent>
             <MudTh>@ConstantString.Actions</MudTh>
             <MudTh>Participant</MudTh>
+            <MudTh>Status</MudTh>
             <MudTh>Occurred</MudTh>
             <MudTh>From</MudTh>
             <MudTh>To</MudTh>
@@ -54,6 +55,12 @@
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
                 <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
             </div>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            @if (context.EnrolmentStatus is not null)
+            {
+                <MudChip T="string" Size="Size.Small" Style="@($"background-color: {context.EnrolmentStatus.Colour}; color: white;")">@context.EnrolmentStatus.Name</MudChip>
+            }
         </MudTd>
         <MudTd DataLabel="Occurred">
             <div class="d-flex flex-column">
@@ -112,6 +119,7 @@
     <HeaderContent>
             <MudTh>Actions</MudTh>
             <MudTh>Participant</MudTh>
+            <MudTh>Status</MudTh>
             <MudTh>Occurred</MudTh>
             <MudTh>From</MudTh>
             <MudTh>To</MudTh>
@@ -128,6 +136,12 @@
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
                 <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
             </div>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            @if (context.EnrolmentStatus is not null)
+            {
+                <MudChip T="string" Size="Size.Small" Style="@($"background-color: {context.EnrolmentStatus.Colour}; color: white;")">@context.EnrolmentStatus.Name</MudChip>
+            }
         </MudTd>
         <MudTd DataLabel="Occurred">
             <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
