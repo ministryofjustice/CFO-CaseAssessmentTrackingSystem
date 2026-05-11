@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Features.Transfers.DTOs
+﻿@using Cfo.Cats.Application.Features.Transfers.DTOs
 @using Cfo.Cats.Application.Features.Transfers.Queries
 @using Humanizer
 
@@ -34,7 +34,7 @@
                 <MudAlert Severity="Severity.Info" Dense="true">
                     Consider whether the reason for archiving is still valid. If this participant should be re-engaged at their new location, use <strong>Process and Assign</strong> instead.
                 </MudAlert>
-                <MudCheckBox @bind-Value="confirmed" Label="I confirm the archive reason is still valid and this transfer should be dismissed." Color="Color.Primary" />
+                <MudCheckBox @bind-Value="confirmed" Label="I confirm the archive reason is still valid and this transfer should be dismissed without reassigning the participant." Color="Color.Primary" />
             </MudStack>
         }
     </DialogContent>
