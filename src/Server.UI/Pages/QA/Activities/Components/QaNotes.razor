@@ -67,6 +67,13 @@
                                     <MudText Typo="Typo.subtitle1">
                                         @note.Message
                                     </MudText>
+
+                                    @if (!string.IsNullOrWhiteSpace(note.ReturnReason))
+                                    {
+                                        <MudText Typo="Typo.body2" Color="Color.Warning" Class="mt-2">
+                                            <strong>Return Reason:</strong> @note.ReturnReason
+                                        </MudText>
+                                    }
                                 </MudCardContent>
                                 <MudCardActions>
                                     <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">

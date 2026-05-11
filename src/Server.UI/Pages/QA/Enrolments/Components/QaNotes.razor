@@ -15,6 +15,13 @@
                                 @note.Message
                             </MudText>
 
+                            @if (!string.IsNullOrWhiteSpace(note.ReturnReason))
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Warning" Class="mt-2">
+                                    <strong>Return Reason:</strong> @note.ReturnReason
+                                </MudText>
+                            }
+
                             @if (_hideUser && _cfoTenantNames.Contains(note.TenantName))
                             {
                                 <MudText Typo="Typo.caption">

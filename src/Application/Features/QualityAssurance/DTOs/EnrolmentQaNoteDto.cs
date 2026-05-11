@@ -14,6 +14,7 @@ public class EnrolmentQaNoteDto
     public required string CreatedBy { get; set; }
     public required string TenantName { get; set; }
     public required bool IsExternal { get; set; }
+    public string ReturnReason { get; set; }
 
     private class Mapper : Profile
     {
@@ -23,7 +24,8 @@ public class EnrolmentQaNoteDto
                 .ForMember(target => target.CreatedBy, options => options.MapFrom(source=>source.CreatedByUser.DisplayName))
                 .ForMember(target => target.Message, options => options.MapFrom(source => source.Message))
                 .ForMember(target => target.Created, options => options.MapFrom(source => source.Created))
-                .ForMember(target => target.TenantName, options => options.MapFrom(source => source.CreatedByUser.TenantName));
+                .ForMember(target => target.TenantName, options => options.MapFrom(source => source.CreatedByUser.TenantName))
+                .ForMember(target => target.ReturnReason, options => options.MapFrom(source => source.ReturnReason));
     }
 
 }

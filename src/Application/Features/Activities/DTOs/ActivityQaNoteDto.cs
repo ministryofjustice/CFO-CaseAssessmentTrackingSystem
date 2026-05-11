@@ -10,6 +10,7 @@ public class ActivityQaNoteDto
     public required string CreatedBy { get; set; }
     public required string TenantName { get; set; }
     public required bool IsExternal { get; set; }
+    public string ReturnReason { get; set; }
     
     public bool IsExpanded { get; set; }
     
@@ -32,6 +33,7 @@ public class ActivityQaNoteDto
             CreatedBy = entity?.CreatedByUser?.DisplayName ?? string.Empty,
             TenantName = entity?.CreatedByUser?.TenantName ?? string.Empty,
             IsExternal = entity.IsExternal,
+            ReturnReason = entity.ReturnReason,
             IsExpanded = false
         };
     }
