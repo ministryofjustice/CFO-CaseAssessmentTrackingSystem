@@ -4,7 +4,6 @@ using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Assessments;
-using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
@@ -32,11 +31,22 @@ public static class SaveAssessment
                                            request.Assessment.Id,
                                            request.Assessment.ParticipantId
                                        });
-            
-            pa.UpdateJson(JsonConvert.SerializeObject(request.Assessment, new JsonSerializerSettings
+
+            foreach (var pathway in request.Assessment.Pathways)
             {
-                TypeNameHandling = TypeNameHandling.Auto
-            }));
+                foreach (var question in pathway.Questions())
+                {
+                    switch (question)
+                    {
+                        case SingleChoiceQuestion single when single.Answer is not null:
+                            pa.SetAnswer(single.Code, single.Answer);
+                            break;
+                        case MultipleChoiceQuestion multi when multi.Answers is not null:
+                            pa.SetAnswers(multi.Code, multi.Answers);
+                            break;
+                    }
+                }
+            }
 
             if (request.Submit)
             {

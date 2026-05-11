@@ -13,6 +13,7 @@ public class B3()
             NoneOftheGivenOptions
         ])
 {
+    public override string Code => nameof(B3);
     public const string CookingOrMealPlanningOrHealthyEatingStruggle = "Cooking/meal planning/healthy eating";
     public const string CleaningOrLookingAfterYourHomeStruggle = "Cleaning or looking after your home";
     public const string KeepingYourHomeWarmStruggle = "Keeping your home warm";

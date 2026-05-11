@@ -5,6 +5,7 @@ public class C4()
         "This includes owing money to loan sharks, prison debt, drug debt or owing family/friends.",
         [Yes, No])
 {
+    public override string Code => nameof(C4);
     public const string Yes = "Yes";
     public const string No = "No";
 }

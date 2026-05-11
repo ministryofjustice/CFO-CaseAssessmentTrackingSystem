@@ -1,7 +1,7 @@
 CREATE TABLE [Participant].[Assessment] (
     [Id]             UNIQUEIDENTIFIER NOT NULL,
     [ParticipantId]  NVARCHAR (9)     NOT NULL,
-    [AssessmentJson] NVARCHAR (MAX)   NOT NULL,
+    [AssessmentJson] NVARCHAR (MAX)   NULL,
     [TenantId]       NVARCHAR (50)    NULL,
     [Created]        DATETIME2 (7)    NULL,
     [CreatedBy]      NVARCHAR (36)    NULL,

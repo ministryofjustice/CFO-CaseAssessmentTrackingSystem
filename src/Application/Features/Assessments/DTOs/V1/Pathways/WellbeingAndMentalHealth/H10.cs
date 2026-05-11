@@ -1,3 +1,6 @@
 namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
 
-public class H10() : HealthCoreQuestion("I have felt I have someone to turn to for support when needed");
+public class H10() : HealthCoreQuestion("I have felt I have someone to turn to for support when needed")
+{
+    public override string Code => nameof(H10);
+}

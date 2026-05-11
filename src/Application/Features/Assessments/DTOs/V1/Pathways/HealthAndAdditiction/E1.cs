@@ -7,6 +7,7 @@ public class E1() : SingleChoiceQuestion("How is your health in general?", [
     VeryGood,
 ])
 {
+    public override string Code => nameof(E1);
     public const string VeryBad = "Very bad";
     public const string Bad = "Bad";
     public const string Fair = "Fair";

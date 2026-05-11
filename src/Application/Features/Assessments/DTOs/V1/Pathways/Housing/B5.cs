@@ -9,6 +9,7 @@ public class B5() : SingleChoiceQuestion(
         VerySafeToWalkAloneAfterDarkInLocalArea,
     ])
 {
+    public override string Code => nameof(B5);
     public const string VeryUnsafeToWalkAloneAfterDarkInLocalArea = "Very unsafe";
     public const string ABitUnsafeToWalkAloneAfterDarkInLocalArea = "A bit unsafe";
     public const string FairlySafeToWalkAloneAfterDarkInLocalArea = "Fairly safe";

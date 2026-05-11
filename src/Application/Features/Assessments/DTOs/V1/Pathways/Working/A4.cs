@@ -9,6 +9,7 @@ public class A4()
         NoPreferNot
     ])
 {
+    public override string Code => nameof(A4);
     public const string AtLeastOncePerMonth = "Yes - at least once per month";
     public const string LessThanOncePerMonth = "Yes - less than once per month";
     public const string NoCannot = "No - I am currently unable to";

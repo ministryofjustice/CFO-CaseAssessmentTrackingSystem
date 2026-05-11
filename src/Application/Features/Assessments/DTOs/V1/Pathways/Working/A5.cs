@@ -6,6 +6,7 @@ public class A5() : SingleChoiceQuestion("Do you know how to find and apply for 
     No
 ])
 {
+    public override string Code => nameof(A5);
     public const string Yes = "Yes";
     public const string No = "No";
 };

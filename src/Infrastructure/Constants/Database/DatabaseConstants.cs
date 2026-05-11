@@ -51,6 +51,7 @@ internal static class DatabaseConstants
         public const string PriCode = nameof(PriCode);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
+        public const string AssessmentAnswer = nameof(AssessmentAnswer);
 
         public const string Timeline = nameof(Timeline);
 

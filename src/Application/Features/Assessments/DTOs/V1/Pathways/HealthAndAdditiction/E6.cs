@@ -13,6 +13,7 @@ public class E6() : MultipleChoiceQuestion("Do you have a problem, receive, or r
         None
     ])
 {
+    public override string Code => nameof(E6);
     public const string Alcohol = "Alcohol";
     public const string Gambling = "Gambling";
     public const string IllegalDrugsOrSubstances = "Illegal drugs / substances";

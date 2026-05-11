@@ -32,6 +32,7 @@ public class SeedDataBackgroundService(
             logger.LogInformation($"Seeding: {Path.GetFileName(file)}");
             var sql = await File.ReadAllTextAsync(file, cancellationToken);
             await using var cmd = new SqlCommand(sql, conn);
+            cmd.CommandTimeout = 60 * 3; // three minute timeout.
             await cmd.ExecuteNonQueryAsync(cancellationToken);
             logger.LogInformation($"Seeded: {Path.GetFileName(file)}");
         }
