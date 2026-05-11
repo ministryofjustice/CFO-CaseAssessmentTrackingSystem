@@ -1,5 +1,6 @@
-﻿@using Cfo.Cats.Application.Features.Transfers.DTOs
+@using Cfo.Cats.Application.Features.Transfers.DTOs
 @using Cfo.Cats.Application.Features.Transfers.Queries
+@using Humanizer
 
 @inherits CatsComponentBase
 
@@ -17,6 +18,9 @@
                 </MudText>
                 @if (archiveDetails is not null)
                 {
+                    <MudField Label="Archived On" Variant="Variant.Text">
+                        @archiveDetails.ArchivedOn.ToLocalTime().ToString("dd/MM/yyyy") (@archiveDetails.ArchivedOn.Humanize())
+                    </MudField>
                     <MudField Label="Archive Reason" Variant="Variant.Text">
                         @(archiveDetails.Reason ?? "Not recorded")
                     </MudField>

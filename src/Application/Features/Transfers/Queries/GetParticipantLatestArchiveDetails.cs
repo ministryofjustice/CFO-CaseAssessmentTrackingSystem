@@ -16,6 +16,7 @@ public static class GetParticipantLatestArchiveDetails
     {
         public string? Reason { get; set; }
         public string? AdditionalInformation { get; set; }
+        public DateTime ArchivedOn { get; set; }
     }
 
     private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ArchiveDetailsDto>>
@@ -30,7 +31,8 @@ public static class GetParticipantLatestArchiveDetails
                 .Select(h => new ArchiveDetailsDto
                 {
                     Reason = h.Reason,
-                    AdditionalInformation = h.AdditionalInformation
+                    AdditionalInformation = h.AdditionalInformation,
+                    ArchivedOn = h.From
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
