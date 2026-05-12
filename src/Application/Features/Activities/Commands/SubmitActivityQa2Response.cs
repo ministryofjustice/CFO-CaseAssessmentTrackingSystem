@@ -163,7 +163,7 @@ public static class SubmitActivityQa2Response
                     .WithMessage("FeedbackType must be 'Returned' when returning");
                 
                 RuleFor(x => x.ReturnReason)
-                    .NotNull()
+                    .NotEmpty()
                     .WithMessage("Return Reason is required when returning");
                 
                 RuleFor(x => x.MessageToProvider)
