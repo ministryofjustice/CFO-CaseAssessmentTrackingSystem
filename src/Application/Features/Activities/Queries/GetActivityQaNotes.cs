@@ -44,6 +44,7 @@ public static class GetActivityQaNotes
                 CreatedBy = x.CreatedByUser?.DisplayName,
                 TenantName = x.CreatedByUser?.TenantName,
                 IsExternal = x.IsExternal,
+                ReturnReason = x.ReturnReason,
                 IsExpanded = false
             };
 
