@@ -14,7 +14,8 @@ CREATE TABLE [Mi].[ProviderFeedbackEnrolment] (
     [PqaSubmittedDate] DATETIME2 (7)    NOT NULL,
     [ActionDate]       DATETIME2 (7)    NOT NULL,
     [Message]          NVARCHAR (1000)  NOT NULL,
-    [FeedbackType]     INT              NULL
+    [FeedbackType]     INT              NULL,
+    [ReturnReason]     NVARCHAR (100)   NULL
 );
 GO
 

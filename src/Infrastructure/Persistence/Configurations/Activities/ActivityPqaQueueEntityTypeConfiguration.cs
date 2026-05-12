@@ -52,6 +52,7 @@ public class ActivityPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration<
 
             note.Ignore(x => x.IsExternal);
             note.Ignore(x => x.FeedbackType);
+            note.Ignore(x => x.ReturnReason);
         });
 
         builder.HasOne(t => t.Tenant)

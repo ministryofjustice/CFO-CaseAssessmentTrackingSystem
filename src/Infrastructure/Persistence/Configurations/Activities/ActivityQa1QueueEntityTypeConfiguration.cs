@@ -51,6 +51,7 @@ public class ActivityQa1QueueEntityTypeConfiguration : IEntityTypeConfiguration<
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
             
             note.Ignore(x => x.FeedbackType);
+            note.Ignore(x => x.ReturnReason);
         });
 
         builder.HasOne(t => t.Tenant)

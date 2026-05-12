@@ -48,6 +48,7 @@ public static class GetActivitiesToProvider
                     CfoUser = cfoUser.DisplayName,
                     PqaSubmittedDate = (DateTime?)pfa.PqaSubmittedDate,
                     PqaUser = submittedByUser.DisplayName,
+                    ReturnReason = pfa.ReturnReason,
                     ReturnedDate = pfa.ActionDate,
                     Message = pfa.Message ?? ""
                 };
@@ -135,6 +136,7 @@ public static class GetActivitiesToProvider
         public string? PqaUser { get; set; }
         public string? CfoUser { get; set; }
         public DateTime? PqaSubmittedDate { get; set; }
+        public string? ReturnReason { get; set; }
         public DateTime? ReturnedDate { get; set; }
         public string? Message { get; set; }
     }

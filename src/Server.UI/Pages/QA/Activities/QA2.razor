@@ -125,6 +125,22 @@
                                                     Returned
                                                 </MudRadio>                                        
                                             </MudRadioGroup>
+
+                                            @if (Command.Response == SubmitActivityQa2Response.Qa2Response.Return)
+                                            {
+                                                <MudSelect @bind-Value="Command.ReturnReason" 
+                                                           For="() => Command.ReturnReason"
+                                                           Label="Return Reason"
+                                                           Required="true"
+                                                           Class="mt-4">
+                                                    @foreach (var returnReason in PicklistService.DataSource
+                                                                    .Where(c => c.Name == Picklist.QaReturnReason)
+                                                                    .OrderBy(c => c.Text))
+                                                    {
+                                                        <MudSelectItem Value="@returnReason.Value">@returnReason.Text</MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            }
                                         
                                             <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
                                                 This comment will be visible to all users (including PQA)

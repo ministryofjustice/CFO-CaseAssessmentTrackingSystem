@@ -100,6 +100,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Provider QA",        r => r.PqaUser },
                 { "CFO User",           r => r.CfoUser },
                 { "PQA Submitted Date", r => r.PqaSubmittedDate },
+                { "Return Reason",      r => r.ReturnReason },
                 { "Returned Date",      r => r.ReturnedDate },
                 { "Advisory Notes",     r => r.Message },
             });
@@ -133,6 +134,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Provider QA",        r => r.PqaUser },
                 { "CFO User",           r => r.CfoUser },
                 { "PQA Submitted Date", r => r.PqaSubmittedDate },
+                { "Return Reason",      r => r.ReturnReason },
                 { "Returned Date",      r => r.ReturnedDate },
                 { "Advisory Notes",     r => r.Message },
             });

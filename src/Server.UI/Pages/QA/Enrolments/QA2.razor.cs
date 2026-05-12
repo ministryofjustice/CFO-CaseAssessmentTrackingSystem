@@ -128,6 +128,7 @@ public partial class QA2
     private void OnResponseChanged()
     {
         Command.FeedbackType = null;
+        Command.ReturnReason = null;
         Command.MessageToProvider = string.Empty;
         Command.MessageToQa1 = string.Empty;
         Command.EnrolmentFeedbackReason = string.Empty;

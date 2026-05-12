@@ -17,6 +17,8 @@ public static class SubmitQa2Response
         [Description("Feedback Type")]
         public FeedbackType? FeedbackType { get; set; } 
 
+        public string? ReturnReason { get; set; }
+
         public string Message { get; set; } = null!;
         
         [Description("Message to provider")]
@@ -58,7 +60,7 @@ public static class SubmitQa2Response
 
             if (!string.IsNullOrWhiteSpace(request.MessageToProvider))
             {
-                entry.AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+                entry.AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType, returnReason: request.ReturnReason);
             }
             
             var response = request.Response!.Value;
@@ -155,6 +157,10 @@ public static class SubmitQa2Response
                 RuleFor(x => x.FeedbackType)
                     .Equal(FeedbackType.Returned)
                     .WithMessage("FeedbackType must be 'Returned' when returning");
+                
+                RuleFor(x => x.ReturnReason)
+                    .NotEmpty()
+                    .WithMessage("Return Reason is required when returning");
                 
                 RuleFor(x => x.MessageToProvider)
                     .NotEmpty()

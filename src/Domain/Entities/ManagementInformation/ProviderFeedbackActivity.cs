@@ -41,6 +41,8 @@ public class ProviderFeedbackActivity
 
     public int? FeedbackType{get; set;}
 
+    public string? ReturnReason { get; set; }
+
     public static ProviderFeedbackActivity CreateReturnedQA2Activity(
         Guid queueEntryId,
         int noteId,
@@ -55,7 +57,8 @@ public class ProviderFeedbackActivity
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) => new()
+        int? feedbackType,
+        string? returnReason) => new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -74,7 +77,8 @@ public class ProviderFeedbackActivity
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
             Message = message,
-            FeedbackType = feedbackType
+            FeedbackType = feedbackType,
+            ReturnReason = returnReason
         };
     public static ProviderFeedbackActivity CreateReturnedEscalationActivity(
         Guid queueEntryId,
@@ -90,7 +94,8 @@ public class ProviderFeedbackActivity
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) => new()
+        int? feedbackType,
+        string? returnReason) => new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -109,7 +114,8 @@ public class ProviderFeedbackActivity
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
             Message = message,
-            FeedbackType = feedbackType
+            FeedbackType = feedbackType,
+            ReturnReason = returnReason
         };
     public static ProviderFeedbackActivity CreateAdvisoryQA2Activity(
         Guid queueEntryId,

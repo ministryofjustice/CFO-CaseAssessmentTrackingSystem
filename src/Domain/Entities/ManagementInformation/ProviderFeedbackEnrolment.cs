@@ -37,6 +37,8 @@ public class ProviderFeedbackEnrolment
 
     public int? FeedbackType { get; set; }
 
+    public string? ReturnReason { get; set; }
+
     public static ProviderFeedbackEnrolment CreateReturnedQA2Enrolment(
         Guid queueEntryId,
         int noteId,
@@ -49,7 +51,8 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) =>
+        int? feedbackType,
+        string? returnReason) =>
         new()
         {
             Id = Guid.CreateVersion7(),
@@ -67,7 +70,8 @@ public class ProviderFeedbackEnrolment
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
             Message = message,
-            FeedbackType = feedbackType
+            FeedbackType = feedbackType,
+            ReturnReason = returnReason
         };
 
     public static ProviderFeedbackEnrolment CreateReturnedEscalationEnrolment(
@@ -82,7 +86,8 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) => 
+        int? feedbackType,
+        string? returnReason) => 
         new()
         {
             Id = Guid.CreateVersion7(),
@@ -100,7 +105,8 @@ public class ProviderFeedbackEnrolment
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
             Message = message,
-            FeedbackType = feedbackType
+            FeedbackType = feedbackType,
+            ReturnReason = returnReason
         };
     public static ProviderFeedbackEnrolment CreateAdvisoryQA2Enrolment(
         Guid queueEntryId,
