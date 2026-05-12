@@ -138,5 +138,4 @@ public partial class QA2
             Command.FeedbackType = FeedbackType.Returned;
         }
     }
->>>>>>> develop
 }

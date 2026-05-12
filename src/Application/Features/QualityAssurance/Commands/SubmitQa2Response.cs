@@ -30,7 +30,7 @@ public static class SubmitQa2Response
         public string MessageToQa1 { get; set; } = null!;
         
         [Description("Enrolment Feedback Reason")]
-        public string EnrolmentFeedbackReason { get; set; } = null!
+        public string EnrolmentFeedbackReason { get; set; } = null!;
     }
 
     public enum Qa2Response
