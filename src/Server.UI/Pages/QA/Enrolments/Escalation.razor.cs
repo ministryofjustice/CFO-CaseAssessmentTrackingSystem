@@ -1,4 +1,3 @@
-using System.Text;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.Queries;
@@ -132,52 +131,27 @@ public partial class Escalation
         finally { _saving = false; }
     }
 
-    private void ShowActionFailure(string title, IResult result)
-    {
-        var html = new StringBuilder();
-
-        html.Append($"<div>");
-        html.Append($"<h2>{title}</h2>");
-        html.Append($"<ul>");
-        
-        foreach (var e in result.Errors)
-        {
-            html.Append($"<li>{e}</li>");
-        }
-        
-        html.Append($"</ul>");
-        html.Append($"</div>");
-   
-        RenderFragment content = builder =>
-        {
-            builder.AddMarkupContent(0, html.ToString());
-        };
-        
-        Snackbar.Add(content, Severity.Error, options =>
-        {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
-    }
+    private void ShowActionFailure(string title, IResult result) =>
+        Snackbar.Add(
+            RenderFailure(title, result),
+            Severity.Error,
+            options =>
+            {
+                options.RequireInteraction = true;
+                options.SnackbarVariant = Variant.Text;
+            });
+    
     private void OnResponseChanged()
     {
-        if (Command.Response == SubmitEscalationResponse.EscalationResponse.Accept)
-        {
-            Command.FeedbackType = null;
-            Command.ReturnReason = null;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitEscalationResponse.EscalationResponse.Return)
+        Command.FeedbackType = null;
+        Command.ReturnReason = null;
+        Command.MessageToProvider = string.Empty;
+        Command.MessageToQa1 = string.Empty;
+        Command.EnrolmentFeedbackReason = string.Empty;
+        
+        if (Command.Response == SubmitEscalationResponse.EscalationResponse.Return)
         {
             Command.FeedbackType = FeedbackType.Returned;
-            Command.ReturnReason = null;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitEscalationResponse.EscalationResponse.Comment)
-        {
-            Command.FeedbackType = null;
-            Command.ReturnReason = null;
-            Command.MessageToProvider = string.Empty;
         }
     }    
 }

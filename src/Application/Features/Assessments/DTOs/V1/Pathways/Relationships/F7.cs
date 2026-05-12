@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
 
 public class F7() : MultipleChoiceQuestion("Do you feel you can trust, confide in, and rely on any of the following? (tick all that apply)",
     [
@@ -10,6 +10,7 @@ public class F7() : MultipleChoiceQuestion("Do you feel you can trust, confide i
         NoneOfThese,
     ])
 {
+    public override string Code => nameof(F7);
     public const string PartnerOrSpouse = "A partner / spouse";
     public const string CloseFriend = "A close friend";
     public const string ParentOrGuardian = "A parent / guardian";

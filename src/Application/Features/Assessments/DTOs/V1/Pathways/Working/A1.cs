@@ -10,6 +10,7 @@ public class A1() : SingleChoiceQuestion("What is your current employment status
     InPermanentJob
 ])
 {
+    public override string Code => nameof(A1);
     public const string DoNotWantAJob = "Do not want a job";
     public const string WantAJobButCannotWork = "Want a job but cannot work";
     public const string LookingForWork = "Looking for work";

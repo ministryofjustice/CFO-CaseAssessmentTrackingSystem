@@ -8,6 +8,7 @@ public class E2(): SingleChoiceQuestion("Do you consider yourself disabled?", "F
         
     ])
 {
+    public override string Code => nameof(E2);
     public const string No = "No";
     public const string LittleImpairment = "Yes, A little impairment";
     public const string LotOfImpairment = "Yes, A lot of impairment";

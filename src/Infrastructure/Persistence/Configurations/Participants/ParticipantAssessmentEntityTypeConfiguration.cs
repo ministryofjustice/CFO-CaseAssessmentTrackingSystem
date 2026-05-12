@@ -1,5 +1,6 @@
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
+using Cfo.Cats.Domain.ValueObjects;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -42,6 +43,18 @@ public class ParticipantAssessmentEntityTypeConfiguration : IEntityTypeConfigura
             );
             score.Property(x => x.Pathway).HasMaxLength(50).IsRequired();
             score.Property(x => x.Score).HasColumnType("float").IsRequired();
+        });
+
+        builder.OwnsMany(p => p.Answers, answer => {
+            answer.WithOwner().HasForeignKey("AssessmentId");
+            answer.HasKey("Id");
+            answer.HasIndex("AssessmentId", nameof(AssessmentAnswer.QuestionCode), nameof(AssessmentAnswer.Answer)).IsUnique();
+            answer.ToTable(
+                DatabaseConstants.Tables.AssessmentAnswer,
+                DatabaseConstants.Schemas.Participant
+            );
+            answer.Property(x => x.QuestionCode).HasMaxLength(3).IsRequired();
+            answer.Property(x => x.Answer).HasMaxLength(80).IsRequired();
         });
             
         builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);

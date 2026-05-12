@@ -9,6 +9,7 @@ public class G1() : SingleChoiceQuestion("I tend to bounce back quickly after ha
         StronglyAgree
     ])
 {
+    public override string Code => nameof(G1);
     public const string StronglyDisagree = "Strongly disagree";
     public const string Disagree = "Disagree";
     public const string Neither = "Neither";

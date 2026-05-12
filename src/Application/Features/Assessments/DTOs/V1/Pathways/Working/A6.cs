@@ -7,6 +7,7 @@ public class A6() : SingleChoiceQuestion("Are you able to fill in application fo
     No
 ])
 {
+    public override string Code => nameof(A6);
     public const string YesUnaided = "Yes, unaided";
     public const string YesWithHelp = "Yes, with help";
     public const string No = "No";

@@ -73,6 +73,36 @@ public partial class Transfers
         }
     }
 
+    private async Task Dismiss(IncomingTransferDto incomingTransfer)
+    {
+        var parameters = new DialogParameters<DismissTransferDialog>
+        {
+            { x => x.Model, incomingTransfer }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = await DialogService.ShowAsync<DismissTransferDialog>("Dismiss Transfer", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not { Canceled: false })
+        {
+            return;
+        }
+
+        var command = new DismissIncomingTransfer.Command { IncomingTransfer = incomingTransfer };
+        var dismissResult = await GetNewMediator().Send(command);
+
+        if (dismissResult.Succeeded)
+        {
+            incomingTransfers.Remove(incomingTransfer);
+            Snackbar.Add("Transfer dismissed successfully.", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add(dismissResult.ErrorMessage, Severity.Error);
+        }
+    }
+
     private void View(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
 
     private async Task ViewOffenderManagerSummary(string participantId)

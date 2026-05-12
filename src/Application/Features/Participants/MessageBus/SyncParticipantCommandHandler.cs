@@ -82,6 +82,9 @@ public class SyncParticipantCommandHandler(
             logger.LogTrace("Update nationality");
             participant.UpdateNationality(candidate.Nationality);
 
+            logger.LogTrace("Update ethnicity");
+            participant.UpdateEthnicity(candidate.Ethnicity);
+
             participant.UpdateSync();
 
             // Dispatch events and commit transaction

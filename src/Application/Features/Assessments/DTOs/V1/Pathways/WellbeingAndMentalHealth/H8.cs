@@ -1,3 +1,6 @@
 namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
 
-public class H8() : HealthCoreQuestion("I have felt unhappy");
+public class H8() : HealthCoreQuestion("I have felt unhappy")
+{
+    public override string Code => nameof(H8);
+}

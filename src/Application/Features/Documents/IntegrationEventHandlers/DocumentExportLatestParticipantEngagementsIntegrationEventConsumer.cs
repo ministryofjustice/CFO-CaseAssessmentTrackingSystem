@@ -54,7 +54,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
                     { "Description", item => item.Description },
                     { "Engaged at (Location)", item => item.EngagedAtLocationName },
                     { "Engaged at (Contract)", item => item.EngagedAtContractName },
-                    { "Engaged on", item => item.EngagedOn?.ToShortDateString() },
+                    { "Engaged on", item => item.EngagedOn },
                     { "Has Engaged Recently", item => item.HasEngagedRecently ? "Yes" : "No" },
                     { "Has Engaged", item => item.HasEngaged ? "Yes" : "No" },
                     { "Engaged With", item => item.EngagedWithDisplayName },

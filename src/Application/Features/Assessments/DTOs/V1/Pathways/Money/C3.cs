@@ -5,6 +5,7 @@ public class C3()
         "This includes things such as court fines but doesn’t include mortgages or secured loans.",
         [Yes, No])
 {
+    public override string Code => nameof(C3);
     public const string Yes = "Yes";
     public const string No = "No";
 }

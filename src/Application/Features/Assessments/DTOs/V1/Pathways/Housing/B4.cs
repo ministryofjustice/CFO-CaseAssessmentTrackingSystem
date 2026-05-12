@@ -11,6 +11,7 @@ public class B4() : SingleChoiceQuestion(
         VerySatisfied,
     ])
 {
+    public override string Code => nameof(B4);
     public const string VeryDissatisfied = "Very dissatisfied";
     public const string SlightlyDissatisfied = "Slightly dissatisfied";
     public const string NeitherSatisfiedOrDissatisfied = "Neither satisfied or dissatisfied";

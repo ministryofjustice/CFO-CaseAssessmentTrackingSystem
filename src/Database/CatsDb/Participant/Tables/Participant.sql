@@ -22,6 +22,7 @@ CREATE TABLE [Participant].[Participant] (
     [RegistrationDetailsJson]        NVARCHAR (MAX)  NULL,
     [RiskDue]                        DATE            NULL,
     [Nationality]                    NVARCHAR (50)   NULL,
+    [Ethnicity]                      NVARCHAR (100)  NULL,
     [DateOfFirstConsent]             DATE            NULL,
     [LastSyncDate]                   DATETIME2 (7)   NULL,
     [BioDue]                         DATETIME2 (7)   NULL,
@@ -31,20 +32,47 @@ CREATE TABLE [Participant].[Participant] (
 );
 GO
 
-CREATE NONCLUSTERED INDEX [IX_Participant_CurrentLocationId]
-    ON [Participant].[Participant]([CurrentLocationId] ASC);
+-- this covers a lot of the owner id centric aggregate queries
+CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId_Covering]
+ON [Participant].[Participant] ([OwnerId])
+INCLUDE (    
+    [EnrolmentStatus],    
+    [CurrentLocationId],    
+    [EnrolmentLocationId],    
+    [Created],    
+    [LastModified],    
+    [FirstName],    
+    [LastName])
+    WITH (FILLFACTOR = 95);
+
 GO
 
-CREATE NONCLUSTERED INDEX [IX_Participant_EnrolmentLocationId]
-    ON [Participant].[Participant]([EnrolmentLocationId] ASC);
+-- covers enrolment status queries and dashboards
+CREATE NONCLUSTERED INDEX [IX_Participant_EnrolmentStatus_Covering]
+ON [Participant].[Participant] ([EnrolmentStatus])
+INCLUDE (
+    [OwnerId],
+    [CurrentLocationId],
+    [EnrolmentLocationId],
+    [RiskDue],
+    [DeactivatedInFeed],
+    [FirstName],
+    [LastName]
+)
+WITH (FILLFACTOR = 95);
 GO
 
-CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId]
-    ON [Participant].[Participant]([OwnerId] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [IX_Participant_EditorId]
-    ON [Participant].[Participant]([EditorId] ASC);
+-- Composite OwnerId + EnrolmentStatus (highest-value seek pattern)
+CREATE NONCLUSTERED INDEX [IX_Participant_OwnerId_EnrolmentStatus]
+ON [Participant].[Participant] ([OwnerId], [EnrolmentStatus])
+INCLUDE (
+    [CurrentLocationId],
+    [EnrolmentLocationId],
+    [RiskDue],
+    [Created],
+    [LastModified]
+)
+WITH (FILLFACTOR = 95);
 GO
 
 ALTER TABLE [Participant].[Participant]

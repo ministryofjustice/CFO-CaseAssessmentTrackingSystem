@@ -7,6 +7,7 @@ public class H12() : SingleChoiceQuestion("How often do you feel stressed?", [
     RarelyOrNever
 ])
 {
+    public override string Code => nameof(H12);
     public const string EveryDay = "Every day";
     public const string OneToTwoTimesPerWeek = "1-2 times a week";
     public const string FewTimesAMonth = "Few times a month";

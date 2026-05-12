@@ -19,6 +19,8 @@ public partial class Participant
     private ParticipantCascadingDetails? _participantCascading;
     private ParticipantAssessmentDto? _latestParticipantAssessment;
 
+    private bool _pathwaySummaryView = false;
+
     private bool _showRightToWorkWarning;
     private readonly string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 

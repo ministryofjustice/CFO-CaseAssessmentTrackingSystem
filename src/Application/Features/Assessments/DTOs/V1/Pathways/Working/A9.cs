@@ -8,6 +8,7 @@ public class A9() : SingleChoiceQuestion(
 ]
 )
 {
+    public override string Code => nameof(A9);
     public const string Yes = "Yes";
     public const string No = "No";
 };

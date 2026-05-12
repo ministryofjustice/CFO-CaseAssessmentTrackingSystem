@@ -1,6 +1,7 @@
 CREATE TABLE [Participant].[IncomingTransferQueue] (
     [Id]             UNIQUEIDENTIFIER NOT NULL,
     [Completed]      BIT              NOT NULL,
+    [Dismissed]      BIT              NOT NULL DEFAULT 0,
     [Created]        DATETIME2 (7)    NULL,
     [CreatedBy]      NVARCHAR (36)    NULL,
     [LastModified]   DATETIME2 (7)    NULL,

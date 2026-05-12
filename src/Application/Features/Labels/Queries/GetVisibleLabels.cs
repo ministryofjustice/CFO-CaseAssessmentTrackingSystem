@@ -54,7 +54,7 @@ public static class GetVisibleLabels
                                 """;
 
             var labels = await connection.QueryAsync<LabelDto>(sql, new { TenantId = request.CurrentUser.TenantId! });
-            return labels.OrderBy(x => x.Contract).ToArray();
+            return labels.OrderBy(x => x.Name).ToArray();
         }
     }
 }

@@ -16,31 +16,47 @@ public class ParticipantAssessment : OwnerPropertyEntity<Guid>, IMayHaveTenant, 
         #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private readonly List<PathwayScore> _scores = new();
+    private readonly List<AssessmentAnswer> _answers = new();
 
     public string ParticipantId {get; private set;}
-    public string AssessmentJson {get; private set;}
     public DateTime? Completed { get; private set; }
     public string? CompletedBy { get; private set; }
     public int LocationId { get; private set; }
 
     public IReadOnlyCollection<PathwayScore> Scores => _scores.AsReadOnly();
+    public IReadOnlyCollection<AssessmentAnswer> Answers => _answers.AsReadOnly();
 
-    private ParticipantAssessment(Guid id, string participantId, string assessmentJson, string tenantId, int locationId)
+    private ParticipantAssessment(Guid id, string participantId, string tenantId, int locationId)
     {
         Id = id;
         ParticipantId = participantId;
-        AssessmentJson = assessmentJson;
         TenantId = tenantId;
         LocationId = locationId;
         AddDomainEvent(new AssessmentCreatedDomainEvent(this));
     }
 
-    public ParticipantAssessment UpdateJson(string json)
+    public ParticipantAssessment SetAnswer(string questionCode, string answer)
     {
-        //TODO: Add events for update, and logic to stop locked assessments being updated
-        this.AssessmentJson = json;
+        _answers.RemoveAll(a => a.QuestionCode == questionCode);
+        _answers.Add(new AssessmentAnswer(questionCode, answer));
         return this;
     }
+
+    public ParticipantAssessment SetAnswers(string questionCode, IEnumerable<string> answers)
+    {
+        _answers.RemoveAll(a => a.QuestionCode == questionCode);
+        foreach (var answer in answers)
+        {
+            _answers.Add(new AssessmentAnswer(questionCode, answer));
+        }
+        return this;
+    }
+
+    public string? GetAnswer(string questionCode)
+        => _answers.FirstOrDefault(a => a.QuestionCode == questionCode)?.Answer;
+
+    public IEnumerable<string> GetAnswers(string questionCode)
+        => _answers.Where(a => a.QuestionCode == questionCode).Select(a => a.Answer);
 
     public ParticipantAssessment SetPathwayScore(string pathwayName, double score)
     {
@@ -64,8 +80,8 @@ public class ParticipantAssessment : OwnerPropertyEntity<Guid>, IMayHaveTenant, 
         return this;
     }
 
-    public static ParticipantAssessment Create(Guid id, string participantId, string assessmentJson, string tenantId, int locationId) 
-        => new(id, participantId, assessmentJson, tenantId, locationId);
+    public static ParticipantAssessment Create(Guid id, string participantId, string tenantId, int locationId) 
+        => new(id, participantId, tenantId, locationId);
 
     public string? TenantId {get; set;}
 

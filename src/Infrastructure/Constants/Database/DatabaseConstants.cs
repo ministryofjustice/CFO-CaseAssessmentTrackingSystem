@@ -51,6 +51,7 @@ internal static class DatabaseConstants
         public const string PriCode = nameof(PriCode);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
+        public const string AssessmentAnswer = nameof(AssessmentAnswer);
 
         public const string Timeline = nameof(Timeline);
 
@@ -58,7 +59,8 @@ internal static class DatabaseConstants
         public const string EnrolmentQa1Queue = "Qa1Queue";
         public const string EnrolmentQa2Queue = "Qa2Queue";
         public const string EnrolmentEscalationQueue = "EscalationQueue";
-
+        public const string EnrolmentFeedback = nameof(EnrolmentFeedback);
+        
         public const string PasswordHistory = nameof(PasswordHistory);
 
         public const string AccessAuditTrail = nameof(AccessAuditTrail);
@@ -79,9 +81,12 @@ internal static class DatabaseConstants
         public const string PRI = nameof(PRI);
         
         public const string Label = nameof(Label);
-     
+
+        public const string Initiative = nameof(Initiative);
+        public const string InitiativeObjective = nameof(InitiativeObjective);
 
     }
+    
     public static class Schemas
     {
         public const string Dms = nameof(Dms);
@@ -163,5 +168,15 @@ internal static class DatabaseConstants
         /// The medium length for Risk Text.
         /// </summary>     
         public const int RiskMediumText = 10000;
+
+        /// <summary>
+        /// The fixed length for an initiative code.
+        /// </summary>
+        public const int InitiativeCode = 8;
+
+        /// <summary>
+        /// The maximum length for the description of an initiative.
+        /// </summary>
+        public const int InitiativeDescription = 256;
     }
 }

@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
@@ -9,17 +10,27 @@ public static class SubmitEscalationResponse
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
     public class Command : IRequest<Result>
     {
-        public required Guid QueueEntryId { get; set; }
+        public required Guid QueueEntryId { get; init; }
         
         public EscalationResponse? Response { get; set; }
+        
+        [Description("Feedback Type")]
         public FeedbackType? FeedbackType { get; set; } 
 
         public string? ReturnReason { get; set; }
 
-        public string Message { get; set; } = default!;
-        public string MessageToProvider { get; set; } = default!;
+        public string Message { get; set; } = null!;
+        
+        [Description("Message to provider")]
+        public string MessageToProvider { get; set; } = null!;
 
-        public UserProfile? CurrentUser { get; set; }
+        public UserProfile? CurrentUser { get; init; }
+        
+        [Description("Feedback message to Qa1")]
+        public string MessageToQa1 { get; set; } = null!;
+        
+        [Description("Enrolment Feedback Reason")]
+        public string EnrolmentFeedbackReason { get; set; } = null!;
     }
 
     public enum EscalationResponse
@@ -39,13 +50,22 @@ public static class SubmitEscalationResponse
 
             if (entry == null)
             {
-                return Result.Failure("Cannot find queue item");
+                return Result.Failure("Cannot find enrolment escalation queue item");
             }
+            
+            if (!string.IsNullOrWhiteSpace(request.Message))
+            {
+                entry.AddNote(request.Message, isExternal: false);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(request.MessageToProvider))
+            {
+                entry.AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType, returnReason: request.ReturnReason);
+            }
+       
+            var response = request.Response!.Value;
 
-            entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType, returnReason: request.ReturnReason);
-
-            switch (request.Response)
+            switch (response)
             {
                 case EscalationResponse.Accept:
                     entry.Accept();
@@ -57,6 +77,44 @@ public static class SubmitEscalationResponse
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.MessageToQa1))
+            {
+                var outcome = response switch
+                {
+                    EscalationResponse.Accept => FeedbackOutcome.Approved,
+                    EscalationResponse.Return => FeedbackOutcome.Returned,
+                    _ => throw new ArgumentOutOfRangeException($"Cannot generate feedback for {response}")
+                };
+
+                // get most recent QA1 for this enrolment
+                var qa1 = await unitOfWork.DbContext
+                    .EnrolmentQa1Queue
+                    .Where(x => x.ParticipantId == entry.ParticipantId)
+                    .Where(x => x.IsCompleted)
+                    .OrderByDescending(x => x.LastModified)
+                    .Select(x =>
+                        new
+                        {
+                            Qa1User = x.LastModifiedBy,
+                            Qa1Submitted = x.LastModified,
+                            x.IsAccepted
+                        })
+                    .FirstAsync(cancellationToken);
+
+                var enrolmentFeedback = EnrolmentFeedback.Create(
+                    entry.ParticipantId,
+                    qa1.Qa1User!,
+                    request.MessageToQa1,
+                    qa1.IsAccepted ? FeedbackOutcome.Approved : FeedbackOutcome.Returned,
+                    outcome,
+                    FeedbackStage.Escalation,
+                    qa1.Qa1Submitted!.Value,
+                    request.EnrolmentFeedbackReason
+                );
+
+                unitOfWork.DbContext.EnrolmentFeedbacks.Add(enrolmentFeedback);
             }
 
             return Result.Success();
@@ -119,6 +177,16 @@ public static class SubmitEscalationResponse
                     .WithMessage("External Message is required for Advisory or Accepted By Exception")
                     .Matches(ValidationConstants.Notes)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
+            });
+            
+            RuleFor(x => x.MessageToQa1)
+                .MaximumLength(ValidationConstants.NotesLength);
+            
+            When(x => !string.IsNullOrWhiteSpace(x.MessageToQa1), () =>
+            {
+                RuleFor(x => x.EnrolmentFeedbackReason)
+                    .NotEmpty()
+                    .WithMessage("You must select a feedback reason when providing a QA1 message");
             });
         }
     }
@@ -195,7 +263,7 @@ public static class SubmitEscalationResponse
 
     public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

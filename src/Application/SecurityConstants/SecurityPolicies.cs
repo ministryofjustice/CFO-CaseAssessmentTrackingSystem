@@ -67,5 +67,15 @@ public static class SecurityPolicies
 
     public const string ServiceDeskManagement = nameof(ServiceDeskManagement);
 
+    /// <summary>
+    /// Allows access to the Initiatives management page and list.
+    /// </summary>
+    public const string Initiatives = nameof(Initiatives);
+
+    /// <summary>
+    /// Allows adding, editing, amending, and deactivating initiatives. Aligns with CMPSM role.
+    /// </summary>
+    public const string ManageInitiatives = nameof(ManageInitiatives);
+
     public const string UserManagement = nameof(UserManagement);
 }

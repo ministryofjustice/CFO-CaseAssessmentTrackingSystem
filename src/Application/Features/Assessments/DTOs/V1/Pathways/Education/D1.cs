@@ -10,6 +10,7 @@ public class D1() : SingleChoiceQuestion("What is your highest level of qualific
         DegreeOrHigher
     ])
 {
+    public override string Code => nameof(D1);
     public const string NoQualificationsOrEntryLevel = "No quals / entry level Example:Skills for life";
     public const string NvqLevelOneOrSimilar = "NVQ level 1 or similar Example:Grade D/3 or lower at GCSE";
     public const string FivePlusGcsesOrSimilar = "5+ GCSEs, NVQ level 2, etc. Example:Grade C/4 or higher at GCSE";

@@ -13,7 +13,6 @@ using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Assessments;
-using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
@@ -64,12 +63,7 @@ public static class BeginAssessment
                 ]
             };
 
-            string json = JsonConvert.SerializeObject(assessment, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
-            
-            ParticipantAssessment pa = ParticipantAssessment.Create(assessment.Id, request.ParticipantId, assessmentJson: json, _currentUserService.TenantId!, request.Location!.Id);
+            ParticipantAssessment pa = ParticipantAssessment.Create(assessment.Id, request.ParticipantId, _currentUserService.TenantId!, request.Location!.Id);
             foreach (var pathway in assessment.Pathways)
             {
                 pa.SetPathwayScore(pathway.Title, -1);

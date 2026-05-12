@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Transfers.DTOs;
@@ -19,6 +20,7 @@ public class IncomingTransferDto
     public required DateTime MoveOccured { get; set; }
     public required TransferLocationType TransferType { get; set; }
     public required bool Completed { get; set; }
+    public EnrolmentStatus? EnrolmentStatus { get; set; }
 
     private class Mapper : Profile
     {
@@ -27,6 +29,7 @@ public class IncomingTransferDto
                 .ForMember(p => p.ParticipantId, options => options.MapFrom(src => src.ParticipantId))
                 .ForMember(p => p.ParticipantFullName, options => options.MapFrom(src => src.Participant!.FirstName + " " + src.Participant!.LastName))
                 .ForMember(p => p.FromContract, options => options.MapFrom(src => src.FromContract == null ? null : src.FromContract.Description))
-                .ForMember(p => p.ToContract, options => options.MapFrom(src => src.ToContract == null ? null : src.ToContract.Description));
+                .ForMember(p => p.ToContract, options => options.MapFrom(src => src.ToContract == null ? null : src.ToContract.Description))
+                .ForMember(p => p.EnrolmentStatus, options => options.MapFrom(src => src.Participant!.EnrolmentStatus));
     }
 }

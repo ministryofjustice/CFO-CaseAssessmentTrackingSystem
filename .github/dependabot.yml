@@ -14,7 +14,7 @@ updates:
     commit-message:
       prefix: "deps"
 
-    open-pull-requests-limit: 1
+    open-pull-requests-limit: 5
 
     ignore:
       - dependency-name: "AutoMapper"
@@ -23,6 +23,23 @@ updates:
       - dependency-name: "MediatR.*"
 
     groups:
-      all-dependencies:
+      microsoft-dotnet:
+        patterns:
+          - "Microsoft.*"
+          - "System.*"
+      aspire:
+        patterns:
+          - "Aspire.*"
+          - "CommunityToolkit.Aspire.*"
+      all-other-dependencies:
         patterns:
           - "*"
+        exclude-patterns:
+          - "Microsoft.*"
+          - "System.*"
+          - "Aspire.*"
+          - "CommunityToolkit.Aspire.*"
+          - "AutoMapper"
+          - "AutoMapper.*"
+          - "MediatR"
+          - "MediatR.*"

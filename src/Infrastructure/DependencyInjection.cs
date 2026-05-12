@@ -1,6 +1,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
+using Cfo.Cats.Application.Common.Interfaces.Initiatives;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
@@ -16,6 +17,7 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Jobs;
@@ -24,6 +26,7 @@ using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Persistence.Repositories;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
+using Cfo.Cats.Infrastructure.Services.Initiatives;
 using Cfo.Cats.Infrastructure.Services.Delius;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MessageHandling;
@@ -188,7 +191,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ILabelRepository, LabelRepository>();
-        services.AddScoped<IParticipantLabelRepository, ParticipantLabelRepository>();  
+        services.AddScoped<IParticipantLabelRepository, ParticipantLabelRepository>();
+        services.AddScoped<IInitiativeRepository, InitiativeRepository>();
         
         SqlMapper.AddTypeHandler(typeof(LabelScope), new SmartEnumIntHandler<LabelScope>());
         
@@ -231,6 +235,15 @@ public static class DependencyInjection
                 var logger = sp.GetRequiredService<ILogger<CachingContractService>>();
 
                 return new CachingContractService(cache, service, logger);
+            })
+            .AddSingleton<InitiativeService>()
+            .AddSingleton<IInitiativeService>(sp =>
+            {
+                var service = sp.GetRequiredService<InitiativeService>();
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingInitiativeService>>();
+
+                return new CachingInitiativeService(cache, service, logger);
             });
             
 

@@ -16,6 +16,7 @@ public class D3() : MultipleChoiceQuestion("Have you been diagnosed with or feel
         NoneOftheGivenOptions
     ])
 {
+    public override string Code => nameof(D3);
     public const string AutismOrASD = "Autism / ASD";
     public const string AdhdOrAdd= "ADHD / ADD";
     public const string Epilepsy = "Epilepsy";

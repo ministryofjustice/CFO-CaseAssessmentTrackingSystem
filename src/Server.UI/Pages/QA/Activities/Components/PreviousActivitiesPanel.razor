@@ -51,6 +51,7 @@
     </MudTable>
     
 
+
     <MudDialog Visible="@(_activityQaDetailsDto is not null)">
         <TitleContent>
             <MudText Typo="Typo.h6">
@@ -66,15 +67,15 @@
                     @_activityQaDetailsDto!.AdditionalInformation
                 </MudText>
                 
-                @if (@_activityQaDetailsDto.Definition!.Classification == ClassificationType.Employment)
+                @if (@_activityQaDetailsDto!.Definition.Classification == ClassificationType.Employment)
                 {
                     <Employment Model="_activityQaDetailsDto.EmploymentTemplate" ReadOnly="true" />
                 }
-                else if (@_activityQaDetailsDto.Definition!.Classification == ClassificationType.EducationAndTraining)
+                else if (@_activityQaDetailsDto!.Definition.Classification == ClassificationType.EducationAndTraining)
                 {
                     <EducationTraining Model="_activityQaDetailsDto.EducationTrainingTemplate" ReadOnly="true"/>
                 }
-                else if (@_activityQaDetailsDto.Definition!.Classification == ClassificationType.ISWActivity)
+                else if (@_activityQaDetailsDto!.Definition.Classification == ClassificationType.ISWActivity)
                 {
                     <Isw Model="_activityQaDetailsDto.ISWTemplate" ReadOnly="true" />
                 }
@@ -84,6 +85,7 @@
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => _activityQaDetailsDto = null)" Class="px-10">Close</MudButton>
         </DialogActions>
     </MudDialog>
+   
     
 </MudForm>        
 

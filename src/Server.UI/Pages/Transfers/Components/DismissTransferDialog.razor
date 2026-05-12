@@ -1,0 +1,84 @@
+﻿@using Cfo.Cats.Application.Features.Transfers.DTOs
+@using Cfo.Cats.Application.Features.Transfers.Queries
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        @if (loading)
+        {
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+        }
+        else
+        {
+            <MudStack Spacing="3">
+                <MudText Typo="Typo.body1">
+                    You are dismissing the incoming transfer for <strong>@Model.ParticipantFullName</strong> (@Model.ParticipantId).
+                </MudText>
+                @if (archiveDetails is not null)
+                {
+                    <MudField Label="Archived On" Variant="Variant.Text">
+                        @archiveDetails.ArchivedOn.ToLocalTime().ToString("dd/MM/yyyy") (@archiveDetails.ArchivedOn.Humanize())
+                    </MudField>
+                    <MudField Label="Archive Reason" Variant="Variant.Text">
+                        @(archiveDetails.Reason ?? "Not recorded")
+                    </MudField>
+                    @if (!string.IsNullOrWhiteSpace(archiveDetails.AdditionalInformation))
+                    {
+                        <MudField Label="Additional Information" Variant="Variant.Text">
+                            @archiveDetails.AdditionalInformation
+                        </MudField>
+                    }
+                }
+                <MudAlert Severity="Severity.Info" Dense="true">
+                    Consider whether the reason for archiving is still valid. If this participant should be re-engaged at their new location, use <strong>Process and Assign</strong> instead.
+                </MudAlert>
+                <MudCheckBox @bind-Value="confirmed" Label="I confirm the archive reason is still valid and this transfer should be dismissed without reassigning the participant." Color="Color.Primary" />
+            </MudStack>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel" Disabled="loading">@ConstantString.Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Close" OnClick="Submit" Disabled="loading || !confirmed">Dismiss</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required IncomingTransferDto Model { get; set; }
+
+    private bool loading;
+    private bool confirmed;
+    private GetParticipantLatestArchiveDetails.ArchiveDetailsDto? archiveDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            loading = true;
+
+            var result = await GetNewMediator().Send(new GetParticipantLatestArchiveDetails.Query
+            {
+                ParticipantId = Model.ParticipantId
+            });
+
+            if (result is { Succeeded: true, Data: not null })
+            {
+                archiveDetails = result.Data;
+            }
+        }
+        finally
+        {
+            loading = false;
+            await base.OnInitializedAsync();
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}
