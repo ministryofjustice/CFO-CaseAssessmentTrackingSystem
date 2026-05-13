@@ -46,7 +46,7 @@ public static class GetInductionPayments
                             ip.PaymentPeriod,
                             ip.Induction,
                             ParticipantName = p.FirstName + " " + p.LastName,
-                            SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
+                            SupportWorkerName = u.DisplayName ?? ""
                         };
 
             query = request.ContractId is null

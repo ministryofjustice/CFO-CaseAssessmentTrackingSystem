@@ -44,7 +44,7 @@ public static class GetEnrolmentPayments
                             TenantId = c!.Tenant!.Id!,
                             ParticipantName = p.FirstName + " " + p.LastName,
                             ep.SubmissionToAuthority,
-                            SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
+                            SupportWorkerName = u.DisplayName ?? ""
                         };
 
             query = request.ContractId is null

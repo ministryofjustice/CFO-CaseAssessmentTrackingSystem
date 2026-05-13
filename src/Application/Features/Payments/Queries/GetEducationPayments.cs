@@ -47,7 +47,7 @@ public static class GetEducationPayments
                             ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
                             a.CourseLevel,
                             a.CourseTitle,
-                            SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
+                            SupportWorkerName = u.DisplayName ?? ""
                         };
 
             query = request.ContractId is null

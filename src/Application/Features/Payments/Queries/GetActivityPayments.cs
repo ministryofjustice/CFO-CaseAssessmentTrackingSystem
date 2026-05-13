@@ -51,7 +51,7 @@ public static class GetActivityPayments
                     ep.PaymentPeriod,
                     TenantId = c!.Tenant!.Id!,
                     ParticipantName = p.FirstName + " " + p.LastName,
-                    SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
+                    SupportWorkerName = u.DisplayName ?? ""
                 }
             )
             .Union
@@ -82,7 +82,7 @@ public static class GetActivityPayments
                         re.PaymentPeriod,
                         TenantId = c!.Tenant!.Id!,
                         ParticipantName = p.FirstName + " " + p.LastName,
-                        SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
+                        SupportWorkerName = u.DisplayName ?? ""
                     }
             );
 

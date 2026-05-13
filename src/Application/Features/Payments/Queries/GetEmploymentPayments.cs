@@ -47,7 +47,7 @@ public static class GetEmploymentPayments
                             ep.PaymentPeriod,
                             a.EmploymentType,
                             EmploymentCategory = a.Definition.Category.Name,
-                            SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
+                            SupportWorkerName = u.DisplayName ?? ""
                         };
 
             query = request.ContractId is null
