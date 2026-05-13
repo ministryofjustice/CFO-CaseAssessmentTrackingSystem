@@ -98,7 +98,8 @@ public static class GetActivityPayments
                       || x.IneligibilityReason != null && x.IneligibilityReason.Contains(request.Keyword)
                       || x.ActivityCategory.Contains(request.Keyword)
                       || x.Location.Contains(request.Keyword)
-                      || x.LocationType.Contains(request.Keyword));
+                      || x.LocationType.Contains(request.Keyword)
+                      || x.SupportWorkerName.Contains(request.Keyword));
             }
 
             result.Items = await query.AsNoTracking()
