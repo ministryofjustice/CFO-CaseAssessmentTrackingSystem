@@ -27,6 +27,8 @@ public static class GetInductionPayments
                         join c in unitOfWork.DbContext.Contracts on ip.ContractId equals c.Id
                         join l in unitOfWork.DbContext.Locations on ip.LocationId equals l.Id
                         join p in unitOfWork.DbContext.Participants on ip.ParticipantId equals p.Id
+                        join u in unitOfWork.DbContext.Users on ip.SupportWorker equals u.Id into userJoin
+                        from u in userJoin.DefaultIfEmpty()
                         where dd.TheMonth == request.Month && dd.TheYear == request.Year
                         select new
                         {
@@ -43,7 +45,8 @@ public static class GetInductionPayments
                             TenantId = c!.Tenant!.Id!,
                             ip.PaymentPeriod,
                             ip.Induction,
-                            ParticipantName = p.FirstName + " " + p.LastName
+                            ParticipantName = p.FirstName + " " + p.LastName,
+                            SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
                         };
 
             query = request.ContractId is null
@@ -74,7 +77,8 @@ public static class GetInductionPayments
                     Location = x.Location,
                     LocationType = x.LocationType,
                     IneligibilityReason = x.IneligibilityReason,
-                    ParticipantName = x.ParticipantName
+                    ParticipantName = x.ParticipantName,
+                    SupportWorkerName = x.SupportWorkerName
                 })
                 .OrderBy(e => e.Contract)
                 .ThenByDescending(e => e.CreatedOn)

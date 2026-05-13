@@ -56,6 +56,7 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
                     { "Participant Name", item => item.ParticipantName },
                     { "Location Name", item => item.Location },
                     { "Location Type", item => item.LocationType },
+                    { "Support Worker", item => item.SupportWorkerName },
                     { "Support Type", item => item.SupportType },
                     { "Payable", item => item.EligibleForPayment },
                     { "Ineligibility Reason", item => item.IneligibilityReason }

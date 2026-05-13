@@ -27,6 +27,8 @@ public static class GetEmploymentPayments
                         join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
                         join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
                         join a in unitOfWork.DbContext.EmploymentActivities on ep.ActivityId equals a.Id
+                        join u in unitOfWork.DbContext.Users on a.OwnerId equals u.Id into userJoin
+                        from u in userJoin.DefaultIfEmpty()
                         where dd.TheMonth == request.Month && dd.TheYear == request.Year
                         select new
                         {
@@ -44,7 +46,8 @@ public static class GetEmploymentPayments
                             ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
                             ep.PaymentPeriod,
                             a.EmploymentType,
-                            EmploymentCategory = a.Definition.Category.Name
+                            EmploymentCategory = a.Definition.Category.Name,
+                            SupportWorkerName = u.DisplayName ?? u.UserName ?? ""
                         };
 
             query = request.ContractId is null
@@ -76,7 +79,8 @@ public static class GetEmploymentPayments
                     PaymentPeriod = x.PaymentPeriod,
                     IneligibilityReason = x.IneligibilityReason,
                     EmploymentCategory = x.EmploymentCategory,
-                    EmploymentType = x.EmploymentType
+                    EmploymentType = x.EmploymentType,
+                    SupportWorkerName = x.SupportWorkerName
                 })
                 .OrderBy(e => e.Contract)
                 .ThenByDescending(e => e.CreatedOn)
