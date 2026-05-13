@@ -66,21 +66,35 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
     {
         get
         {
-            var dataByReason = Data!.ChartData
-                .GroupBy(x => x.Reason)
-                .ToDictionary(g => g.Key, g => g.AsEnumerable());
+            var allTenants = Data!.ChartData
+                .Select(x => x.Tenant)
+                .Distinct()
+                .OrderBy(t => t)
+                .ToList();
+
+            var dataByReasonAndTenant = Data!.ChartData
+                .ToDictionary(x => (x.Reason, x.Tenant));
 
             var reasons = _fixedReasonOrder.AsEnumerable();
 
-            if (dataByReason.ContainsKey("Unknown"))
+            if (Data!.ChartData.Any(x => x.Reason == "Unknown"))
             {
                 reasons = reasons.Append("Unknown");
             }
 
             return reasons.Select(reason =>
-                (reason, dataByReason.TryGetValue(reason, out var items)
-                    ? items
-                    : Enumerable.Empty<GetArchivedCasesByTenantAndReason.ArchivedCasesChartData>()));
+            {
+                var items = allTenants.Select(tenant =>
+                    dataByReasonAndTenant.TryGetValue((reason, tenant), out var item)
+                        ? item
+                        : new GetArchivedCasesByTenantAndReason.ArchivedCasesChartData
+                        {
+                            Tenant = tenant,
+                            Reason = reason,
+                            Count = 0
+                        });
+                return (reason, items);
+            });
         }
     }
     
