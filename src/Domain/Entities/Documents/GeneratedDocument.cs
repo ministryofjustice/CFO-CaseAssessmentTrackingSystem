@@ -72,6 +72,7 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate EnrolmentAdvisoriesToProvider = new(nameof(EnrolmentAdvisoriesToProvider), 14);
     public static readonly DocumentTemplate ActivitiesAdvisoriesToProvider = new(nameof(ActivitiesAdvisoriesToProvider), 15);
     public static readonly DocumentTemplate ProviderFeedback = new(nameof(ProviderFeedback), 16);
+    public static readonly DocumentTemplate PerformanceDashboard = new(nameof(PerformanceDashboard), 17);
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
     public static readonly DocumentTemplate OutcomeQualityDipSample = new(nameof(OutcomeQualityDipSample), 500);
 }

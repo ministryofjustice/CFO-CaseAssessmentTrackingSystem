@@ -1,6 +1,8 @@
 using AutoMapper;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.EventHandlers;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -11,6 +13,7 @@ public partial class PerformanceDashboard
     private MudDateRangePicker _picker = null!;
     private DateRange _dateRange { get; set; } = new DateRange(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today);
     private bool _visualMode = true;
+    private bool _downloading;
     public string? SelectedTenantId { get; set; }
     public string? SelectedDisplayName { get; set; }
 
@@ -38,6 +41,43 @@ public partial class PerformanceDashboard
         {
             SelectedTenantId = tenant.TenantId;
             SelectedDisplayName = tenant.DisplayName;
+        }
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var startDate = _dateRange.Start ?? throw new InvalidOperationException("Start date not set");
+            var endDate = _dateRange.End ?? throw new InvalidOperationException("End date not set");
+
+            var exportResult = await GetNewMediator().Send(new ExportPerformanceDashboard.Command
+            {
+                Request = new ExportPerformanceDashboard.PerformanceDashboardExportRequest
+                {
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    TenantId = SelectedTenantId
+                }
+            });
+
+            if (exportResult.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(exportResult.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
         }
     }
 
