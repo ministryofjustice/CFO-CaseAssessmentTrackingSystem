@@ -68,12 +68,18 @@
                         </MudTabPanel>
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                             <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
-                                <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" Status="_participant.DipSampleStatus"/>
+                                <SubmitCpmResponseComponent Command="@SubmitCpmCommand" 
+                                                            OnFormSubmit="CpmResponseSubmitted" 
+                                                            Status="_participant.DipSampleStatus" 
+                                                            CsoComments="@_participant.CsoComments"/>
                             </MudTabPanel>
                         </AuthorizeView>
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
                             <MudTabPanel Text="Finalise" Disabled="_participant.CpmAnswer.IsAnswer is false">
-                                <SubmitFinalResponseComponent Command="@SubmitFinalCommand" Status="_participant.DipSampleStatus" OnFormSubmit="FinalResponseSubmitted"/>
+                                <SubmitFinalResponseComponent Command="@SubmitFinalCommand" 
+                                                             Status="_participant.DipSampleStatus" 
+                                                             OnFormSubmit="FinalResponseSubmitted"
+                                                             CpmComments="@_participant.CpmComments"/>
                             </MudTabPanel>
                         </AuthorizeView>
                     </MudTabs>

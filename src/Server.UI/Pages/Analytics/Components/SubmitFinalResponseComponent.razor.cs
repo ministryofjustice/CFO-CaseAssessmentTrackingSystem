@@ -18,6 +18,15 @@ public partial class SubmitFinalResponseComponent
 
     [Parameter][EditorRequired] public required EventCallback<SubmitFinalResponse.Command> OnFormSubmit { get; set; }
     [Parameter][EditorRequired] public required SubmitFinalResponse.Command Command { get; set; }
+    [Parameter] public string? CpmComments { get; set; }
+
+    private void CopyFromVerification()
+    {
+        if (!string.IsNullOrWhiteSpace(CpmComments))
+        {
+            Command.Comments = CpmComments;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
