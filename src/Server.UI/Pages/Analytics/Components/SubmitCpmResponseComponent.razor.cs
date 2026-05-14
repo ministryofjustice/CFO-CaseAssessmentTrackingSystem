@@ -15,6 +15,15 @@ public partial class SubmitCpmResponseComponent
     [Parameter][EditorRequired] public required SubmitCpmResponse.Command Command { get; set; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [Parameter, EditorRequired] public required DipSampleStatus Status { get; set; }
+    [Parameter] public string? CsoComments { get; set; }
+
+    private void CopyFromReview()
+    {
+        if (!string.IsNullOrWhiteSpace(CsoComments))
+        {
+            Command.Comments = CsoComments;
+        }
+    }
 
     private async Task OnSubmit()
     {
