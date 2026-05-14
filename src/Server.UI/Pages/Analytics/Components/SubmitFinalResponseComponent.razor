@@ -19,14 +19,31 @@
             <MudStack Spacing="2">
                 @if (!ReadOnly && !string.IsNullOrWhiteSpace(CpmComments))
                 {
-                    <MudButton Color="Color.Secondary" 
-                               Variant="Variant.Filled" 
-                               Size="Size.Small"
-                               StartIcon="@Icons.Material.Filled.ContentCopy"
-                               Style="width: fit-content;"
-                               OnClick="CopyFromVerification">
-                        Copy from Verification
-                    </MudButton>
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        <MudButton Color="Color.Secondary" 
+                                   Variant="Variant.Filled" 
+                                   Size="Size.Small"
+                                   StartIcon="@Icons.Material.Filled.ContentCopy"
+                                   Style="width: fit-content;"
+                                   OnClick="CopyFromVerification">
+                            Copy from Verification
+                        </MudButton>
+                        <MudTooltip Text="Click to view Verification comments">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                          Size="Size.Small" 
+                                          Color="Color.Info"
+                                          OnClick="() => _showCpmComments = !_showCpmComments" />
+                        </MudTooltip>
+                    </MudStack>
+                    @if (_showCpmComments)
+                    {
+                        <MudPaper Class="pa-3" Elevation="1" Style="background-color: var(--mud-palette-background-grey);">
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Verification Comments (CPM):</MudText>
+                                <MudText Typo="Typo.body2">@CpmComments</MudText>
+                            </MudStack>
+                        </MudPaper>
+                    }
                 }
                 <MudTextField @bind-Value="@Command.Comments"
                               For="@(() => Command.Comments)"
