@@ -289,6 +289,11 @@ public static class AddActivity
                     .When(c => c.Location is not null)
                     .WithMessage("The selected location does not belong to the linked initiative's contract");
 
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn) => BeWithinInitiativeLifetime(command.TaskId, commencedOn))
+                    .When(c => c.CommencedOn is not null)
+                    .WithMessage("The activity commencement date must fall within the linked initiative's lifetime");
+
                 RuleFor(c => c.ISWTemplate.BaselineAchievedOn)
                 .Must((command, baselineAchievedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, baselineAchievedOn))
                 .When(c =>
@@ -408,6 +413,29 @@ public static class AddActivity
 
             return unitOfWork.DbContext.Locations
                 .Any(l => l.Id == location.Id && l.Contract!.Id == initiativeContractId);
+        }
+
+        private bool BeWithinInitiativeLifetime(Guid taskId, DateTime? commencedOn)
+        {
+            if (commencedOn is null)
+            {
+                return true;
+            }
+
+            var lifetime = (
+                from task in unitOfWork.DbContext.ObjectiveTasks
+                join io in unitOfWork.DbContext.InitiativeObjectives on task.ObjectiveId equals io.ObjectiveId
+                join initiative in unitOfWork.DbContext.Initiatives on io.InitiativeId equals initiative.Id
+                where task.Id == taskId
+                select new { initiative.Lifetime.StartDate, initiative.Lifetime.EndDate }
+            ).FirstOrDefault();
+
+            if (lifetime is null)
+            {
+                return true;
+            }
+
+            return commencedOn.Value >= lifetime.StartDate && commencedOn.Value <= lifetime.EndDate;
         }
 
         private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? date)
