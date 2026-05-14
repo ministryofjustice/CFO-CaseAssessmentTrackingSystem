@@ -2,6 +2,7 @@ using ApexCharts;
 using Cfo.Cats.Application.Common.Interfaces.Initiatives;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
 
@@ -24,6 +25,7 @@ public partial class InitiativeObjectivesDashboardComponent
     private ITenantService TenantService { get; set; } = null!;
 
     private InitiativeDto? _initiativeFilter;
+    private ApplicationUserDto? _userFilter;
     private string _tenantFilter = string.Empty;
     private bool ShowActiveOnly { get; set; } = false;
 
@@ -91,12 +93,19 @@ public partial class InitiativeObjectivesDashboardComponent
         Colors = new List<string> { "#1976d2", "#5cb85c" }
     };
 
+    private void OnTenantChanged()
+    {
+        _userFilter = null;
+        StateHasChanged();
+    }
+
     private IEnumerable<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto> FilteredRows =>
         Data is null
             ? Array.Empty<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto>()
             : Data
                 .Where(r => _initiativeFilter is null || r.InitiativeCode == _initiativeFilter.Code)
                 .Where(r => string.IsNullOrEmpty(_tenantFilter) || r.OwnerTenantId == _tenantFilter)
+                .Where(r => _userFilter is null || r.OwnerId == _userFilter.Id)
                 .Where(r => !ShowActiveOnly || !r.IsObjectiveCompleted);
 
     public record InitiativeChartPoint(string InitiativeCode, int ActiveCount, int CompletedCount);

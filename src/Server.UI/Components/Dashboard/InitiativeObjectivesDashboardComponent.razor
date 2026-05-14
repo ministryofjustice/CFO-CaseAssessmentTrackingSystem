@@ -61,7 +61,7 @@
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Initiative Objectives</MudText>
                 <MudSpacer />
-                <MudSelect T="string" @bind-Value="_tenantFilter" @bind-Value:after="StateHasChanged"
+                <MudSelect T="string" @bind-Value="_tenantFilter" @bind-Value:after="OnTenantChanged"
                            Label="Tenant" Clearable="true" AnchorOrigin="Origin.BottomLeft"
                            Style="max-width: 260px;" Class="mr-2">
                     @foreach (var tenant in _tenants)
@@ -69,6 +69,11 @@
                         <MudSelectItem T="string" Value="@tenant.Id">@tenant.Name</MudSelectItem>
                     }
                 </MudSelect>
+                <PickUserAutocomplete @bind-Value="_userFilter" @bind-Value:after="StateHasChanged"
+                                     TenantId="@CurrentUser.TenantId"
+                                     Label="Assignee"
+                                     Style="max-width: 260px;"
+                                     Class="mr-2" />
                 <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
                                        ActiveOnly="false"
                                        Style="max-width: 260px;" 

@@ -47,6 +47,7 @@ public static class GetInitiativeObjectivesDashboard
                               {
                                   ParticipantId = data.p.Id,
                                   ParticipantName = data.p.FirstName + " " + data.p.LastName,
+                                  OwnerId = data.u.Id,
                                   OwnerDisplayName = data.u.DisplayName,
                                   OwnerTenantId = data.u.TenantId,
                                   OwnerTenantName = data.t != null ? data.t.Name : null,
@@ -75,6 +76,7 @@ public static class GetInitiativeObjectivesDashboard
     {
         public required string ParticipantId { get; init; }
         public required string ParticipantName { get; init; }
+        public string? OwnerId { get; init; }
         public string? OwnerDisplayName { get; init; }
         public string? OwnerTenantId { get; init; }
         public string? OwnerTenantName { get; init; }
