@@ -23,6 +23,7 @@ public class ActivityPaymentDto
     public string Location { get; set; } = "";
     public string? IneligibilityReason { get; set; }
     public string ParticipantName { get; set; } = "";
+    public string SupportWorkerName { get; set; } = "";
 }
 
 public class ActivityPaymentSummaryDto
