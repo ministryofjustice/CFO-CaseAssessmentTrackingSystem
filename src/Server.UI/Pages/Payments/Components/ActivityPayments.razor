@@ -80,6 +80,11 @@
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.SupportWorkerName)">
+                            Support Worker
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
                         <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.Type)">
                             Activity
                         </MudTableSortLabel>
@@ -109,6 +114,7 @@
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
                         </div>
                     </MudTd>
+                    <MudTd DataLabel="Support Worker">@context.SupportWorkerName</MudTd>
                     <MudTd DataLabel="">
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.Type</MudText>

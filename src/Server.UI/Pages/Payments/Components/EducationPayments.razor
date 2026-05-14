@@ -76,6 +76,11 @@
                             Location
                         </MudTableSortLabel>
                     </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<EducationPaymentDto, object>(x => x.SupportWorkerName)">
+                            Support Worker
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Details</MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
@@ -102,6 +107,7 @@
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
                         </div>
                     </MudTd>
+                    <MudTd DataLabel="Support Worker">@context.SupportWorkerName</MudTd>
                     <MudTd DataLabel="Details" Style="max-width: 192px; overflow: hidden; padding: 0;">
                         <div class="d-flex flex-column">
                             <MudTooltip Text="@context.CourseTitle">

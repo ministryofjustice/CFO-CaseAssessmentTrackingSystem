@@ -29,6 +29,9 @@ public static class GetActivityPayments
                 join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
                 join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
                 join p in unitOfWork.DbContext.Participants on ep.ParticipantId equals p.Id
+                join a in unitOfWork.DbContext.Activities on ep.ActivityId equals a.Id
+                join u in unitOfWork.DbContext.Users on a.OwnerId equals u.Id into userJoin
+                from u in userJoin.DefaultIfEmpty()
                 where dd.TheMonth == request.Month && dd.TheYear == request.Year
                 select new
                 {
@@ -47,7 +50,8 @@ public static class GetActivityPayments
                     ep.IneligibilityReason,
                     ep.PaymentPeriod,
                     TenantId = c!.Tenant!.Id!,
-                    ParticipantName = p.FirstName + " " + p.LastName
+                    ParticipantName = p.FirstName + " " + p.LastName,
+                    SupportWorkerName = u.DisplayName ?? ""
                 }
             )
             .Union
@@ -57,6 +61,8 @@ public static class GetActivityPayments
                     join c in unitOfWork.DbContext.Contracts on re.ContractId equals c.Id
                     join l in unitOfWork.DbContext.Locations on re.LocationId equals l.Id
                     join p in unitOfWork.DbContext.Participants on re.ParticipantId equals p.Id
+                    join u in unitOfWork.DbContext.Users on re.SupportWorker equals u.Id into userJoin
+                    from u in userJoin.DefaultIfEmpty()
                     where dd.TheMonth == request.Month && dd.TheYear == request.Year
                     select new
                     {
@@ -75,7 +81,8 @@ public static class GetActivityPayments
                         re.IneligibilityReason,
                         re.PaymentPeriod,
                         TenantId = c!.Tenant!.Id!,
-                        ParticipantName = p.FirstName + " " + p.LastName
+                        ParticipantName = p.FirstName + " " + p.LastName,
+                        SupportWorkerName = u.DisplayName ?? ""
                     }
             );
 
@@ -91,7 +98,8 @@ public static class GetActivityPayments
                       || x.IneligibilityReason != null && x.IneligibilityReason.Contains(request.Keyword)
                       || x.ActivityCategory.Contains(request.Keyword)
                       || x.Location.Contains(request.Keyword)
-                      || x.LocationType.Contains(request.Keyword));
+                      || x.LocationType.Contains(request.Keyword)
+                      || x.SupportWorkerName.Contains(request.Keyword));
             }
 
             result.Items = await query.AsNoTracking()
@@ -109,7 +117,8 @@ public static class GetActivityPayments
                     LocationType = x.LocationType,
                     IneligibilityReason = x.IneligibilityReason,
                     ParticipantName = x.ParticipantName,
-                    PaymentPeriod = x.PaymentPeriod
+                    PaymentPeriod = x.PaymentPeriod,
+                    SupportWorkerName = x.SupportWorkerName
                 })
                 .OrderBy(e => e.Contract)
                 .ThenByDescending(e => e.CreatedOn)

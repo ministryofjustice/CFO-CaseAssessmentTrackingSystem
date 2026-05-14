@@ -27,6 +27,8 @@ public static class GetEnrolmentPayments
                         join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
                         join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
                         join p in unitOfWork.DbContext.Participants on ep.ParticipantId equals p.Id
+                        join u in unitOfWork.DbContext.Users on ep.SupportWorker equals u.Id into userJoin
+                        from u in userJoin.DefaultIfEmpty()
                         where dd.TheMonth == request.Month && dd.TheYear == request.Year
                         select new
                         {
@@ -41,7 +43,8 @@ public static class GetEnrolmentPayments
                             ep.IneligibilityReason,
                             TenantId = c!.Tenant!.Id!,
                             ParticipantName = p.FirstName + " " + p.LastName,
-                            ep.SubmissionToAuthority
+                            ep.SubmissionToAuthority,
+                            SupportWorkerName = u.DisplayName ?? ""
                         };
 
             query = request.ContractId is null
@@ -55,7 +58,8 @@ public static class GetEnrolmentPayments
                       || x.ParticipantId.Contains(request.Keyword)
                       || x.IneligibilityReason != null && x.IneligibilityReason.Contains(request.Keyword)
                       || x.Location.Contains(request.Keyword)
-                      || x.LocationType.Contains(request.Keyword));
+                      || x.LocationType.Contains(request.Keyword)
+                      || x.SupportWorkerName.Contains(request.Keyword));
             }
 
             result.Items = await query.AsNoTracking()
@@ -70,7 +74,8 @@ public static class GetEnrolmentPayments
                     LocationType = x.LocationType,
                     IneligibilityReason = x.IneligibilityReason,
                     ParticipantName = x.ParticipantName,
-                    SubmissionToAuthority = x.SubmissionToAuthority
+                    SubmissionToAuthority = x.SubmissionToAuthority,
+                    SupportWorkerName = x.SupportWorkerName
                 })
                 .OrderBy(e => e.Contract)
                 .ThenByDescending(e => e.CreatedOn)
