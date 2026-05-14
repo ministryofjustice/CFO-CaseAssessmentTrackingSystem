@@ -9,6 +9,7 @@ public partial class SubmitFinalResponseComponent
 {
     private MudForm _form = new();
     private bool ReadOnly { get; set; } = true;
+    private bool _showCpmComments = false;
 
     [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
@@ -20,8 +21,22 @@ public partial class SubmitFinalResponseComponent
     [Parameter][EditorRequired] public required SubmitFinalResponse.Command Command { get; set; }
     [Parameter] public string? CpmComments { get; set; }
 
-    private void CopyFromVerification()
+    private async Task CopyFromVerification()
     {
+        if (!string.IsNullOrWhiteSpace(Command.Comments))
+        {
+            bool? result = await DialogService.ShowMessageBoxAsync(
+                "Confirm Copy",
+                "This will replace your current comments. Do you want to continue?",
+                yesText: "Yes, Replace",
+                cancelText: "Cancel");
+            
+            if (result != true)
+            {
+                return;
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(CpmComments))
         {
             Command.Comments = CpmComments;
