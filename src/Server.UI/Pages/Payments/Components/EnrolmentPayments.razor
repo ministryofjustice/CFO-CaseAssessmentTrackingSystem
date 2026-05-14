@@ -49,7 +49,14 @@
                     <MudTh>Approved</MudTh>
                     <MudTh>Submission To Authority</MudTh>
                     <MudTh>Participant</MudTh>
-                    <MudTh>Location</MudTh>
+                    <MudTh>
+                        Location
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<EnrolmentPaymentDto, object>(x => x.SupportWorkerName)">
+                            Support Worker
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
                 <GroupHeaderTemplate>
@@ -77,6 +84,7 @@
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
                         </div>
                     </MudTd>
+                    <MudTd DataLabel="Support Worker">@context.SupportWorkerName</MudTd>
                     <MudTd DataLabel="Payable">
                         @if (context.EligibleForPayment)
                         {

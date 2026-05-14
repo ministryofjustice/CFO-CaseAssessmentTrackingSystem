@@ -57,6 +57,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
                     { "Participant Name", item => item.ParticipantName },
                     { "Location Name", item => item.Location },
                     { "Location Type", item => item.LocationType },
+                    { "Support Worker", item => item.SupportWorkerName },
                     { "Activity Type", item => item.Type },
                     { "Activity Category", item => item.Category },
                     { "Payable", item => item.EligibleForPayment },
