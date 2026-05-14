@@ -10,6 +10,7 @@ public partial class SubmitCpmResponseComponent
 {
     private MudForm form = new();
     private bool ReadOnly { get; set; } = true;
+    private bool _showCsoComments = false;
 
     [Parameter][EditorRequired] public required EventCallback<SubmitCpmResponse.Command> OnFormSubmit { get; set; }
     [Parameter][EditorRequired] public required SubmitCpmResponse.Command Command { get; set; }
@@ -17,8 +18,22 @@ public partial class SubmitCpmResponseComponent
     [Parameter, EditorRequired] public required DipSampleStatus Status { get; set; }
     [Parameter] public string? CsoComments { get; set; }
 
-    private void CopyFromReview()
+    private async Task CopyFromReview()
     {
+        if (!string.IsNullOrWhiteSpace(Command.Comments))
+        {
+            bool? result = await DialogService.ShowMessageBoxAsync(
+                "Confirm Copy",
+                "This will replace your current comments. Do you want to continue?",
+                yesText: "Yes, Replace",
+                cancelText: "Cancel");
+            
+            if (result != true)
+            {
+                return;
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(CsoComments))
         {
             Command.Comments = CsoComments;
