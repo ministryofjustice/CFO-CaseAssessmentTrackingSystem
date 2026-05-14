@@ -79,6 +79,11 @@
                             Location
                         </MudTableSortLabel>
                     </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.SupportWorkerName)">
+                            Support Worker
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh> 
                         <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.EligibleForPayment)">
                             Payable
@@ -111,6 +116,7 @@
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
                         </div>
                     </MudTd>
+                    <MudTd DataLabel="Support Worker">@context.SupportWorkerName</MudTd>
                     <MudTd DataLabel="Payable">
                         @if (context.EligibleForPayment)
                         {
