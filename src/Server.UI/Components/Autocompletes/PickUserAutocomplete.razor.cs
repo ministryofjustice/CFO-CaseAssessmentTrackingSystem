@@ -5,53 +5,35 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes;
 
 public class PickUserAutocomplete : MudAutocomplete<ApplicationUserDto>
 {
-    private IReadOnlyList<ApplicationUserDto> _userList = [];
-
     [Parameter, EditorRequired]
     public string TenantId { get; set; } = default!;
 
     [Inject]
     private IUserService UserService { get; set; } = default!;
 
-    protected override void OnInitialized() => UserService.OnChange += TenantsService_OnChange;
-
-    private void TenantsService_OnChange() => InvokeAsync(StateHasChanged);
-
-    protected override ValueTask DisposeAsyncCore()
-    {
-        UserService.OnChange -= TenantsService_OnChange;
-        return base.DisposeAsyncCore();
-    }
-    
-
-    public override Task SetParametersAsync(ParameterView parameters)
+    public PickUserAutocomplete()
     {
         SearchFunc = SearchKeyValues;
+        ToStringFunc = user => user?.DisplayName;
         Clearable = true;
         ResetValueOnEmptyText = true;
         ShowProgressIndicator = true;
         Strict = true;
         MaxItems = 50;
-        _userList = string.IsNullOrEmpty(TenantId)
-            ? UserService.DataSource
-            : UserService.DataSource.Where(x => x.TenantId!.StartsWith(TenantId)).ToList().AsReadOnly();
-        ToStringFunc = user => user?.DisplayName;
-
-        return base.SetParametersAsync(parameters);
     }
 
     private Task<IEnumerable<ApplicationUserDto>> SearchKeyValues(string? value, CancellationToken cancellation)
     {
+        var source = string.IsNullOrEmpty(TenantId)
+            ? UserService.DataSource
+            : UserService.DataSource.Where(x => x.TenantId!.StartsWith(TenantId));
+
         var result = string.IsNullOrEmpty(value)
-            ? _userList?.Select(x => x)
-            : _userList
-                ?.Where(x =>
-                    x.UserName.Contains(value, StringComparison.OrdinalIgnoreCase)
-                    || x.Email.Contains(value, StringComparison.OrdinalIgnoreCase)
-                )
-                .Select(x => x);
+            ? source
+            : source.Where(x =>
+                x.UserName.Contains(value, StringComparison.OrdinalIgnoreCase)
+                || x.Email.Contains(value, StringComparison.OrdinalIgnoreCase));
 
-        return Task.FromResult(result?.AsEnumerable() ?? []);
+        return Task.FromResult(result.Take(MaxItems ?? 50));
     }
-
 }
