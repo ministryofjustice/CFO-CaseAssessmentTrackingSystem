@@ -4,6 +4,7 @@
     "github>ministryofjustice/hmpps-renovate-config:base"
   ],
   "baseBranches": ["develop"],
+  "prCreation": "immediate",
   "packageRules": [
     {
       "matchPackagePatterns": ["^AutoMapper", "^MediatR"],
