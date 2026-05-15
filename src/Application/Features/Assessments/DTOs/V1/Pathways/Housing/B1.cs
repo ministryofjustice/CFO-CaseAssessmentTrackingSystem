@@ -11,6 +11,7 @@ public class B1() : SingleChoiceQuestion("Where do you normally live or spend mo
     ]
 )
 {
+    public override string Code => nameof(B1);
     public const string SleepRough = "Sleep rough";
     public const string ShelterHostelEmergencyHousingOrAP = "Shelter, hostel, emergency housing or AP";
     public const string TemporarilyStayingWithFamilyOrFriends = "Temporarily staying with family or friends";

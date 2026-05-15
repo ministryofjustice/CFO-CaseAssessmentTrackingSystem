@@ -17,6 +17,7 @@ public class H13() : MultipleChoiceQuestion("Do you live with any of the followi
         Other,
         NoneOfThese])
 {
+    public override string Code => nameof(H13);
     public const string AnxietyDisorders = "Anxiety disorders";
     public const string BipolarDisorder = "Bipolar Disorder";
     public const string BorderlinePersonalityDisorder = "Borderline Personality Disorder";

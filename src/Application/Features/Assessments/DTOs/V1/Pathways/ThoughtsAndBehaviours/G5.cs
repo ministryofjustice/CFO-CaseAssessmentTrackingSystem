@@ -9,6 +9,7 @@ public class G5() : SingleChoiceQuestion("I feel good about myself",
         StronglyAgree
     ])
 {
+    public override string Code => nameof(G5);
     public const string StronglyDisagree = "Strongly disagree";
     public const string Disagree = "Disagree";
     public const string Neither = "Neither";

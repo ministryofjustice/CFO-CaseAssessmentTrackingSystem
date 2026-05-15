@@ -1,0 +1,18 @@
+@page "/pages/initiatives"
+@inject IStringLocalizer<Index> L
+
+@attribute [Authorize(Policy = SecurityPolicies.Initiatives)]
+
+<PageTitle>@Title</PageTitle>
+
+<InitiativesTable />
+
+@code {
+    private string Title { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Title = L["Initiatives"];
+    }
+}

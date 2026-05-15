@@ -6,6 +6,7 @@ public class A7() : SingleChoiceQuestion("Are you comfortable using computers, t
     No
 ])
 {
+    public override string Code => nameof(A7);
     public const string Yes = "Yes";
     public const string No = "No";
 }

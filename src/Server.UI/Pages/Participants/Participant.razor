@@ -1,6 +1,7 @@
 @page "/pages/participants/{id}"
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Analytics.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
@@ -93,7 +94,27 @@
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                             <CasePathwayPlan/>
+                             <MudSwitch T="bool" @bind-Value="_pathwaySummaryView" Color="Color.Secondary" ThumbIcon="@Icons.Material.Filled.Summarize">
+                                Summary View
+                             </MudSwitch>
+                             @if(_pathwaySummaryView)
+                             {
+                                <MudStack Spacing="3">
+                                    <MudText Typo="Typo.h4">
+                                        Pathway Plan
+                                    </MudText>
+                                    <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.Id" />
+                                    <MudText Typo="Typo.h4">
+                                        Reviews
+                                    </MudText>
+                                    <PathwayPlanReviewHistory ParticipantId="@_participant.Id"/>   
+                                </MudStack>
+                                
+                             }
+                             else
+                             {
+                                <CasePathwayPlan/>
+                             }
                         </MudTabPanel>
                         <MudTabPanel Text="PRI">
                             <CasePRI ParticipantId="@Id" OnUpdate="() => Refresh()" />

@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Application.Features.Initiatives.DTOs;
+using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 
@@ -14,14 +15,16 @@ public class ObjectiveDto
     public required string CreatedBy { get; set; }
     public IEnumerable<ObjectiveTaskDto> Tasks { get; set; } = [];
     public string? Justification { get; set; }
+    public InitiativeSummaryDto? LinkedInitiative { get; set; }
     public required int Index { get; set; }
     public string DisplayName => $"{Index}. {Description}";
     public bool IsCompleted => Completed.HasValue;
     public required bool IsMandatory { get; set; }
-    public bool CanBeRenamed => IsMandatory is false;
+    public bool CanBeEdited => IsMandatory is false;
 
     public class Mapping : Profile
     {
-        public Mapping() => CreateMap<Objective, ObjectiveDto>();
+        public Mapping() => CreateMap<Objective, ObjectiveDto>()
+            .ForMember(target => target.LinkedInitiative, opt => opt.Ignore());
     }
 }

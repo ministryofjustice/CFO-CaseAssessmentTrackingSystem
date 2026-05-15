@@ -1,5 +1,5 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@inherits CatsComponent<GetArchivedCasesByContractAndReason.ArchivedCasesByContractAndReasonDto>
+@inherits CatsComponent<GetArchivedCasesByTenantAndReason.ArchivedCasesByTenantAndReasonDto>
 
 @if (Loading)
 {
@@ -8,16 +8,22 @@
 
 @if (ErrorMessage is not null)
 {
-    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
         @ErrorMessage
     </MudAlert>
 }
 
 @if (Data is not null && Data.ChartData.Any())
 {
+
+    <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="ma-4">
+        This data is based on the tenant of the user who did the archiving regardless of the contract location of the participant at the time of archive.
+        It excludes any participants <strong>auto</strong> archived for being > 30 days past Licence End Date
+    </MudAlert>
+
     if (VisualMode)
     {
-        <ApexCharts.ApexChart TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
+        <ApexCharts.ApexChart TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
                               Options="@Options"
                               Height="650"
                               Width="@( "100%" )">
@@ -25,11 +31,11 @@
             @foreach (var series in SeriesByReason)
             {
                 <ApexCharts.ApexPointSeries
-                    TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
+                    TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
                     Items="@(series.Items)"
                     SeriesType="ApexCharts.SeriesType.Bar"
                     Name="@(series.Reason)"
-                    XValue="@(e => e.Contract)"
+                    XValue="@(e => e.Tenant)"
                     YValue="@(e => e.Count)"
                     ShowDataLabels="true" />
             }
@@ -41,37 +47,41 @@
         <MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
             <HeaderContent>               
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.Contract!)">
-                        Contract 
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.Tenant)">
+                        Tenant 
                     </MudTableSortLabel>
                 </MudTh>
 
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.Reason!)">
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.Reason)">
                         Reason
                     </MudTableSortLabel>
                 </MudTh>
 
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.ParticipantId!)">
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.ParticipantId)">
                         Participant
                     </MudTableSortLabel>
                 </MudTh>
-
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.Created)">
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.Location)">
+                        Location (at archive)
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.Created)">
                         Created
                     </MudTableSortLabel>
                 </MudTh>
 
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.From)">
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.From)">
                         From
                     </MudTableSortLabel>
                 </MudTh>
 
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.To!)">
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.To.GetValueOrDefault())">
                         To
                     </MudTableSortLabel>
                 </MudTh>
@@ -82,9 +92,10 @@
             </HeaderContent>
 
             <RowTemplate>
-                <MudTd DataLabel="Contract Name">@context.Contract</MudTd>
+                <MudTd DataLabel="Tenant">@context.Tenant</MudTd>
                 <MudTd DataLabel="Reason">@context.Reason</MudTd>
                 <MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
+                <MudTd DataLabel="Location">@context.Location</MudTd>
                 <MudTd DataLabel="Created">@context.Created.ToShortDateString()</MudTd>
                 <MudTd DataLabel="From">@context.From.ToShortDateString()</MudTd>
                 <MudTd DataLabel="To">@context.To?.ToShortDateString()</MudTd>

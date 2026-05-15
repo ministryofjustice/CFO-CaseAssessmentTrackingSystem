@@ -132,6 +132,11 @@
                     </MudTableSortLabel>
                 </MudTh>
 				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.ReturnReason!)">
+                        Return Reason
+                    </MudTableSortLabel>
+                </MudTh>
+				<MudTh>
                     <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.ReturnedDate!)">
                         Returned Date
                     </MudTableSortLabel>
@@ -147,6 +152,7 @@
 				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
 				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
 				<MudTd DataLabel="PQA Submitted Date">@context.PqaSubmittedDate</MudTd>
+				<MudTd DataLabel="Return Reason">@context.ReturnReason</MudTd>
 				<MudTd DataLabel="Returned Date">@context.ReturnedDate</MudTd>
 				<MudTd DataLabel="Message">@context.Message</MudTd>
 			</RowTemplate>

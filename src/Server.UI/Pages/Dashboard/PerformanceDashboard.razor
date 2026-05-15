@@ -28,21 +28,21 @@
                    Color="Color.Primary">
             Visual Mode
         </MudSwitch>
-        @* <MudLoadingButton Loading="@_downloading"
+        <MudLoadingButton Loading="@_downloading"
                           Variant="Variant.Filled"
                           Color="Color.Secondary"
                           StartIcon="@Icons.Material.Filled.CloudDownload"
                           Size="Size.Small"
                           OnClick="OnExport">
             @ConstantString.Export
-        </MudLoadingButton> *@
+        </MudLoadingButton>
     </MudStack>
 </MudStack>
 
 <MudStack>
     <MudTabs Class="pa-6" ApplyEffectsToContainer="true" Outlined="true">
         <MudTabPanel Text="Archived Case Behaviour">
-            <ArchivedCasesByContractAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
+            <ArchivedCasesByTenantAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
         </MudTabPanel>
     </MudTabs>
 </MudStack>

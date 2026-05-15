@@ -21,7 +21,7 @@ public class ActivityQaDetailsDto
     public LocationDto? Location { get; set; }
 
     [Description("Activity/ETE")]
-    public ActivityDefinition? Definition { get; set; }
+    public required ActivityDefinition Definition { get; set; } = null!;
 
     [Description("Date activity took place")]
     public DateTime? CommencedOn { get; set; }

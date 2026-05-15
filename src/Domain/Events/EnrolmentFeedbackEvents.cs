@@ -1,0 +1,6 @@
+using Cfo.Cats.Domain.Common.Events;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
+
+namespace Cfo.Cats.Domain.Events;
+
+public sealed class EnrolmentFeedbackCreatedDomainEvent(EnrolmentFeedback entity) : CreatedDomainEvent<EnrolmentFeedback>(entity);

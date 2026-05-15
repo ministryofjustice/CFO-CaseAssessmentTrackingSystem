@@ -25,6 +25,14 @@ else
                 <MudCard Outlined="false" Elevation="2" Class="mb-2">
                     <MudCardContent>
                         <MudText Typo="Typo.body2">@note.Message</MudText>
+                        
+                        @if (!string.IsNullOrWhiteSpace(note.ReturnReason))
+                        {
+                            <MudText Typo="Typo.body2" Class="mt-2">
+                                <strong>Return Reason:</strong> @note.ReturnReason
+                            </MudText>
+                        }
+                        
                         <MudText Typo="Typo.caption">
                             @(_hideUser && _cfoTenantNames.Contains(note.TenantName)
                                 ? $"CFO User ({note.TenantName}) · {note.Created.Humanize()}"

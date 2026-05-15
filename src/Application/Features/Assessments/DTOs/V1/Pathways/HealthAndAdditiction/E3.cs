@@ -7,6 +7,7 @@ public class E3() : SingleChoiceQuestion("Are you currently taking any regular m
         NotSure
     ])
 {
+    public override string Code => nameof(E3);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NotSure = "Not Sure";

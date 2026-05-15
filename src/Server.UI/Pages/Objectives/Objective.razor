@@ -35,6 +35,14 @@
                     <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
                 }
             }
+
+            @if(Model.LinkedInitiative is not null)
+            {
+                <MudTooltip Text="@Model.LinkedInitiative.Description">
+                    <MudChip T="string" Text="@Model.LinkedInitiative.Code" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Link" />
+                </MudTooltip>
+            }
+
         </div>
     </ChildContent>
     <NestedList>
@@ -53,10 +61,10 @@
                     <MudIconButton OnClick="@Complete" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
                 </MudTooltip>
 
-                @if(Model.CanBeRenamed)
+                @if(Model.CanBeEdited)
                 {
                     <MudTooltip Text="Edit Objective">
-                        <MudIconButton OnClick="@Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
+                        <MudIconButton OnClick="@Edit" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
                     </MudTooltip>
                 }
             }

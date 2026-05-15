@@ -76,6 +76,7 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 ActionDate = n.Created ?? DateTime.UtcNow,
                 n.Message,
                 FeedbackType = (int?)n.FeedbackType,
+                n.ReturnReason,
                 Queue = "QA2",
                 SourceTable = "Activities.Qa2QueueNote",
                 q.LastModified
@@ -107,6 +108,7 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 ActionDate = en.Created ?? DateTime.UtcNow,
                 en.Message,
                 FeedbackType = (int?)en.FeedbackType,
+                en.ReturnReason,
                 Queue = "Escalation",
                 SourceTable = "Activities.EscalationNote",
                 eq.LastModified
@@ -166,7 +168,8 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 latestRecord.PqaSubmittedDate,
                 latestRecord.ActionDate,
                 latestRecord.Message ?? string.Empty,
-                latestRecord.FeedbackType)
+                latestRecord.FeedbackType,
+                latestRecord.ReturnReason)
             : ProviderFeedbackActivity.CreateReturnedEscalationActivity(
                 latestRecord.QueueEntryId,
                 latestRecord.NoteId,
@@ -181,7 +184,8 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 latestRecord.PqaSubmittedDate,
                 latestRecord.ActionDate,
                 latestRecord.Message ?? string.Empty,
-                latestRecord.FeedbackType);
+                latestRecord.FeedbackType,
+                latestRecord.ReturnReason);
 
         dbContext.ProviderFeedbackActivities.Add(feedback);
         await unitOfWork.SaveChangesAsync();

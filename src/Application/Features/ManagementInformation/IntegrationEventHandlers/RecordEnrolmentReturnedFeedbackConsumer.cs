@@ -50,6 +50,7 @@ public class RecordEnrolmentReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILo
                 ActionDate = n.Created ?? DateTime.UtcNow,
                 n.Message,
                 FeedbackType = (int?)n.FeedbackType,
+                n.ReturnReason,
                 Queue = "QA2",
                 SourceTable = "Enrolment.Qa2QueueNote",
                 q.LastModified
@@ -84,6 +85,7 @@ public class RecordEnrolmentReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILo
                 ActionDate = en.Created ?? DateTime.UtcNow,
                 en.Message,
                 FeedbackType = (int?)en.FeedbackType,
+                en.ReturnReason,
                 Queue = "Escalation",
                 SourceTable = "Enrolment.EscalationNote",
                 eq.LastModified
@@ -142,7 +144,8 @@ public class RecordEnrolmentReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILo
                 latestRecord.PqaSubmittedDate,
                 latestRecord.ActionDate,
                 latestRecord.Message ?? string.Empty,
-                latestRecord.FeedbackType)
+                latestRecord.FeedbackType,
+                latestRecord.ReturnReason)
             : ProviderFeedbackEnrolment.CreateReturnedEscalationEnrolment(
                 latestRecord.QueueEntryId,
                 latestRecord.NoteId,
@@ -155,7 +158,8 @@ public class RecordEnrolmentReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILo
                 latestRecord.PqaSubmittedDate,
                 latestRecord.ActionDate,
                 latestRecord.Message ?? string.Empty,
-                latestRecord.FeedbackType);
+                latestRecord.FeedbackType,
+                latestRecord.ReturnReason);
 
         dbContext.ProviderFeedbackEnrolments.Add(feedback);
         await unitOfWork.SaveChangesAsync();

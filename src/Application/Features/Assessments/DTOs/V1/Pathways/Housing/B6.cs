@@ -12,6 +12,7 @@ public class B6() : MultipleChoiceQuestion(
         LiveAlone
     ])
 {
+    public override string Code => nameof(B6);
     public const string LivingWithPartnerOrSpouse = "Partner/spouse";
     public const string LivingWithOtherFamilyMembers = "Other family members";
     public const string LivingWithOwnChildren = "Own Children";

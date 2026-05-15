@@ -6,6 +6,7 @@ public class C8()
         No
  ])
 {
+    public override string Code => nameof(C8);
     public const string Yes = "Yes";
     public const string No = "No";
 }

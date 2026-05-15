@@ -10,6 +10,7 @@ public class A8() : SingleChoiceQuestion(
 ]
 )
 {
+    public override string Code => nameof(A8);
     public const string Yes = "Yes";
     public const string YesStruggleToAffordData = "Yes, but I struggle to afford data";
     public const string No = "No";

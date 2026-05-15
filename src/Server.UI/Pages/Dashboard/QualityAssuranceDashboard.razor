@@ -1,6 +1,5 @@
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
-@using Cfo.Cats.Infrastructure.Constants
+
 @inherits CatsComponentBase
 
 @page "/pages/dashboard/qualityassurance"
@@ -13,7 +12,7 @@
     </MudText>
     <MudStack Row="true" AlignItems="AlignItems.Center">
 
-        <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+        <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@DateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
             <PickerActions>
                 <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
@@ -37,7 +36,7 @@
                             Color="Color.Secondary"
                             StartIcon="@Icons.Material.Filled.CloudDownload"
                             Size="Size.Small"
-                            OnClick="OnExport">
+                            OnClick="@OnExport">
                 @ConstantString.Export
             </MudLoadingButton>
         </AuthorizeView>
@@ -49,64 +48,81 @@
         <MudTabPanel Text="Activities" Class="pa-0">
             <MudTabs Outlined="true" Class="pa-0 ma-0">
                 <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
-                <MudTabPanel Text="Returns" Class="pa-2">
-                    <ActivitiesToProviderDashboardComponent 
-                        TenantId="@SelectedTenantId" 
-                        DateRange="@_dateRange" 
-                        @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
-                        VisualMode="@_visualMode" />
-                </MudTabPanel>
-                <MudTabPanel Text="Advisories" Class="pa-2">
-                    <ActivitiesAdvisoriesToProviderDashboardComponent 
-                        TenantId="@SelectedTenantId" 
-                        DateRange="@_dateRange" 
-                        @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
-                        VisualMode="@_visualMode" />
-                </MudTabPanel>
+                    <MudTabPanel Text="Returns" Class="pa-2">
+                        <ActivitiesToProviderDashboardComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Advisories" Class="pa-2">
+                        <ActivitiesAdvisoriesToProviderDashboardComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Team Feedback" Class="pa-2">
+                        <ActivitiesFeedbackSeniorComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
                 </AuthorizeView>
               
                 <MudTabPanel Text="My Feedback" Class="pa-2">
                     <ActivitiesFeedbackComponent 
                         TenantId="@SelectedTenantId" 
-                        DateRange="@_dateRange" 
-                        @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
+                        DateRange="@DateRange" 
+                        @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
                         VisualMode="@_visualMode" 
                         UserId="@CurrentUser.UserId" />
                 </MudTabPanel>
 
-                <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
-                    <MudTabPanel Text="Team Feedback" Class="pa-2">
-                        <ActivitiesFeedbackSeniorComponent 
-                            TenantId="@SelectedTenantId" 
-                            DateRange="@_dateRange" 
-                            @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
-                            VisualMode="@_visualMode" />
-                    </MudTabPanel>
-                </AuthorizeView>
-                
             </MudTabs>
         </MudTabPanel>
-
-        <MudTabPanel Text="Enrolments" Class="pa-0"> 
-            <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
-                <MudTabs Outlined="true" Class="pa-0 ma-0">
+        
+        <MudTabPanel Text="Enrolments" Class="pa-0">
+            <MudTabs Outlined="true" Class="pa-0 ma-0">
+                <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
                     <MudTabPanel Text="Returns">
-                        <EnrolmentsToProviderDashboardComponent 
-                            TenantId="@SelectedTenantId" 
-                            DateRange="@_dateRange" 
-                            @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
-                            VisualMode="@_visualMode" />
+                        <EnrolmentsToProviderDashboardComponent
+                            TenantId="@SelectedTenantId"
+                            DateRange="@DateRange"
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)"
+                            VisualMode="@_visualMode"/>
                     </MudTabPanel>
+                        
                     <MudTabPanel Text="Advisories">
-                        <EnrolmentAdvisoriesToProviderDashboardComponent 
+                        <EnrolmentAdvisoriesToProviderDashboardComponent
+                            TenantId="@SelectedTenantId"
+                            DateRange="@DateRange"
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)"
+                            VisualMode="@_visualMode"/>
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Team Feedback" Class="pa-2">
+                        <EnrolmentsFeedbackSeniorComponent 
                             TenantId="@SelectedTenantId" 
-                            DateRange="@_dateRange" 
-                            @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
                             VisualMode="@_visualMode" />
                     </MudTabPanel>
-                </MudTabs>
-            </AuthorizeView>
-            
+                    
+                </AuthorizeView>
+                    
+                <MudTabPanel Text="My Feedback" Class="pa-2">
+                    <EnrolmentsFeedbackComponent 
+                        TenantId="@SelectedTenantId" 
+                        DateRange="@DateRange" 
+                        @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                        VisualMode="@_visualMode" 
+                        UserId="@CurrentUser.UserId" />
+                </MudTabPanel>
+            </MudTabs>
         </MudTabPanel>
     </MudTabs>
 </MudStack>

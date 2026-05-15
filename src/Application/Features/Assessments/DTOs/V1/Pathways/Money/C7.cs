@@ -6,6 +6,7 @@ public class C7() : SingleChoiceQuestion("Do you need help with budgeting or man
     No
 ])
 {
+    public override string Code => nameof(C7);
     public const string Yes = "Yes";
     public const string No = "No";
 }

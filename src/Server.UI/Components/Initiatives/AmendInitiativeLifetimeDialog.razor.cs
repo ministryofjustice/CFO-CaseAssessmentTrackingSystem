@@ -1,0 +1,47 @@
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Initiatives.Commands.AmendInitiativeLifetime;
+using Cfo.Cats.Infrastructure.Constants;
+
+namespace Cfo.Cats.Server.UI.Components.Initiatives;
+
+public partial class AmendInitiativeLifetimeDialog
+{
+    private MudForm? _form;
+    private bool _saving = false;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
+    [Parameter, EditorRequired] public AmendInitiativeLifetimeCommand Model { get; set; } = null!;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Save()
+    {
+        try
+        {
+            _saving = true;
+            await _form!.ValidateAsync();
+
+            if (_form!.IsValid == false)
+            {
+                return;
+            }
+
+            var result = await Service.Send(Model);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

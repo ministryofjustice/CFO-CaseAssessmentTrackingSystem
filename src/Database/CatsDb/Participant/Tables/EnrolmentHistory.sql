@@ -13,8 +13,26 @@ CREATE TABLE [Participant].[EnrolmentHistory] (
 );
 GO
 
-CREATE NONCLUSTERED INDEX [IX_EnrolmentHistory_ParticipantId]
-    ON [Participant].[EnrolmentHistory]([ParticipantId] ASC);
+/*
+Optimized index for 'latest and previous enrolment status per participant'
+*/
+CREATE NONCLUSTERED INDEX IX_EnrolmentHistory_ParticipantId_Created_DESC
+ON [Participant].[EnrolmentHistory]
+(
+    [ParticipantId],
+    [Created] DESC
+)
+INCLUDE
+(
+    [EnrolmentStatus]
+)
+WITH
+(
+    FILLFACTOR = 100,
+    SORT_IN_TEMPDB = ON,
+    ONLINE = ON
+);
+
 GO
 
 ALTER TABLE [Participant].[EnrolmentHistory]

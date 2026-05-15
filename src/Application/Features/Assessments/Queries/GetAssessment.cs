@@ -1,8 +1,15 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.HealthAndAdditiction;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Housing;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Money;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
 using Cfo.Cats.Application.SecurityConstants;
-using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.Queries;
 
@@ -43,11 +50,22 @@ public static class GetAssessment
                 return Result<Assessment>.Failure(["Assessment not found"]);
             }
 
-            Assessment assessment = JsonConvert.DeserializeObject<Assessment>(pa.AssessmentJson,
-            new JsonSerializerSettings
+            var assessment = new Assessment
             {
-                TypeNameHandling = TypeNameHandling.Auto
-            })!;
+                Id = pa.Id,
+                ParticipantId = pa.ParticipantId,
+                Pathways =
+                [
+                    new WorkingPathway(),
+                    new HousingPathway(),
+                    new MoneyPathway(),
+                    new EducationPathway(),
+                    new HealthAndAddictionPathway(),
+                    new RelationshipsPathway(),
+                    new ThoughtsAndBehavioursPathway(),
+                    new WellbeingAndMentalHealthPathway(),
+                ]
+            }.WithAnswers(pa.Answers.ToLookup(a => a.QuestionCode, a => a.Answer));
 
             return Result<Assessment>.Success(assessment);
         }

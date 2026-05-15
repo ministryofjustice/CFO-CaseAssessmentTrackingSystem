@@ -6,4 +6,5 @@ public class ActivityQueueEntryNote : Note
 {
     public bool IsExternal { get; set; }
     public Cfo.Cats.Domain.Common.Enums.FeedbackType? FeedbackType { get; set; }
+    public string? ReturnReason { get; set; }
 }

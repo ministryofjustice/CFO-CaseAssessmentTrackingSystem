@@ -7,13 +7,15 @@ using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
-using System.Text;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class QA2
 {
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = null!;
+    
     private QaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
@@ -47,7 +49,7 @@ public partial class QA2
             Command = new SubmitQa2Response.Command()
             {
                 QueueEntryId = _queueEntry.Id,
-                CurrentUser = UserProfile
+                CurrentUser = UserProfile!
             };
 
             await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
@@ -113,49 +115,27 @@ public partial class QA2
         finally { _saving = false; }
     }
 
-    private void ShowActionFailure(string title, IResult result)
-    {
-        var html = new StringBuilder();
-
-        html.Append($"<div>");
-        html.Append($"<h2>{title}</h2>");
-        html.Append($"<ul>");
-        
-        foreach (var e in result.Errors)
-        {
-            html.Append($"<li>{e}</li>");
-        }
-        
-        html.Append($"</ul>");
-        html.Append($"</div>");
-
-        RenderFragment content = builder =>
-        {
-            builder.AddMarkupContent(0, html.ToString());
-        };
-
-        Snackbar.Add(content, Severity.Error, options =>
-        {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
-    }
+    private void ShowActionFailure(string title, IResult result) =>
+        Snackbar.Add(
+            RenderFailure(title, result),
+            Severity.Error,
+            options =>
+            {
+                options.RequireInteraction = true;
+                options.SnackbarVariant = Variant.Text;
+            });
+    
     private void OnResponseChanged()
     {
-        if (Command.Response == SubmitQa2Response.Qa2Response.Accept)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitQa2Response.Qa2Response.Return)
+        Command.FeedbackType = null;
+        Command.ReturnReason = null;
+        Command.MessageToProvider = string.Empty;
+        Command.MessageToQa1 = string.Empty;
+        Command.EnrolmentFeedbackReason = string.Empty;
+
+        if (Command.Response == SubmitQa2Response.Qa2Response.Return)
         {
             Command.FeedbackType = FeedbackType.Returned;
-            Command.MessageToProvider = string.Empty;
         }
-        else if (Command.Response == SubmitQa2Response.Qa2Response.Escalate)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
-        }
-    }    
+    }
 }

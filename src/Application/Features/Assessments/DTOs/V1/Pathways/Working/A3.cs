@@ -7,6 +7,7 @@ public class A3() : SingleChoiceQuestion("Does or would your offence limit the t
     NotSure
 ])
 {
+    public override string Code => nameof(A3);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NotSure = "Not Sure";

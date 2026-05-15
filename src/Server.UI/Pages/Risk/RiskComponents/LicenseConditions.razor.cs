@@ -15,4 +15,9 @@ public partial class LicenseConditions
         options.IncludeProperties(x => x.LicenseEnd);
         options.IncludeProperties(x => x.NoLicenseEndDate);
     };
+
+    private DateTime MinLicenseEndDate =>
+        Model.DeactivatedInFeed.HasValue
+            ? Model.DeactivatedInFeed.Value.AddDays(-30).ToDateTime(TimeOnly.MinValue)
+            : DateTime.UtcNow.Date;
 }
