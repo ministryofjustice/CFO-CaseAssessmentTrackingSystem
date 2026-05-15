@@ -14,8 +14,8 @@
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.2.0-preview.1.26170.3" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.2" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.2.2" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.3.0" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.33" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.21.2" />
