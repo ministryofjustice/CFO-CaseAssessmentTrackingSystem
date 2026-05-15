@@ -3,10 +3,16 @@
   "extends": [
     "github>ministryofjustice/hmpps-renovate-config:base"
   ],
+  "baseBranches": ["develop"],
   "packageRules": [
     {
       "matchPackagePatterns": ["^AutoMapper", "^MediatR"],
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
     },
     {
       "matchUpdateTypes": ["patch"],
