@@ -7,6 +7,7 @@ public class A13() : SingleChoiceQuestion("Feel you are being taken advantage of
     NA
 ])
 {
+    public override string Code => nameof(A13);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";
