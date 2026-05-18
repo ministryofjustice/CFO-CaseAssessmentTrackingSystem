@@ -54,8 +54,14 @@
         <QaPots/>
     }
 
-        <ActivitiesQaPots/>
-
+    @if (_showMyTeamsActivitiesInQAPots)
+    {
+        <MyTeamsActivitiesInQaPots/>
+    }
+    else
+    {
+        <MyActivitiesInQaPots/>
+    }
 
     @if (_showSyncComponent)
     {

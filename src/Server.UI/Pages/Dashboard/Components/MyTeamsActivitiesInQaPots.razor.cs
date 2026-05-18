@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
-public partial class ActivitiesQaPots
+public partial class MyTeamsActivitiesInQaPots
 {
     private bool _loading;
 
@@ -23,14 +23,20 @@ public partial class ActivitiesQaPots
     {
         _loading = true;
         
-        var userId = UserProfile.UserId;
+        var userTenantId = UserProfile.TenantId;
         
         var unitOfWork = GetNewUnitOfWork();
 
         var context = unitOfWork.DbContext;
 
-        var cfo = await GetCfoCounts(context, userId);
-        var pqa = await GetPqaCounts(context, userId);
+        if(userTenantId == null)
+        {
+            _loading = false;
+            return;
+        }
+        
+        var cfo = await GetCfoCounts(context, userTenantId);
+        var pqa = await GetPqaCounts(context, userTenantId);
 
         _educationCfo = cfo.GetValueOrDefault(ActivityType.EducationAndTraining);
         _employmentCfo = cfo.GetValueOrDefault(ActivityType.Employment);
@@ -45,12 +51,12 @@ public partial class ActivitiesQaPots
 
     private async Task<Dictionary<ActivityType, int>> GetPqaCounts(
         IApplicationDbContext context,
-        string userId) => await (
+        string userTenantId) => await (
                 from q in context.ActivityPqaQueue.AsNoTracking()
                 join a in context.Activities.AsNoTracking()
                     on q.ActivityId equals a.Id
                 where !q.IsCompleted
-                      && a.OwnerId == userId
+                      && a.TenantId.StartsWith(userTenantId)
                 group q by a.Type
                 into grouped
                 select new
@@ -63,7 +69,7 @@ public partial class ActivitiesQaPots
 
     private async Task<Dictionary<ActivityType, int>> GetCfoCounts(
         IApplicationDbContext context,
-        string userId)
+        string userTenantId)
     {
         var qa1 =
             from q in context.ActivityQa1Queue.AsNoTracking()
@@ -88,7 +94,7 @@ public partial class ActivitiesQaPots
                 from activityId in combined
                 join a in context.Activities.AsNoTracking()
                     on activityId equals a.Id
-                where a.OwnerId == userId
+                where a.TenantId.StartsWith(userTenantId)
                 group activityId by a.Type
                 into grouped
                 select new
