@@ -6,6 +6,7 @@ public class C5() : SingleChoiceQuestion("Left a significant long-term relations
     NA
 ])
 {
+    public override string Code => nameof(C5);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";
