@@ -6,6 +6,7 @@ public class A16() : SingleChoiceQuestion("Feel you generally share the same vie
     NA
 ])
 {
+    public override string Code => nameof(A16);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

@@ -6,6 +6,7 @@ public class B6() : SingleChoiceQuestion("At least one parent or guardian was mo
     NA
 ])
 {
+    public override string Code => nameof(B6);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";
