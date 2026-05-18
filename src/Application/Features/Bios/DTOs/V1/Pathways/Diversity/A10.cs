@@ -7,6 +7,7 @@ public class A10() : SingleChoiceQuestion("Are/have been a member of a gang",
     NA
 ])
 {
+    public override string Code => nameof(A10);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

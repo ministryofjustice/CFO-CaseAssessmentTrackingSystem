@@ -6,6 +6,7 @@ public class C7() : SingleChoiceQuestion("Subject to violence or harm by another
     NA
 ])
 {
+    public override string Code => nameof(C7);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

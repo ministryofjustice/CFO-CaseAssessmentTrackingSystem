@@ -7,6 +7,7 @@ public class A11() : SingleChoiceQuestion("Have carried an illegal weapon at som
     NA
 ])
 {
+    public override string Code => nameof(A11);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";
