@@ -6,6 +6,7 @@ public class B8() : SingleChoiceQuestion("A parent or guardian spent time in pri
     NA
 ])
 {
+    public override string Code => nameof(B8);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";
