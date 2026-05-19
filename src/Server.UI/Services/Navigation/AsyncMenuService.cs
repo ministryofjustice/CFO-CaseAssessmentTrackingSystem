@@ -122,7 +122,6 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
                     });
                 }
 
-                menuItems.Add(management);
             }
 
             if(await PassesPolicy(principal, SecurityPolicies.Initiatives))
@@ -135,6 +134,11 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
                    Href = "/pages/initiatives",
                    PageStatus = PageStatus.Wip
                 });
+            }
+
+            if(management.SectionItems.Any())
+            {
+                menuItems.Add(management);
             }
 
         }
