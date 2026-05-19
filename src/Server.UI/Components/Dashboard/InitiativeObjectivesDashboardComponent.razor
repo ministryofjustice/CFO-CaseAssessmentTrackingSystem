@@ -21,10 +21,13 @@
         <MudItem xs="12" Class="d-flex justify-space-between align-center">
             <MudText Typo="Typo.h6">Initiative Objectives</MudText>
             <div class="d-flex align-center gap-3">
-                <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
-                                       ActiveOnly="false"
-                                       Style="max-width: 260px;" 
-                                       Label="Initiative" />
+                @if (!VisualMode)
+                {
+                    <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
+                                           ActiveOnly="false"
+                                           Style="max-width: 260px;" 
+                                           Label="Initiative" />
+                }
                 <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show active only" />
             </div>
         </MudItem>
