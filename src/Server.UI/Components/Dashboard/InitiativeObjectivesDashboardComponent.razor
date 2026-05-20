@@ -18,12 +18,22 @@
 @if (Data is not null && Data.Any())
 {
     <MudGrid Spacing="2" Class="mb-3">
-        <MudItem xs="12" sm="6">
+        <MudItem xs="12" Class="d-flex justify-space-between align-center">
+            <MudText Typo="Typo.h6">Initiative Objectives</MudText>
+            <div class="d-flex align-center gap-3">
+                @if (!VisualMode)
+                {
+                    <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
+                                           ActiveOnly="false"
+                                           Style="max-width: 260px;" 
+                                           Label="Initiative" />
+                }
+                <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show active only" />
+            </div>
+        </MudItem>
+        <MudItem xs="12">
             <MudChip T="string">Active (@TotalActive)</MudChip>
             <MudChip T="string">Completed (@TotalCompleted)</MudChip>
-        </MudItem>
-        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-            <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show active only" />
         </MudItem>
     </MudGrid>
 
@@ -58,22 +68,6 @@
                   Striped="true"
                   Dense="true"
                   SortLabel="Sort By">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Initiative Objectives</MudText>
-                <MudSpacer />
-                <MudSelect T="string" @bind-Value="_tenantFilter" @bind-Value:after="StateHasChanged"
-                           Label="Tenant" Clearable="true" AnchorOrigin="Origin.BottomLeft"
-                           Style="max-width: 260px;" Class="mr-2">
-                    @foreach (var tenant in _tenants)
-                    {
-                        <MudSelectItem T="string" Value="@tenant.Id">@tenant.Name</MudSelectItem>
-                    }
-                </MudSelect>
-                <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
-                                       ActiveOnly="false"
-                                       Style="max-width: 260px;" 
-                                       Label="Initiative" />
-            </ToolBarContent>
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantName)">
@@ -90,6 +84,11 @@
                         Objective
                     </MudTableSortLabel>
                 </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.InitiativeObjectiveCreatedBy ?? string.Empty)">
+                        Created By
+                    </MudTableSortLabel>
+                </MudTh>                
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.InitiativeCode)">
                         Initiative
@@ -128,6 +127,9 @@
                 </MudTd>
                 <MudTd DataLabel="Objective">
                     <MudText Typo="Typo.body2">@context.ObjectiveDescription</MudText>
+                </MudTd>
+                <MudTd DataLabel="Created By">
+                    <MudText Typo="Typo.body2">@context.InitiativeObjectiveCreatedBy</MudText>
                 </MudTd>
                 <MudTd DataLabel="Initiative">
                     <MudTooltip Text="@context.InitiativeDescription">
