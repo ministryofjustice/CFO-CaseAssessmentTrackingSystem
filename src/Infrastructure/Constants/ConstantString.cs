@@ -197,15 +197,17 @@ public static class ConstantString
 
     public static string Active =>
      Localize("Active");
+    public static string AdjustDate =>
+        Localize("Adjust Date");
 
     public static string DateSuccessfullyAdjusted =>
-    Localize("Date Successfully Adjusted");
+        Localize("Date Successfully Adjusted");
 
-    public static string TaskSuccessfullyRenamed =>
-    Localize("Task Successfully Renamed");
+    public static string TaskSuccessfullyEdited =>
+        Localize("Task Successfully Edited");
 
     public static string TaskSuccessfullyCompleted =>
-    Localize("Task Successfully Completed");
+        Localize("Task Successfully Completed");
 
     public static string ThematicObjectiveSuccessfullyAdded =>
     Localize("Thematic Objective Successfully Added");
