@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.Initiatives.Commands.AddInitiative;
 using Cfo.Cats.Application.Features.Initiatives.Commands.AmendInitiativeLifetime;
 using Cfo.Cats.Application.Features.Initiatives.Commands.DeactivateInitiative;
 using Cfo.Cats.Application.Features.Initiatives.Commands.EditInitiative;
+using Cfo.Cats.Application.Features.Initiatives.Commands.Export;
 using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.Initiatives.Queries;
 using Cfo.Cats.Infrastructure.Constants;
@@ -14,10 +15,35 @@ public partial class InitiativesTable
 {
     [Inject] private IContractService ContractService { get; set; } = null!;
 
-    private bool _showExpired = false;
+    private bool _showExpired;
 
     protected override IRequest<Result<InitiativeDto[]>> CreateQuery()
         => new GetInitiatives.Query { IncludeExpired = _showExpired };
+
+    private async Task OnExport()
+    {
+        try
+        {
+            var result = await Service.Send(new ExportInitiatives.Command
+            {
+                Query = new GetInitiatives.Query { IncludeExpired = _showExpired }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error has occurred while generating the initiatives export");
+            Snackbar.Add("An error has occurred while generating the initiatives export.", Severity.Error);
+        }
+    }
 
     private async Task OnAdd()
     {
