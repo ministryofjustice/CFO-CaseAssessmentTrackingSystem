@@ -4,7 +4,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
-public static class EditTask
+public static class AdjustTaskDueDate
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
@@ -18,8 +18,8 @@ public static class EditTask
         [Description("Pathway Plan Id")]
         public required Guid PathwayPlanId { get; init; }
 
-        [Description("Description")]
-        public string? Description { get; set; }
+        [Description("Due")]
+        public DateTime? Due { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -36,12 +36,12 @@ public static class EditTask
             var task = objective.Tasks.FirstOrDefault(x => x.Id == request.TaskId)
                        ?? throw new NotFoundException("Cannot find task", request.TaskId);
 
-            if (string.IsNullOrWhiteSpace(request.Description))
+            if (request.Due.HasValue is false)
             {
-                return Result.Failure("You must provide a Description");
+                return Result.Failure("You must provide a Due date");
             }
 
-            task.Rename(request.Description);
+            task.Extend(request.Due.Value);
 
             return Result.Success();
         }
@@ -54,7 +54,9 @@ public static class EditTask
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
+            var today = DateTime.UtcNow;
+
             RuleFor(x => x.ObjectiveId)
                 .NotEmpty();
 
@@ -64,14 +66,19 @@ public static class EditTask
             RuleFor(x => x.PathwayPlanId)
                 .NotEmpty()
                 .WithMessage("You must provide a Pathway Plan");
-                
-            RuleFor(x => x.Description)
-                .NotEmpty()
-                .WithMessage("You must provide a description")
-                .MaximumLength(2000)
-                .WithMessage($"Maximum length of description is 2000")
-                .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
+
+            RuleFor(x => x.Due)
+                .Must(x => x.HasValue)
+                .WithMessage("You must provide a Due date");
+
+            When(x => x.Due.HasValue, () =>
+            {
+                RuleFor(x => x.Due)
+                    .GreaterThanOrEqualTo(new DateTime(today.Year, today.Month, 1))
+                    .WithMessage(ValidationConstants.DateMustBeInFuture)
+                    .Must(x => x!.Value.Day.Equals(1))
+                    .WithMessage("Due date must fall on the first day of the month");
+            });
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {

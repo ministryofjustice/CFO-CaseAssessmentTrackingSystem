@@ -2,7 +2,7 @@ using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
 namespace Cfo.Cats.Server.UI.Pages.Objectives.Tasks;
 
-public partial class RenameTaskDialog
+public partial class EditTaskDialog
 {
     private MudForm? _form;
     private bool _saving;
