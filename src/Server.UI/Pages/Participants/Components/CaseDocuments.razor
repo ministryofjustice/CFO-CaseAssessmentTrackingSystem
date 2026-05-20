@@ -16,14 +16,28 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
+<style>
+    .compact-toolbar .mud-table-toolbar {
+        height: auto !important;
+        min-height: 50px;
+    }
+</style>
     <MudDataGrid T="DocumentDto" FixedHeader="true" Loading="_loading"
                  FixedFooter="true"
-                 Virtualize="true"
                  Height="calc(100vh - 330px)"
                  Items="@_documents"
                  Hover="true"
-                 BreakPoint="Breakpoint.Sm">
-
+                 BreakPoint="Breakpoint.Sm"
+                 QuickFilter="@_quickFilter"
+                 Class="compact-toolbar">
+        <ToolBarContent>
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4"></div>
+            </div>
+            <div class="d-flex flex-column justify-end">
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" />
+            </div>                          
+        </ToolBarContent>
         <Columns>
             <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
@@ -53,6 +67,9 @@
             </CellTemplate>
         </PropertyColumn>
         </Columns>
+        <PagerContent>
+            <MudDataGridPager T="DocumentDto" PageSizeOptions="new int[] { 10, 20, 50 }" />
+        </PagerContent>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>
         </NoRecordsContent>
@@ -60,54 +77,3 @@
             <MudText>@ConstantString.Loading</MudText>
         </LoadingContent>
     </MudDataGrid>
-
-
-@code {
-    bool _loading = true;
-    private DocumentDto[] _documents = [];
-    private DocumentDto _currentDto = new() { Id = Guid.Empty };
-
-    [Parameter]
-    [EditorRequired]
-    public string ParticipantId { get; set; } = default!;
-
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; } = null!;
-
-    protected Guid SelectedDocument { get; set; } = Guid.Empty;
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            if (String.IsNullOrWhiteSpace(ParticipantId) == false)
-            {
-                _documents = await GetNewMediator().Send(new GetByParticipantId.Query()
-                    {
-                        ParticipantId = ParticipantId
-                    });
-            }
-        }finally{
-            _loading = false;
-        }
-    }
-
-    public async Task OpenDocumentDialog(DocumentDto item)
-    {
-        await DialogService.ShowAsync<ViewDocumentDialog>(
-            "Document",
-            new DialogParameters<ViewDocumentDialog>()
-                {
-                { x => x.Model, item }
-                },
-            new DialogOptions
-                {
-                    MaxWidth = MaxWidth.ExtraExtraLarge,
-                    Position=DialogPosition.Center,
-                    FullWidth = true,
-                    CloseButton = true,
-                    CloseOnEscapeKey = true,
-                });
-    }
-}
