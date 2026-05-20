@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Components.Identity;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
@@ -17,6 +18,15 @@ public partial class PqaList
 
     private PqaQueueWithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
+    
+    public string? SelectedTenantId { get; set; }
+    public string? SelectedDisplayName { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SelectedTenantId = UserProfile?.TenantId;
+        SelectedDisplayName = UserProfile?.TenantName;
+    }
 
     private void RowClicked(DataGridRowClickEventArgs<EnrolmentQueueEntryDto> args) => Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{args.Item.Id}");
 
@@ -25,7 +35,20 @@ public partial class PqaList
         try
         {
             _loading = true;
-            Query.CurrentUser = UserProfile;
+            
+            // Create a user profile with the selected tenant for filtering
+            var effectiveUser = new UserProfile
+            {
+                UserId = UserProfile?.UserId ?? string.Empty,
+                UserName = UserProfile?.UserName ?? string.Empty,
+                Email = UserProfile?.Email ?? string.Empty,
+                TenantId = SelectedTenantId,
+                TenantName = SelectedDisplayName,
+                AssignedRoles = UserProfile?.AssignedRoles ?? [],
+                Contracts = UserProfile?.Contracts ?? []
+            };
+            
+            Query.CurrentUser = effectiveUser;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
@@ -82,6 +105,25 @@ public partial class PqaList
         finally
         {
             _downloading = false;
+        }
+    }
+
+    private async Task DisplayTenantSelectorDialog()
+    {
+        var parameters = new DialogParameters<SelectTenantDialog>
+        {
+            { "CurrentUser", UserProfile! }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
+        var dialog = await DialogService.ShowAsync<SelectTenantDialog>("Select Tenant", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: SelectedTenant tenant })
+        {
+            SelectedTenantId = tenant.TenantId;
+            SelectedDisplayName = tenant.DisplayName;
+            await _table.ReloadServerData();
         }
     }
 }

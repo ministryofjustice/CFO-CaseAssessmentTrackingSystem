@@ -41,6 +41,12 @@
                 <MudStack>
                     <MudStack Row="true">
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            @if (UserProfile?.AssignedRoles is not [])
+                            {
+                                <MudLink OnClick="@DisplayTenantSelectorDialog">
+                                    @SelectedDisplayName
+                                </MudLink>
+                            }
                             <MudButton Variant="Variant.Filled"
                                        Size="Size.Small"
                                        Disabled="@_loading"
