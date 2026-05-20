@@ -13,7 +13,7 @@
         {
             <MudTooltip Text="Mark task as completed">
                 <MudIconButton Icon="@Icons.Material.Filled.CheckBoxOutlineBlank"
-                               OnClick="Complete"
+                               OnClick="@Complete"
                                Disabled="!ParticipantIsActive"/>
             </MudTooltip>
         }
@@ -76,10 +76,10 @@
             <div class="d-flex gap-2 align-center mr-4">
                 <MudTooltip Text="Actions">
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted || !ParticipantIsActive " Size="Size.Small" Dense>
-                        <MudMenuItem OnClick="@AdjustDate">Adjust date</MudMenuItem>
-                        @if(Model.CanBeRenamed)
+                        <MudMenuItem OnClick="@AdjustDate">@ConstantString.AdjustDate</MudMenuItem>
+                        @if(Model.CanBeEdited)
                         {
-                            <MudMenuItem OnClick="@Rename">Edit</MudMenuItem>
+                            <MudMenuItem OnClick="@Edit">@ConstantString.Edit</MudMenuItem>
                         }
                     </MudMenu>
                 </MudTooltip>
