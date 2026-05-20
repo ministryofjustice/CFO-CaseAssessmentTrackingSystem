@@ -7,6 +7,7 @@ public class A5() : SingleChoiceQuestion("A member of a Gypsy or Irish traveller
     NA
 ])
 {
+    public override string Code => nameof(A5);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";
