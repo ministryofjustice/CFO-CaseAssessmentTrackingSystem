@@ -41,12 +41,31 @@
                 <MudStack>
                     <MudStack Row="true">
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            @if (UserProfile?.AssignedRoles is not [])
-                            {
-                                <MudLink OnClick="@DisplayTenantSelectorDialog">
+                            <div style="position: relative; min-width: 200px; cursor: pointer; margin-bottom: 8px;" 
+                                 @onclick="DisplayTenantSelectorDialog">
+                                <label style="position: absolute; top: -9px; left: 10px; background: white; padding: 0 5px; font-size: 0.75rem; color: rgba(0,0,0,0.6); z-index: 1;">
+                                    Tenant
+                                </label>
+                                <div style="padding: 9.19px 14px; border: 1px solid rgba(0,0,0,0.23); border-radius: 4px; height: 40px; display: flex; align-items: center;">
                                     @SelectedDisplayName
-                                </MudLink>
-                            }
+                                </div>
+                            </div>
+                            <MudSelect T="string" 
+                                       Value="@SelectedSupportWorkerId" 
+                                       ValueChanged="@OnSupportWorkerChanged"
+                                       Label="Support Worker"
+                                       Dense="true"
+                                       Variant="Variant.Outlined"
+                                       AnchorOrigin="Origin.BottomCenter"
+                                       Margin="Margin.Dense"
+                                       Class="support-worker-select"
+                                       Style="min-width: 200px;">
+                                <MudSelectItem T="string" Value="@((string?)null)">All Support Workers</MudSelectItem>
+                                @foreach (var sw in _availableSupportWorkers)
+                                {
+                                    <MudSelectItem T="string" Value="@sw.Id">@sw.Name</MudSelectItem>
+                                }
+                            </MudSelect>
                             <MudButton Variant="Variant.Filled"
                                        Size="Size.Small"
                                        Disabled="@_loading"
@@ -85,9 +104,7 @@
         </PropertyColumn>
         <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
             <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>                    
-                </div>
+                <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>                    
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.TenantId" Title="@L["Tenant"]">

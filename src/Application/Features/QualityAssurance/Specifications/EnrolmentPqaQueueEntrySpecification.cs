@@ -15,5 +15,8 @@ public class EnrolmentPqaQueueEntrySpecification : Specification<EnrolmentPqaQue
             || e.Participant!.FirstName.Contains(filter.Keyword!)
             || e.Participant!.LastName.Contains(filter.Keyword!),
             !string.IsNullOrEmpty(filter.Keyword));
+
+        Query.Where(e => e.SupportWorkerId == filter.SupportWorkerId!,
+            !string.IsNullOrEmpty(filter.SupportWorkerId));
     }
 }
