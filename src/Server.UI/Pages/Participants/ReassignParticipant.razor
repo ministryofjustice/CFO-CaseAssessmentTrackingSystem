@@ -4,7 +4,8 @@
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Participants.Commands
-@using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Server.UI.Components.Users
+@using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Caching
 @using Cfo.Cats.Application.Features.Participants.DTOs
@@ -61,6 +62,12 @@
                         }
                         
                     </MudSelect>
+                </div>
+                <div class="d-flex flex-column mt-9" style="min-width: 480px;">
+                    <UserSelectComponent TenantId="@(UserProfile!.TenantId!)"
+                                         Label="Owner"
+                                         Placeholder="All owners"
+                                         ValueChanged="OnOwnerFilterChanged" />
                 </div>
             </div>
             <div class="flex-grow-1"></div>
@@ -236,7 +243,6 @@
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
         Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!).OrderByDescending(l => l.LocationType.IsCustody).ThenBy(l => l.Name).ToArray();
-        ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();        
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state, CancellationToken cancellationToken)
@@ -290,6 +296,7 @@
         ParticipantCacheKey.Refresh();
         _selectedItems = [];
         Query.Keyword = string.Empty;
+        Query.OwnerId = null;
         ParticipantIdsToReassign.Clear();
         await _table.ReloadServerData();
     }
@@ -337,6 +344,14 @@
     private async Task LocationValuesChanged(IEnumerable<LocationDto> selectedValues)
     {
         Query.Locations = selectedValues.Select(l => l.Id).ToArray();
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnOwnerFilterChanged(ApplicationUserDto? user)
+    {
+        Query.OwnerId = user?.Id;
+        _selectedItems = new();
+        ParticipantIdsToReassign.Clear();
         await _table.ReloadServerData();
     }
 
