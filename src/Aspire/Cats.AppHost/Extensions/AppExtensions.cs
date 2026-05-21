@@ -24,7 +24,7 @@ internal static class AppExtensions
     {
         var rabbit = builder.AddRabbitMQ("rabbit", port: 5672)
             // 4.3.0-management-alpine
-            .WithImageSHA256("8724c6573b43d315bcec914f16a509d0b5faf5f3b281a832b484ece0bbcbe914")
+            .WithImageSHA256("1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3")
             .WithDataVolume("cats-aspire-rabbit")
             .WithLifetime(ContainerLifetime.Persistent)
             .WithHttpEndpoint(port: 15672, targetPort: 15672);            
