@@ -1,5 +1,6 @@
 using AutoMapper;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Domain.Identity;
 using FluentValidation;
@@ -8,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 public partial class ReassignParticipantDialog
 {
-
-    private UserManager<ApplicationUser>? _userManager;
     private MudForm? _form;
 
     [EditorRequired]
@@ -22,10 +21,6 @@ public partial class ReassignParticipantDialog
     private bool _saving;
 
     private void Cancel() => MudDialog.Close();
-
-    protected override void OnInitialized() =>
-        //TODO: replace this with new user lookup when that is merged into main.
-        _userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
 
     private async Task Submit()
     {
@@ -54,5 +49,7 @@ public partial class ReassignParticipantDialog
             _saving = false;
         }
     }
+
+    private void OnUserSelectedChanged(ApplicationUserDto user) => Model.AssigneeId = user.Id;
 
 }
