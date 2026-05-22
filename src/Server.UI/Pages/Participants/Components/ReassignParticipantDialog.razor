@@ -1,5 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Server.UI.Components.Users
 @inherits CatsComponentBase
 
 @inject IValidationService Validator
@@ -16,19 +17,9 @@
                     </MudText>
                 </MudItem>
                 <MudItem xs="12">
-                    @if (_userManager is not null)
-                    {
-                        <MudSelect T="string" Style="min-width:650px" @bind-Value="Model!.AssigneeId" Dense="true" Required="true">
-                            @foreach (var item in _userManager.Users
-                                          .Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!))
-                                          .Where(x => x.IsActive)
-                                          .Where(x => x.LockoutEnd == null)
-                                          .OrderBy((x => x.DisplayName)))
-                            {
-                                <MudSelectItem T="string" Value="@item.Id">@item.DisplayName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    }
+                    <div style="min-width: 600px;">
+			            <UserSelectComponent ValueChanged="dto => { OnUserSelectedChanged(dto); }" TenantId="@UserProfile!.TenantId" Required="true" />
+		            </div>
                 </MudItem>
             </MudGrid>
             
