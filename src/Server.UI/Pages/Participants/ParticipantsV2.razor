@@ -36,8 +36,21 @@
                           AdornmentColor="Color.Secondary">
             </MudTextField>
             <MudSpacer />
+            @if (_canReassign)
+            {
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="ReassignSelectedItems"
+                           Disabled="@(!_selectedParticipantIds.Any())">
+                    Reassign Selected (@_selectedParticipantIds.Count)
+                </MudButton>
+                <MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Deselect" OnClick="ClearSelectedParticipants"
+                           Disabled="@(!_selectedParticipantIds.Any())">
+                    Clear Selection
+                </MudButton>
+            }
             <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
-                       StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
+                       StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefreshClicked">
                 @ConstantString.Refresh
             </MudButton>
             <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="OnExport"
@@ -65,6 +78,13 @@
             <MudText>
                 @_totalItems records
             </MudText>
+
+            @if (_canReassign)
+            {
+                <MudText>
+                    @_selectedParticipantIds.Count selected
+                </MudText>
+            }
 
             <!-- Tabular Switch -->
             <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@TabularChanged" T="bool?" />
@@ -150,6 +170,10 @@
         {
             <MudTable T="ParticipantPaginationDto" Items="@_data" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
                 <HeaderContent>
+                    @if (_canReassign)
+                    {
+                        <MudTh>Select</MudTh>
+                    }
                     <MudTh>Id</MudTh>
                     <MudTh>Participant</MudTh>
                     <MudTh>Status</MudTh>
@@ -159,6 +183,15 @@
                     <MudTh>Risk Due</MudTh>
                 </HeaderContent>
                 <RowTemplate>
+                    @if (_canReassign)
+                    {
+                        <MudTd>
+                            <MudCheckBox T="bool"
+                                         Value="@IsParticipantSelected(context.Id)"
+                                         ValueChanged="@(value => SetParticipantSelection(context.Id, value))"
+                                         @onclick:stopPropagation="true" />
+                        </MudTd>
+                    }
                     <MudTd>@context.Id</MudTd>
                     <MudTd>@context.ParticipantName</MudTd>
                     <MudTd>@context.EnrolmentStatus.Name</MudTd>
@@ -178,7 +211,14 @@
                 {
                     <MudPaper Outlined="true" Class="pa-4">
                         <MudStack>
-                            <MudStack Row="true" Justify="Justify.FlexEnd">
+                            <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                                @if (_canReassign)
+                                {
+                                    <MudCheckBox T="bool"
+                                                 Value="@IsParticipantSelected(item.Id)"
+                                                 ValueChanged="@(value => SetParticipantSelection(item.Id, value))"
+                                                 @onclick:stopPropagation="true" />
+                                }
                                 <MudText Typo="Typo.h5">@item.Id @item.ParticipantName</MudText>
                                 <MudSpacer />
                                 <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
