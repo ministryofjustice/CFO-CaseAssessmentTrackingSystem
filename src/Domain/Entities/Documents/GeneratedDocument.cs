@@ -76,5 +76,6 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
     public static readonly DocumentTemplate OutcomeQualityDipSample = new(nameof(OutcomeQualityDipSample), 500);
     public static readonly DocumentTemplate Initiatives = new(nameof(Initiatives), 900);
+    public static readonly DocumentTemplate InitiativeObjectivesDashboard = new(nameof(InitiativeObjectivesDashboard), 1300);
 
 }
