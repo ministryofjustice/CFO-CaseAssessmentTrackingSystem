@@ -37,6 +37,7 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportProviderFeedbackIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportPerformanceDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportInitiativeObjectivesDashboardIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInitiativesIntegrationEventConsumer>(provider);
 
         _bus = Configure.With(_activator)
