@@ -1,4 +1,3 @@
-@using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 
 @inherits CatsComponent<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>
@@ -29,6 +28,15 @@
                                            Label="Initiative" />
                 }
                 <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show active only" />
+                <MudLoadingButton Variant="Variant.Filled"
+                                  Size="MudBlazor.Size.Small"
+                                  Loading="@_downloading"
+                                  Disabled="@Loading"
+                                  OnClick="@OnExport"
+                                  StartIcon="@Icons.Material.Filled.Download"
+                                  Color="Color.Secondary">
+                    @ConstantString.Export
+                </MudLoadingButton>
             </div>
         </MudItem>
         <MudItem xs="12">
@@ -161,5 +169,5 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }
