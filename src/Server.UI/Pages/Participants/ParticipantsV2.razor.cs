@@ -7,16 +7,21 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.Features.Labels.Queries;
 using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.Participants.Specifications;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
+using Cfo.Cats.Server.UI.Pages.Participants.Components;
 using Cfo.Cats.Server.UI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants;
@@ -36,6 +41,12 @@ public partial class ParticipantsV2
     [Inject]
     public ParticipantsSessionStorage SessionStorage { get;set; } = null!;
 
+    [Inject]
+    public IAuthorizationService AuthorizationService { get; set; } = null!;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
 
@@ -51,6 +62,8 @@ public partial class ParticipantsV2
     private bool Tabular { get; set; } = false;
 
     private bool _downloading = false;
+    private bool _canReassign;
+    private readonly HashSet<string> _selectedParticipantIds = [];
 
     private ParticipantPaginationDto[] _data = [];
 
@@ -76,6 +89,9 @@ public partial class ParticipantsV2
     {
         _locations = LocationService.GetVisibleLocations(UserProfile.TenantId!)
                         .ToDictionary( k => k.Id, e => e.Name );
+
+        var authState = await AuthState;
+        _canReassign = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Reassign)).Succeeded;
 
         _users = UserService.DataSource
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
@@ -155,6 +171,12 @@ public partial class ParticipantsV2
         await OnRefresh();
     }
 
+    private async Task OnRefreshClicked()
+    {
+        _selectedParticipantIds.Clear();
+        await OnRefresh();
+    }
+
     private async Task OnRefresh()
     {
         Query.CurrentUser = UserProfile;
@@ -172,6 +194,55 @@ public partial class ParticipantsV2
             _totalItems = 0;
         }
         await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
+    }
+
+    private bool IsParticipantSelected(string participantId) => _selectedParticipantIds.Contains(participantId);
+
+    private void SetParticipantSelection(string participantId, bool isSelected)
+    {
+        if (isSelected)
+        {
+            _selectedParticipantIds.Add(participantId);
+            return;
+        }
+
+        _selectedParticipantIds.Remove(participantId);
+    }
+
+    private void ClearSelectedParticipants() => _selectedParticipantIds.Clear();
+
+    private async Task ReassignSelectedItems()
+    {
+        if (_selectedParticipantIds.Count == 0)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<ReassignParticipantDialog>
+        {
+            {
+                x => x.Model, new ReassignParticipants.Command()
+                {
+                    CurrentUser = UserProfile,
+                    ParticipantIdsToReassign = _selectedParticipantIds.ToArray()
+                }
+            },
+            {
+                x => x.UserProfile,
+                UserProfile
+            }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ReassignParticipantDialog>("Reassign participants", parameters, options);
+        var state = await dialog.Result;
+
+        if (state?.Canceled == false)
+        {
+            ParticipantCacheKey.Refresh();
+            _selectedParticipantIds.Clear();
+            await OnRefresh();
+        }
     }
 
     private async Task ShowSelectLocationDialog()
