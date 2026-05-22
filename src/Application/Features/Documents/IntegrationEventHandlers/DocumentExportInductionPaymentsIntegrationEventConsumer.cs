@@ -35,7 +35,7 @@ public class DocumentExportInductionPaymentsIntegrationEventConsumer(
         try
         {
             var request = JsonConvert.DeserializeObject<GetInductionPayments.Query>(context.SearchCriteria!)
-                          ?? throw new InvalidOperationException("Failed to deserialize initiatives export search criteria.");
+                          ?? throw new InvalidOperationException("Failed to deserialize induction payments export search criteria.");
 
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
             var data = await new GetInductionPayments.Handler(unitOfWork, targetsProvider).Handle(request!, CancellationToken.None);
