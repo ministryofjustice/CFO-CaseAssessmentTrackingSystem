@@ -17,8 +17,8 @@
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.3.5" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.3.5" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.23.3" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4.1" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.23.4" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
