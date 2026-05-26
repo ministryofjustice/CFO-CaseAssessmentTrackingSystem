@@ -80,6 +80,22 @@
                                     }
                                 </MudSelect>
                             </div>
+                            <div style="min-width: 200px;">
+                                <MudSelect T="int?" 
+                                           Value="@SelectedActivityTypeId" 
+                                           ValueChanged="@OnActivityTypeChanged"
+                                           Label="Activity Type"
+                                           Variant="Variant.Outlined"
+                                           AnchorOrigin="Origin.BottomCenter"
+                                           Margin="Margin.Dense"
+                                           Class="support-worker-select">
+                                    <MudSelectItem T="int?" Value="@((int?)null)">All Activity Types</MudSelectItem>
+                                    @foreach (var at in _availableActivityTypes)
+                                    {
+                                        <MudSelectItem T="int?" Value="@at.Value">@at.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </div>
                             <MudButton Variant="Variant.Filled"
                                        Size="Size.Small"
                                        Disabled="@_loading"
@@ -100,7 +116,7 @@
                         </MudHidden>
                     </MudStack>
                     <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Style="width: 350px; align-self: flex-end;">
                     </MudTextField>
                 </MudStack>
             </div>
@@ -119,6 +135,13 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.Activity.Definition.Category.Name</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Activity.Definition.Type" Title="@L["Activity Type"]" Sortable="false">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Activity.Definition.Type.Name</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>

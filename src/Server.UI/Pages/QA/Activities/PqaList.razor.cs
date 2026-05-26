@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 
@@ -23,8 +24,11 @@ public partial class PqaList
     public string? SelectedDisplayName { get; set; }
     public string? SelectedSupportWorkerId { get; set; }
     public string? SelectedSupportWorkerName { get; set; }
+    public int? SelectedActivityTypeId { get; set; }
+    public string? SelectedActivityTypeName { get; set; }
     
     private List<(string Id, string Name)> _availableSupportWorkers = new();
+    private readonly List<ActivityType> _availableActivityTypes = ActivityType.List.ToList();
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,6 +36,8 @@ public partial class PqaList
         SelectedDisplayName = UserProfile?.TenantName;
         SelectedSupportWorkerId = null;
         SelectedSupportWorkerName = "All Support Workers";
+        SelectedActivityTypeId = null;
+        SelectedActivityTypeName = "All Activity Types";
         
         await LoadAvailableSupportWorkers();
     }
@@ -100,6 +106,7 @@ public partial class PqaList
             
             Query.CurrentUser = effectiveUser;
             Query.SupportWorkerId = SelectedSupportWorkerId;
+            Query.ActivityTypeId = SelectedActivityTypeId;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "CommencedOn";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? false ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
@@ -130,6 +137,8 @@ public partial class PqaList
         Query.Keyword = string.Empty;
         SelectedSupportWorkerId = null;
         SelectedSupportWorkerName = "All Support Workers";
+        SelectedActivityTypeId = null;
+        SelectedActivityTypeName = "All Activity Types";
         await _table.ReloadServerData();
     }
 
@@ -149,6 +158,26 @@ public partial class PqaList
         {
             SelectedSupportWorkerName = _availableSupportWorkers
                 .FirstOrDefault(x => x.Id == supportWorkerId).Name ?? "Unknown";
+        }
+        
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnActivityTypeChanged(int? activityTypeId)
+    {
+        if (_loading)
+        {
+            return;
+        }
+        
+        SelectedActivityTypeId = activityTypeId;
+        if (activityTypeId == null)
+        {
+            SelectedActivityTypeName = "All Activity Types";
+        }
+        else
+        {
+            SelectedActivityTypeName = ActivityType.FromValue(activityTypeId.Value).Name;
         }
         
         await _table.ReloadServerData();
