@@ -69,8 +69,9 @@ public partial class InitiativeObjectivesDashboardComponent
             Labels = new XAxisLabels
             {
                 Rotate = -45,
-                RotateAlways = true
-            }
+                RotateAlways = true,
+                Trim = true
+            },
         },
         Theme = new Theme
         {
@@ -86,7 +87,7 @@ public partial class InitiativeObjectivesDashboardComponent
                 .Where(r => _initiativeFilter is null || r.InitiativeCode == _initiativeFilter.Code)
                 .Where(r => !ShowActiveOnly || !r.IsObjectiveCompleted);
 
-    public record InitiativeChartPoint(string InitiativeCode, int ActiveCount, int CompletedCount);
+    public record InitiativeChartPoint(string InitiativeCode, string InitiativeDescription, DateTime InitiativeStartDate, int ActiveCount, int CompletedCount);
 
     private int TotalActive => Data?.Count(r => !r.IsObjectiveCompleted) ?? 0;
 
@@ -97,9 +98,11 @@ public partial class InitiativeObjectivesDashboardComponent
             .GroupBy(r => r.InitiativeCode)
             .Select(g => new InitiativeChartPoint(
                 g.Key,
+                g.First().InitiativeDescription,
+                g.First().InitiativeStartDate,
                 g.Count(r => !r.IsObjectiveCompleted),
                 g.Count(r => r.IsObjectiveCompleted)))
-            .OrderBy(p => p.InitiativeCode)
+            .OrderBy(p => p.InitiativeStartDate)
             .ToArray()
         ?? Array.Empty<InitiativeChartPoint>();
 
