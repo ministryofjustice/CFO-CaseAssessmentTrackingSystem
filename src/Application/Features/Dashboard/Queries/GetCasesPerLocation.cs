@@ -1,26 +1,34 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
 public static class GetCasesPerLocation
 {
+    private const string OutsideOfContractRegion = "Outside of contract region";
+
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<CasesPerLocationDto>>
     {
-        public string? UserId { get; set; }
-        public string? TenantId { get; set; }
-        public required UserProfile CurrentUser { get; set; }
+        public string? UserId { get; init; }
+        public string? TenantId { get; init; }
+        public required UserProfile CurrentUser { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<CasesPerLocationDto>>
+    public class Handler(IUnitOfWork unitOfWork, ILocationService locationService) : IRequestHandler<Query, Result<CasesPerLocationDto>>
     {
         public async Task<Result<CasesPerLocationDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
+            var currentTenantId = request.CurrentUser.TenantId ?? request.TenantId ?? string.Empty;
+            var visibleLocationIds = locationService
+                .GetVisibleLocations(currentTenantId)
+                .Select(l => l.Id)
+                .ToArray();
 
             var query = from p in context.Participants
-                        join l in context.Locations on p.CurrentLocation!.Id equals l.Id
+                        join l in context.Locations on p.CurrentLocation.Id equals l.Id
                         join u in context.Users on p.OwnerId equals u.Id
                         where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                         select new { p, l, u };
@@ -40,7 +48,9 @@ public static class GetCasesPerLocation
             var groupedQuery = from x in query
                                group x.p by new
                 {
-                    x.l.Name,
+                    Name = visibleLocationIds.Contains(x.l.Id)
+                        ? x.l.Name
+                        : OutsideOfContractRegion,
                     x.l.LocationType,
                     x.p.EnrolmentStatus
                 } into grp
