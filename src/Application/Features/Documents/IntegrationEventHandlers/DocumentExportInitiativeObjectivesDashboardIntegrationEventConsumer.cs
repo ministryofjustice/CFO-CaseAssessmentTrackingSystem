@@ -76,9 +76,9 @@ public class DocumentExportInitiativeObjectivesDashboardIntegrationEventConsumer
                     { "Initiative", item => item.InitiativeCode },
                     { "Initiative Description", item => item.InitiativeDescription },
                     { "Objective Status", item => item.IsObjectiveCompleted ? "Completed" : "Active" },
-                    { "Task Status", item => item.TaskSummary },
                     { "Completed Tasks", item => item.CompletedTasks },
                     { "Total Tasks", item => item.TotalTasks },
+                    { "Outstanding Tasks", item => item.TotalTasks - item.CompletedTasks },
                     { "Activities", item => item.ActivityCount }
                 });
 
