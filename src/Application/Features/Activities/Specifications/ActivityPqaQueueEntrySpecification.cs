@@ -13,5 +13,8 @@ public class ActivityPqaQueueEntrySpecification : Specification<ActivityPqaQueue
         Query.Where(e => 
             e.Participant!.Id.Contains(filter.Keyword!) || e.Participant!.LastName.Contains(filter.Keyword!),
         string.IsNullOrEmpty(filter.Keyword) == false);
+
+        Query.Where(e => e.Participant!.OwnerId == filter.SupportWorkerId!,
+            !string.IsNullOrEmpty(filter.SupportWorkerId));
     }
 }

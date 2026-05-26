@@ -6,4 +6,5 @@ public class ActivityQueueEntryFilter
 : PaginationFilter
 {
     public UserProfile? CurrentUser { get; set; }
+    public string? SupportWorkerId { get; set; }
 }

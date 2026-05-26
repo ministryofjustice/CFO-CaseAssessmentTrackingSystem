@@ -65,6 +65,7 @@ public partial class PqaList
             var result = await GetNewMediator().Send(query);
             
             _availableSupportWorkers = result.Items
+                .Where(x => !string.IsNullOrEmpty(x.SupportWorkerId))
                 .Select(x => (x.SupportWorkerId, x.SupportWorker))
                 .Distinct()
                 .OrderBy(x => x.SupportWorker)
