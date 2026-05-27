@@ -1,16 +1,16 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrator-job
+  name: seeder-job
   labels:
-    app: migrator
+    app: seeder
 spec:
   backoffLimit: 3
   ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
-        app: migrator
+        app: seeder
     spec:
       serviceAccountName: ${NAMESPACE}
       restartPolicy: Never
@@ -21,8 +21,8 @@ spec:
         runAsGroup: 1001  
         runAsNonRoot: true
       containers:
-        - name: migrator
-          image: ${REGISTRY}/${REPOSITORY}:migrator-${IMAGE_TAG}
+        - name: seeder
+          image: ${REGISTRY}/${REPOSITORY}:seeder-${IMAGE_TAG}
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
