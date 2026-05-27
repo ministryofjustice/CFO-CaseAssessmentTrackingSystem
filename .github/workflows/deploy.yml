@@ -52,15 +52,15 @@ jobs:
             /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
             /p:ContainerImageTag=cats-${{ github.sha }}
       
-      - name: Build and Push DatabaseMigrator Container
+      - name: Build and Push DatabaseSeeding Container
         run: |
-          dotnet publish src/DatabaseMigrator/DatabaseMigrator.csproj \
+          dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj \
             --configuration Release \
             --no-build \
             /t:PublishContainer \
             /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
             /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
-            /p:ContainerImageTag=migrator-${{ github.sha }}
+            /p:ContainerImageTag=seeder-${{ github.sha }}
       
       - name: Generate Kubernetes Manifests
         run: |
