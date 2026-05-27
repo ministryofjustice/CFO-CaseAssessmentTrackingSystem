@@ -6,6 +6,6 @@ spec:
   selector:
     app: cats # this should match the pod label in deployment.yml
   ports:
-    - name: https
+    - name: http
       port: 8080
       targetPort: 8080
