@@ -17,7 +17,7 @@ spec:
       serviceAccountName: ${NAMESPACE}
       containers:
         - name: port-forward
-          image: ministryofjustice/port-forward
+          image: ministryofjustice/port-forward@sha256:eaed873978acf6ccf23f08315f56ef71f0a7ffcd6a0bea821459bfb363b65e76 
           ports:
             - containerPort: 11433   # this is your LOCAL_PORT inside the pod
           env:
