@@ -51,6 +51,9 @@ using Rebus.Activation;
 using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Handlers;
+using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text.Json;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure;
@@ -382,6 +385,54 @@ public static class DependencyInjection
         services
             .AddAuthentication()
             .AddMicrosoftIdentityWebApp(configuration, openIdConnectScheme: "MicrosoftEntraID");
+        
+        services
+            .AddAuthentication()
+            .AddOAuth("HmppsAuth", options =>
+            {
+                var hmppsConfig = configuration.GetSection(HmppsAuthSettings.Key);
+                options.ClientId = hmppsConfig["ClientId"] ?? throw new InvalidOperationException("HmppsAuth:ClientId is required");
+                options.ClientSecret = hmppsConfig["ClientSecret"] ?? throw new InvalidOperationException("HmppsAuth:ClientSecret is required");
+                options.CallbackPath = hmppsConfig["CallbackPath"] ?? "/signin-hmpps";
+                options.AuthorizationEndpoint = hmppsConfig["AuthorizationEndpoint"] ?? throw new InvalidOperationException("HmppsAuth:AuthorizationEndpoint is required");
+                options.TokenEndpoint = hmppsConfig["TokenEndpoint"] ?? throw new InvalidOperationException("HmppsAuth:TokenEndpoint is required");
+                options.UserInformationEndpoint = hmppsConfig["UserInformationEndpoint"] ?? throw new InvalidOperationException("HmppsAuth:UserInformationEndpoint is required");
+                
+                options.SignInScheme = IdentityConstants.ExternalScheme;
+                options.SaveTokens = true;
+                
+                options.Scope.Add("read");
+                
+                options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+                {
+                    OnCreatingTicket = async context =>
+                    {
+                        var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", context.AccessToken);
+                        request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                        var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
+                        response.EnsureSuccessStatusCode();
+
+                        var user = await response.Content.ReadFromJsonAsync<JsonElement>();
+                        
+                        if (user.TryGetProperty("username", out var username))
+                        {
+                            context.Identity?.AddClaim(new Claim(ClaimTypes.NameIdentifier, username.GetString() ?? ""));
+                        }
+                        
+                        if (user.TryGetProperty("name", out var name))
+                        {
+                            context.Identity?.AddClaim(new Claim(ClaimTypes.Name, name.GetString() ?? ""));
+                        }
+                        
+                        if (user.TryGetProperty("email", out var email))
+                        {
+                            context.Identity?.AddClaim(new Claim(ClaimTypes.Email, email.GetString() ?? ""));
+                        }
+                    }
+                };
+            });
 
         services.Configure<OpenIdConnectOptions>("MicrosoftEntraID", options =>
         {
