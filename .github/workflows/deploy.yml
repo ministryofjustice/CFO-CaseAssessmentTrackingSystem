@@ -83,14 +83,35 @@ jobs:
           NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           DOTNET_ENVIRONMENT: "Development"
       
-      - name: Deploy to Kubernetes
+      - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
           kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${KUBE_NAMESPACE}
           kubectl config use-context ${KUBE_CLUSTER}
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+
+      - name: Run database migration
+        run: |
+          kubectl -n ${KUBE_NAMESPACE} delete job migrator-job --ignore-not-found=true
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-job.yml
+          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/migrator-job
+        env:
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+
+      - name: Run database seeding
+        run: |
+          kubectl -n ${KUBE_NAMESPACE} delete job seeder-job --ignore-not-found=true
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-job.yml
+          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/seeder-job
+        env:
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/
+        env:
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}

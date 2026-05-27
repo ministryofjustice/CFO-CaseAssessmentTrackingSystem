@@ -20,5 +20,9 @@ COPY --from=build /opt/sqlpackage /opt/sqlpackage
 RUN chmod -R a+rx /opt/sqlpackage
 ENV PATH="$PATH:/opt/sqlpackage"
 
-# Copy DACPAC
+# Copy DACPAC and entrypoint
 COPY --from=build /src/src/Database/CatsDb/bin/Release/CatsDb.dacpac ./CatsDb.dacpac
+COPY src/Database/entrypoint.sh ./
+RUN chmod +x ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
