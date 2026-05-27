@@ -1,44 +1,43 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: seeder-job
+  name: migrator-job
   labels:
-    app: seeder
+    app: migrator
 spec:
-  backoffLimit: 3
+  backoffLimit: 2
   ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
-        app: seeder
+        app: migrator
     spec:
       serviceAccountName: ${NAMESPACE}
       restartPolicy: Never
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-        runAsUser: 1001 
-        runAsGroup: 1001  
+        runAsUser: 1001
+        runAsGroup: 1001
         runAsNonRoot: true
-      initContainers:
-        - name: wait-for-migration
-          image: bitnami/kubectl:latest
-          command:
-            - kubectl
-            - wait
-            - --for=condition=complete
-            - --timeout=300s
-            - job/migrator-job
-          securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
       containers:
-        - name: seeder
-          image: ${REGISTRY}/${REPOSITORY}:seeder-${IMAGE_TAG}
+        - name: migrator
+          image: ${REGISTRY}/${REPOSITORY}:migrator-${IMAGE_TAG}
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "Deploying schema via sqlpackage..."
+              sqlpackage /Action:Publish \
+                /SourceFile:/app/CatsDb.dacpac \
+                /TargetConnectionString:"$ConnectionStrings__CatsDb" \
+                /p:BlockOnPossibleDataLoss=false
+              echo "Schema deployed successfully."
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
-          env:   
+          env:
             - name: DATABASE_ADDRESS
               valueFrom:
                 secretKeyRef:
@@ -54,7 +53,5 @@ spec:
                 secretKeyRef:
                   name: rds-mssql-instance-output
                   key: database_password
-            - name: DOTNET_ENVIRONMENT
-              value: "${DOTNET_ENVIRONMENT}"
             - name: ConnectionStrings__CatsDb
               value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
