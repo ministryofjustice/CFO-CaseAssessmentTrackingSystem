@@ -254,6 +254,12 @@ public static class DependencyInjection
         string? accessKey = configuration.GetValue<string>("AWS:AccessKey");
         string? secretKey = configuration.GetValue<string>("AWS:SecretKey");
 
+        if (string.IsNullOrEmpty(accessKey) != string.IsNullOrEmpty(secretKey))
+        {
+            throw new InvalidOperationException(
+                "AWS configuration is invalid: both AWS:AccessKey and AWS:SecretKey must be set together, or neither should be set.");
+        }
+
         if (string.IsNullOrEmpty(accessKey) is false && string.IsNullOrEmpty(secretKey) is false)
         {
             options.Credentials = new BasicAWSCredentials(accessKey, secretKey);
