@@ -42,7 +42,7 @@ The solution follows **Clean Architecture** with four main layers:
 
 Supporting projects:
 - `src/Aspire/Cats.AppHost` — Aspire orchestration host for local dev and Kubernetes publishing.
-- `src/DatabaseMigrator` — standalone migrator used during deployment.
+- `src/DatabaseSeeding` — standalone seeder used during deployment.
 
 ---
 
