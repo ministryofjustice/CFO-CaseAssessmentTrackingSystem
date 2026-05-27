@@ -23,7 +23,7 @@ spec:
       serviceAccountName: ${NAMESPACE}
       containers:
         - name: rabbitmq
-          image: rabbitmq:3-management
+          image: rabbitmq:4.3-management-alpine@sha256:1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3
           imagePullPolicy: Always 
           ports:
             - containerPort: 5672
