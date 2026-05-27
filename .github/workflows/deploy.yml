@@ -61,6 +61,14 @@ jobs:
             /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
             /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
             /p:ContainerImageTag=seeder-${{ github.sha }}
+
+      - name: Build and Push DatabaseMigrator Container
+        run: |
+          docker build \
+            -f src/Database/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:migrator-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:migrator-${{ github.sha }}
       
       - name: Generate Kubernetes Manifests
         run: |
