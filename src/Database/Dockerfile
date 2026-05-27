@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:c0790639332692a0d56cdd81ed581cfd24d040d9839764c138994866df89a3b6 AS build
 WORKDIR /src
 
 # Install sqlpackage to a fixed, non-root path
@@ -12,7 +12,7 @@ COPY src/Database/CatsDb/ src/Database/CatsDb/
 RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --configuration Release
 
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
+FROM mcr.microsoft.com/dotnet/runtime:10.0@sha256:d399699ebc8a27ab34665707ae6dc8f77ae478bd319444841a33a2b3840c5c9a AS final
 WORKDIR /app
 
 # Copy sqlpackage and make it accessible to non-root users
