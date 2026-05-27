@@ -28,7 +28,9 @@ spec:
             - containerPort: 8080
           securityContext:
             allowPrivilegeEscalation: false
-            privileged: false              
+            privileged: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: DATABASE_ADDRESS
               valueFrom:

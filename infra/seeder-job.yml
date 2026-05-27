@@ -20,25 +20,15 @@ spec:
         runAsUser: 1001 
         runAsGroup: 1001  
         runAsNonRoot: true
-      initContainers:
-        - name: wait-for-migration
-          image: bitnami/kubectl:latest
-          command:
-            - kubectl
-            - wait
-            - --for=condition=complete
-            - --timeout=300s
-            - job/migrator-job
-          securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
       containers:
         - name: seeder
           image: ${REGISTRY}/${REPOSITORY}:seeder-${IMAGE_TAG}
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
-          env:   
+            capabilities:
+              drop: ["ALL"]
+          env:
             - name: DATABASE_ADDRESS
               valueFrom:
                 secretKeyRef:
