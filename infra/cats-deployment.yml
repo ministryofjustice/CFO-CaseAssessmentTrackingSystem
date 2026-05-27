@@ -70,3 +70,10 @@ spec:
               value: "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
             - name: AWS__RootFolder
               value: "Files"
+            - name: Sentry__Dsn
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: SentryDsn
+            - name: Sentry__Environment
+              value: "${DOTNET_ENVIRONMENT}-CloudPlatform"
