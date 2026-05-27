@@ -1,6 +1,8 @@
 using ApexCharts;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Initiatives.DTOs;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
@@ -18,6 +20,7 @@ public partial class InitiativeObjectivesDashboardComponent
     public bool IsDarkMode { get; set; }
 
     private InitiativeDto? _initiativeFilter;
+    private bool _downloading;
     private bool ShowActiveOnly { get; set; } = false;
 
     protected override IRequest<Result<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>> CreateQuery()
@@ -28,23 +31,23 @@ public partial class InitiativeObjectivesDashboardComponent
          TenantId = TenantId
      };
 
-    private ApexCharts.ApexChartOptions<InitiativeChartPoint> Options => new()
+    private ApexChartOptions<InitiativeChartPoint> Options => new()
     {
-        Chart = new ApexCharts.Chart
+        Chart = new Chart
         {
             Stacked = true
         },
-        PlotOptions = new ApexCharts.PlotOptions
+        PlotOptions = new PlotOptions
         {
-            Bar = new ApexCharts.PlotOptionsBar
+            Bar = new PlotOptionsBar
             {
                 Horizontal = false,
-                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                DataLabels = new PlotOptionsBarDataLabels
                 {
-                    Total = new ApexCharts.BarTotalDataLabels
+                    Total = new BarTotalDataLabels
                     {
                         Enabled = true,
-                        Style = new ApexCharts.BarDataLabelsStyle
+                        Style = new BarDataLabelsStyle
                         {
                             FontWeight = "800",
                             Color = IsDarkMode ? "#FFFFFF" : "#000000",
@@ -69,9 +72,9 @@ public partial class InitiativeObjectivesDashboardComponent
                 RotateAlways = true
             }
         },
-        Theme = new ApexCharts.Theme
+        Theme = new Theme
         {
-            Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
         Colors = new List<string> { "#1976d2", "#5cb85c" }
     };
@@ -104,4 +107,41 @@ public partial class InitiativeObjectivesDashboardComponent
         ShowActiveOnly && Data is not null
             ? ChartData.Where(x => x.ActiveCount > 0).ToArray()
             : ChartData ?? Array.Empty<InitiativeChartPoint>();
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var result = await Service.Send(new ExportInitiativeObjectivesDashboard.Command
+            {
+                Request = new ExportInitiativeObjectivesDashboard.InitiativeObjectivesDashboardExportRequest
+                {
+                    UserId = UserId,
+                    TenantId = TenantId,
+                    InitiativeCode = _initiativeFilter?.Code,
+                    ShowActiveOnly = ShowActiveOnly
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error has occurred while generating the initiative objectives dashboard export");
+            Snackbar.Add("An error has occurred while generating the initiative objectives dashboard export.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }
