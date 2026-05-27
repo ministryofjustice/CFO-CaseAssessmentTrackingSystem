@@ -54,7 +54,7 @@ The recommended way to run and debug these apps is using .NET Aspire.
 - **Using Visual Studio Code**: open the project and press `F5`, selecting the *Default Configuration*.
 - **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Cats.AppHost` and start the application.
 
-On startup, Aspire automatically applies the SQL Project schema to the local SQL Server container before starting the application. The `DatabaseMigrator` project then runs to seed any required reference data. No manual migration steps are needed for local development.
+On startup, Aspire automatically applies the SQL Project schema to the local SQL Server container before starting the application. The `DatabaseSeeding` project then runs to seed any required reference data. No manual migration steps are needed for local development.
 
 ## Database schema
 
@@ -100,7 +100,7 @@ Available targets:
 The `Publish` target writes output to:
 
 - `artifacts/Server.UI`
-- `artifacts/DatabaseMigrator`
+- `artifacts/DatabaseSeeding`
 
 ---
 
