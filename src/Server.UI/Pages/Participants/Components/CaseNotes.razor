@@ -1,14 +1,15 @@
-﻿@using Humanizer;
+﻿@using Humanizer;Does
 
 @inherits CatsComponentBase
 
-@if(_notes is not null)
+@if(_paginatedNotes is not null)
 {
-    @if (_notes.Any())
+    @if (_paginatedNotes.TotalItems > 0)
     {
         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
             <MudText Typo="Typo.body1">
-                @TotalNotes notes
+                @TotalNotes @(TotalNotes == 1 ? "note" : "notes")
+
             </MudText>
             <MudPagination Count="@TotalPages"
                            ShowFirstButton="true"
@@ -32,7 +33,7 @@
         }
         else
         {
-            if (!_notes.Any())
+            if (_paginatedNotes.TotalItems == 0)
             {
                 <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
                     <MudCard>
