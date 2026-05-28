@@ -145,6 +145,12 @@
                 }
             </MudMenu>
 
+            <MudMenu Size="Size.Small" Label="@Query.RecentlyAssigned.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All" OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.All))" />
+                <MudMenuItem Label="Last 10 Days" OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.Last10Days))" />
+                <MudMenuItem Label="Last 30 Days" OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.Last30Days))" />
+            </MudMenu>
+
             <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudMenuItem Label="Id" OnClick="@(() => SortBy("Id"))"/>
                 <MudMenuItem Label="First Name" OnClick="@(() => SortBy("FirstName"))"/>
@@ -152,6 +158,10 @@
                 <MudMenuItem Label="Assignee" OnClick="@(() => SortBy("Owner"))"/>
                 <MudMenuItem Label="Tenant" OnClick="@(() => SortBy("Tenant"))"/>
                 <MudMenuItem Label="Risk Due" OnClick="@(() => SortBy("RiskDue"))"/>
+                @if (Query.RecentlyAssigned != RecentlyAssignedFilter.All)
+                {
+                    <MudMenuItem Label="Assigned On" OnClick="@(() => SortBy("AssignedOn"))"/>
+                }
                 <MudMenuItem Label="Current Location" OnClick="@(() => SortBy("CurrentLocation"))"/>
                 <MudMenuItem Label="Enrolment Location" OnClick="@(() => SortBy("EnrolmentLocation"))"/>
                 <MudMenuItem Label="Enrolment Status" OnClick="@(() => SortBy("EnrolmentStatus"))"/>
@@ -180,6 +190,10 @@
                     <MudTh>Location</MudTh>
                     <MudTh>Enrolled At</MudTh>
                     <MudTh>Assignee</MudTh>
+                    @if (Query.RecentlyAssigned != RecentlyAssignedFilter.All)
+                    {
+                        <MudTh>Assigned On</MudTh>
+                    }
                     <MudTh>Risk Due</MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -198,6 +212,10 @@
                     <MudTd>@context.CurrentLocation.Name</MudTd>
                     <MudTd>@context.EnrolmentLocation?.Name</MudTd>
                     <MudTd>@context.Owner</MudTd>
+                    @if (Query.RecentlyAssigned != RecentlyAssignedFilter.All)
+                    {
+                        <MudTd>@context.AssignedOn?.ToShortDateString()</MudTd>
+                    }
                     <MudTd>
                         @context.RiskDue.ToShortDateOrEmptyString()
                     </MudTd>
@@ -242,7 +260,10 @@
                                     }
                                 <MudSpacer />
                                 <MudText Typo="Typo.body2">
-                                    Assigned to @item.Owner (@item.Tenant)
+                                    Assigned to @item.Owner (@item.Tenant)@if (Query.RecentlyAssigned != RecentlyAssignedFilter.All && item.AssignedOn.HasValue)
+                                    {
+                                        @($" on {item.AssignedOn.Value.ToShortDateString()}")
+                                    }
                                 </MudText>
                             </MudStack>
                             <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">

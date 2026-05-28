@@ -123,6 +123,7 @@ public partial class ParticipantsV2
             Query.OwnerId = sd.OwnerId;
             Query.TenantId = sd.TenantId;
             Query.RiskDue = sd.RiskDue;
+            Query.RecentlyAssigned = sd.RecentlyAssigned;
             Tabular = sd.Tabular;
         }
 
@@ -144,6 +145,20 @@ public partial class ParticipantsV2
     private async Task LabelsValueChanged(LabelDto? labelDto)
     {
         Query.Label = labelDto is not null ? new LabelId(labelDto.Id) : null;
+        await OnRefresh();
+    }
+
+    private async Task RecentlyAssignedFilterChanged(RecentlyAssignedFilter filter)
+    {
+        Query.RecentlyAssigned = filter;
+        
+        // If switching to "All" and currently sorted by AssignedOn, reset to default sort
+        if (filter == RecentlyAssignedFilter.All && Query.OrderBy.Equals("AssignedOn", StringComparison.OrdinalIgnoreCase))
+        {
+            Query.OrderBy = "Id";
+            Query.SortDirection = SortDirection.Ascending.ToString();
+        }
+        
         await OnRefresh();
     }
 
@@ -340,6 +355,7 @@ public partial class ParticipantsV2
         Query.PageNumber = 1;
         Query.Label = null;
         Query.OwnerId = null;
+        Query.RecentlyAssigned = RecentlyAssignedFilter.All;
         Tabular = false;
     }
     
