@@ -249,13 +249,24 @@ public static class DependencyInjection
 
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 
-        if(configuration.GetSection("AWS") is {} section && section.Exists())
+        var options = configuration.GetAWSOptions();
+
+        string? accessKey = configuration.GetValue<string>("AWS:AccessKey");
+        string? secretKey = configuration.GetValue<string>("AWS:SecretKey");
+
+        if (string.IsNullOrEmpty(accessKey) != string.IsNullOrEmpty(secretKey))
         {
-            var options = configuration.GetAWSOptions();
-            options.Credentials = new BasicAWSCredentials(section.GetRequiredValue("AccessKey"), section.GetRequiredValue("SecretKey"));
-            services.AddDefaultAWSOptions(options);
-            services.AddAWSService<IAmazonS3>();            
+            throw new InvalidOperationException(
+                "AWS configuration is invalid: both AWS:AccessKey and AWS:SecretKey must be set together, or neither should be set.");
         }
+
+        if (string.IsNullOrEmpty(accessKey) is false && string.IsNullOrEmpty(secretKey) is false)
+        {
+            options.Credentials = new BasicAWSCredentials(accessKey, secretKey);
+        }
+
+        services.AddDefaultAWSOptions(options);
+        services.AddAWSService<IAmazonS3>();
 
         services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
         {

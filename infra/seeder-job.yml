@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seeder-job
+  labels:
+    app: seeder
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: seeder
+    spec:
+      serviceAccountName: ${NAMESPACE}
+      restartPolicy: Never
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001 
+        runAsGroup: 1001  
+        runAsNonRoot: true
+      containers:
+        - name: seeder
+          image: ${REGISTRY}/${REPOSITORY}:seeder-${IMAGE_TAG}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: DATABASE_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: rds_instance_address
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: database_username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: database_password
+            - name: DOTNET_ENVIRONMENT
+              value: "${DOTNET_ENVIRONMENT}"
+            - name: ConnectionStrings__CatsDb
+              value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"

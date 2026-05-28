@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq # this should match the selector in service.yml
+  template:
+    metadata:
+      labels:
+        app: rabbitmq # this should match the selector in service.yml
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001 
+        runAsGroup: 1001  
+        runAsNonRoot: true
+      serviceAccountName: ${NAMESPACE}
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:4.3-management-alpine@sha256:1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3
+          imagePullPolicy: Always 
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: RABBIT_USER
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: RABBIT_PASS

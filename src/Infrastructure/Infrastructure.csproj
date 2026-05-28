@@ -8,6 +8,7 @@
     <ItemGroup>
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" />
         <PackageReference Include="AWSSDK.S3" />
+        <PackageReference Include="AWSSDK.SecurityToken" />
         <PackageReference Include="ClosedXML" />
         <PackageReference Include="GovukNotify" />
         <PackageReference Include="IPAddressRange" />
