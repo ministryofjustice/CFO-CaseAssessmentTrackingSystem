@@ -27,8 +27,8 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Restore dotnet tools
-        run: dotnet tool restore --disable-parallel
+      - name: Install dotnet sql package
+        run: dotnet tool install --global microsoft.sqlpackage --version 170.3.93
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
