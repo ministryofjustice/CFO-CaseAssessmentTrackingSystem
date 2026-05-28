@@ -7,7 +7,7 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseNotes
 {
-    private ParticipantNoteDto[]? _notes;
+    private PaginatedData<ParticipantNoteDto>? _paginatedNotes;
     private const int PageSize = 5;
     private int _pageNumber = 1;
 
@@ -33,36 +33,24 @@ public partial class CaseNotes
         }
     }
 
-    private IEnumerable<ParticipantNoteDto> OrderedNotes =>
-        _notes?
-            .OrderByDescending(x => x.Created)!;
+    private IEnumerable<ParticipantNoteDto> PagedNotes => _paginatedNotes?.Items ?? [];
 
-    private IEnumerable<ParticipantNoteDto> PagedNotes =>
-        OrderedNotes
-            .Skip((_pageNumber - 1) * PageSize)
-            .Take(PageSize);
+    private int TotalNotes => _paginatedNotes?.TotalItems ?? 0;
 
-    private int TotalNotes => _notes?.Length ?? 0;
+    private int TotalPages => _paginatedNotes?.TotalPages ?? 0;
 
-    private int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalNotes / (double)PageSize));
-
-    private async Task OnRefresh()
-    {
-        _notes = await GetNewMediator().Send(new GetParticipantNotes.Query()
+    private async Task OnRefresh() =>
+        _paginatedNotes = await GetNewMediator().Send(new GetParticipantNotes.Query()
         {
-            ParticipantId = ParticipantId
+            ParticipantId = ParticipantId,
+            PageNumber = _pageNumber,
+            PageSize = PageSize
         });
 
-        if (_pageNumber > TotalPages)
-        {
-            _pageNumber = TotalPages;
-        }
-    }
-
-    private Task OnPaginationChanged(int page)
+    private async Task OnPaginationChanged(int page)
     {
         _pageNumber = page;
-        return Task.CompletedTask;
+        await OnRefresh();
     }
 
     private async Task OnAddNote()
