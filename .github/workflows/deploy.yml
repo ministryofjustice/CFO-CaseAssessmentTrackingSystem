@@ -28,7 +28,7 @@ jobs:
         run: dotnet restore
 
       - name: Restore dotnet tools
-        run: dotnet tool restore
+        run: dotnet tool restore --disable-parallel
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
