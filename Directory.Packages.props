@@ -19,7 +19,7 @@
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4.1" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.23.4" />
-    <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.5.3" />
+    <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.6.7" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
