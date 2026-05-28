@@ -95,3 +95,7 @@ spec:
                   key: SentryDsn
             - name: Sentry__Environment
               value: "${DOTNET_ENVIRONMENT}-CloudPlatform"
+            - name: Sentry__Release
+              value: "${APP_VERSION}"
+            - name: AppConfigurationSettings__Version
+              value: "${APP_VERSION}"
