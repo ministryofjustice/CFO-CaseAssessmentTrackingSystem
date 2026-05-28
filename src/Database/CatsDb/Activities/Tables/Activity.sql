@@ -24,7 +24,8 @@ CREATE TABLE [Activities].[Activity] (
     [CompletedOn]                  DATETIME2 (7)    NULL,
     [CompletedBy]                  NVARCHAR (36)    NULL,
     [AbandonJustification]         NVARCHAR (1000)  NULL,
-    [AbandonReason]                INT              NULL
+    [AbandonReason]                INT              NULL,
+    [Test]                         NVARCHAR(MAX)    NULL
 );
 GO
 
