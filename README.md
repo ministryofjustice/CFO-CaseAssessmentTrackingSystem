@@ -101,6 +101,7 @@ The `Publish` target writes output to:
 
 - `artifacts/Server.UI`
 - `artifacts/DatabaseSeeding`
+- `artifacts/CatsDb.dacpac`
 
 ---
 
