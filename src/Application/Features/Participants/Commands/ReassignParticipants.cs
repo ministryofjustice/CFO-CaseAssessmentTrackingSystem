@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class ReassignParticipants
 {
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
-    public class Command : IRequest<Result<bool>>
+    public class Command : ICommand<Result<bool>>
     {
         public string[] ParticipantIdsToReassign { get; set; } = [];
 
@@ -16,7 +16,7 @@ public static class ReassignParticipants
         public string? AssigneeId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<bool>>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result<bool>>
     {
         public async Task<Result<bool>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -71,7 +71,7 @@ public static class ReassignParticipants
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));                   
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 // Validate each ParticipantId in the list
                 RuleForEach(p => p.ParticipantIdsToReassign)                       

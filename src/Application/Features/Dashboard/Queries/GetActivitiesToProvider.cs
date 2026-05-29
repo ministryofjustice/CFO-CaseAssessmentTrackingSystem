@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetActivitiesToProvider
 {
     [RequestAuthorize(Policy = SecurityPolicies.Internal)]
-    public class Query : IRequest<Result<ActivitiesToProviderDto>>
+    public class Query : IQuery<Result<ActivitiesToProviderDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -15,7 +15,7 @@ public static class GetActivitiesToProvider
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ActivitiesToProviderDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ActivitiesToProviderDto>>
     {
         
         public async Task<Result<ActivitiesToProviderDto>> Handle(Query request, CancellationToken cancellationToken)

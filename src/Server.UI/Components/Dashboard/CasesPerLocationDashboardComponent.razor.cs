@@ -16,7 +16,7 @@ public partial class CasesPerLocationDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
     
-    protected override IRequest<Result<GetCasesPerLocation.CasesPerLocationDto>> CreateQuery()
+    protected override IQuery<Result<GetCasesPerLocation.CasesPerLocationDto>> CreateQuery()
      => new GetCasesPerLocation.Query()
      {
          CurrentUser = CurrentUser,

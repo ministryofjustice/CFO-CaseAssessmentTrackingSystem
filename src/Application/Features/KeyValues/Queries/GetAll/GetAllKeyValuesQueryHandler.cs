@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.KeyValues.Queries.GetAll;
 public class GetAllKeyValuesQueryHandler(
     IUnitOfWork unitOfWork,
     IMapper mapper
-) : IRequestHandler<GetAllKeyValuesQuery, IEnumerable<KeyValueDto>>
+) : IQueryHandler<GetAllKeyValuesQuery, IEnumerable<KeyValueDto>>
 {
     public async Task<IEnumerable<KeyValueDto>> Handle(GetAllKeyValuesQuery request,
         CancellationToken cancellationToken)

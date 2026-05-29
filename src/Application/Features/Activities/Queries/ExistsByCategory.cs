@@ -6,14 +6,14 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class ExistsByCategory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<bool>
+    public class Query : IQuery<bool>
     {
         public required string ParticipantId { get; set; }
         public required ActivityCategory Category { get; set; }
         public DateTime? CommencedOn { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, bool>
     {
         public async Task<bool> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.Activities

@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands.Rename;
 public static class RenameTenant
 {
     [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
-    public class Command  : IRequest<Result<string>>
+    public class Command  : ICommand<Result<string>>
     {
         public required string Id { get; set; }
         public required string Name { get; set; }
@@ -21,7 +21,7 @@ public static class RenameTenant
         
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<string>>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {

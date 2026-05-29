@@ -1,9 +1,8 @@
 using System.Linq;
 using System.Reflection;
-using Cfo.Cats.Application.Common.Interfaces.Caching;
 using Cfo.Cats.Application.Common.Security;
-using MediatR;
-using NetArchTest.Rules;
+using Cortex.Mediator.Commands;
+using Cortex.Mediator.Queries;
 using NUnit.Framework;
 using Shouldly;
 
@@ -16,28 +15,23 @@ public class RequestTests
     [Test]
     public void Commands_Should_HaveAuthorizeAttribute()
     {
-        var result = Types.InAssembly(ApplicationAssembly)
-            .That()
-            .AreNotInterfaces()
-            .And()
-            .AreNotAbstract()
-            .And()
-            .ImplementInterface(typeof(IRequest<>))
-            .Or()
-            .ImplementInterface(typeof(ICacheableRequest<>))
-            .Or()
-            .ImplementInterface(typeof(ICacheInvalidatorRequest<>))
-            .Should()
-            .HaveCustomAttribute(typeof(RequestAuthorizeAttribute))
-            .Or()
-            .HaveCustomAttribute(typeof(AllowAnonymousAttribute))
-            .GetResult();
+        var failedTypes = ApplicationAssembly.GetTypes()
+            .Where(t => t.IsInterface == false)
+            .Where(t => t.IsAbstract == false)
+            .Where(t => t.ContainsGenericParameters == false)
+            .Where(t => ImplementsOpenGenericInterface(t, typeof(ICommand<>))
+                        || ImplementsOpenGenericInterface(t, typeof(IQuery<>)))
+            .Where(t => t.GetCustomAttribute<RequestAuthorizeAttribute>() is null
+                        && t.GetCustomAttribute<AllowAnonymousAttribute>() is null)
+            .Select(t => t.FullName)
+            .ToList();
 
-        var failedTypes = result.FailingTypes?.Select(t => t.FullName).ToList();
-        
-        var formattedFailedTypes = failedTypes == null ? "None" : string.Join("\n", failedTypes);
-        
-        result.IsSuccessful
-            .ShouldBeTrue($"The following types failed the test:\n {formattedFailedTypes}");
+        failedTypes
+            .ShouldBeEmpty($"The following types failed the test:\n {string.Join("\n", failedTypes)}");
     }
+
+    private static bool ImplementsOpenGenericInterface(Type type, Type openGenericInterface)
+        => type.GetInterfaces().Any(i =>
+            i.IsGenericType
+            && i.GetGenericTypeDefinition() == openGenericInterface);
 }

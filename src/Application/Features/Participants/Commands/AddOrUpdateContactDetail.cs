@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class AddOrUpdateContactDetail
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid? Id { get; set; }
         public required string ParticipantId { get; set; }
@@ -53,7 +53,7 @@ public static class AddOrUpdateContactDetail
                 }));
         }
     }
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -131,7 +131,7 @@ public static class AddOrUpdateContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .Must(Exist)
@@ -150,7 +150,7 @@ public static class AddOrUpdateContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 When(c => c.Id is not null, () =>
                 {
@@ -172,7 +172,7 @@ public static class AddOrUpdateContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .Must(MustNotBeArchived)

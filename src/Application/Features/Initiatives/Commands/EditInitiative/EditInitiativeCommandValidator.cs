@@ -29,7 +29,7 @@ public class EditInitiativeCommandValidator : AbstractValidator<EditInitiativeCo
             .NotNull()
             .WithMessage("A contract must be selected.");
 
-        RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+        RuleSet(ValidationConstants.RuleSet.Mediator, () =>
         {
             RuleFor(x => x)
                 .MustAsync(BeUniqueCode)

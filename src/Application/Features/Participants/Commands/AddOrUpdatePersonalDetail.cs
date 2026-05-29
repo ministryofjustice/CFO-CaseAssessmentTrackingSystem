@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public class AddOrUpdatePersonalDetail
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required string ParticipantId { get; set; }
         public ParticipantPersonalDetailDto PersonalDetails { get; set; } = new();
@@ -34,7 +34,7 @@ public class AddOrUpdatePersonalDetail
         }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -85,7 +85,7 @@ public class AddOrUpdatePersonalDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .Must(Exist)
@@ -132,7 +132,7 @@ public class AddOrUpdatePersonalDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .Must(MustNotBeArchived)

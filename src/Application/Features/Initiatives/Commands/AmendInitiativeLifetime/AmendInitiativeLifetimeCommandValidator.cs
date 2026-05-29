@@ -23,7 +23,7 @@ public class AmendInitiativeLifetimeCommandValidator : AbstractValidator<AmendIn
             .GreaterThanOrEqualTo(x => x.StartDate)
             .WithMessage("End date must be on or after start date.");
 
-        RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+        RuleSet(ValidationConstants.RuleSet.Mediator, () =>
         {
             RuleFor(x => x.Id)
                 .MustAsync(FundMustExist)

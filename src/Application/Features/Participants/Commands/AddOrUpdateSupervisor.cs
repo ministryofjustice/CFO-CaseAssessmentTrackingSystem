@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public class AddOrUpdateSupervisor
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("Participant Id")]
         public required string ParticipantId { get; set; }
@@ -16,7 +16,7 @@ public class AddOrUpdateSupervisor
         public required ParticipantSupervisorDto Supervisor { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -84,7 +84,7 @@ public class AddOrUpdateSupervisor
                 .When(p => string.IsNullOrEmpty(p.Supervisor.Address) is false)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(p => p.ParticipantId)
                     .MustAsync(Exist)

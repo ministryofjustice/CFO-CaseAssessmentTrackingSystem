@@ -15,14 +15,14 @@ public static class GetBio
     /// Returns a Bio for a Participant
     /// </summary>
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<Bio>>
+    public class Query : IQuery<Result<Bio>>
     {
         public required string ParticipantId { get; set; }
         public Guid? BioId { get; set; }
 
     }
 
-    internal class Handler : IRequestHandler<Query, Result<Bio>>
+    public class Handler : IQueryHandler<Query, Result<Bio>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public Handler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;

@@ -5,7 +5,7 @@ using Cfo.Cats.Domain.Labels;
 namespace Cfo.Cats.Application.Features.Labels.Commands.DeleteLabel;
 
 [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-public class DeleteLabelCommand : IRequest<Result>
+public class DeleteLabelCommand : ICommand<Result>
 {
     public required UserProfile UserProfile { get; set; }
     public required LabelId LabelId { get; set; }

@@ -9,12 +9,12 @@ namespace Cfo.Cats.Application.Features.Assessments.Queries;
 public static class GetAssessmentScores
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<IEnumerable<ParticipantAssessmentDto>>>
+    public class Query : IQuery<Result<IEnumerable<ParticipantAssessmentDto>>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler : IRequestHandler<Query, Result<IEnumerable<ParticipantAssessmentDto>>>
+    public class Handler : IQueryHandler<Query, Result<IEnumerable<ParticipantAssessmentDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -60,7 +60,7 @@ public static class GetAssessmentScores
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ParticipantId)
                     .MustAsync(Exist)

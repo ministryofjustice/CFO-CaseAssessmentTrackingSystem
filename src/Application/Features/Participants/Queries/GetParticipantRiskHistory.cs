@@ -13,7 +13,7 @@ public static class GetParticipantRiskHistory
 
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<RiskHistoryDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<RiskHistoryDto[]>>
     {
 
         public async Task<Result<RiskHistoryDto[]>> Handle(Query request, CancellationToken cancellationToken)

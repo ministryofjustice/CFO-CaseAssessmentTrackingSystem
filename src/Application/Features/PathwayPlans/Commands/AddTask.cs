@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 public static class AddTask
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("Pathway Plan Id")]
         public required Guid PathwayPlanId { get; init; }
@@ -29,7 +29,7 @@ public static class AddTask
         }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -85,7 +85,7 @@ public static class AddTask
                     .WithMessage("Due date must fall on the first day of the month");
             });
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.PathwayPlanId)
                     .MustAsync(ParticipantMustNotBeArchived)

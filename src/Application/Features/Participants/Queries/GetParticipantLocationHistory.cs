@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantLocationHistory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<IEnumerable<ParticipantLocationHistoryDto>>
+    public class Query : IQuery<IEnumerable<ParticipantLocationHistoryDto>>
     {
         public required string ParticipantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantLocationHistoryDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, IEnumerable<ParticipantLocationHistoryDto>>
     {
         public async Task<IEnumerable<ParticipantLocationHistoryDto>> Handle(Query request, CancellationToken cancellationToken)
         {

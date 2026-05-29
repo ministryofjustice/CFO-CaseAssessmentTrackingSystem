@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetContactDetails
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<IEnumerable<ParticipantContactDetailDto>>
+    public class Query : IQuery<IEnumerable<ParticipantContactDetailDto>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, IEnumerable<ParticipantContactDetailDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, IEnumerable<ParticipantContactDetailDto>>
     {
         public async Task<IEnumerable<ParticipantContactDetailDto>> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.ParticipantContactDetails

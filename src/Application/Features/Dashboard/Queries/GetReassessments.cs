@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetReassessments
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ReassessmentsDto>>
+    public class Query : IQuery<Result<ReassessmentsDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -15,7 +15,7 @@ public static class GetReassessments
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ReassessmentsDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ReassessmentsDto>>
     {
         public async Task<Result<ReassessmentsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

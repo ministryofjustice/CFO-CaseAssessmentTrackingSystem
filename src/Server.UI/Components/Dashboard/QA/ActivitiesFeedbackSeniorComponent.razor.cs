@@ -22,7 +22,7 @@ public partial class ActivitiesFeedbackSeniorComponent
 
     private bool HasReadItems => Data?.TabularData?.Any(x => x.IsRead) ?? false;
     
-    protected override IRequest<Result<GetActivitiesFeedback.ActivitiesFeedbackDto>>
+    protected override IQuery<Result<GetActivitiesFeedback.ActivitiesFeedbackDto>>
         CreateQuery()
         => new GetActivitiesFeedback.Query
         {

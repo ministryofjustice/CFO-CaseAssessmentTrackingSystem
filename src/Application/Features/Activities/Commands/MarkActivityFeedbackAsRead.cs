@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 public static class MarkActivityFeedbackAsRead
 {
     [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid ActivityFeedbackId { get; init; }
     }
     
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -38,7 +38,7 @@ public static class MarkActivityFeedbackAsRead
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ActivityFeedbackId)
                     .Must(id => _unitOfWork.DbContext.ActivityFeedbacks.Any(f => f.Id == id))

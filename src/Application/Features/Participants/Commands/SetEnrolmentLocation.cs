@@ -46,7 +46,7 @@ public static class SetEnrolmentLocation
     }
 
     public class Handler(IUnitOfWork unitOfWork) 
-        : IRequestHandler<Command, Result<string>>
+        : ICommandHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {

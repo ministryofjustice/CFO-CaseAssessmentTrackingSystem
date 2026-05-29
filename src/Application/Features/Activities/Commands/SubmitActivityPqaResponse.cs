@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 public static class SubmitActivityPqaResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required Guid QueueEntryId { get; set; }
 
@@ -24,7 +24,7 @@ public static class SubmitActivityPqaResponse
         Comment = 2
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -87,7 +87,7 @@ public static class SubmitActivityPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(b => b.QueueEntryId)
                     .Must(MustExist)
@@ -107,7 +107,7 @@ public static class SubmitActivityPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.QueueEntryId)
                     .Must(MustBeOpen)
@@ -132,7 +132,7 @@ public static class SubmitActivityPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(e => e)
                     .Must(OwnerMustNotBeApprover)
@@ -157,7 +157,7 @@ public static class SubmitActivityPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(f => f)
                     .Must(NotExpired)
@@ -187,7 +187,7 @@ public static class SubmitActivityPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 When(g => g.Response is PqaResponse.Accept, () =>
                 {
@@ -215,7 +215,7 @@ public static class SubmitActivityPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 When(g => g.Response is PqaResponse.Accept, () =>
                 {

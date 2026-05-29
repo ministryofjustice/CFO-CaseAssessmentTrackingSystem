@@ -6,7 +6,7 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class PathwayPlanReviewHistory
 {
-    protected override IRequest<Result<PathwayPlanReviewHistoryDto[]>> CreateQuery()
+    protected override IQuery<Result<PathwayPlanReviewHistoryDto[]>> CreateQuery()
         => new GetPathwayPlanReviewHistory.Query()
         {
             CurrentUser = CurrentUser,

@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Payments.Queries;
 public static class GetSupportAndReferralPayments
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
-    public class Query : BaseFilter, IRequest<Result<SupportAndReferralPaymentsDto>>
+    public class Query : BaseFilter, IQuery<Result<SupportAndReferralPaymentsDto>>
     {
         public required int Month { get; set; }
         public required int Year { get; set; }
@@ -16,7 +16,7 @@ public static class GetSupportAndReferralPayments
         public string? ContractId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ITargetsProvider targetsProvider) : IRequestHandler<Query, Result<SupportAndReferralPaymentsDto>>
+    public class Handler(IUnitOfWork unitOfWork, ITargetsProvider targetsProvider) : IQueryHandler<Query, Result<SupportAndReferralPaymentsDto>>
     {
         public async Task<Result<SupportAndReferralPaymentsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

@@ -3,7 +3,7 @@ namespace Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit;
 public class AddEditKeyValueCommandHandler(
     IUnitOfWork unitOfWork,
     IMapper mapper
-) : IRequestHandler<AddEditKeyValueCommand, Result<int>>
+) : ICommandHandler<AddEditKeyValueCommand, Result<int>>
 {
 
     public async Task<Result<int>> Handle(AddEditKeyValueCommand request, CancellationToken cancellationToken)

@@ -1,35 +1,46 @@
 namespace Cfo.Cats.Application.Pipeline;
 
-public class AccessAuditingBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IAuditableRequest<TResponse>
+public sealed class AccessAuditingBehaviour<TQuery, TResponse>(
+    IUnitOfWork unitOfWork,
+    ICurrentUserService currentUserService)
+    : IQueryPipelineBehavior<TQuery, TResponse>
+    where TQuery : IQuery<TResponse>
 {
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(
+        TQuery query,
+        QueryHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         var span = SentrySdk.GetSpan()?
             .StartChild("auditing", "Participant access auditing");
 
-        var response = await next(cancellationToken);
+        var response = await next();
         try
         {
+            if (query is not IAuditableRequest<TResponse> auditableRequest)
+            {
+                return response;
+            }
+
             var currentUser = currentUserService.UserId ?? Guid.Empty.ToString();
-            
-            // Check if the participant exists before auditing access to avoid unhandled exceptions for non-existent participants as forign keys in the audit trail on particpant table
+            var participantId = auditableRequest.Identifier();
+
+            // Check the participant exists before writing an audit trail with a participant foreign key.
             var exists = await unitOfWork.DbContext.Participants
-                .AnyAsync(p => p.Id == request.Identifier(), cancellationToken);
+                .AnyAsync(p => p.Id == participantId, cancellationToken);
 
             if (exists)
             {
                 var auditEntry = ParticipantAccessAuditTrail.Create(
-                    typeof(TRequest).FullName!.Split('.').Last(),
-                    request.Identifier(),
+                    typeof(TQuery).FullName!.Split('.').Last(),
+                    participantId,
                     currentUser);
-                
+
                 unitOfWork.DbContext.AccessAuditTrails.Add(auditEntry);
             }
         }
         catch (Exception ex)
         {
-            // Ensure that audit exceptions do not break normal flow
             span?.SetExtra("AuditError", ex.Message);
         }
         finally

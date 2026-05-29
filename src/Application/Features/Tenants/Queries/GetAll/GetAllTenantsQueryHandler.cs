@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Tenants.Queries.GetAll;
 
-public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, Result<IEnumerable<TenantDto>>>
+public class GetAllTenantsQueryHandler : IQueryHandler<GetAllTenantsQuery, Result<IEnumerable<TenantDto>>>
 {
     private readonly IStringLocalizer<GetAllTenantsQueryHandler> localizer;
     private readonly IMapper mapper;

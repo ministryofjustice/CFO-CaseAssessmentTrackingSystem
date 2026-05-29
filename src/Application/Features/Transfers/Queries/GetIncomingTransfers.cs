@@ -8,16 +8,16 @@ namespace Cfo.Cats.Application.Features.Transfers.Queries;
 public static class GetIncomingTransfers
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<IEnumerable<IncomingTransferDto>>>
+    public class Query : IQuery<Result<IEnumerable<IncomingTransferDto>>>
     {
         public string? TenantId { get; set; }
     }
 
-    private class Handler(
+    public class Handler(
         ICurrentUserService currentUserService,
         IUnitOfWork unitOfWork,
         ILocationService locationService,
-        IMapper mapper) : IRequestHandler<Query, Result<IEnumerable<IncomingTransferDto>>>
+        IMapper mapper) : IQueryHandler<Query, Result<IEnumerable<IncomingTransferDto>>>
     {
         public async Task<Result<IEnumerable<IncomingTransferDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

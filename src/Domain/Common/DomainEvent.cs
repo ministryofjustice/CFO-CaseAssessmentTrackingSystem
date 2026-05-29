@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Cortex.Mediator.Notifications;
 
 namespace Cfo.Cats.Domain.Common;
 

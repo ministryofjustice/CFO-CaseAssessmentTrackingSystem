@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Transfers.Commands;
 public static class ProcessIncomingTransfer
 {
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required IncomingTransferDto IncomingTransfer { get; set; }
 
@@ -17,7 +17,7 @@ public static class ProcessIncomingTransfer
         public ApplicationUserDto? Assignee { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -57,7 +57,7 @@ public static class ProcessIncomingTransfer
                 .NotNull()
                 .WithMessage("You must choose an assignee");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.IncomingTransfer)
                     .MustAsync(NotBeCompleted)

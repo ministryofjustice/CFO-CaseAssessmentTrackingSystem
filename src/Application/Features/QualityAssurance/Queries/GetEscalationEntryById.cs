@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 public static class GetEscalationEntryById
 {
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-    public class Query : IRequest<Result<EnrolmentQueueEntryDto>>
+    public class Query : IQuery<Result<EnrolmentQueueEntryDto>>
     {
         public Guid Id { get; set; }
         public UserProfile? CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<EnrolmentQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<EnrolmentQueueEntryDto>>
     {
         public async Task<Result<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
         {

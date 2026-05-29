@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantEnrolmentHistory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<IEnumerable<ParticipantEnrolmentHistoryDto>>
+    public class Query : IQuery<IEnumerable<ParticipantEnrolmentHistoryDto>>
     {
         public required string ParticipantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantEnrolmentHistoryDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, IEnumerable<ParticipantEnrolmentHistoryDto>>
     {
         //Hide CFO Users details from providers
         private static readonly string[] HiddenTenantIds = ["1.1.", "1."];
@@ -105,7 +105,7 @@ public static class GetParticipantEnrolmentHistory
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

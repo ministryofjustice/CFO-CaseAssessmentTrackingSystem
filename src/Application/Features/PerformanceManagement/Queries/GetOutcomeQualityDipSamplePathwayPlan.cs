@@ -10,12 +10,12 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 public static class GetOutcomeQualityDipSamplePathwayPlan
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ParticipantDipSamplePathwayPlanDto>>
+    public class Query : IQuery<Result<ParticipantDipSamplePathwayPlanDto>>
     {
         public required string ParticipantId { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantDipSamplePathwayPlanDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ParticipantDipSamplePathwayPlanDto>>
     {
         public async Task<Result<ParticipantDipSamplePathwayPlanDto>> Handle(Query request, CancellationToken cancellationToken)
         {

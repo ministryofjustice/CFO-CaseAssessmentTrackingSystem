@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetSupportReferrals
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<SupportAndReferralDto>>
+    public class Query : IQuery<Result<SupportAndReferralDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -15,7 +15,7 @@ public static class GetSupportReferrals
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<SupportAndReferralDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<SupportAndReferralDto>>
     {
         public async Task<Result<SupportAndReferralDto>> Handle(Query request, CancellationToken cancellationToken)
         {

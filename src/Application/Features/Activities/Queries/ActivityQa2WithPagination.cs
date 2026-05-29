@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class ActivityQa2WithPagination
 {
     [RequestAuthorize(Roles = $"{RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
-    public class Query : ActivityQueueEntryFilter, IRequest<Result<PaginatedData<ActivityQueueEntryDto>>>
+    public class Query : ActivityQueueEntryFilter, IQuery<Result<PaginatedData<ActivityQueueEntryDto>>>
     {
         public Query()
         {
@@ -21,7 +21,7 @@ public static class ActivityQa2WithPagination
         public ActivityQa2QueueEntrySpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<ActivityQueueEntryDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PaginatedData<ActivityQueueEntryDto>>>
     {
         public async Task<Result<PaginatedData<ActivityQueueEntryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

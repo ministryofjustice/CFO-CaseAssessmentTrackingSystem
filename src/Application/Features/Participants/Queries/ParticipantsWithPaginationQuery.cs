@@ -12,7 +12,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class ParticipantsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : PaginationFilter, IRequest<Result<PaginatedData<ParticipantPaginationDto>>>
+    public class Query : PaginationFilter, IQuery<Result<PaginatedData<ParticipantPaginationDto>>>
     {
         /// <summary>
         /// The filter for the list (based on the status)
@@ -41,7 +41,7 @@ public static class ParticipantsWithPagination
         public RecentlyAssignedFilter RecentlyAssigned { get; set; } = RecentlyAssignedFilter.All;    
         }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
     {
         public async Task<Result<PaginatedData<ParticipantPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

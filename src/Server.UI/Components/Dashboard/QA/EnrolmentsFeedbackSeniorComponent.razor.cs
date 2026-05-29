@@ -22,7 +22,7 @@ public partial class EnrolmentsFeedbackSeniorComponent
 
     private bool HasReadItems => Data?.TabularData?.Any(x => x.IsRead) ?? false;
     
-    protected override IRequest<Result<GetEnrolmentsFeedback.EnrolmentsFeedbackDto>>
+    protected override IQuery<Result<GetEnrolmentsFeedback.EnrolmentsFeedbackDto>>
         CreateQuery()
         => new GetEnrolmentsFeedback.Query
         {

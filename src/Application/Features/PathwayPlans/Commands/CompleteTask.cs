@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 public class CompleteTask
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("Task Id")]
         public required Guid TaskId { get; init; }
@@ -27,7 +27,7 @@ public class CompleteTask
 
     public class Handler(
         IUnitOfWork unitOfWork, 
-        ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
+        ICurrentUserService currentUserService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -73,7 +73,7 @@ public class CompleteTask
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.PathwayPlanId)
                     .MustAsync(ParticipantMustNotBeArchived)

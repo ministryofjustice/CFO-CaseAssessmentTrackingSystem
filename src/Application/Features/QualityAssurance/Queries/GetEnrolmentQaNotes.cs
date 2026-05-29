@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 public static class GetEnrolmentQaNotes
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<EnrolmentQaNoteDto[]>>
+    public class Query : IQuery<Result<EnrolmentQaNoteDto[]>>
     {
         public string? ParticipantId { get; set; }
 
@@ -19,7 +19,7 @@ public static class GetEnrolmentQaNotes
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        IMapper mapper) : IRequestHandler<Query, Result<EnrolmentQaNoteDto[]>>
+        IMapper mapper) : IQueryHandler<Query, Result<EnrolmentQaNoteDto[]>>
     {
         public async Task<Result<EnrolmentQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -95,7 +95,7 @@ public static class GetEnrolmentQaNotes
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId!)
                     .MustAsync(MustExist)

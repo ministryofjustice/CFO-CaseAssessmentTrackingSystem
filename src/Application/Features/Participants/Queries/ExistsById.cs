@@ -15,7 +15,7 @@ public static class CheckParticipantExistsById
         public MemoryCacheEntryOptions? Options => ParticipantCacheKey.MemoryCacheEntryOptions;
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, bool>
     {
         
         public async Task<bool> Handle(Query request, CancellationToken cancellationToken) =>

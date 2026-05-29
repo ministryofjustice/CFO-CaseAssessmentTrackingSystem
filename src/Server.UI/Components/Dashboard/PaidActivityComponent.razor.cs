@@ -32,7 +32,7 @@ public partial class PaidActivityComponent
     };
     private ApexChartOptions<LocationActivityCount> chartOptions = new();
 
-    protected override IRequest<Result<GetPaidActivities.PaidActivitiesDto>> CreateQuery()
+    protected override IQuery<Result<GetPaidActivities.PaidActivitiesDto>> CreateQuery()
      => new GetPaidActivities.Query()
      {
          CurrentUser = CurrentUser,

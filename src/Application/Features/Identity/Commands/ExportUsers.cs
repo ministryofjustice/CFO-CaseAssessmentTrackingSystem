@@ -10,15 +10,15 @@ namespace Cfo.Cats.Application.Features.Identity.Commands;
 public static class ExportUsers
 {
     [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsRead)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public string? TenantId { get; init; }
         public string? SearchString { get; init; }
         public string? Role { get; init; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ISerializer serializer)
-        : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ISerializer serializer)
+        : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -47,7 +47,7 @@ public static class ExportUsers
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)

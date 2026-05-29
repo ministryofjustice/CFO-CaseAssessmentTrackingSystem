@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Payments.Queries;
 public static class GetEnrolmentPayments
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
-    public class Query : BaseFilter, IRequest<Result<EnrolmentPaymentsDto>>
+    public class Query : BaseFilter, IQuery<Result<EnrolmentPaymentsDto>>
     {
         public required int Month { get; set; }
         public required int Year { get; set; }
@@ -16,7 +16,7 @@ public static class GetEnrolmentPayments
         public string? ContractId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ITargetsProvider targetsProvider) : IRequestHandler<Query, Result<EnrolmentPaymentsDto>>
+    public class Handler(IUnitOfWork unitOfWork, ITargetsProvider targetsProvider) : IQueryHandler<Query, Result<EnrolmentPaymentsDto>>
     {
         public async Task<Result<EnrolmentPaymentsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

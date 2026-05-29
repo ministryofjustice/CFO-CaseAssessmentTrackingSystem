@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class DeleteContactDetail
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<int>>
+    public class Command : ICommand<Result<int>>
     {
         public required Guid ContactDetailId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<int>>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -48,7 +48,7 @@ public static class DeleteContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ContactDetailId)
                 .Must(ParticipantMustNotBeArchived)

@@ -2,7 +2,7 @@ using Cfo.Cats.Application.Features.KeyValues.DTOs;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.ByName;
 
-public class KeyValuesQueryByNameHandler : IRequestHandler<KeyValuesQueryByName, IEnumerable<KeyValueDto>>
+public class KeyValuesQueryByNameHandler : IQueryHandler<KeyValuesQueryByName, IEnumerable<KeyValueDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;

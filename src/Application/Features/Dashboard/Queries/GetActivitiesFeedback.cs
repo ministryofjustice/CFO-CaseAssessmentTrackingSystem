@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetActivitiesFeedback
 {
     [RequestAuthorize(Policy = SecurityPolicies.Internal)]
-    public class Query : IRequest<Result<ActivitiesFeedbackDto>>
+    public class Query : IQuery<Result<ActivitiesFeedbackDto>>
     {
         public string? TenantId { get; init; }
         public required UserProfile CurrentUser { get; init; }
@@ -17,7 +17,7 @@ public static class GetActivitiesFeedback
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<ActivitiesFeedbackDto>>
+        : IQueryHandler<Query, Result<ActivitiesFeedbackDto>>
     {
         public async Task<Result<ActivitiesFeedbackDto>> Handle(
             Query request,

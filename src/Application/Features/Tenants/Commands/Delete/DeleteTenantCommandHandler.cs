@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Tenants.Commands.Delete;
 
-public class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCommand, Result<int>>
+public class DeleteTenantCommandHandler : ICommandHandler<DeleteTenantCommand, Result<int>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IStringLocalizer<DeleteTenantCommandHandler> localizer;

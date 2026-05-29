@@ -21,7 +21,7 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetArchivedCasesByTenantAndReason.ArchivedCasesByTenantAndReasonDto>>
+    protected override IQuery<Result<GetArchivedCasesByTenantAndReason.ArchivedCasesByTenantAndReasonDto>>
         CreateQuery()
         => new GetArchivedCasesByTenantAndReason.Query
         {

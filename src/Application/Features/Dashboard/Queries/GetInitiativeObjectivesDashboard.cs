@@ -7,14 +7,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetInitiativeObjectivesDashboard
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<InitiativeObjectiveRowDto[]>>
+    public class Query : IQuery<Result<InitiativeObjectiveRowDto[]>>
     {
         public string? UserId { get; init; }
         public string? TenantId { get; init; }
         public required UserProfile CurrentUser { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<InitiativeObjectiveRowDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<InitiativeObjectiveRowDto[]>>
     {
         public async Task<Result<InitiativeObjectiveRowDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

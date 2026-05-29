@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 public static class FinaliseOutcomeQualityDipSample
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipFinalise)]
-    public record Command : IRequest<Result>
+    public record Command : ICommand<Result>
     {
         public required Guid SampleId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -35,7 +35,7 @@ public static class FinaliseOutcomeQualityDipSample
                .NotNull()
                .WithMessage("SampleId is required");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
 
                 RuleFor(c => c)

@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetPaidActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<PaidActivitiesDto>>
+    public class Query : IQuery<Result<PaidActivitiesDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -13,7 +13,7 @@ public static class GetPaidActivities
         public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaidActivitiesDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaidActivitiesDto>>
     {
         public async Task<Result<PaidActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
         {

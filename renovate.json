@@ -7,7 +7,7 @@
   "prCreation": "immediate",
   "packageRules": [
     {
-      "matchPackagePatterns": ["^AutoMapper", "^MediatR"],
+      "matchPackagePatterns": ["^AutoMapper"],
       "enabled": false
     },
     {

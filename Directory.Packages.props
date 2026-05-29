@@ -35,7 +35,7 @@
     <PackageVersion Include="IPAddressRange" Version="6.3.0" />
     <PackageVersion Include="LazyCache" Version="2.4.0" />
     <PackageVersion Include="LazyCache.AspNetCore" Version="2.4.0" />
-    <PackageVersion Include="MediatR" Version="12.5.0" />
+    <PackageVersion Include="Cortex.Mediator" Version="3.1.2" />
     <PackageVersion Include="MemoryPack.Generator" Version="1.21.4" />
     <PackageVersion Include="MessagePack" Version="3.1.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />

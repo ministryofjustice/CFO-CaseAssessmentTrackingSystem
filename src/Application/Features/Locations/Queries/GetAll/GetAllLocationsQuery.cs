@@ -7,7 +7,7 @@ using Cfo.Cats.Application.SecurityConstants;
 namespace Cfo.Cats.Application.Features.Locations.Queries.GetAll;
 
 [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-public class GetAllLocationsQuery : LocationAdvancedFilter,  IRequest<Result<LocationDto[]>>
+public class GetAllLocationsQuery : LocationAdvancedFilter,  IQuery<Result<LocationDto[]>>
 {
     public LocationAdvancedSpecification Specification => new(this);
 }

@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Domain.Common.Contracts;
-using MediatR;
 
 namespace Cfo.Cats.Infrastructure.Services;
 

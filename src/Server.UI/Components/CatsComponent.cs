@@ -32,7 +32,7 @@ public abstract class CatsComponent<TData> : OwningComponentBase<IMediator>
     /// <summary>
     /// Creates the query to execute for loading data
     /// </summary>
-    protected abstract IRequest<Result<TData>> CreateQuery();
+    protected abstract IQuery<Result<TData>> CreateQuery();
 
     /// <summary>
     /// Called when data is successfully loaded. Override for custom processing.

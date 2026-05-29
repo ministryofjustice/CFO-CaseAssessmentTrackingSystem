@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 public static class SubmitActivityEscalationResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required Guid ActivityQueueEntryId { get; init; }
 
@@ -39,7 +39,7 @@ public static class SubmitActivityEscalationResponse
         Comment = 2
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -195,7 +195,7 @@ public static class SubmitActivityEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ActivityQueueEntryId)
                     .MustAsync(MustExist)
@@ -214,7 +214,7 @@ public static class SubmitActivityEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ActivityQueueEntryId)
                     .MustAsync(MustBeOpen)
@@ -239,7 +239,7 @@ public static class SubmitActivityEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ActivityQueueEntryId)
                     .MustAsync(MustBeAtSubmittedToAuthority)

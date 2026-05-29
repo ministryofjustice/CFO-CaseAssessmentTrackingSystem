@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Inductions.Commands;
 public static class CompleteInductionPhase
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid WingInductionId { get; set; }
         
@@ -18,7 +18,7 @@ public static class CompleteInductionPhase
         public UserProfile? CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
 
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
@@ -60,7 +60,7 @@ public static class CompleteInductionPhase
             RuleFor(c => c.CurrentUser)
                 .NotNull();
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.WingInductionId)
                     .MustAsync(MustExist)

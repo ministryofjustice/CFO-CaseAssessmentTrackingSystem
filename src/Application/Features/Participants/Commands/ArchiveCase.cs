@@ -7,14 +7,14 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class ArchiveCase
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required string ParticipantId { get; set; }
         [Description("Reason for Archive")] public ArchiveReason ArchiveReason { get; set; } = ArchiveReason.None;
         [Description("Justification for Archive")] public string? Justification { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ public static class ArchiveCase
                 .MaximumLength(9)
                 .WithMessage("Invalid Participant Id");
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(MustExist)

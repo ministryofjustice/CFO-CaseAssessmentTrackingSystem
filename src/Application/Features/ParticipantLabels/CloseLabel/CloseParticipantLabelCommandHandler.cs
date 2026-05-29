@@ -2,7 +2,7 @@ using Cfo.Cats.Domain.ParticipantLabels;
 
 namespace Cfo.Cats.Application.Features.ParticipantLabels.CloseLabel;
 
-public class CloseParticipantLabelCommandHandler(IParticipantLabelRepository labelRepository) : IRequestHandler<CloseParticipantLabelCommand, Result>
+public class CloseParticipantLabelCommandHandler(IParticipantLabelRepository labelRepository) : ICommandHandler<CloseParticipantLabelCommand, Result>
 {
     public async Task<Result> Handle(CloseParticipantLabelCommand request, CancellationToken cancellationToken)
     {

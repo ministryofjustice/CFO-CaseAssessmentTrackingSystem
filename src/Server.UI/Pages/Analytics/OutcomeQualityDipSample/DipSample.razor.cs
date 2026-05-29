@@ -123,7 +123,7 @@ public partial class DipSample
         "Finalisation submitted"
     );
     
-    private async Task PerformAction(IRequest<Result> command, string confirmationMessage, string confirmationTitle, string successMessage)
+    private async Task PerformAction(ICommand<Result> command, string confirmationMessage, string confirmationTitle, string successMessage)
     {
         try
         {
