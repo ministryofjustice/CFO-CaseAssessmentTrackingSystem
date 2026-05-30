@@ -7,13 +7,15 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseNotes
 {
-    private ParticipantNoteDto[]? _notes = null;
+    private PaginatedData<ParticipantNoteDto>? _paginatedNotes;
+    private const int PageSize = 5;
+    private int _pageNumber = 1;
 
     [Parameter, EditorRequired]
-    public string ParticipantId { get; set; } = default!;
+    public string ParticipantId { get; set; } = null!;
 
     [Parameter]
-    public bool AllowAddNote { get; set; } = false;
+    public bool AllowAddNote { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,12 +33,27 @@ public partial class CaseNotes
         }
     }
 
-    private async Task OnRefresh() => _notes = await GetNewMediator().Send(new GetParticipantNotes.Query()
-    {
-        ParticipantId = ParticipantId
-    });
+    private IEnumerable<ParticipantNoteDto> PagedNotes => _paginatedNotes?.Items ?? [];
 
-    public async Task OnAddNote()
+    private int TotalNotes => _paginatedNotes?.TotalItems ?? 0;
+
+    private int TotalPages => _paginatedNotes?.TotalPages ?? 0;
+
+    private async Task OnRefresh() =>
+        _paginatedNotes = await GetNewMediator().Send(new GetParticipantNotes.Query()
+        {
+            ParticipantId = ParticipantId,
+            PageNumber = _pageNumber,
+            PageSize = PageSize
+        });
+
+    private async Task OnPaginationChanged(int page)
+    {
+        _pageNumber = page;
+        await OnRefresh();
+    }
+
+    private async Task OnAddNote()
     {
         // Show Dialog
         var parameters = new DialogParameters<AddNoteDialog>
@@ -53,13 +70,8 @@ public partial class CaseNotes
 
         if (!state!.Canceled)
         {
+            _pageNumber = 1;
             await OnRefresh();
         }
-    }
-
-    public async Task OnExpandNote(string message)
-    {
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        await DialogService.ShowMessageBoxAsync("Note", message, options: options);
     }
 }
