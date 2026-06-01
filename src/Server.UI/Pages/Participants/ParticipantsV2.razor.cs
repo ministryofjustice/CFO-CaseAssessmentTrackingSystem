@@ -135,6 +135,16 @@ public partial class ParticipantsV2
             Query.RiskDue = sd.RiskDue;
             Query.RecentlyAssigned = sd.RecentlyAssigned;
             Tabular = sd.Tabular;
+            
+            // Sync _currentFilter based on restored state
+            _currentFilter = sd.RecentlyAssigned switch
+            {
+                RecentlyAssignedFilter.Last10Days => QuickFilter.Last10Days,
+                RecentlyAssignedFilter.Last30Days => QuickFilter.Last30Days,
+                _ when sd.RiskDue.HasValue => QuickFilter.OverdueRisk,
+                _ when !string.IsNullOrEmpty(sd.OwnerId) => QuickFilter.MyParticipants,
+                _ => QuickFilter.All
+            };
         }
 
         await OnRefresh();
@@ -160,6 +170,9 @@ public partial class ParticipantsV2
 
     private async Task RecentlyAssignedFilterChanged(RecentlyAssignedFilter filter)
     {
+        // Reset query like other quick filters to avoid unintended filter combinations
+        ResetQuery();
+        
         Query.RecentlyAssigned = filter;
         
         // Update the current filter tracking
@@ -169,13 +182,6 @@ public partial class ParticipantsV2
             RecentlyAssignedFilter.Last30Days => QuickFilter.Last30Days,
             _ => QuickFilter.All
         };
-        
-        // If switching to "All" and currently sorted by AssignedOn, reset to default sort
-        if (filter == RecentlyAssignedFilter.All && Query.OrderBy.Equals("AssignedOn", StringComparison.OrdinalIgnoreCase))
-        {
-            Query.OrderBy = "Id";
-            Query.SortDirection = SortDirection.Ascending.ToString();
-        }
         
         await OnRefresh();
     }

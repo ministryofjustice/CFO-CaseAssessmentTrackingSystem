@@ -43,7 +43,7 @@ public record ParticipantsSessionData
     public required LabelId? LabelId { get; init; }
     public required string? OwnerId { get; init; } 
     public required DateTime? RiskDue { get; init; } 
-    public required RecentlyAssignedFilter RecentlyAssigned { get; init; }
+    public RecentlyAssignedFilter RecentlyAssigned { get; init; } = RecentlyAssignedFilter.All;
 
     public bool Tabular {get; init; }
     
