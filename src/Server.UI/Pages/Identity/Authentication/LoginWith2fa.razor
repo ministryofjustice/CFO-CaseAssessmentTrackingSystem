@@ -110,7 +110,7 @@
             if (result.Succeeded)
             {
                 await Sender.Publish(IdentityAuditNotification.LoginSucceededTwoFactorRequired(user.UserName!, NetworkIpProvider.IpAddress));
-                RedirectManager.RedirectTo("/");
+                RedirectManager.RedirectTo(user.HomePage ?? "/");
             }
             else if (result.IsLockedOut)
             {
