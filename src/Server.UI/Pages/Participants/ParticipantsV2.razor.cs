@@ -26,6 +26,15 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants;
 
+public enum QuickFilter
+{
+    All,
+    MyParticipants,
+    OverdueRisk,
+    Last10Days,
+    Last30Days
+}
+
 public partial class ParticipantsV2
 {
 
@@ -64,6 +73,7 @@ public partial class ParticipantsV2
     private bool _downloading = false;
     private bool _canReassign;
     private readonly HashSet<string> _selectedParticipantIds = [];
+    private QuickFilter _currentFilter = QuickFilter.All;
 
     private ParticipantPaginationDto[] _data = [];
 
@@ -152,6 +162,14 @@ public partial class ParticipantsV2
     {
         Query.RecentlyAssigned = filter;
         
+        // Update the current filter tracking
+        _currentFilter = filter switch
+        {
+            RecentlyAssignedFilter.Last10Days => QuickFilter.Last10Days,
+            RecentlyAssignedFilter.Last30Days => QuickFilter.Last30Days,
+            _ => QuickFilter.All
+        };
+        
         // If switching to "All" and currently sorted by AssignedOn, reset to default sort
         if (filter == RecentlyAssignedFilter.All && Query.OrderBy.Equals("AssignedOn", StringComparison.OrdinalIgnoreCase))
         {
@@ -183,6 +201,7 @@ public partial class ParticipantsV2
     private async Task ClearSearch()
     {
         ResetQuery();
+        _currentFilter = QuickFilter.All;
         await OnRefresh();
     }
 
@@ -331,6 +350,7 @@ public partial class ParticipantsV2
     private async Task ApplyMyParticipantsFilter()
     {
         ResetQuery();
+        _currentFilter = QuickFilter.MyParticipants;
         Query.OwnerId = UserProfile.UserId;
         await OnRefresh();
     }
@@ -338,9 +358,17 @@ public partial class ParticipantsV2
     private async Task ApplyOverdueRiskFilter()
     {
         ResetQuery();
+        _currentFilter = QuickFilter.OverdueRisk;
         Query.RiskDue = DateTime.UtcNow.Date;
         Query.SortDirection = SortDirection.Ascending.ToString();
         Query.OrderBy = "RiskDue";
+        await OnRefresh();
+    }
+
+    private async Task ClearQuickFilter()
+    {
+        ResetQuery();
+        _currentFilter = QuickFilter.All;
         await OnRefresh();
     }
 
@@ -355,9 +383,21 @@ public partial class ParticipantsV2
         Query.PageNumber = 1;
         Query.Label = null;
         Query.OwnerId = null;
+        Query.RiskDue = null;
         Query.RecentlyAssigned = RecentlyAssignedFilter.All;
+        Query.JustMyCases = false;
         Tabular = false;
     }
+
+    private string GetCurrentFilterLabel()
+        => _currentFilter switch
+        {
+            QuickFilter.MyParticipants => "My Participants",
+            QuickFilter.OverdueRisk => "Overdue Risk",
+            QuickFilter.Last10Days => "Assigned (Last 10 Days)",
+            QuickFilter.Last30Days => "Assigned (Last 30 Days)",
+            _ => "All"
+        };
     
     private void OnEnrol() => Navigation.NavigateTo("/pages/candidates/search");
 

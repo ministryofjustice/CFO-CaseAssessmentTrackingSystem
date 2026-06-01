@@ -26,9 +26,12 @@
     <MudStack>
         <!-- Header/Filter row -->
         <MudStack Row="true" Justify="Justify.FlexEnd">
-            <MudMenu Label="Filters" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenu Label="@($"Filters: {GetCurrentFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => ClearQuickFilter())">All</MudMenuItem>
                 <MudMenuItem OnClick="@(() => ApplyMyParticipantsFilter())">My Participants</MudMenuItem>
                 <MudMenuItem OnClick="@(() => ApplyOverdueRiskFilter())">Overdue risk</MudMenuItem>
+                <MudMenuItem OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.Last10Days))">Assigned (Last 10 Days)</MudMenuItem>
+                <MudMenuItem OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.Last30Days))">Assigned (Last 30 Days)</MudMenuItem>            
             </MudMenu>
             <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
                           ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
@@ -143,12 +146,6 @@
                 {
                     <MudMenuItem Label="@l.Name" Icon="@l.AppIcon.AsMudIcon()" IconColor="@l.Colour.AsMudColour()" OnClick="@(() => LabelsValueChanged(l))"></MudMenuItem>
                 }
-            </MudMenu>
-
-            <MudMenu Size="Size.Small" Label="@Query.RecentlyAssigned.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                <MudMenuItem Label="All" OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.All))" />
-                <MudMenuItem Label="Last 10 Days" OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.Last10Days))" />
-                <MudMenuItem Label="Last 30 Days" OnClick="@(() => RecentlyAssignedFilterChanged(RecentlyAssignedFilter.Last30Days))" />
             </MudMenu>
 
             <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
