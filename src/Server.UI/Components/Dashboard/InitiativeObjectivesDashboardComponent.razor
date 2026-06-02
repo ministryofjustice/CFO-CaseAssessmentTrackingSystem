@@ -1,4 +1,5 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponent<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>
 
@@ -147,7 +148,18 @@
                 <MudTd DataLabel="Objective Status">
                     @if (context.IsObjectiveCompleted)
                     {
-                        <MudChip T="string" Color="Color.Success" Size="MudBlazor.Size.Small">Completed</MudChip>
+                        @if (context.CompletedStatus == CompletionStatus.Done)
+                        {
+                            <MudChip T="string" Text="@context.CompletedStatus.Name" Size="MudBlazor.Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                        }
+                        else if (context.CompletedStatus == CompletionStatus.NotRequired)
+                        {
+                            <MudChip T="string" Text="@context.CompletedStatus.Name" Size="MudBlazor.Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
+                        }
+                        else
+                        {
+                            <MudChip T="string" Size="MudBlazor.Size.Small" Color="Color.Primary">Active</MudChip>
+                        }
                     }
                     else
                     {
