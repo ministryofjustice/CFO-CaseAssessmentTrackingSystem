@@ -1,0 +1,54 @@
+@using Cfo.Cats.Application.Features.Dashboard.DTOs;
+
+@inherits CatsComponentBase
+
+<MudItem xs="12" lg="6">
+    @if (@_loading)
+    {
+        <LoadingCard Title="Recently Approved Activities" />
+    }
+    else
+    {
+        <MudCard style="height: 100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">Recently Approved Activities</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (_activities == null || _activities.Count == 0)
+                {
+                    <MudText Align="Align.Center" Class="pa-4">
+                        No recently approved activities found
+                    </MudText>
+                }
+                else
+                {
+                    <MudList T="RecentlyApprovedActivitiesSummaryDto" ReadOnly>
+                        @foreach (var activity in _activities)
+                        {
+                            <MudListItem T="RecentlyApprovedActivitiesSummaryDto">
+                                <div class="d-flex justify-space-between align-center w-100">
+                                    <div>
+                                        <MudText Typo="Typo.body2">
+                                            @activity.Participant
+                                        </MudText>
+                                        <MudText Typo="Typo.caption">
+                                            @activity.Definition.Type.Name - @activity.Definition.Category.Name
+                                        </MudText>
+                                        <MudText Typo="Typo.caption">
+                                            Approved: @activity.ApprovedOn?.ToString("d")
+                                        </MudText>
+                                    </div>
+                                    <MudButton Color="Color.Info" Variant="Variant.Text" Size="Size.Small" OnClick="@(() => EditParticipant(activity.ParticipantId))">
+                                        @activity.ParticipantId
+                                    </MudButton>
+                                </div>
+                            </MudListItem>
+                        }
+                    </MudList>
+                }
+            </MudCardContent>
+        </MudCard>
+    }
+</MudItem>
