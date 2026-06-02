@@ -1,6 +1,7 @@
 @using Cfo.Cats.Application.Features.Dashboard.DTOs;
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Locations
+@using Humanizer
 
 @inherits CatsComponentBase
 
@@ -53,6 +54,10 @@
                     {
                         foreach (var activity in _activities)
                         {
+                            var created = activity.Created;
+                            var commencedOn = activity.CommencedOn;
+                            var today = DateTime.Today.ToLocalTime();
+                            
                             <MudListItem T="RecentlyApprovedActivitiesSummaryDto">
                                 <div class="d-flex justify-space-between align-center w-100">
                                     <div>
@@ -62,11 +67,21 @@
                                                 @activity.ParticipantId
                                             </MudButton>
                                         </MudText>
-                                        <MudText Typo="Typo.caption">
+                                        <div class="d-flex gap-2 align-center">
                                             <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
-                                        </MudText>
+                                            <MudText Typo="Typo.body2">
+                                                Category:  @activity.Definition.Category.Name.
+                                            </MudText>
+                                        </div>
                                         <MudText Typo="Typo.caption">
                                             Approved on: @activity.ApprovedOn?.ToString("d")
+                                        </MudText>
+                                        <MudText Typo="Typo.caption">
+                                            Added on @created.ToShortDateOrEmptyString() (@(created?.Humanize() ?? "N/A")).
+                                        </MudText>
+                                        <MudText Typo="Typo.caption">
+                                            Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn.HasValue && commencedOn.Value == today ? "today" : commencedOn?.Humanize() ?? "N/A"))
+                                            at @activity.TookPlaceAtLocationName.
                                         </MudText>
                                     </div>
                             

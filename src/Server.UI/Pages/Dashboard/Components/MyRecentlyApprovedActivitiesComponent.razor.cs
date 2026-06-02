@@ -48,10 +48,10 @@ public partial class MyRecentlyApprovedActivitiesComponent
         _activities = await GetNewMediator().Send(_query);
     }
 
-    private Task OnDateRangeChanged(DateRange range)
+    private Task OnDateRangeChanged(DateRange? range)
     {
-        _query.CommencedStart = range.Start;
-        _query.CommencedEnd = range.End;
+        _query.CommencedStart = range?.Start;
+        _query.CommencedEnd = range?.End;
         return OnRefresh();
     }
 

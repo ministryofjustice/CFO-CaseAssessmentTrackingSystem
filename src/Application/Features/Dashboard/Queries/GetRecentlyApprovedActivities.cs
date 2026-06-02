@@ -2,7 +2,6 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
@@ -63,7 +62,10 @@ public static class GetRecentlyApprovedActivities
                              ParticipantId = a.Participant.Id,
                              Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
                              Definition = a.Definition,
-                             ApprovedOn = a.CompletedOn
+                             ApprovedOn = a.CompletedOn,
+                             Created = a.Created,
+                             CommencedOn = a.CommencedOn,
+                             TookPlaceAtLocationName = a.TookPlaceAtLocation.Name
                          };
 #pragma warning restore CS8602
 
