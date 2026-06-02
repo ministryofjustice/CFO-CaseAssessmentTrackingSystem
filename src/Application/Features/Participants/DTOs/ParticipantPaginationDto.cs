@@ -47,4 +47,7 @@ public class ParticipantPaginationDto
     
     public DateOnly? ConsentGranted { get; set; }
     
+    [Description("Assigned On")]
+    public DateTime? AssignedOn { get; set; }
+    
 }
