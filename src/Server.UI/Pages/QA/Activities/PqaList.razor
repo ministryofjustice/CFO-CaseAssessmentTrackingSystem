@@ -40,8 +40,21 @@
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
                 <MudStack>
-                    <MudStack Row="true">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                                @SelectedDisplayName
+                            </MudButton>
+                            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSupportWorkerDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                                @SelectedSupportWorkerName
+                            </MudButton>
+                            <MudMenu Size="Size.Small" Label="@SelectedActivityTypeName" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                                <MudMenuItem OnClick="@(() => ActivityTypeChanged(null))">All Activity Types</MudMenuItem>
+                                @foreach (var at in _availableActivityTypes)
+                                {
+                                    <MudMenuItem OnClick="@(() => ActivityTypeChanged(at.Value))">@at.Name</MudMenuItem>
+                                }
+                            </MudMenu>
                             <MudButton Variant="Variant.Filled"
                                        Size="Size.Small"
                                        Disabled="@_loading"
@@ -62,7 +75,7 @@
                         </MudHidden>
                     </MudStack>
                     <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                  Clearable="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Style="width: 350px; align-self: flex-end;">
                     </MudTextField>
                 </MudStack>
             </div>
@@ -81,6 +94,13 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.Activity.Definition.Category.Name</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Activity.Definition.Type" Title="@L["Activity Type"]" Sortable="false">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Activity.Definition.Type.Name</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>

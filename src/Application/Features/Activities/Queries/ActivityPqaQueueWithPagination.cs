@@ -32,6 +32,13 @@ public static class ActivityPqaQueueWithPagination
                 .Include(a => a.Activity)
                 .AsNoTracking();
 
+            // Apply ActivityType filter if specified
+            if (request.ActivityTypeId.HasValue)
+            {
+                var activityType = ActivityType.FromValue(request.ActivityTypeId.Value);
+                query = query.Where(x => x.Activity!.Type == activityType);
+            }
+
             var sortExpression = GetSortExpression(request);
 
             var ordered = request.SortDirection.Equals("Descending", StringComparison.CurrentCultureIgnoreCase)
