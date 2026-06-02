@@ -47,6 +47,7 @@ public class DocumentExportPqaActivitiesIntegrationEventConsumer(
                     { "Participant Id", item => item.ParticipantId },
                     { "Participant Name", item => item.ParticipantName },
                     { "Activity", item => item.Activity.Definition.Category.Name },
+                    { "Activity Type", item => item.Activity.Definition.Type.Name },
                     { "Support Worker", item => item.SupportWorker },
                     { "Tenant", item => item.TenantName },
                     { "Commenced on", item => item.CommencedOn },

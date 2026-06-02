@@ -10,10 +10,22 @@ public class EnrolmentPqaQueueEntrySpecification : Specification<EnrolmentPqaQue
                 .StartsWith(filter.CurrentUser!.TenantId!))
             .Where(e => e.IsCompleted == false);
 
-        Query.Where(e => 
-            e.ParticipantId.Contains(filter.Keyword!)
-            || e.Participant!.FirstName.Contains(filter.Keyword!)
-            || e.Participant!.LastName.Contains(filter.Keyword!),
-            !string.IsNullOrEmpty(filter.Keyword));
+        if (!string.IsNullOrWhiteSpace(filter.Keyword))
+        {
+            if (filter.Keyword.Split(" ") is { Length: 2 } segments)
+            {
+                Query.Where(e => e.Participant!.FirstName.Contains(segments[0]) && e.Participant!.LastName.Contains(segments[1]));
+            }
+            else
+            {
+                Query.Where(e => 
+                    e.ParticipantId.Contains(filter.Keyword!)
+                    || e.Participant!.FirstName.Contains(filter.Keyword!)
+                    || e.Participant!.LastName.Contains(filter.Keyword!));
+            }
+        }
+
+        Query.Where(e => e.SupportWorkerId == filter.SupportWorkerId!,
+            !string.IsNullOrEmpty(filter.SupportWorkerId));
     }
 }
