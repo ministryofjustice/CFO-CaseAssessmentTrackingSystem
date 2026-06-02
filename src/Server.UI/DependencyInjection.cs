@@ -15,6 +15,7 @@ using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
 using ApexCharts;
 using Cfo.Cats.Server.UI.Pages.Participants;
+using Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -125,6 +126,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ParticipantsSessionStorage>();
+        services.AddScoped<PQASessionStorage>();
         
         return builder;
     }

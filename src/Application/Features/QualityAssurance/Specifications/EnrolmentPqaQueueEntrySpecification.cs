@@ -6,9 +6,10 @@ public class EnrolmentPqaQueueEntrySpecification : Specification<EnrolmentPqaQue
 {
     public EnrolmentPqaQueueEntrySpecification(QueueEntryFilter filter)
     {
-        Query.Where(e => e.TenantId
-                .StartsWith(filter.CurrentUser!.TenantId!))
-            .Where(e => e.IsCompleted == false);
+        Query.Where(e => e.TenantId.StartsWith(filter.CurrentUser!.TenantId!));
+        Query.Where(e => e.TenantId == filter.TenantId, filter.TenantId is not null);
+
+        Query.Where(e => e.IsCompleted == false);
 
         if (!string.IsNullOrWhiteSpace(filter.Keyword))
         {
