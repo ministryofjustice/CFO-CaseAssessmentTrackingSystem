@@ -46,6 +46,8 @@ public class ApplicationUser : IdentityUser, IAuditable
     public string? LastModifiedBy { get; set; }
     public DateTime? LastLogin { get; set; }
 
+    public string? HomePage { get; set; }
+
     public ApplicationUser AddNote(Note note)
     {
         if(_notes.Contains(note) is false)

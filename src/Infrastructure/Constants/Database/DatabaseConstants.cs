@@ -179,5 +179,7 @@ internal static class DatabaseConstants
         /// The maximum length for the description of an initiative.
         /// </summary>
         public const int InitiativeDescription = 256;
+
+        public const int Fifty = 50;
     }
 }
