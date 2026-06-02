@@ -47,12 +47,22 @@
 
                 <MudDivider Class="my-2" />
                 <MudMenuItem Href="/user/profile">
-                    <div class="d-flex">
-                        <MudIcon Class="mx-2"
-                                 Style="color: white;"
-                                 Icon="@Icons.Material.Filled.Person" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon 
+                            Icon="@Icons.Material.Filled.Person"
+                            Color="Color.Info" />
                         <MudText>@L["Profile"]</MudText>
-                    </div>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="SetHomePage">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Home"
+                            Color="Color.Primary">
+                        </MudIcon>
+                        <MudText>
+                            @L["Set Default Page"]
+                        </MudText>
+                    </MudStack>
                 </MudMenuItem>
                 <div class="mt-4 mx-4">
                     <form action="@IdentityComponentsEndpointRouteBuilderExtensions.Logout" method="post">
@@ -75,24 +85,3 @@
     </form>
 </MudTooltip>
 
-@code
-{
-
-    [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
-    private bool IsLoading { get; set; }
-    private UserProfile? UserProfile { get; set; }
-    
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (UserProfile is null)
-        {
-            IsLoading = true;
-            var state = await AuthState;
-            this.UserProfile = state.User.GetUserProfileFromClaim();
-            IsLoading = false;
-        }
-    }
-
-}
