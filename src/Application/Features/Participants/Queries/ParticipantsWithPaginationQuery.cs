@@ -135,8 +135,8 @@ public static class ParticipantsWithPagination
             // Apply recently assigned filter
             DateTime? recentlyAssignedCutoff = request.RecentlyAssigned switch
             {
-                RecentlyAssignedFilter.Last10Days => DateTime.UtcNow.AddDays(-10),
-                RecentlyAssignedFilter.Last30Days => DateTime.UtcNow.AddDays(-30),
+                RecentlyAssignedFilter.Last10Days => DateTime.UtcNow.Date.AddDays(-10),
+                RecentlyAssignedFilter.Last30Days => DateTime.UtcNow.Date.AddDays(-30),
                 _ => null
             };
 
