@@ -98,6 +98,11 @@ public static class EditObjective
                     .WithMessage("The initiative cannot be changed or removed because activities have already been recorded against this objective's tasks");
 
                 RuleFor(x => x.InitiativeStartDate)
+                    .MustAsync((command, startDate, token) => NotHaveActivitiesWhenChangingStartDate(command.ObjectiveId, command.InitiativeId, startDate, token))
+                    .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
+                    .WithMessage("The start date cannot be changed because activities have already been recorded against this objective's tasks");
+
+                RuleFor(x => x.InitiativeStartDate)
                     .MustAsync((command, startDate, token) => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token))
                     .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
                     .WithMessage("The start date must fall within the initiative's lifetime");
@@ -116,6 +121,28 @@ public static class EditObjective
                             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
+        }
+
+        private async Task<bool> NotHaveActivitiesWhenChangingStartDate(Guid objectiveId, Guid? initiativeId, DateTime? newStartDate, CancellationToken cancellationToken)
+        {
+            if (!initiativeId.HasValue || !newStartDate.HasValue)
+            {
+                return true;
+            }
+
+            var currentStartDate = await _unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ObjectiveId == objectiveId && io.InitiativeId == initiativeId.Value)
+                .Select(io => (DateOnly?)io.StartDate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // No existing link, or start date unchanged — nothing to block
+            if (currentStartDate is null || currentStartDate == DateOnly.FromDateTime(newStartDate.Value))
+            {
+                return true;
+            }
+
+            return !await _unitOfWork.DbContext.Activities
+                .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
         }
 
         private async Task<bool> NotHaveActivitiesWhenChangingInitiative(Guid objectiveId, Guid? newInitiativeId, CancellationToken cancellationToken)
