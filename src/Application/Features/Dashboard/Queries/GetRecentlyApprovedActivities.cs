@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 
@@ -12,6 +13,10 @@ public static class GetRecentlyApprovedActivities
     {
         public required UserProfile UserProfile { get; set; }
         public int DaysBack { get; set; } = 30;
+        public DateTime? CommencedStart { get; set; }
+        public DateTime? CommencedEnd { get; set; }
+        public LocationDto? Location { get; set; }
+        public List<ActivityType>? IncludeTypes { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork)
@@ -28,16 +33,41 @@ public static class GetRecentlyApprovedActivities
                             && a.OwnerId == request.UserProfile.UserId
                             && a.Status == ActivityStatus.ApprovedStatus.Value
                             && a.CompletedOn >= cutoffDate
-                        select new RecentlyApprovedActivitiesSummaryDto
-                        {
-                            ParticipantId = a.Participant.Id,
-                            Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
-                            Definition = a.Definition,
-                            ApprovedOn = a.CompletedOn
-                        };
+                        select a;
+            
+            // Apply optional filters
+            if (request.CommencedStart.HasValue)
+            {
+                query = query.Where(a => a.CommencedOn >= request.CommencedStart.Value);
+            }
+            
+            if (request.CommencedEnd.HasValue)
+            {
+                query = query.Where(a => a.CommencedOn <= request.CommencedEnd.Value);
+            }
+            
+            if (request.Location is not null)
+            {
+                query = query.Where(a => a.TookPlaceAtLocation.Id == request.Location.Id);
+            }
+            
+            if (request.IncludeTypes is { Count: > 0 })
+            {
+                var typeValues = request.IncludeTypes.Select(t => t.Value).ToList();
+                query = query.Where(a => typeValues.Contains(a.Type));
+            }
+            
+            var results = from a in query
+                         select new RecentlyApprovedActivitiesSummaryDto
+                         {
+                             ParticipantId = a.Participant.Id,
+                             Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
+                             Definition = a.Definition,
+                             ApprovedOn = a.CompletedOn
+                         };
 #pragma warning restore CS8602
 
-            return await query
+            return await results
                 .OrderByDescending(a => a.ApprovedOn)
                 .Take(10)
                 .ToListAsync(cancellationToken);

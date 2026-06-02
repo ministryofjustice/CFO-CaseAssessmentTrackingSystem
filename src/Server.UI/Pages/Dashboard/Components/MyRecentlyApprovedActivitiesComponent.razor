@@ -1,4 +1,6 @@
 @using Cfo.Cats.Application.Features.Dashboard.DTOs;
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Locations
 
 @inherits CatsComponentBase
 
@@ -16,38 +18,64 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                @if (_activities == null || _activities.Count == 0)
-                {
-                    <MudText Align="Align.Center" Class="pa-4">
-                        No recently approved activities found
-                    </MudText>
-                }
-                else
-                {
-                    <MudList T="RecentlyApprovedActivitiesSummaryDto" ReadOnly>
-                        @foreach (var activity in _activities)
+                <MudList T="RecentlyApprovedActivitiesSummaryDto" ReadOnly>
+                    <MudListSubheader>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudDateRangePicker Label="Commenced from/to range"
+                                                DateRangeChanged="@OnDateRangeChanged"
+                                                Clearable
+                                                MaxDate="DateTime.Today" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <LocationSelectComponent
+                                    TenantId="@(CurrentUser.TenantId!)"
+                                    Label="Location"
+                                    @bind-Value="_location"
+                                    @bind-Value:after="OnRefresh"
+                                    For="() => _location" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudChipSet T="ActivityType"
+                                            SelectedValuesChanged="OnActivityTypesChanged"
+                                            SelectionMode="SelectionMode.MultiSelection">
+                                    @foreach (var type in ActivityType.List.Where(x=>x.Value == 1 || x.Value==2 || x.Value==4))
+                                    {
+                                        <MudChip Value="type"
+                                                    SelectedColor="Color.Info"
+                                                    Text="@type.Name" />
+                                    }
+                                </MudChipSet>
+                            </MudItem>
+                        </MudGrid>
+                    </MudListSubheader>
+                    @if (_activities is not null && _activities.Count > 0)
+                    {
+                        foreach (var activity in _activities)
                         {
                             <MudListItem T="RecentlyApprovedActivitiesSummaryDto">
                                 <div class="d-flex justify-space-between align-center w-100">
                                     <div>
                                         <MudText Typo="Typo.body2">
-                                            @activity.Participant
+                                            Participant: @activity.Participant
+                                            <MudButton Color="Color.Info" Variant="Variant.Text" Size="Size.Small" OnClick="@(() => EditParticipant(activity.ParticipantId))">
+                                                @activity.ParticipantId
+                                            </MudButton>
                                         </MudText>
                                         <MudText Typo="Typo.caption">
-                                            @activity.Definition.Type.Name - @activity.Definition.Category.Name
+                                            <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
                                         </MudText>
                                         <MudText Typo="Typo.caption">
-                                            Approved: @activity.ApprovedOn?.ToString("d")
+                                            Approved on: @activity.ApprovedOn?.ToString("d")
                                         </MudText>
                                     </div>
-                                    <MudButton Color="Color.Info" Variant="Variant.Text" Size="Size.Small" OnClick="@(() => EditParticipant(activity.ParticipantId))">
-                                        @activity.ParticipantId
-                                    </MudButton>
+                            
                                 </div>
                             </MudListItem>
+                            <MudDivider />
                         }
-                    </MudList>
-                }
+                    }
+                </MudList>            
             </MudCardContent>
         </MudCard>
     }
