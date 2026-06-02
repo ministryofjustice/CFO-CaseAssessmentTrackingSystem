@@ -26,6 +26,8 @@ public class InitiativeObjectiveEntityTypeConfiguration : IEntityTypeConfigurati
 
         builder.Property(io => io.CreatedBy).HasMaxLength(36);
         builder.Property(io => io.LastModifiedBy).HasMaxLength(36);
+        builder.Property(io => io.StartDate).IsRequired();
+        builder.Property(io => io.EndDate);
 
         builder.HasIndex(io => io.ObjectiveId).IsUnique();
 

@@ -11,8 +11,15 @@
                           Immediate="true" 
                           Counter=2000
             />
-            <InitiativeAutoComplete @bind-Value="_selectedInitiative"
+            <InitiativeAutoComplete @bind-Value="SelectedInitiative"
                                     Label="Initiative (optional)" />
+            @if (_selectedInitiative is not null)
+            {
+                <MudDatePicker @bind-Date="Model.InitiativeStartDate"
+                               Label="Initiative Start Date"
+                               For="@(() => Model.InitiativeStartDate)"
+                               Class="mt-4" />
+            }
         </MudForm>
     </DialogContent>
     <DialogActions>
