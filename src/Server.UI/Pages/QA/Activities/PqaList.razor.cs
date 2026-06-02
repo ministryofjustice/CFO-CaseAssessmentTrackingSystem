@@ -135,10 +135,13 @@ public partial class PqaList
     private async Task OnRefresh()
     {
         Query.Keyword = string.Empty;
+        SelectedTenantId = UserProfile?.TenantId;
+        SelectedDisplayName = UserProfile?.TenantName;
         SelectedSupportWorkerId = null;
         SelectedSupportWorkerName = "All Support Workers";
         SelectedActivityTypeId = null;
         SelectedActivityTypeName = "All Activity Types";
+        await LoadAvailableSupportWorkers();
         await _table.ReloadServerData();
     }
 
@@ -182,6 +185,8 @@ public partial class PqaList
         
         await _table.ReloadServerData();
     }
+    
+    private async Task ActivityTypeChanged(int? activityTypeId) => await OnActivityTypeChanged(activityTypeId);
 
     private async Task OnExport()
     {
@@ -213,7 +218,7 @@ public partial class PqaList
         }
     }
 
-    private async Task DisplayTenantSelectorDialog()
+    private async Task ShowTenantDialog()
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
@@ -236,6 +241,25 @@ public partial class PqaList
             SelectedSupportWorkerId = null;
             SelectedSupportWorkerName = "All Support Workers";
             
+            await _table.ReloadServerData();
+        }
+    }
+    
+    private async Task ShowSupportWorkerDialog()
+    {
+        var parameters = new DialogParameters<SelectUserDialog>
+        {
+            { "CurrentUser", UserProfile! }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
+        var dialog = await DialogService.ShowAsync<SelectUserDialog>("Select Support Worker", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: SelectedUser user })
+        {
+            SelectedSupportWorkerId = user.UserId;
+            SelectedSupportWorkerName = user.DisplayName;
             await _table.ReloadServerData();
         }
     }

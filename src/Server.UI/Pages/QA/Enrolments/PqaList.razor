@@ -11,19 +11,6 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
-<style>
-    .support-worker-select .mud-input-control {
-        min-height: 30.75px !important;
-        max-height: 30.75px !important;
-    }
-    .support-worker-select .mud-select {
-        min-height: 30.75px !important;
-    }
-    .support-worker-select .mud-input {
-        line-height: 0.7000em !important;
-    }
-</style>
-
 <MudDataGrid ServerData="@(ServerReload)"
              T="EnrolmentQueueEntryDto"
              FixedHeader="true"
@@ -54,31 +41,12 @@
                 <MudStack>
                     <MudStack Row="true" AlignItems="AlignItems.Center">
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            <div style="position: relative; min-width: 200px; cursor: pointer;" 
-                                 @onclick="DisplayTenantSelectorDialog">
-                                <label style="position: absolute; top: -9px; left: 10px; background: white; padding: 0 5px; font-size: 0.75rem; color: rgba(0,0,0,0.6); z-index: 1;">
-                                    Tenant
-                                </label>
-                                <div style="padding: 5.55px 14px; border: 1px solid rgba(0,0,0,0.23); border-radius: 4px; height: 30.75px; display: flex; align-items: center; font-size: 0.8125rem;">
-                                    @SelectedDisplayName
-                                </div>
-                            </div>
-                            <div style="min-width: 200px;">
-                                <MudSelect T="string" 
-                                           Value="@SelectedSupportWorkerId" 
-                                           ValueChanged="@OnSupportWorkerChanged"
-                                           Label="Support Worker"
-                                           Variant="Variant.Outlined"
-                                           AnchorOrigin="Origin.BottomCenter"
-                                           Margin="Margin.Dense"
-                                           Class="support-worker-select">
-                                    <MudSelectItem T="string" Value="@((string?)null)">All Support Workers</MudSelectItem>
-                                    @foreach (var sw in _availableSupportWorkers)
-                                    {
-                                        <MudSelectItem T="string" Value="@sw.Id">@sw.Name</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </div>
+                            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                                @SelectedDisplayName
+                            </MudButton>
+                            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSupportWorkerDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                                @SelectedSupportWorkerName
+                            </MudButton>
                             <MudButton Variant="Variant.Filled"
                                        Size="Size.Small"
                                        Disabled="@_loading"
