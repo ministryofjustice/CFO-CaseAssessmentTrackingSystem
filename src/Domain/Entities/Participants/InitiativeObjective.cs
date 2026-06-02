@@ -16,8 +16,17 @@ public class InitiativeObjective : BaseAuditableEntity<Guid>, IMustHaveTenant
     public string TenantId { get; set; } = null!;
     public Initiative Initiative { get; private set; }
 
-    public static InitiativeObjective Create(Guid objectiveId, Guid initiativeId, string participantId)
-        => new() { Id = Guid.CreateVersion7(), ObjectiveId = objectiveId, InitiativeId = initiativeId, ParticipantId = participantId };
+    public DateOnly StartDate { get; private set; }
+    public DateOnly? EndDate { get; private set; }
 
-    public void Update(Guid initiativeId) => InitiativeId = initiativeId;
+    public static InitiativeObjective Create(Guid objectiveId, Guid initiativeId, string participantId, DateOnly startDate)
+        => new() { Id = Guid.CreateVersion7(), ObjectiveId = objectiveId, InitiativeId = initiativeId, ParticipantId = participantId, StartDate = startDate };
+
+    public void Update(Guid initiativeId, DateOnly startDate)
+    {
+        InitiativeId = initiativeId;
+        StartDate = startDate;
+    }
+
+    public void Close(DateOnly endDate) => EndDate = endDate;
 }

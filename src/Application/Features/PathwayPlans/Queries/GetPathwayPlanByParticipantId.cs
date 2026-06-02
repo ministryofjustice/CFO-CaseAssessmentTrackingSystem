@@ -36,7 +36,9 @@ public static class GetPathwayPlanByParticipantId
                     io.ObjectiveId,
                     io.Initiative.Id,
                     io.Initiative.Code,
-                    io.Initiative.Description
+                    io.Initiative.Description,
+                    io.StartDate,
+                    io.EndDate
                 })
                 .ToArrayAsync(cancellationToken);
 
@@ -51,7 +53,9 @@ public static class GetPathwayPlanByParticipantId
                         {
                             Id = link.Id,
                             Code = link.Code,
-                            Description = link.Description
+                            Description = link.Description,
+                            InitiativeStartDate = link.StartDate,
+                            InitiativeEndDate = link.EndDate
                         };
                     }
                 }

@@ -12,6 +12,20 @@ public partial class EditObjectiveDialog
     private bool _saving;
     private InitiativeDto? _selectedInitiative;
 
+    private InitiativeDto? SelectedInitiative
+    {
+        get => _selectedInitiative;
+        set
+        {
+            _selectedInitiative = value;
+            Model.InitiativeId = value?.Id;
+            if (value is null)
+            {
+                Model.InitiativeStartDate = null;
+            }
+        }
+    }
+
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter, EditorRequired] public required EditObjective.Command Model { get; set; }
 
@@ -41,7 +55,6 @@ public partial class EditObjectiveDialog
 
             if (_form.IsValid)
             {
-                Model.InitiativeId = _selectedInitiative?.Id;
                 MudDialog.Close(DialogResult.Ok(true));
             }
         }

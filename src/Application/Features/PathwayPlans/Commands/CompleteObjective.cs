@@ -18,6 +18,8 @@ public static class CompleteObjective
         public CompletionStatus Reason { get; set; } = CompletionStatus.Done;
 
         public string? Justification { get; set; }
+
+        public DateTime? InitiativeEndDate { get; set; }
     }
 
     public class Handler(
@@ -33,6 +35,11 @@ public static class CompleteObjective
                 ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
 
             objective.Complete(request.Reason, currentUserService.UserId!, request.Justification);
+
+            if (request.InitiativeEndDate.HasValue && objective.LinkedInitiative is not null)
+            {
+                objective.LinkedInitiative.Close(DateOnly.FromDateTime(request.InitiativeEndDate.Value));
+            }
 
             return Result.Success();
         }
@@ -69,6 +76,25 @@ public static class CompleteObjective
                 RuleFor(x => x.PathwayPlanId)
                     .MustAsync(ParticipantMustNotBeArchived)
                     .WithMessage("Participant is archived");
+
+                RuleFor(x => x.InitiativeEndDate)
+                    .MustAsync(async (command, endDate, token) =>
+                    {
+                        var hasInitiative = await _unitOfWork.DbContext.InitiativeObjectives
+                            .AnyAsync(io => io.ObjectiveId == command.ObjectiveId, token);
+                        return !hasInitiative || endDate.HasValue;
+                    })
+                    .WithMessage("You must provide an end date when the objective has a linked initiative");
+
+                RuleFor(x => x.InitiativeEndDate)
+                    .MustAsync((command, endDate, token) => BeWithinInitiativeLifetime(command.ObjectiveId, endDate, token))
+                    .When(x => x.InitiativeEndDate.HasValue)
+                    .WithMessage("The end date must fall within the initiative's lifetime");
+
+                RuleFor(x => x.InitiativeEndDate)
+                    .MustAsync((command, endDate, token) => BeOnOrAfterInitiativeStartDate(command.ObjectiveId, endDate, token))
+                    .When(x => x.InitiativeEndDate.HasValue)
+                    .WithMessage("The end date must be on or after the initiative start date");
             });
         }
 
@@ -84,6 +110,43 @@ public static class CompleteObjective
                             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
+        }
+
+        private async Task<bool> BeWithinInitiativeLifetime(Guid objectiveId, DateTime? endDate, CancellationToken cancellationToken)
+        {
+            if (!endDate.HasValue)
+            {
+                return true;
+            }
+
+            var lifetime = await (
+                from io in _unitOfWork.DbContext.InitiativeObjectives
+                join i in _unitOfWork.DbContext.Initiatives on io.InitiativeId equals i.Id
+                where io.ObjectiveId == objectiveId
+                select new { i.Lifetime.StartDate, i.Lifetime.EndDate }
+            ).AsNoTracking().FirstOrDefaultAsync(cancellationToken);
+
+            if (lifetime is null)
+            {
+                return true;
+            }
+
+            return endDate.Value >= lifetime.StartDate && endDate.Value <= lifetime.EndDate;
+        }
+
+        private async Task<bool> BeOnOrAfterInitiativeStartDate(Guid objectiveId, DateTime? endDate, CancellationToken cancellationToken)
+        {
+            if (!endDate.HasValue)
+            {
+                return true;
+            }
+
+            var startDate = await _unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ObjectiveId == objectiveId)
+                .Select(io => io.StartDate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return endDate.Value >= startDate.ToDateTime(TimeOnly.MinValue);
         }
     }
 }
