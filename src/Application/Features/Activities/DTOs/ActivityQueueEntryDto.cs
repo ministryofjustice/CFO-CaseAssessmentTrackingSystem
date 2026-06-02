@@ -14,6 +14,7 @@ public class ActivityQueueEntryDto
     public string? ParticipantId { get; init; }
         
     public string SupportWorker { get; init; } = null!;
+    public string SupportWorkerId { get; init; } = null!;
 
     public string? AssignedTo { get; init; }
 
@@ -54,6 +55,9 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                 source => source.Participant!.Owner!.DisplayName
                 ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                source => source.Participant!.OwnerId
+                ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.IsCompleted, options => options.MapFrom(source => source.IsCompleted))
                 .ForMember(target => target.IsAccepted, options => options.MapFrom(source => source.IsAccepted))
@@ -80,6 +84,9 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.SupportWorker, options =>
                     options.MapFrom(source => source.Participant!.Owner!.DisplayName
                     ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                    source => source.Participant!.OwnerId
+                    ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
@@ -104,6 +111,9 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                 source => source.Participant!.Owner!.DisplayName
                 ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                source => source.Participant!.OwnerId
+                ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
@@ -127,6 +137,9 @@ public class ActivityQueueEntryDto
                 options => options.MapFrom(source => source.ParticipantId))
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                 source => source.Participant!.Owner!.DisplayName
+                ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                source => source.Participant!.OwnerId
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
