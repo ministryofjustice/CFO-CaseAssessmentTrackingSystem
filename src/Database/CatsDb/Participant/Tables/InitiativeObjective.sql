@@ -4,6 +4,8 @@ CREATE TABLE [Participant].[InitiativeObjective] (
     [InitiativeId]     UNIQUEIDENTIFIER NOT NULL,
     [ParticipantId]    NVARCHAR(9)      NOT NULL,
     [TenantId]         NVARCHAR(50)     NOT NULL,
+    [StartDate]        DATE             NOT NULL DEFAULT '0001-01-01',
+    [EndDate]          DATE             NULL,
     [Created]          DATETIME2        NULL,
     [CreatedBy]        NVARCHAR(36)     NULL,
     [LastModified]     DATETIME2        NULL,

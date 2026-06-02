@@ -10,6 +10,7 @@ public partial class CompleteObjectiveDialog
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired] public required CompleteObjective.Command Model { get; set; }
+    [Parameter, EditorRequired] public bool HasLinkedInitiative { get; set; }
 
     private void Cancel() => MudDialog.Cancel();
 
