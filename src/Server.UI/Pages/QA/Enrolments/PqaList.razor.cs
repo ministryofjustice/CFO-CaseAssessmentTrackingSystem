@@ -1,4 +1,3 @@
-using System.Data.Entity.Core.Metadata.Edm;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
@@ -104,21 +103,29 @@ public partial class PqaList
 
     private async Task OnRefresh()
     {
-        Query.CurrentUser = UserProfile;
-        var results = await Service.Send(Query);
-        if(results is { Succeeded: true, Data: not null})
+        try
         {
-            _data = results.Data.Items.ToArray();
-            _totalPages = results.Data.TotalPages;    
-            _totalItems = results.Data.TotalItems;
+            _loading = true;
+            Query.CurrentUser = UserProfile;
+            var results = await Service.Send(Query);
+            if(results is { Succeeded: true, Data: not null})
+            {
+                _data = results.Data.Items.ToArray();
+                _totalPages = results.Data.TotalPages;    
+                _totalItems = results.Data.TotalItems;
+            }
+            else
+            {
+                _data = [];
+                _totalPages = 0;
+                _totalItems = 0;
+            }
+            await SessionStorage.SetAsync(PQASessionData.FromQuery(Query));
         }
-        else
+        finally
         {
-            _data = [];
-            _totalPages = 0;
-            _totalItems = 0;
+            _loading = false;
         }
-        await SessionStorage.SetAsync(PQASessionData.FromQuery(Query));
     }
 
     private async Task OnExport()
@@ -183,5 +190,22 @@ public partial class PqaList
             Query.SupportWorkerId = user.UserId;
             await OnRefresh();
         }
+    }
+
+    private async Task SortBy(string key)
+    {
+        if (Query.OrderBy == key)
+        {
+            Query.SortDirection = Query.SortDirection == SortDirection.Ascending.ToString()
+                ? SortDirection.Descending.ToString()
+                : SortDirection.Ascending.ToString();
+        }
+        else
+        {
+            Query.OrderBy = key;
+            Query.SortDirection = SortDirection.Ascending.ToString();
+        }
+
+        await OnRefresh();
     }
 }

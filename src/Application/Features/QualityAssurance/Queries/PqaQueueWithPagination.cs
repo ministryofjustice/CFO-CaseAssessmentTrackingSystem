@@ -15,7 +15,7 @@ public static class PqaQueueWithPagination
     {
         public Query()
         {
-            SortDirection = "Desc";
+            SortDirection = "Descending";
             OrderBy = "Created";
             PageSize = 50;
         }

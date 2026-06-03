@@ -82,6 +82,13 @@
                 }
             </MudButton>
 
+            <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="Participant" OnClick="@(() => SortBy("ParticipantId"))" />
+                <MudMenuItem Label="Support Worker" OnClick="@(() => SortBy("SupportWorker"))" />
+                <MudMenuItem Label="Tenant" OnClick="@(() => SortBy("TenantId"))" />
+                <MudMenuItem Label="Submitted" OnClick="@(() => SortBy("Created"))" />
+            </MudMenu>
+
             <MudTooltip Text="Clear search parameters">
                 <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
             </MudTooltip>
