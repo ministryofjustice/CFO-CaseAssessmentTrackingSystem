@@ -41,7 +41,7 @@ public class DocumentExportPqaActivitiesIntegrationEventConsumer(
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
             var data = await new ActivityPqaQueueWithPagination.Handler(unitOfWork, mapper).Handle(request!, CancellationToken.None);
 
-            var results = await excelService.ExportAsync(data.Items!,
+            var results = await excelService.ExportAsync(data.Data!.Items!,
                 new Dictionary<string, Func<ActivityQueueEntryDto, object?>>
                 {
                     { "Participant Id", item => item.ParticipantId },
