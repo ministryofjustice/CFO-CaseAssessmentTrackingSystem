@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.DTOs;
@@ -10,110 +12,123 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
 public partial class PqaList
 {
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+    [CascadingParameter] private UserProfile UserProfile { get; set; } = null!;
 
-    private bool _loading = false;
+    [Inject]
+    public IUserService UserService { get; set; } = null!;
+
+    [Inject]
+    public ITenantService TenantService { get; set; } = null!;
+
+    [Inject]
+    public ActivityPQASessionStorage SessionStorage { get; set; } = null!;
+
+    private IDictionary<string, string> _users = null!;
+    private IDictionary<string, string> _tenants = null!;
+
+    private int _totalPages;
+    private int _totalItems;
+
+    private bool _loading;
     private bool _downloading;
-    private int _defaultPageSize = 30;
-    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
+
+    private ActivityQueueEntryDto[] _data = [];
 
     private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
-    private ActivityQueueEntryDto _currentDto = new();
-    
-    public string? SelectedTenantId { get; set; }
-    public string? SelectedDisplayName { get; set; }
-    public string? SelectedSupportWorkerId { get; set; }
-    public string? SelectedSupportWorkerName { get; set; }
-    public int? SelectedActivityTypeId { get; set; }
-    public string? SelectedActivityTypeName { get; set; }
-    
-    private List<(string Id, string Name)> _availableSupportWorkers = new();
     private readonly List<ActivityType> _availableActivityTypes = ActivityType.List.ToList();
+
+    private string SelectedActivityTypeName
+        => Query.ActivityTypeId is null
+            ? "All Activity Types"
+            : _availableActivityTypes.FirstOrDefault(a => a.Value == Query.ActivityTypeId.Value)?.Name ?? "Unknown Activity Type";
 
     protected override async Task OnInitializedAsync()
     {
-        SelectedTenantId = UserProfile?.TenantId;
-        SelectedDisplayName = UserProfile?.TenantName;
-        SelectedSupportWorkerId = null;
-        SelectedSupportWorkerName = "All Support Workers";
-        SelectedActivityTypeId = null;
-        SelectedActivityTypeName = "All Activity Types";
-        
-        await LoadAvailableSupportWorkers();
+        _users = UserService.DataSource
+            .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
+            .ToDictionary(a => a.Id, e => e.DisplayName);
+
+        _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
+            .ToDictionary(k => k.Id, k => k.Name);
+
+        var cached = await SessionStorage.GetAsync();
+
+        if (cached is { Succeeded: true, Data: { } sd })
+        {
+            Query.Keyword = sd.Keyword;
+            Query.OrderBy = sd.OrderBy;
+            Query.PageNumber = sd.PageNumber;
+            Query.PageSize = 50;
+            Query.SortDirection = sd.SortDirection;
+            Query.SupportWorkerId = sd.SupportWorkerId;
+            Query.TenantId = sd.TenantId;
+            Query.ActivityTypeId = sd.ActivityTypeId;
+        }
+
+        await OnRefresh();
     }
 
-    private async Task LoadAvailableSupportWorkers()
+    private void OnRowClick(TableRowClickEventArgs<ActivityQueueEntryDto> args)
     {
-        try
+        if (args?.Item is not null)
         {
-            // Load all support workers for the selected tenant (without support worker filter)
-            var effectiveUser = new UserProfile
-            {
-                UserId = UserProfile?.UserId ?? string.Empty,
-                UserName = UserProfile?.UserName ?? string.Empty,
-                Email = UserProfile?.Email ?? string.Empty,
-                TenantId = SelectedTenantId,
-                TenantName = SelectedDisplayName,
-                AssignedRoles = UserProfile?.AssignedRoles ?? [],
-                Contracts = UserProfile?.Contracts ?? []
-            };
-            
-            var query = new ActivityPqaQueueWithPagination.Query
-            {
-                CurrentUser = effectiveUser,
-                SupportWorkerId = null, // Don't filter by support worker
-                PageNumber = 1,
-                PageSize = 1000, // Get a large set to capture all support workers
-                OrderBy = "Created",
-                SortDirection = "Descending"
-            };
-            
-            var result = await GetNewMediator().Send(query);
-            
-            _availableSupportWorkers = result.Items
-                .Where(x => !string.IsNullOrEmpty(x.SupportWorkerId))
-                .Select(x => (x.SupportWorkerId, x.SupportWorker))
-                .Distinct()
-                .OrderBy(x => x.SupportWorker)
-                .ToList();
-        }
-        catch
-        {
-            // If loading fails, just use empty list
-            _availableSupportWorkers = new();
+            Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
         }
     }
 
-    private void RowClicked(DataGridRowClickEventArgs<ActivityQueueEntryDto> args) => Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
+    private Task PageChanged(int page)
+    {
+        Query.PageNumber = page;
+        return OnRefresh();
+    }
 
-    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state, CancellationToken cancellationToken)
+    private async Task ClearSearch()
+    {
+        ResetQuery();
+        await OnRefresh();
+    }
+
+    private void ResetQuery()
+    {
+        Query.SupportWorkerId = null;
+        Query.TenantId = null;
+        Query.ActivityTypeId = null;
+        Query.OrderBy = "CommencedOn";
+        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.PageNumber = 1;
+        Query.PageSize = 50;
+        Query.Keyword = null;
+    }
+
+    private Task OnSearch(string text)
+    {
+        Query.Keyword = text;
+        return OnRefresh();
+    }
+
+    private Task OnRefreshClicked()
+        => OnRefresh();
+
+    private async Task OnRefresh()
     {
         try
         {
             _loading = true;
-            
-            // Create a user profile with the selected tenant for filtering
-            var effectiveUser = new UserProfile
+            Query.CurrentUser = UserProfile;
+            var results = await Service.Send(Query);
+            if (results is { Succeeded: true, Data: not null })
             {
-                UserId = UserProfile?.UserId ?? string.Empty,
-                UserName = UserProfile?.UserName ?? string.Empty,
-                Email = UserProfile?.Email ?? string.Empty,
-                TenantId = SelectedTenantId,
-                TenantName = SelectedDisplayName,
-                AssignedRoles = UserProfile?.AssignedRoles ?? [],
-                Contracts = UserProfile?.Contracts ?? []
-            };
-            
-            Query.CurrentUser = effectiveUser;
-            Query.SupportWorkerId = SelectedSupportWorkerId;
-            Query.ActivityTypeId = SelectedActivityTypeId;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "CommencedOn";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? false ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+                _data = results.Data.Items.ToArray();
+                _totalPages = results.Data.TotalPages;
+                _totalItems = results.Data.TotalItems;
+            }
+            else
+            {
+                _data = [];
+                _totalPages = 0;
+                _totalItems = 0;
+            }
+            await SessionStorage.SetAsync(ActivityPQASessionData.FromQuery(Query));
         }
         finally
         {
@@ -121,79 +136,18 @@ public partial class PqaList
         }
     }
 
-    private async Task OnSearch(string text)
+    private async Task ActivityTypeChanged(int? activityTypeId)
     {
-        if (_loading)
-        {
-            return;
-        }
-
-        Query.Keyword = text;
-        await _table.ReloadServerData();
+        Query.ActivityTypeId = activityTypeId;
+        await OnRefresh();
     }
-
-    private async Task OnRefresh()
-    {
-        Query.Keyword = string.Empty;
-        SelectedTenantId = UserProfile?.TenantId;
-        SelectedDisplayName = UserProfile?.TenantName;
-        SelectedSupportWorkerId = null;
-        SelectedSupportWorkerName = "All Support Workers";
-        SelectedActivityTypeId = null;
-        SelectedActivityTypeName = "All Activity Types";
-        await LoadAvailableSupportWorkers();
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnSupportWorkerChanged(string? supportWorkerId)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        
-        SelectedSupportWorkerId = supportWorkerId;
-        if (string.IsNullOrEmpty(supportWorkerId))
-        {
-            SelectedSupportWorkerName = "All Support Workers";
-        }
-        else
-        {
-            SelectedSupportWorkerName = _availableSupportWorkers
-                .FirstOrDefault(x => x.Id == supportWorkerId).Name ?? "Unknown";
-        }
-        
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnActivityTypeChanged(int? activityTypeId)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        
-        SelectedActivityTypeId = activityTypeId;
-        if (activityTypeId == null)
-        {
-            SelectedActivityTypeName = "All Activity Types";
-        }
-        else
-        {
-            SelectedActivityTypeName = ActivityType.FromValue(activityTypeId.Value).Name;
-        }
-        
-        await _table.ReloadServerData();
-    }
-    
-    private async Task ActivityTypeChanged(int? activityTypeId) => await OnActivityTypeChanged(activityTypeId);
 
     private async Task OnExport()
     {
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportPqaActivities.Command()
+            var result = await Service.Send(new ExportPqaActivities.Command()
             {
                 Query = Query
             });
@@ -205,7 +159,6 @@ public partial class PqaList
             }
 
             Snackbar.Add(result.ErrorMessage, Severity.Error);
-
         }
         catch (Exception ex)
         {
@@ -222,7 +175,7 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", UserProfile! }
+            { "CurrentUser", UserProfile }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -231,25 +184,17 @@ public partial class PqaList
 
         if (result is { Canceled: false, Data: SelectedTenant tenant })
         {
-            SelectedTenantId = tenant.TenantId;
-            SelectedDisplayName = tenant.DisplayName;
-            
-            // Reload support workers list for the new tenant
-            await LoadAvailableSupportWorkers();
-            
-            // Reset support worker filter when tenant changes
-            SelectedSupportWorkerId = null;
-            SelectedSupportWorkerName = "All Support Workers";
-            
-            await _table.ReloadServerData();
+            Query.TenantId = tenant.TenantId;
+            Query.SupportWorkerId = null;
+            await OnRefresh();
         }
     }
-    
+
     private async Task ShowSupportWorkerDialog()
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", UserProfile! }
+            { "CurrentUser", UserProfile }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -258,9 +203,25 @@ public partial class PqaList
 
         if (result is { Canceled: false, Data: SelectedUser user })
         {
-            SelectedSupportWorkerId = user.UserId;
-            SelectedSupportWorkerName = user.DisplayName;
-            await _table.ReloadServerData();
+            Query.SupportWorkerId = user.UserId;
+            await OnRefresh();
         }
+    }
+
+    private async Task SortBy(string key)
+    {
+        if (Query.OrderBy == key)
+        {
+            Query.SortDirection = Query.SortDirection == SortDirection.Ascending.ToString()
+                ? SortDirection.Descending.ToString()
+                : SortDirection.Ascending.ToString();
+        }
+        else
+        {
+            Query.OrderBy = key;
+            Query.SortDirection = SortDirection.Ascending.ToString();
+        }
+
+        await OnRefresh();
     }
 }
