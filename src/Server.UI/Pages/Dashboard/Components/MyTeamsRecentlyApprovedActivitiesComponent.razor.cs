@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
-public partial class MyRecentlyApprovedActivitiesComponent : CatsComponent<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>
+public partial class MyTeamsRecentlyApprovedActivitiesComponent : CatsComponent<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>
 {
     private int _pageNumber = 1;
     private LocationDto? _location;
@@ -30,7 +30,7 @@ public partial class MyRecentlyApprovedActivitiesComponent : CatsComponent<Pagin
             CommencedStart = _commencedStart,
             CommencedEnd = _commencedEnd,
             IncludeTypes = _includeTypes,
-            JustMyParticipants = true
+            JustMyParticipants = false  
         };
 
     protected override async Task OnInitializedAsync()

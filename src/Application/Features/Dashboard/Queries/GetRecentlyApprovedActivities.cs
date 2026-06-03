@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -8,20 +9,25 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetRecentlyApprovedActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<List<RecentlyApprovedActivitiesSummaryDto>>
+    public class Query : IRequest<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>>
     {
-        public required UserProfile UserProfile { get; set; }
-        public int DaysBack { get; set; } = 30;
-        public DateTime? CommencedStart { get; set; }
-        public DateTime? CommencedEnd { get; set; }
-        public LocationDto? Location { get; set; }
-        public List<ActivityType>? IncludeTypes { get; set; }
+        public required UserProfile UserProfile { get; init; }
+        public int DaysBack { get; init; } = 30;
+        public DateTime? CommencedStart { get; init; }
+        public DateTime? CommencedEnd { get; init; }
+        public LocationDto? Location { get; init; }
+        public List<ActivityType>? IncludeTypes { get; init; }
+        public bool JustMyParticipants { get; init; } = true;
+        public int PageNumber { get; init; } = 1;
+        public int PageSize { get; init; } = 10;
+        public string OrderBy { get; set; } = "ApprovedOn";
+        public string SortDirection { get; init; } = "Descending";
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, List<RecentlyApprovedActivitiesSummaryDto>>
+        : IRequestHandler<Query, Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>>
     {
-        public async Task<List<RecentlyApprovedActivitiesSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
             var cutoffDate = DateTime.UtcNow.AddDays(-request.DaysBack);
@@ -29,12 +35,15 @@ public static class GetRecentlyApprovedActivities
 #pragma warning disable CS8602
             var query = from a in db.Activities
                         where a.TenantId.StartsWith(request.UserProfile.TenantId!)
-                            && a.OwnerId == request.UserProfile.UserId
                             && a.Status == ActivityStatus.ApprovedStatus.Value
                             && a.CompletedOn >= cutoffDate
                         select a;
             
-            // Apply optional filters
+            if (request.JustMyParticipants)
+            {
+                query = query.Where(a => a.OwnerId == request.UserProfile.UserId);
+            }
+            
             if (request.CommencedStart.HasValue)
             {
                 query = query.Where(a => a.CommencedOn >= request.CommencedStart.Value);
@@ -67,19 +76,39 @@ public static class GetRecentlyApprovedActivities
                              CommencedOn = a.CommencedOn,
                              TookPlaceAtLocationName = a.TookPlaceAtLocation.Name
                          };
+            
+            results = request.SortDirection.ToLower() == "ascending"
+                ? results.OrderBy(a => a.ApprovedOn)
+                : results.OrderByDescending(a => a.ApprovedOn);
 #pragma warning restore CS8602
 
-            return await results
-                .OrderByDescending(a => a.ApprovedOn)
-                .Take(10)
+            var count = await results.CountAsync(cancellationToken);
+            
+            var items = await results
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
+
+            return Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>.Success(
+                new PaginatedData<RecentlyApprovedActivitiesSummaryDto>(items, count, request.PageNumber, request.PageSize));
         }
 
         public class Validator : AbstractValidator<Query>
         {
-            public Validator() =>
+            public Validator()
+            {
                 RuleFor(x => x.UserProfile.UserId)
                     .NotNull();
+                
+                RuleFor(r => r.PageNumber)
+                    .GreaterThan(0)
+                    .WithMessage(string.Format(ValidationConstants.PositiveNumberMessage, "Page Number"));
+
+                RuleFor(r => r.PageSize)
+                    .GreaterThan(0)
+                    .LessThanOrEqualTo(ValidationConstants.MaximumPageSize)
+                    .WithMessage(ValidationConstants.MaximumPageSizeMessage);
+            }
         }
     }
 }

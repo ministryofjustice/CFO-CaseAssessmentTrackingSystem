@@ -95,6 +95,13 @@
         <MyArchivedCases/>
     }
     
-    <MyRecentlyApprovedActivitiesComponent />
+    @if (_showMyTeamsParticipants)
+    {
+        <MyTeamsRecentlyApprovedActivitiesComponent />
+    }
+    else
+    {
+        <MyRecentlyApprovedActivitiesComponent />
+    }
     
 </MudGrid>
