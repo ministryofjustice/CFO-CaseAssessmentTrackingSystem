@@ -1,0 +1,108 @@
+@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Server.UI.Components.Users
+
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@_command" @ref="_form" Validation="@(Validator.ValidateValue(_command))">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body2">
+                        Assign <strong>@Participant.ParticipantName</strong> (@Participant.Id)
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <div style="min-width: 600px;">
+                        <UserSelectComponent ValueChanged="OnUserSelectedChanged" TenantId="@TenantId" Required="true" />
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" 
+                   Variant="Variant.Filled" 
+                   StartIcon="@Icons.Material.Filled.Cancel" 
+                   OnClick="Cancel">
+            @ConstantString.Cancel
+        </MudButton>
+        <MudLoadingButton Color="Color.Primary" 
+                          Variant="Variant.Filled" 
+                          StartIcon="@Icons.Material.Filled.Save" 
+                          Loading="@_saving" 
+                          OnClick="Submit">
+            @ConstantString.Submit
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public UnassignedCaseDto Participant { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string TenantId { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public UserProfile? CurrentUser { get; set; }
+
+    private MudForm? _form;
+    private bool _saving;
+    private AssignUnassignedCase.Command _command = null!;
+
+    protected override void OnInitialized()
+    {
+        _command = new AssignUnassignedCase.Command
+        {
+            ParticipantId = Participant.Id,
+            CurrentUser = CurrentUser
+        };
+    }
+
+    private void OnUserSelectedChanged(ApplicationUserDto? user)
+    {
+        if (user != null)
+        {
+            _command.AssigneeId = user.Id;
+        }
+    }
+
+    private void Cancel() => MudDialog.Close();
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+
+            await _form!.ValidateAsync();
+
+            if (_form.IsValid)
+            {
+                var result = await GetNewMediator().Send(_command);
+                
+                if (result.Succeeded)
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add($"Case assigned successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
+            }
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}
