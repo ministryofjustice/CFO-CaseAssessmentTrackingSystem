@@ -11,21 +11,22 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 public static class PqaQueueWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
-    public class Query : QueueEntryFilter, IRequest<PaginatedData<EnrolmentQueueEntryDto>>
+    public class Query : QueueEntryFilter, IRequest<Result<PaginatedData<EnrolmentQueueEntryDto>>>
     {
         public Query()
         {
-            SortDirection = "Desc";
+            SortDirection = "Descending";
             OrderBy = "Created";
+            PageSize = 50;
         }
 
         [JsonIgnore]
         public EnrolmentPqaQueueEntrySpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<EnrolmentQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<EnrolmentQueueEntryDto>>>
     {
-        public async Task<PaginatedData<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<EnrolmentQueueEntryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = unitOfWork.DbContext
                 .EnrolmentPqaQueue
