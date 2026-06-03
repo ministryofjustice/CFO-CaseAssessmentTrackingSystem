@@ -7,5 +7,6 @@ public class ActivityQueueEntryFilter
 {
     public UserProfile? CurrentUser { get; set; }
     public string? SupportWorkerId { get; set; }
+    public string? TenantId { get; set; }
     public int? ActivityTypeId { get; set; }
 }
