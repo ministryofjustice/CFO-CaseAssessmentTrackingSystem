@@ -1,20 +1,10 @@
 ﻿@page "/identity/users"
 
 @using Cfo.Cats.Application.Features.Identity.DTOs
-@using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
-@using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
-@using Cfo.Cats.Server.UI.Pages.Identity.Users.Components
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
-@using Cfo.Cats.Application.SecurityConstants
-@using System.Security.Claims
-@using BlazorDownloadFile
-@using System.Linq.Expressions
-@using ActualLab.Fusion.Extensions
-@using AutoMapper.QueryableExtensions;
 @using Cfo.Cats.Infrastructure.Services
-@using Cfo.Cats.Infrastructure.Services.MultiTenant
 @using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
 
@@ -25,13 +15,11 @@
 
 @inject IUsersStateContainer UsersStateContainer
 @inject IOnlineUserTracker OnlineUserTracker
-@inject IBlazorDownloadFileService BlazorDownloadFileService
 @inject IUserService UserService
 @inject ITenantService TenantsService
 @inject IFusionCache FusionCache;
-@inject IExcelService ExcelService
 @inject INetworkIpProvider NetworkIpProvider
-@inject IFusionCache cache;
+@inject IFusionCache Cache;
 
 @inject IStringLocalizer<Users> L
 @inject ILogger<Users> Logger
@@ -58,22 +46,22 @@
             <MudStack Row="true">
                 @if (_canSearch)
                 {
-                    <MudSelect T="string" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="false" Label="Tenant" Clearable="true"
+                    <MudSelect T="string" ValueChanged="@OnChangedListView" Value="@_selectedTenantId" Dense="false" Label="Tenant" Clearable="true"
                                Style="min-width: 300px;" Placeholder="Select a tenant">
-                        @foreach (var item in TenantsService.DataSource.Where(x => x.Id.StartsWith(CurrentUser!.TenantId!)).OrderBy(t => t.Id))
+                        @foreach (var item in TenantsService.DataSource.Where(x => x.Id.StartsWith(_currentUser!.TenantId!)).OrderBy(t => t.Id))
                         {
                             <MudSelectItem T="string" Value="@item.Id">
                                 @item.Name  
                             </MudSelectItem>
                         }
                     </MudSelect>
-                    <MudSelect T="string" Placeholder="Select a role" Value="@_searchRole" Clearable="true" ValueChanged="@(OnSearchRole)" Dense="false" Label="Role">
+                    <MudSelect T="string" Placeholder="Select a role" Value="@_searchRole" Clearable="true" ValueChanged="@OnSearchRole" Dense="false" Label="Role">
                         @foreach (var str in _roles.OrderBy(x => x.Name).Select(x => x.Name) )
                         {
                             <MudSelectItem Value="@str">@str</MudSelectItem>
                         }
                     </MudSelect>
-                    <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End" Label="Search"
+                    <MudTextField T="string" Immediate="false" ValueChanged="@OnSearch" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End" Label="Search"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                     </MudTextField>
                 }
@@ -93,7 +81,7 @@
                                 Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Add"
                                    Size="Size.Small"
-                                   OnClick="OnCreate">
+                                   OnClick="@OnCreate">
                             @ConstantString.New
                         </MudButton>
                     }
@@ -165,7 +153,7 @@
             <PropertyColumn Property="x => x.UserName" Title="@L[_currentDto.GetMemberDescription(x => x.UserName)]">
                 <CellTemplate>
                     <div class="d-flex align-items-center">
-                        <MudBadge Color="@(IsOnline(context.Item.DisplayName??context.Item.UserName) ? Color.Success : Color.Error)" Overlap="false" Dot="true" Bordered="true">
+                        <MudBadge Color="@(IsOnline(context.Item.DisplayName) ? Color.Success : Color.Error)" Overlap="false" Dot="true" Bordered="true">
                             <MudAvatar>
                                 @if (string.IsNullOrEmpty(context.Item.ProfilePictureDataUrl))
                                 {
@@ -275,534 +263,9 @@
             </MudCard>
         </ChildRowContent>
         <PagerContent>
-            <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
+            <MudDataGridPager PageSizeOptions="@([10, 15, 30, 50, 100, 500, 1000])"/>
         </PagerContent>
     </MudDataGrid>
 }
 
 <PermissionsDrawer OnAssignAllChanged="OnAssignAllChangedHandler" Waiting="@_processing" OnOpenChanged="OnOpenChangedHandler" Open="_showPermissionsDrawer" Permissions="_permissions" OnAssignChanged="OnAssignChangedHandler"></PermissionsDrawer>
-
-
-@code {
-    [CascadingParameter] 
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    private UserManager<ApplicationUser> UserManager = null!;
-    private RoleManager<ApplicationRole> RoleManager = null!;
-
-
-
-
-    [CascadingParameter] 
-    public UserProfile UserProfile { get; set; } = default!;
-
-    private ApplicationUser? CurrentUser = default;
-    private IEnumerable<string> CurrentRoles = [];
-
-    private int _defaultPageSize = 15;
-    private readonly ApplicationUserDto _currentDto = new();
-    private string _searchString = string.Empty;
-    private string? _selectedTenantId = null;
-    private string Title { get; set; } = "Users";
-    private List<PermissionModel> _permissions = new();
-    private IList<Claim> _assignedClaims = default!;
-
-    private TimeSpan RefreshInterval => TimeSpan.FromHours(2);
-
-    private MudDataGrid<ApplicationUserDto> _table = null!;
-    private bool _initialised;
-    private bool _processing;
-    private bool _showPermissionsDrawer;
-    private bool _canCreate;
-    private bool _canSearch;
-    private bool _canEdit;
-    private bool _canArchive;
-    private bool _canToggleActiveStatus;
-    private bool _canUnlock;
-    private bool _canManageRoles;
-    private bool _canResetPassword;
-    private bool _canManagePermissions;
-    private bool _loading;
-    private List<ApplicationRoleDto> _roles = new();
-    private string? _searchRole;
-    private Dictionary<string, bool>? policies;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _initialised = false;
-
-        Title = L[_currentDto.GetClassDescription()];
-        RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
-        UserManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-
-        var state = await AuthState;
-        CurrentUser = await UserManager.GetUserAsync(state.User);
-        CurrentRoles = await UserManager.GetRolesAsync(CurrentUser!);
-
-        policies ??= new()
-        {
-            { SecurityPolicies.SystemFunctionsWrite, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded }
-        };
-
-        _canCreate = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canSearch = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canEdit = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canArchive = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canToggleActiveStatus = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canUnlock = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canManageRoles = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canResetPassword = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canManagePermissions = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-
-        _roles = await RoleManager.Roles
-            .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
-            .ToListAsync();
-
-        _initialised = true;
-    }
-
-    private bool CanResetPassword(string[] affectedUserRoles)
-    {
-        if(affectedUserRoles is { Length: 0 })
-        {
-            return _canResetPassword;
-        }
-
-        var userRole = _roles.Where(role => affectedUserRoles.Contains(role.Name)).MinBy(role => role.RoleRank);
-        var currentUserRole = _roles.Where(role => CurrentRoles.Contains(role.Name)).MinBy(role => role.RoleRank);
-        return _canResetPassword && currentUserRole?.RoleRank <= userRole?.RoleRank;
-    }
-
-    private bool IsOnline(string username)
-    {
-        return UsersStateContainer.UsersByConnectionId.Any(x => x.Value.Equals(username, StringComparison.OrdinalIgnoreCase));
-    }
-
-    private Expression<Func<ApplicationUser, bool>> CreateSearchPredicate()
-    {
-        return x =>
-            (x.UserName!.Contains(_searchString) || x.Email!.Contains(_searchString) || x.DisplayName!.Contains(_searchString) || x.PhoneNumber!.Contains(_searchString)) 
-            && (_searchRole == null || (_searchRole != null && x.UserRoles.Any(x => x.Role.Name == _searchRole))) 
-            && (_selectedTenantId == null || (_selectedTenantId != null && x.TenantId == _selectedTenantId));
-    }
-
-    private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state, CancellationToken cancellationToken)
-    {
-        try
-        {
-            _loading = true;
-
-            if (state.SortDefinitions.Count == 0)
-            { 
-                state.SortDefinitions.Add(new SortDefinition<ApplicationUserDto>("Email", false, 1, x => x.Email));
-            }
-
-            var query = UserManager.Users.Where(CreateSearchPredicate()) ;
-            var items = await query
-                .Where(x => x.TenantId!.StartsWith(CurrentUser!.TenantId!))
-                .Include(x => x.UserRoles)
-                .Include(x => x.Superior)                
-                .EfOrderBySortDefinitions(state)
-                .Skip(state.Page * state.PageSize).Take(state.PageSize)
-                .ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider).ToListAsync();
-            var total = await UserManager.Users.CountAsync(CreateSearchPredicate());
-            return new GridData<ApplicationUserDto> { TotalItems = total, Items = items };
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private async Task OnChangedListView(string tenantId)
-    {
-        _selectedTenantId = tenantId;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnSearch(string text)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        _searchString = text.ToLower();
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnSearchRole(string role)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        _searchRole = role;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnRefresh()
-    {
-        TenantsService.Refresh();
-        await _table.ReloadServerData();
-    }
-
-    private async Task ShowCreateUserDialog(ApplicationUserDto model, string title)
-    {
-        var parameters = new DialogParameters<UserFormDialog>
-        {
-            { x => x.Model, model }
-        };
-        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var dialog = await DialogService.ShowAsync<UserFormDialog>(title, parameters, options);
-        var result = await dialog.Result;
-
-        if (!result!.Canceled)
-        {
-            await ProcessUserCreation(model);
-        }
-        else
-        {
-            await OnRefresh();
-        }
-    }
-
-    private async Task ShowIdentityAuditDialog(ApplicationUserDto model, string title)
-    {
-        var parameters = new DialogParameters<UserAuditDialog>
-        {
-            { x => x.UserName, model.UserName }
-        };
-        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-        await DialogService.ShowAsync<UserAuditDialog>(title, parameters, options);
-    }
-
-    private async Task ShowEditUserDialog(ApplicationUserDto model, string title)
-    {
-        var parameters = new DialogParameters<UserFormDialog>
-        {
-            { x => x.Model, model }
-        };
-        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var dialog = await DialogService.ShowAsync<UserFormDialog>(title, parameters, options);
-        var result = await dialog.Result;
-
-        if (!result!.Canceled)
-        {
-            await ProcessUserUpdate(model);
-        }
-        else
-        {
-            await OnRefresh();
-        }
-    }
-
-    private async Task ProcessUserCreation(ApplicationUserDto model)
-    {
-        var applicationUser = Mapper.Map<ApplicationUser>(model);
-        applicationUser.EmailConfirmed = true;
-        applicationUser.IsActive = true;
-        applicationUser.TwoFactorEnabled = true;
-        applicationUser.PhoneNumberConfirmed = string.IsNullOrWhiteSpace(applicationUser.PhoneNumber) == false;
-
-        var identityResult = await UserManager.CreateAsync(applicationUser);
-        if (!identityResult.Succeeded)
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-            return;
-        }
-
-        Snackbar.Add($"{L["New user created successfully."]}", Severity.Info);
-        await AssignRolesToUser(applicationUser, model.AssignedRoles);
-
-        Logger.LogInformation("Create a user succeeded. Username: {@UserName:l}, UserId: {@UserId}", applicationUser.UserName, applicationUser.Id);
-        UserService.Refresh();
-        await OnRefresh();
-    }
-
-    private async Task ProcessUserUpdate(ApplicationUserDto model)
-    {
-        var user = await UserManager.FindByIdAsync(model.Id!) ?? throw new NotFoundException($"The application user [{model.Id}] was not found.");
-        var state = await AuthState;
-
-        Mapper.Map(model, user);
-
-        user.PhoneNumberConfirmed = string.IsNullOrWhiteSpace(user.PhoneNumber) == false;
-
-        var identityResult = await UserManager.UpdateAsync(user);
-        if (identityResult.Succeeded)
-        {
-            var roles = await UserManager.GetRolesAsync(user!);
-            if (roles.Count > 0)
-            {
-                await UserManager.RemoveFromRolesAsync(user, roles);
-            }
-
-            if (model.AssignedRoles is not null && model.AssignedRoles.Length > 0)
-            {
-                await UserManager.AddToRolesAsync(user, model.AssignedRoles);
-            }
-
-            Snackbar.Add($"{L["The user updated successfully."]}", Severity.Info);
-            await OnRefresh();
-            UserService.Refresh();
-
-            var userInfo = new UserInfo(
-                model.Id,
-                model.UserName,
-                model.Email,
-                model.DisplayName ?? string.Empty,
-                model.ProfilePictureDataUrl ?? string.Empty,
-                model.SuperiorName ?? string.Empty,
-                model.SuperiorId ?? string.Empty,
-                model.TenantId ?? string.Empty,
-                model.TenantName ?? string.Empty,
-                model.PhoneNumber,
-                model.AssignedRoles ?? Array.Empty<string>(),
-                UserPresence.Available);
-
-            await OnlineUserTracker.UpdateUser(userInfo);
-
-            await cache.RemoveAsync(ApplicationUserClaimsPrincipalFactory.GetCacheKey(user.Id));
-
-
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-        }
-    }
-
-    private async Task AssignRolesToUser(ApplicationUser user, string[]? roles)
-    {
-        if (roles is not null && roles.Length > 0)
-        {
-            await UserManager.AddToRolesAsync(user, roles);
-        }
-    }
-
-    private async Task OnCreate()
-    {
-        var model = new ApplicationUserDto { AssignedRoles = [] };
-        await ShowCreateUserDialog(model, L["Create a new user"]);
-    }
-
-    private async Task OnEdit(ApplicationUserDto item)
-    {
-        await ShowEditUserDialog(item, L["Edit the user"]);
-    }
-
-    private async Task OnUnlock(ApplicationUserDto item)
-    {
-        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
-
-        user.LockoutEnd = null;
-        var identityResult = await UserManager.UpdateAsync(user);
-
-        if (identityResult.Succeeded)
-        {
-            item.LockoutEnd = null;
-            Snackbar.Add($"{L["The user has been unlocked."]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-        }
-    }
-
-    private async Task OnLock(ApplicationUserDto item)
-    {
-        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
-
-        user.LockoutEnd = DateTimeOffset.MaxValue;
-        var identityResult = await UserManager.UpdateAsync(user);
-
-        if (identityResult.Succeeded)
-        {
-            item.LockoutEnd = DateTimeOffset.MaxValue;
-            Snackbar.Add($"{L["The user has been locked."]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-        }
-    }
-
-    private async Task OnSetActive(ApplicationUserDto item)
-    {
-        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
-        await ToggleUserActiveState(user, item);
-    }
-
-    private async Task ToggleUserActiveState(ApplicationUser user, ApplicationUserDto item)
-    {
-        var mediator = GetNewMediator();
-        if (user.IsActive)
-        {
-            await DeactivateUser(user, item);
-            await mediator.Publish(IdentityAuditNotification.DeactivateAccount(item.UserName, NetworkIpProvider.IpAddress, CurrentUser!.UserName!));
-        }
-        else
-        {
-            await ActivateUser(user, item);
-            await mediator.Publish(IdentityAuditNotification.ActivateAccount(item.UserName, NetworkIpProvider.IpAddress , CurrentUser!.UserName!));
-        }
-    }
-
-    private async Task ActivateUser(ApplicationUser user, ApplicationUserDto item)
-    {
-        user.IsActive = true;
-        user.EmailConfirmed = true;
-        user.LockoutEnd = null;
-        var identityResult = await UserManager.UpdateAsync(user);
-
-        if (identityResult.Succeeded)
-        {
-            item.IsActive = true;
-            item.LockoutEnd = null;
-            Snackbar.Add($"{L["The user has been activated."]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-        }
-    }
-
-    private async Task DeactivateUser(ApplicationUser user, ApplicationUserDto item)
-    {
-        user.IsActive = false;
-        user.LockoutEnd = DateTimeOffset.MaxValue;
-        var identityResult = await UserManager.UpdateAsync(user);
-
-        if (identityResult.Succeeded)
-        {
-            item.IsActive = false;
-            item.LockoutEnd = DateTimeOffset.MaxValue;
-            Snackbar.Add($"{L["The user has been deactivated."]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-        }
-    }
-
-    private async Task OnResetPassword(ApplicationUserDto item)
-    {
-        var model = new ResetPasswordFormModel { UserId = item.Id };
-        
-        var parameters = new DialogParameters<ResetPasswordDialog>
-        {
-            { x => x.Model, model }
-        };
-
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.Small };
-        var dialog = await DialogService.ShowAsync<ResetPasswordDialog>(L[$"Reset Password for {item.DisplayName}"], parameters, options);
-
-        var result = await dialog.Result;
-
-        if (!result!.Canceled)
-        {
-            await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(item.UserName, NetworkIpProvider.IpAddress, UserProfile.Email));
-            Snackbar.Add($"{L["Reset password successfully"]}", Severity.Info);
-        }
-    }
-
-    private Task OnOpenChangedHandler(bool state)
-    {
-        _showPermissionsDrawer = state;
-        return Task.CompletedTask;
-    }
-
-    private async Task<IList<Claim>> GetUserClaims(string userId)
-    {
-        var key = $"get-claims-by-{userId}";
-        return await FusionCache.GetOrSetAsync(key, async _ =>
-        {
-            var user = await UserManager.FindByIdAsync(userId) ?? throw new NotFoundException($"not found application user: {userId}");
-            return await UserManager.GetClaimsAsync(user);
-        }, RefreshInterval);
-    }
-
-    private async Task OnAssignAllChangedHandler(List<PermissionModel> models)
-    {
-        try
-        {
-            _processing = true;
-            var userId = models.First().UserId;
-            var user = await UserManager.FindByIdAsync(userId!) ?? throw new NotFoundException($"not found application user: {userId}");
-
-            foreach (var model in models)
-            {
-                await ProcessPermissionChange(user, model);
-            }
-
-            Snackbar.Add($"{L["Authorization has been changed"]}", Severity.Info);
-            await ClearClaimsCache(user.Id);
-        }
-        finally
-        {
-            _processing = false;
-        }
-    }
-
-    private async Task ProcessPermissionChange(ApplicationUser user, PermissionModel model)
-    {
-        if (model.Assigned)
-        {
-            if (model.ClaimType is not null && model.ClaimValue is not null)
-            {
-                await UserManager.AddClaimAsync(user, new Claim(model.ClaimType, model.ClaimValue));
-            }
-        }
-        else
-        {
-            var removed = _assignedClaims.FirstOrDefault(x => x.Value == model.ClaimValue);
-            if (removed is not null)
-            {
-                await UserManager.RemoveClaimAsync(user, removed);
-            }
-        }
-    }
-
-    private async Task ClearClaimsCache(string userId)
-    {
-        var key = $"get-claims-by-{userId}";
-        FusionCache.Remove(key);
-        await Task.Delay(300);
-    }
-
-    private async Task OnAssignChangedHandler(PermissionModel model)
-    {
-        try
-        {
-            _processing = true;
-            var userId = model.UserId!;
-            var user = await UserManager.FindByIdAsync(userId) ?? throw new NotFoundException($"Application user Not Found {userId}.");
-
-            model.Assigned = !model.Assigned;
-            if (model.Assigned)
-            {
-                if (model.ClaimType is not null && model.ClaimValue is not null)
-                {
-                    await UserManager.AddClaimAsync(user, new Claim(model.ClaimType, model.ClaimValue));
-                    Snackbar.Add($"{L["Permission assigned successfully"]}", Severity.Info);
-                }
-            }
-            else
-            {
-                var removed = _assignedClaims.FirstOrDefault(x => x.Value == model.ClaimValue);
-                if (removed is not null)
-                {
-                    await UserManager.RemoveClaimAsync(user, removed);
-                }
-
-                Snackbar.Add($"{L["Permission removed successfully"]}", Severity.Info);
-            }
-
-            await ClearClaimsCache(user.Id);
-        }
-        finally
-        {
-            _processing = false;
-        }
-    }
-}
