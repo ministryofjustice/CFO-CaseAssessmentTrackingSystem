@@ -1,0 +1,46 @@
+@using Cfo.Cats.Server.UI.Hubs
+@inject PresenceHubClient PresenceClient
+@inject ISnackbar Snackbar
+@implements IAsyncDisposable
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    private string? _currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthState is not null)
+        {
+            var state = await AuthState;
+            _currentUserId = state.User.GetUserId();
+        }
+
+        PresenceClient.UserOnline += OnUserOnline;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await PresenceClient.StartAsync();
+        }
+    }
+
+    private void OnUserOnline(string userId, string name)
+    {
+        if (string.Equals(userId, _currentUserId, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _ = InvokeAsync(() => Snackbar.Add($"{name} is now online", Severity.Info));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        PresenceClient.UserOnline -= OnUserOnline;
+        await PresenceClient.DisposeAsync();
+    }
+}

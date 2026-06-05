@@ -1,4 +1,4 @@
-﻿using BlazorDownloadFile;
+using BlazorDownloadFile;
 using Cfo.Cats.Infrastructure.Constants.Localization;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Fusion;
@@ -13,6 +13,7 @@ using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
+using Cfo.Cats.Server.UI.Hubs;
 using ApexCharts;
 using Cfo.Cats.Server.UI.Pages.Participants;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments;
@@ -93,6 +94,8 @@ public static class DependencyInjection
                 options.KeepAliveInterval = TimeSpan.FromSeconds(10); // SignalR keep-alive interval
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120); // SignalR client timeout interval
             });
+        services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
+        services.AddScoped<PresenceHubClient>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
             
@@ -199,6 +202,8 @@ public static class DependencyInjection
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
+        app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+        
         app.MapGet("/.well-known/security.txt", () =>
             Results.Redirect(
                 "https://security-guidance.service.justice.gov.uk/.well-known/security.txt",
