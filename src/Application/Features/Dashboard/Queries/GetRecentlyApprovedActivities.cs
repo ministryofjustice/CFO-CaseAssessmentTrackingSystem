@@ -12,16 +12,15 @@ public static class GetRecentlyApprovedActivities
     public class Query : IRequest<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>>
     {
         public required UserProfile UserProfile { get; init; }
-        public int DaysBack { get; init; } = 30;
-        public DateTime? CommencedStart { get; init; }
-        public DateTime? CommencedEnd { get; init; }
+        public required DateTime ApprovedStart { get; init; }
+        public required DateTime ApprovedEnd { get; init; }
         public LocationDto? Location { get; init; }
         public List<ActivityType>? IncludeTypes { get; init; }
-        public bool JustMyParticipants { get; init; } = true;
         public int PageNumber { get; init; } = 1;
         public int PageSize { get; init; } = 10;
         public string OrderBy { get; set; } = "ApprovedOn";
         public string SortDirection { get; init; } = "Descending";
+        public string TenantId { get; init; } = null!;
     }
 
     public class Handler(IUnitOfWork unitOfWork)
@@ -30,29 +29,16 @@ public static class GetRecentlyApprovedActivities
         public async Task<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
-            var cutoffDate = DateTime.UtcNow.AddDays(-request.DaysBack);
 
 #pragma warning disable CS8602
             var query = from a in db.Activities
                         where a.TenantId.StartsWith(request.UserProfile.TenantId!)
                             && a.Status == ActivityStatus.ApprovedStatus.Value
-                            && a.CompletedOn >= cutoffDate
+                            && a.CompletedOn >= request.ApprovedStart.Date
+                            && a.CompletedOn < request.ApprovedEnd.AddDays(1).Date
+                            && (string.IsNullOrWhiteSpace(request.TenantId) || a.TenantId.StartsWith(request.TenantId))
+
                         select a;
-            
-            if (request.JustMyParticipants)
-            {
-                query = query.Where(a => a.OwnerId == request.UserProfile.UserId);
-            }
-            
-            if (request.CommencedStart.HasValue)
-            {
-                query = query.Where(a => a.CommencedOn >= request.CommencedStart.Value);
-            }
-            
-            if (request.CommencedEnd.HasValue)
-            {
-                query = query.Where(a => a.CommencedOn <= request.CommencedEnd.Value);
-            }
             
             if (request.Location is not null)
             {

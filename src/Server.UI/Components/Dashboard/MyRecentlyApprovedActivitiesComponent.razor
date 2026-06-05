@@ -8,7 +8,7 @@
 <MudItem xs="12">
     @if (Loading)
     {
-        <LoadingCard Title="Recently Approved Activities" />
+        <MudLoading Text="Loading" />
     }
 
     @if (ErrorMessage is not null)
@@ -30,12 +30,6 @@
                 <MudList T="RecentlyApprovedActivitiesSummaryDto" ReadOnly>
                     <MudListSubheader>
                         <MudGrid>
-                            <MudItem xs="12">
-                                <MudDateRangePicker Label="Commenced from/to range"
-                                                DateRangeChanged="@OnDateRangeChanged"
-                                                Clearable
-                                                MaxDate="DateTime.Today" />
-                            </MudItem>
                             <MudItem xs="12">
                                 <LocationSelectComponent
                                     TenantId="@(CurrentUser.TenantId!)"

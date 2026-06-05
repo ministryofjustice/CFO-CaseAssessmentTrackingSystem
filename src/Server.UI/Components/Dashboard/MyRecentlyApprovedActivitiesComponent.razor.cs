@@ -2,35 +2,43 @@ using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
-using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
-public partial class MyTeamsRecentlyApprovedActivitiesComponent : CatsComponent<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>
+public partial class MyRecentlyApprovedActivitiesComponent : CatsComponent<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>
 {
+    [EditorRequired, Parameter]
+    public DateRange? DateRange { get; set; }
+
+    [Parameter]
+    public string UserId { get; set; } = null!;
+
+    [Parameter]
+    public string TenantId { get; set; } = null!;
+
+    [EditorRequired, Parameter]
+    public bool VisualMode { get; set; }
+
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool IsDarkMode { get; set; }
+    
     private int _pageNumber = 1;
     private LocationDto? _location;
-    private DateTime? _commencedStart;
-    private DateTime? _commencedEnd;
     private List<ActivityType>? _includeTypes;
-
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     protected override IRequest<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>> CreateQuery()
         => new GetRecentlyApprovedActivities.Query()
         {
             UserProfile = CurrentUser,
-            DaysBack = 30,
             PageSize = 10,
             OrderBy = "ApprovedOn",
             SortDirection = $"{SortDirection.Descending}",
             PageNumber = _pageNumber,
             Location = _location,
-            CommencedStart = _commencedStart,
-            CommencedEnd = _commencedEnd,
+            ApprovedStart = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
+            ApprovedEnd = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
             IncludeTypes = _includeTypes,
-            JustMyParticipants = false  
+            TenantId = TenantId
         };
 
     protected override async Task OnInitializedAsync()
@@ -49,13 +57,6 @@ public partial class MyTeamsRecentlyApprovedActivitiesComponent : CatsComponent<
     {
         _pageNumber = 1; 
         return LoadDataAsync();
-    }
-
-    private Task OnDateRangeChanged(DateRange? range)
-    {
-        _commencedStart = range?.Start;
-        _commencedEnd = range?.End;
-        return OnRefresh();
     }
 
     private Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
