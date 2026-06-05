@@ -15,7 +15,7 @@
     <MudStack Row="true" AlignItems="AlignItems.Center">
 		@if (CurrentUser.AssignedRoles is not [])
 		{
-			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
+			<MudLink OnClick="@DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
 				@SelectedDisplayName
 			</MudLink>
 		}
@@ -27,8 +27,6 @@
 		</MudSwitch>
 	</MudStack>
 </MudStack>
-
-
 
 <MudStack>
 	@if(SelectedTenantId is null)
@@ -84,6 +82,10 @@
                     </MudTabPanel>
                     <MudTabPanel Text="Reassessments" Class="pa-3">
                         <ReassessmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+   
+                    <MudTabPanel Text="Recent Approved Activities" Class="pa-3">
+                        <RecentlyApprovedActivitiesComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
                     </MudTabPanel>
                 </MudTabs>
             </MudTabPanel>

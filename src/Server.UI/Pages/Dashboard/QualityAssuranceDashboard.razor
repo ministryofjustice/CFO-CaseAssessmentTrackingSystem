@@ -81,15 +81,7 @@
                         VisualMode="@_visualMode" 
                         UserId="@CurrentUser.UserId" />
                 </MudTabPanel>
-                
-                <MudTabPanel Text="My Teams Recent Approved Activities" Class="pa-2">
-                    <MyTeamsRecentlyApprovedActivitiesComponent 
-                        TenantId="@SelectedTenantId" 
-                        DateRange="@DateRange" 
-                        @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
-                        VisualMode="@_visualMode" 
-                        UserId="@CurrentUser.UserId" />
-                </MudTabPanel>
+             
             </MudTabs>
         </MudTabPanel>
         

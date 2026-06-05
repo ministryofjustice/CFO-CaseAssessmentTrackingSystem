@@ -60,7 +60,8 @@ public static class GetRecentlyApprovedActivities
                              ApprovedOn = a.CompletedOn,
                              Created = a.Created,
                              CommencedOn = a.CommencedOn,
-                             TookPlaceAtLocationName = a.TookPlaceAtLocation.Name
+                             TookPlaceAtLocationName = a.TookPlaceAtLocation.Name,
+                             ApprovedBy = a.CompletedBy
                          };
             
             results = request.SortDirection.ToLower() == "ascending"

@@ -9,4 +9,5 @@ public class RecentlyApprovedActivitiesSummaryDto
     public required DateTime? Created { get; set; }
     public required DateTime? CommencedOn { get; set; }
     public required string TookPlaceAtLocationName { get; set; }
+    public string? ApprovedBy { get; set; }
 }
