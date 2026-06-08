@@ -20,6 +20,11 @@ public static class UnassignedCasesWithPagination
         /// Filter by enrolment status
         /// </summary>
         public int? EnrolmentStatus { get; set; }
+
+        /// <summary>
+        /// Filter by location IDs
+        /// </summary>
+        public int[] Locations { get; set; } = [];
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<UnassignedCaseDto>>>
@@ -61,6 +66,13 @@ public static class UnassignedCasesWithPagination
             if (request.EnrolmentStatus.HasValue)
             {
                 query = query.Where(p => p.EnrolmentStatus == request.EnrolmentStatus.Value);
+            }
+
+            // Apply location filter
+            if (request.Locations.Length > 0)
+            {
+                query = query.Where(p => request.Locations.Contains(p.CurrentLocation.Id)
+                                         || (p.EnrolmentLocation != null && request.Locations.Contains(p.EnrolmentLocation.Id)));
             }
 
             var count = await query.AsNoTracking().CountAsync(cancellationToken);

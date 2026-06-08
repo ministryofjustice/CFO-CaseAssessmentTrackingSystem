@@ -1,11 +1,13 @@
 using ApexCharts;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Server.UI.Components.Locations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,21 +32,67 @@ public partial class UnassignedCasesDashboardComponent
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
+    [Inject]
+    public ILocationService LocationService { get; set; } = default!;
+
     private int _defaultPageSize = 15;
     private MudDataGrid<UnassignedCaseDto> _table = default!;
     private bool _loading;
     private bool _canSearch;
     private List<ChartDataPoint>? _chartData;
     private bool _previousVisualMode;
+    private string? _previousTenantId;
     private GetUnassignedCasesSummary.UnassignedCasesSummaryDto? _summaryData;
+    private IDictionary<int, string> _locations = null!;
 
     private UnassignedCasesWithPagination.Query Query { get; set; } = new();
+
+    /// <summary>
+    /// Creates a UserProfile with the selected TenantId for querying data
+    /// </summary>
+    private UserProfile GetEffectiveUserProfile()
+    {
+        if (UserProfile == null)
+        {
+            return null!;
+        }
+
+        // If TenantId parameter matches UserProfile's TenantId, use it as-is
+        if (TenantId == UserProfile.TenantId)
+        {
+            return UserProfile;
+        }
+
+        // Create a copy with the selected TenantId
+        return new UserProfile
+        {
+            UserId = UserProfile.UserId,
+            UserName = UserProfile.UserName,
+            Email = UserProfile.Email,
+            DisplayName = UserProfile.DisplayName,
+            PhoneNumber = UserProfile.PhoneNumber,
+            TenantId = TenantId,
+            TenantName = UserProfile.TenantName,
+            AssignedRoles = UserProfile.AssignedRoles,
+            DefaultRole = UserProfile.DefaultRole,
+            Contracts = UserProfile.Contracts,
+            IsActive = UserProfile.IsActive,
+            Provider = UserProfile.Provider,
+            SuperiorName = UserProfile.SuperiorName,
+            SuperiorId = UserProfile.SuperiorId,
+            ProfilePictureDataUrl = UserProfile.ProfilePictureDataUrl
+        };
+    }
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
         _previousVisualMode = VisualMode;
+        _previousTenantId = TenantId;
+        
+        _locations = LocationService.GetVisibleLocations(TenantId)
+                        .ToDictionary(k => k.Id, e => e.Name);
         
         if (VisualMode && UserProfile != null)
         {
@@ -54,11 +102,28 @@ public partial class UnassignedCasesDashboardComponent
 
     protected override async Task OnParametersSetAsync()
     {
-        // Reload chart data when switching to visual mode
-        if (VisualMode && (!_previousVisualMode || _chartData == null) && UserProfile != null)
+        var tenantChanged = _previousTenantId != TenantId;
+        
+        // Reload locations if tenant changed
+        if (tenantChanged)
+        {
+            _locations = LocationService.GetVisibleLocations(TenantId)
+                .ToDictionary(k => k.Id, e => e.Name);
+            _previousTenantId = TenantId;
+        }
+        
+        // Reload chart data when switching to visual mode or tenant changed
+        if (VisualMode && (tenantChanged || !_previousVisualMode || _chartData == null) && UserProfile != null)
         {
             await LoadChartData();
         }
+        
+        // Reload table data if tenant changed and in tabular mode
+        if (!VisualMode && tenantChanged && _table != null)
+        {
+            await _table.ReloadServerData();
+        }
+        
         _previousVisualMode = VisualMode;
     }
 
@@ -70,7 +135,7 @@ public partial class UnassignedCasesDashboardComponent
             
             var query = new GetUnassignedCasesSummary.Query
             {
-                CurrentUser = UserProfile!
+                CurrentUser = GetEffectiveUserProfile()
             };
 
             var result = await GetNewMediator().Send(query);
@@ -164,7 +229,7 @@ public partial class UnassignedCasesDashboardComponent
         try
         {
             _loading = true;
-            Query.CurrentUser = UserProfile;
+            Query.CurrentUser = GetEffectiveUserProfile();
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "LastModified";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true 
                 ? SortDirection.Descending.ToString() 
@@ -198,6 +263,32 @@ public partial class UnassignedCasesDashboardComponent
         await _table.ReloadServerData();
     }
 
+    private async Task ShowSelectLocationDialog()
+    {
+        var parameters = new DialogParameters<SelectLocationDialog>
+        {
+            { "CurrentUser", GetEffectiveUserProfile() }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
+        var dialog = await DialogService.ShowAsync<SelectLocationDialog>("Select a location", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: LocationDto location })
+        {
+            Query.Locations = [location.Id];
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task ClearFilters()
+    {
+        Query.Keyword = null;
+        Query.EnrolmentStatus = null;
+        Query.Locations = [];
+        await _table.ReloadServerData();
+    }
+
     private async Task AssignToSelf(UnassignedCaseDto participant)
     {
         var command = new AssignUnassignedCase.Command
@@ -225,7 +316,7 @@ public partial class UnassignedCasesDashboardComponent
         var parameters = new DialogParameters
         {
             { "Participant", participant },
-            { "TenantId", UserProfile!.TenantId },
+            { "TenantId", TenantId },
             { "CurrentUser", UserProfile }
         };
 
