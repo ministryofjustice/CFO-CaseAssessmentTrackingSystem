@@ -8,7 +8,6 @@
 @using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
 
-
 @attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
 @implements IDisposable
@@ -70,11 +69,23 @@
                      <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
                                Disabled="@_loading"
-                               OnClick="@(OnRefresh)"
+                               OnClick="@OnRefresh"
                                StartIcon="@Icons.Material.Filled.Refresh" 
                                Color="Color.Secondary">
                         @ConstantString.Refresh
                     </MudButton>
+                    @if (_canSearch)
+                    {
+                        <MudLoadingButton 
+                            Loading="@_downloading"
+                            Variant="Variant.Filled"
+                            Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.CloudDownload"
+                            Size="Size.Small"
+                            OnClick="@OnExport">
+                            @ConstantString.Export
+                        </MudLoadingButton>
+                    }
                     @if (_canCreate)
                     {
                         <MudButton Variant="Variant.Filled" 

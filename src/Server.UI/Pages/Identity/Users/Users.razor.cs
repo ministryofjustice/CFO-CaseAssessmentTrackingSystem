@@ -7,6 +7,7 @@ using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services;
 using Cfo.Cats.Server.UI.Extensions;
 using Cfo.Cats.Server.UI.Pages.Identity.Users.Components;
@@ -50,6 +51,7 @@ public partial class Users
     private bool _canResetPassword;
     private bool _canManagePermissions;
     private bool _loading;
+    private bool _downloading;
     private List<ApplicationRoleDto> _roles = new();
     private string? _searchRole;
     private Dictionary<string, bool>? _policies;
@@ -143,24 +145,24 @@ public partial class Users
         }
     }
 
-    private async Task OnChangedListView(string tenantId)
+    private async Task OnChangedListView(string? tenantId)
     {
         _selectedTenantId = tenantId;
         await _table.ReloadServerData();
     }
 
-    private async Task OnSearch(string text)
+    private async Task OnSearch(string? text)
     {
         if (_loading)
         {
             return;
         }
 
-        _searchString = text.ToLower();
+        _searchString = text!.ToLower();
         await _table.ReloadServerData();
     }
 
-    private async Task OnSearchRole(string role)
+    private async Task OnSearchRole(string? role)
     {
         if (_loading)
         {
@@ -175,6 +177,36 @@ public partial class Users
     {
         TenantsService.Refresh();
         await _table.ReloadServerData();
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await GetNewMediator().Send(new Application.Features.Identity.Commands.ExportUsers.Command()
+            {
+                TenantId = _selectedTenantId,
+                SearchString = _searchString,
+                Role = _searchRole
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 
     private async Task ShowCreateUserDialog(ApplicationUserDto model, string title)
