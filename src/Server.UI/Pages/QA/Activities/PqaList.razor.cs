@@ -35,7 +35,12 @@ public partial class PqaList
     private ActivityQueueEntryDto[] _data = [];
 
     private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
-    private readonly List<ActivityType> _availableActivityTypes = ActivityType.List.ToList();
+
+    private readonly List<ActivityType> _availableActivityTypes = ActivityDefinition.List
+        .Where(x => x.RequiresQa)
+        .GroupBy(x => x.Type)
+        .Select(x => x.Key)
+        .ToList();
 
     private string SelectedActivityTypeName
         => Query.ActivityTypeId is null
