@@ -44,6 +44,7 @@ public partial class UnassignedCasesDashboardComponent
     private string? _previousTenantId;
     private GetUnassignedCasesSummary.UnassignedCasesSummaryDto? _summaryData;
     private IDictionary<int, string> _locations = null!;
+    private bool _includeTransferIn = true;
 
     private UnassignedCasesWithPagination.Query Query { get; set; } = new();
 
@@ -236,6 +237,7 @@ public partial class UnassignedCasesDashboardComponent
                 : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
+            Query.IncludeTransferIn = _includeTransferIn;
 
             var result = await GetNewMediator().Send(Query, cancellationToken);
 
@@ -286,6 +288,14 @@ public partial class UnassignedCasesDashboardComponent
         Query.Keyword = null;
         Query.EnrolmentStatus = null;
         Query.Locations = [];
+        Query.IncludeTransferIn = _includeTransferIn;
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnIncludeTransferInChanged(bool value)
+    {
+        _includeTransferIn = value;
+        Query.IncludeTransferIn = value;
         await _table.ReloadServerData();
     }
 

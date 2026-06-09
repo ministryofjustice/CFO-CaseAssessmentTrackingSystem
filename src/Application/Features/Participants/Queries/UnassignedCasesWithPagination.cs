@@ -25,6 +25,11 @@ public static class UnassignedCasesWithPagination
         /// Filter by location IDs
         /// </summary>
         public int[] Locations { get; set; } = [];
+
+        /// <summary>
+        /// Include participants with incoming transfers
+        /// </summary>
+        public bool IncludeTransferIn { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<UnassignedCaseDto>>>
@@ -33,17 +38,20 @@ public static class UnassignedCasesWithPagination
         {
             var context = unitOfWork.DbContext;
 
-            // Get visible locations for the current user's tenant
-            var visibleLocationIds = context.Locations
-                .Where(l => l.Tenants.Any(t => t.Id.StartsWith(request.CurrentUser!.TenantId!)))
-                .Select(l => l.Id)
-                .ToList();
-
-            // Get participants without owners at locations visible to the current user's tenant
+            // Get participants without owners at locations that have a tenant matching the selected tenant
             var query = from p in context.Participants
                         where p.OwnerId == null
-                              && (visibleLocationIds.Contains(p.CurrentLocation.Id) 
-                                  || (p.EnrolmentLocation != null && visibleLocationIds.Contains(p.EnrolmentLocation.Id)))
+                              && p.CurrentLocation.Tenants.Any(t => t.Id.StartsWith(request.CurrentUser!.TenantId!))
+                              // Only include participants if they don't have an incoming transfer, or if they do,
+                              // the transfer's ToLocation must be accessible to the user
+                              && (!context.ParticipantIncomingTransferQueue.Any(t => 
+                                  t.ParticipantId == p.Id 
+                                  && !t.Completed 
+                                  && !t.ToLocation.Tenants.Any(lt => lt.Id.StartsWith(request.CurrentUser!.TenantId!))))
+                              // Optionally exclude participants with incoming transfers (unless IncludeTransferIn is true)
+                              && (request.IncludeTransferIn || !context.ParticipantIncomingTransferQueue.Any(t =>
+                                  t.ParticipantId == p.Id
+                                  && !t.Completed))
                         select p;
 
             // Apply keyword search
@@ -125,9 +133,11 @@ public static class UnassignedCasesWithPagination
             var locationIds = paginatedParticipants.Select(p => p.CurrentLocationId).Distinct().ToList();
 
             // Fetch tenant info for these locations
+            // Filter to only include tenants within the current user's tenant scope
             var locationTenants = await (from l in context.Locations
                                         where locationIds.Contains(l.Id)
                                         from t in l.Tenants
+                                        where t.Id.StartsWith(request.CurrentUser!.TenantId!)
                                         select new LocationTenantDto
                                         {
                                             LocationId = l.Id,

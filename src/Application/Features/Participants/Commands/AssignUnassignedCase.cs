@@ -114,8 +114,9 @@ public static class AssignUnassignedCase
 
             // Get the participant's tenant from their current location
             var participantTenantId = participant.CurrentLocation!.Tenants
+                .Where(t => t.Id.StartsWith(c.CurrentUser.TenantId!))
                 .Select(t => t.Id)
-                .FirstOrDefault();
+                .FirstOrDefault() ?? c.CurrentUser.TenantId;
 
             if (string.IsNullOrEmpty(participantTenantId))
             {

@@ -18,22 +18,21 @@ public static class GetUnassignedCasesSummary
             var context = unitOfWork.DbContext;
             var currentTenantId = request.CurrentUser.TenantId!;
 
-            // Get visible locations for the current tenant
-            var visibleLocationIds = await (
-                from l in context.Locations
-                from t in l.Tenants
-                where t.Id.StartsWith(currentTenantId)
-                select l.Id
-            ).Distinct().ToListAsync(cancellationToken);
+            // Base query: unassigned participants at accessible locations without inaccessible incoming transfers
+            var baseQuery = from p in context.Participants
+                            where p.OwnerId == null
+                                && p.CurrentLocation.Tenants.Any(t => t.Id.StartsWith(currentTenantId))
+                                && (!context.ParticipantIncomingTransferQueue.Any(t => 
+                                    t.ParticipantId == p.Id 
+                                    && !t.Completed 
+                                    && !t.ToLocation.Tenants.Any(lt => lt.Id.StartsWith(currentTenantId))))
+                            select p;
 
-            // Query unassigned participants grouped by location and status (for chart - includes all statuses)
-            var groupedQuery = from p in context.Participants
-                               where p.OwnerId == null
-                                   && (visibleLocationIds.Contains(p.CurrentLocation.Id)
-                                       || (p.EnrolmentLocation != null && visibleLocationIds.Contains(p.EnrolmentLocation.Id)))
+            // Group by location and status for chart data
+            var groupedQuery = from p in baseQuery
                                group p by new
                                {
-                                   LocationId = p.CurrentLocation.Id,  // Group by ID to avoid duplicate names
+                                   LocationId = p.CurrentLocation.Id,
                                    LocationName = p.CurrentLocation.Name,
                                    LocationType = p.CurrentLocation.LocationType,
                                    EnrolmentStatus = p.EnrolmentStatus
@@ -50,12 +49,8 @@ public static class GetUnassignedCasesSummary
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
 
-            // Query for totals including archived (for chips)
-            var totalsQuery = from p in context.Participants
-                              where p.OwnerId == null
-                                  && (visibleLocationIds.Contains(p.CurrentLocation.Id)
-                                      || (p.EnrolmentLocation != null && visibleLocationIds.Contains(p.EnrolmentLocation.Id)))
-                                  && !p.CurrentLocation.Name.Contains("Unmapped")  // Exclude unmapped from main totals
+            // Group by location type for chip totals
+            var totalsQuery = from p in baseQuery
                               group p by p.CurrentLocation.LocationType into grp
                               select new { LocationType = grp.Key, Count = grp.Count() };
 
@@ -63,48 +58,28 @@ public static class GetUnassignedCasesSummary
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
 
-            // Also get counts for unmapped locations (for chips)
-            var unmappedCustodyCount = await context.Participants
-                .Where(p => p.OwnerId == null
-                           && (visibleLocationIds.Contains(p.CurrentLocation.Id)
-                               || (p.EnrolmentLocation != null && visibleLocationIds.Contains(p.EnrolmentLocation.Id)))
-                           && p.CurrentLocation.Name.Contains("Unmapped Custody"))
-                .CountAsync(cancellationToken);
-
-            var unmappedCommunityCount = await context.Participants
-                .Where(p => p.OwnerId == null
-                           && (visibleLocationIds.Contains(p.CurrentLocation.Id)
-                               || (p.EnrolmentLocation != null && visibleLocationIds.Contains(p.EnrolmentLocation.Id)))
-                           && p.CurrentLocation.Name.Contains("Unmapped Community"))
-                .CountAsync(cancellationToken);
-
             var custodyTotal = totals.Where(t => t.LocationType.IsCustody).Sum(t => t.Count);
             var communityTotal = totals.Where(t => t.LocationType.IsCommunity).Sum(t => t.Count);
 
             return Result<UnassignedCasesSummaryDto>.Success(
-                new UnassignedCasesSummaryDto(results, custodyTotal, communityTotal, unmappedCustodyCount, unmappedCommunityCount));
+                new UnassignedCasesSummaryDto(results, custodyTotal, communityTotal));
         }
     }
 
     public record UnassignedCasesSummaryDto
     {
-        public UnassignedCasesSummaryDto(LocationStatusSummary[] summaries, int custodyTotal, int communityTotal, 
-            int unmappedCustodyTotal, int unmappedCommunityTotal)
+        public UnassignedCasesSummaryDto(LocationStatusSummary[] summaries, int custodyTotal, int communityTotal)
         {
             Summaries = summaries;
             TotalCount = summaries.Sum(s => s.Count);
             Custody = custodyTotal;
             Community = communityTotal;
-            UnmappedCustody = unmappedCustodyTotal;
-            UnmappedCommunity = unmappedCommunityTotal;
         }
 
         public LocationStatusSummary[] Summaries { get; }
         public int TotalCount { get; }
         public int Custody { get; }
         public int Community { get; }
-        public int UnmappedCustody { get; }
-        public int UnmappedCommunity { get; }
     }
 
     public record LocationStatusSummary(

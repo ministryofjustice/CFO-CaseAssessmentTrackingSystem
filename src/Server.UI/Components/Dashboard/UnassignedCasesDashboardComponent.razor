@@ -33,11 +33,8 @@
     {
         <MudGrid Spacing="2">
             <MudItem>
-                <MudChip T="string">Total (@_summaryData.TotalCount)</MudChip>
                 <MudChip T="string">Custody (@_summaryData.Custody)</MudChip>
                 <MudChip T="string">Community (@_summaryData.Community)</MudChip>
-                <MudChip T="string" Color="Color.Warning">Unmapped Custody (@_summaryData.UnmappedCustody)</MudChip>
-                <MudChip T="string" Color="Color.Warning">Unmapped Community (@_summaryData.UnmappedCommunity)</MudChip>
             </MudItem>
         </MudGrid>
     }
@@ -133,16 +130,16 @@ else
                     @_locations[Query.Locations[0]]
                 }
             </MudButton>
-            @* <MudButton Size="MudSize.Small" 
-                       Variant="Variant.Outlined" 
-                       Color="Color.Default"
-                       StartIcon="@Icons.Material.Filled.Clear" 
-                       OnClick="ClearFilters">
-                Clear Filters
-            </MudButton> *@
+            <MudSwitch Value="_includeTransferIn"
+                       T="bool"
+                       Color="Color.Primary"
+                       Size="MudBlazor.Size.Small"
+                       ValueChanged="@OnIncludeTransferInChanged">
+                Include Transfer In
+            </MudSwitch>   
             <MudTooltip Text="Clear Filters">
                 <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearFilters())" />
-            </MudTooltip>            
+            </MudTooltip>
         </div>
     </ToolBarContent>
     <Columns>
@@ -225,17 +222,6 @@ else
                     }
                     <span>@context.Item.CurrentLocation.Name</span>
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        
-        <PropertyColumn Property="x => x.TenantName" Title="Tenant" />
-        
-        <PropertyColumn Property="x => x.LastModified" Title="Last Modified">
-            <CellTemplate>
-                @if (context.Item.LastModified.HasValue)
-                {
-                    <MudText Typo="Typo.body2">@context.Item.LastModified.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                }
             </CellTemplate>
         </PropertyColumn>
     </Columns>
