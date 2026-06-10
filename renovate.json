@@ -26,6 +26,10 @@
     {
       "matchUpdateTypes": ["major"],
       "minimumReleaseAge": "30 days"
+    },
+    {
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "minimumReleaseAge": "7 days"
     }
   ]
 }
