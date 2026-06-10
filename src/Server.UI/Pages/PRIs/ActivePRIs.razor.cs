@@ -16,10 +16,10 @@ public partial class ActivePRIs
     [SupplyParameterFromQuery(Name = "ListView")]
     public string? ListView { get; set; }
 
-    public string? Title { get; private set; }
+    private string? Title { get; set; }
     private int _defaultPageSize = 15;
     private HashSet<PRIPaginationDto> _selectedItems = new();
-    private MudDataGrid<PRIPaginationDto> _table = default!;
+    private MudDataGrid<PRIPaginationDto> _table = null!;
     private bool _loading;
 
     private GetActivePRIsByUserId.Query? Query { get; set; }
@@ -46,8 +46,16 @@ public partial class ActivePRIs
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<PRIPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
+            var result = await GetNewMediator().Send(Query, cancellationToken);
+
+            if (result.Succeeded)
+            {
+                return new GridData<PRIPaginationDto>
+                    { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return new GridData<PRIPaginationDto> { TotalItems = 0, Items = [] };
         }
         finally
         {
@@ -68,7 +76,8 @@ public partial class ActivePRIs
         {
             return;
         }
-        _selectedItems = new();
+        
+        _selectedItems = new HashSet<PRIPaginationDto>();
         Query!.Keyword = text;
         await _table.ReloadServerData();
     }
@@ -95,7 +104,7 @@ public partial class ActivePRIs
 
     private void ViewParticipant(PRIPaginationDto PRI) => Navigation.NavigateTo($"/pages/Participants/{PRI.ParticipantId}");
 
-    public async Task CreatePriCode()
+    private async Task CreatePriCode()
     {
         var parameters = new DialogParameters<PriGenerateCodeDialog>()
         {

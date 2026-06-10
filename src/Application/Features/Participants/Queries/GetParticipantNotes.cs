@@ -9,14 +9,14 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantNotes
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : ParticipantNotesFilter, IRequest<PaginatedData<ParticipantNoteDto>>
+    public class Query : ParticipantNotesFilter, IRequest<Result<PaginatedData<ParticipantNoteDto>>>
     {
         public ParticipantNotesSpecification Specification => new();
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, PaginatedData<ParticipantNoteDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantNoteDto>>>
     {
-        public async Task<PaginatedData<ParticipantNoteDto>> Handle(Query request, CancellationToken cancellationToken) =>
+        public async Task<Result<PaginatedData<ParticipantNoteDto>>> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.Participants
                 .Where(p => p.Id == request.ParticipantId)
                 .SelectMany(p => p.Notes)

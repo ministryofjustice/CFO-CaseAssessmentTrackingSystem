@@ -1,9 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
-@using Cfo.Cats.Application.SecurityConstants
+﻿@inherits CatsComponentBase;
 @using Humanizer
-
-@inherits CatsComponentBase;
 
 @inject IStringLocalizer<PQA> L
 
@@ -36,7 +32,7 @@
                         <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@_loading"
-                                   OnClick="@(() => OnRefresh())"
+                                   OnClick="@OnRefresh"
                                    StartIcon="@Icons.Material.Filled.Refresh" 
                                    Color="Color.Secondary">
                             @ConstantString.Refresh
@@ -46,7 +42,7 @@
 
                     </MudHidden>
                 </div>
-                <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                <MudTextField T="string" ValueChanged="@(OnSearch!)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                 </MudTextField>
             </div>

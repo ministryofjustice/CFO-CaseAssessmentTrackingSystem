@@ -30,7 +30,14 @@ public partial class EscalationList
             Query.PageSize = state.PageSize;
 
             var result = await GetNewMediator().Send(Query);
-            return new GridData<EnrolmentQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+            
+            if (!result.Succeeded)
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+                return new GridData<EnrolmentQueueEntryDto> { TotalItems = 0, Items = [] };
+            }
+            
+            return new GridData<EnrolmentQueueEntryDto> { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
         }
         finally
         {
