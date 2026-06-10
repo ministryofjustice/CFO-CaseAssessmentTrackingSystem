@@ -30,7 +30,6 @@ public static class GetInitiativeObjectivesDashboard
                             join i in context.Initiatives on io.InitiativeId equals i.Id
                             join creator in context.Users on io.CreatedBy equals creator.Id into creatorJoin
                             from creator in creatorJoin.DefaultIfEmpty()
-                            where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                             select new { p, u, t, o, io, i, creator };
 
             baseQuery = request switch
