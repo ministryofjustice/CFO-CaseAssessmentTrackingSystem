@@ -38,7 +38,7 @@ public static class ParticipantsWithPagination
         public string? OwnerId { get; set; }
         public string? TenantId { get; set; }
         public DateTime? RiskDue { get; set; }        
-        public RecentlyAssignedFilter RecentlyAssigned { get; set; } = RecentlyAssignedFilter.All;    
+        public RecentParticipantFilter RecentAction { get; set; } = RecentParticipantFilter.All;    
         }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
@@ -132,11 +132,16 @@ public static class ParticipantsWithPagination
                 query = query.Where(p => p.RiskDue <= request.RiskDue);
             }
 
-            // Apply recently assigned filter
-            DateTime? recentlyAssignedCutoff = request.RecentlyAssigned switch
+            DateTime? recentlyAssignedCutoff = request.RecentAction switch
             {
-                RecentlyAssignedFilter.Last10Days => DateTime.UtcNow.Date.AddDays(-10),
-                RecentlyAssignedFilter.Last30Days => DateTime.UtcNow.Date.AddDays(-30),
+                RecentParticipantFilter.AssignedLast10Days => DateTime.UtcNow.Date.AddDays(-10),
+                RecentParticipantFilter.AssignedLast30Days => DateTime.UtcNow.Date.AddDays(-30),
+                _ => null
+            };
+
+            DateTime? recentlyVisitedCutoff = request.RecentAction switch
+            {
+                RecentParticipantFilter.VisitedLast7Days => DateTime.UtcNow.Date.AddDays(-7),
                 _ => null
             };
 
@@ -152,7 +157,19 @@ public static class ParticipantsWithPagination
 
                 query = query.Where(p => participantIdsWithRecentOwnership.Contains(p.Id));
             }
-    
+
+            if (recentlyVisitedCutoff.HasValue)
+            {
+                // Filter participants who have access audit trail within the date range for currently logged in user
+                var participantIdsWithAccessAuditTrail = context.AccessAuditTrails
+                    .Where(oh => oh.UserId == request.CurrentUser!.UserId
+                                 && oh.AccessDate >= recentlyVisitedCutoff.Value)
+                    .Select(oh => oh.ParticipantId)
+                    .Distinct();
+
+                query = query.Where(p => participantIdsWithAccessAuditTrail.Contains(p.Id));
+            }
+
             var count = await query.AsNoTracking().CountAsync(cancellationToken);
 
             // Get the latest ownership assignment date for each participant if recently assigned filter is active
@@ -218,7 +235,69 @@ public static class ParticipantsWithPagination
                               }).ToArray(),
                       ConsentGranted = p.DateOfFirstConsent
                   }
-                : from p in query
+                : 
+                (recentlyVisitedCutoff.HasValue
+                ? from p in query
+                  join oh in (
+                      from h in context.AccessAuditTrails
+                      where h.UserId == request.CurrentUser!.UserId
+                      group h by h.ParticipantId into g
+                      select new
+                      {
+                          ParticipantId = g.Key,
+                          MostRecentAccess = g.Max(x => x.AccessDate)
+                      }
+                  ) on p.Id equals oh.ParticipantId into visitedGroup
+                  from visited in visitedGroup.DefaultIfEmpty()
+                  select new ParticipantPaginationDto()
+                  {
+                      AccessedOn = visited != null ? visited.MostRecentAccess : (DateTime?)null,
+                      EnrolmentStatus = p.EnrolmentStatus!,
+                      Owner = p.Owner!.DisplayName!,
+                      ConsentStatus = p.ConsentStatus!,
+                      CurrentLocation = new LocationDto
+                      {
+                          Id = p.CurrentLocation.Id,
+                          Name = p.CurrentLocation.Name,
+                          GenderProvision = p.CurrentLocation.GenderProvision,
+                          LocationType = p.CurrentLocation.LocationType,
+                          ContractName = p.CurrentLocation.Contract!.Description
+                      },
+                      Id = p.Id,
+                      EnrolmentLocation = p.EnrolmentLocation == null
+                          ? null
+                          : new LocationDto
+                          {
+                              Name = p.EnrolmentLocation.Name,
+                              GenderProvision = p.EnrolmentLocation.GenderProvision,
+                              LocationType = p.EnrolmentLocation.LocationType,
+                              Id = p.EnrolmentLocation.Id,
+                              ContractName = p.EnrolmentLocation.Contract!.Description
+                          },
+                      FirstName = p.FirstName,
+                      LastName = p.LastName,
+                      RiskDue = p.RiskDue,
+                      RiskDueReason = p.RiskDueReason!,
+                      Tenant = p.Owner!.TenantName!,
+                      Labels = (
+                              from pl in context.ParticipantLabels
+                              where EF.Property<string>(pl, "_participantId") == p.Id
+                                  && pl.Lifetime.EndDate > DateTime.UtcNow
+                              orderby pl.Lifetime.StartDate descending
+                              select new LabelDto
+                              {
+                                  Name = pl.Label.Name,
+                                  Description = pl.Label.Description,
+                                  Scope = pl.Label.Scope,
+                                  Contract = pl.Label.ContractId!,
+                                  Id = pl.Label.Id.Value,
+                                  AppIcon = pl.Label.AppIcon,
+                                  Colour = pl.Label.Colour,
+                                  Variant = pl.Label.Variant
+                              }).ToArray(),
+                      ConsentGranted = p.DateOfFirstConsent
+                  }
+                :from p in query
                   select new ParticipantPaginationDto()
                   {
                       EnrolmentStatus = p.EnrolmentStatus!,
@@ -265,7 +344,7 @@ public static class ParticipantsWithPagination
                                   Variant = pl.Label.Variant
                               }).ToArray(),
                       ConsentGranted = p.DateOfFirstConsent
-                  };
+                  });
 
             var sortColumn = request.OrderBy.Trim().ToLowerInvariant() switch
             {
@@ -280,6 +359,7 @@ public static class ParticipantsWithPagination
                 "riskdue" => "RiskDue",
                 "lastname" => "LastName",
                 "assignedon" => "AssignedOn",
+                "accessedon" => "AccessedOn",
                 _ => "Id"
             };
 
