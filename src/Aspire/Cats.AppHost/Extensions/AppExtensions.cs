@@ -7,10 +7,13 @@ internal static class AppExtensions
         IResourceBuilder<RabbitMQServerResource> rabbit,
         CatsDatabaseResources databases)
     {
+        var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
+        
         builder.AddProject<Projects.Server_UI>("cats")
         .WithCatsDatabaseReference(databases.CatsDb)
         .WithReference(rabbit)
-        .WaitFor(rabbit);        
+        .WaitFor(rabbit)
+        .WithReplicas(replicaCount);        
         return builder;
     }
 
