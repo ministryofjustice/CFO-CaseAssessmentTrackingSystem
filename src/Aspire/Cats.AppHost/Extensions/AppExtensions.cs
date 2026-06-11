@@ -7,10 +7,28 @@ internal static class AppExtensions
         IResourceBuilder<RabbitMQServerResource> rabbit,
         CatsDatabaseResources databases)
     {
-        builder.AddProject<Projects.Server_UI>("cats")
-        .WithCatsDatabaseReference(databases.CatsDb)
-        .WithReference(rabbit)
-        .WaitFor(rabbit);        
+        var replicaCount = int.TryParse(builder.Configuration["ReplicaCount"], out var n) ? n : 2;
+
+        var instances = Enumerable.Range(0, replicaCount)
+            .Select(i => builder.AddProject<Projects.Server_UI>($"cats-{i}")
+                .WithHttpsEndpoint(name: "https", port: 7060 + i, isProxied: false)
+                .WithHttpEndpoint(name: "http", port: 5030 + i, isProxied: false)
+                .WithCatsDatabaseReference(databases.CatsDb)
+                .WithReference(rabbit)
+                .WaitFor(rabbit))
+            .ToList();
+
+        if(replicaCount > 1)
+        {
+            var proxy = builder.AddProject<Projects.Cats_Proxy>("cats-proxy")
+                .WithEnvironment("ReplicaCount", replicaCount.ToString());
+
+            foreach (var instance in instances)
+            {
+                proxy.WithReference(instance).WaitFor(instance);
+            }
+        }
+
         return builder;
     }
 

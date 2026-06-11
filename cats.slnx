@@ -36,6 +36,7 @@
   </Folder>
   <Folder Name="/src/Aspire/">
     <Project Path="src/Aspire/Cats.AppHost/Cats.AppHost.csproj" />
+    <Project Path="src/Aspire/Cats.Proxy/Cats.Proxy.csproj" />
     <Project Path="src/Aspire/Cats.ServiceDefaults/Cats.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/Database/">
