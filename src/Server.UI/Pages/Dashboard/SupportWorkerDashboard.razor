@@ -1,8 +1,4 @@
-@using Cfo.Cats.Application.Features.Identity.DTOs
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard
-@using Cfo.Cats.Server.UI.Components.Users
-@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 
 @page "/pages/dashboard/supportworker"
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
@@ -23,7 +19,7 @@
         
 		@if (CurrentUser.AssignedRoles is not [])
 		{
-			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
+			<MudLink OnClick="@DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
 				@SelectedDisplayName
 			</MudLink>
 		}
@@ -94,6 +90,9 @@
                     </MudTabPanel>
                     <MudTabPanel Text="Reassessments" Class="pa-3">
                         <ReassessmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Recent Approved Activities" Class="pa-3">
+                        <RecentlyApprovedActivitiesComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
                     </MudTabPanel>
                 </MudTabs>
             </MudTabPanel>
