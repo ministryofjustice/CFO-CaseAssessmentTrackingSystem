@@ -1,12 +1,13 @@
-﻿using Cfo.Cats.Domain.Identity;
+﻿using Cfo.Cats.Application.Features.Identity.MessageBus;
 using Quartz;
+using Rebus.Bus;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
 public class NotifyAccountDeactivationJob(
     ILogger<NotifyAccountDeactivationJob> logger,
-    UserManager<ApplicationUser> userManager,
-    ICommunicationsService communicationsService) : IJob
+    IUnitOfWork unitOfWork,
+    IBus bus) : IJob
 {
     public static readonly JobKey Key = new JobKey(name: nameof(NotifyAccountDeactivationJob));
     public static readonly string Description = "A job to notify accounts that are due to deactivate.";
@@ -33,7 +34,7 @@ public class NotifyAccountDeactivationJob(
         {
             logger.LogInformation("Starting notifying accounts that will be deactivated soon");               
 
-            var users = await userManager.Users
+            var users = await unitOfWork.DbContext.Users
                 .IgnoreAutoIncludes()
                 .Where(user => user.IsActive)
                 .Where(user =>
@@ -42,19 +43,11 @@ public class NotifyAccountDeactivationJob(
                      : user.Created.HasValue && user.Created.Value.Date == sevenDaysFromDeactivationDate)
                 .ToListAsync();
 
-            if (users.Any())
+            foreach(var user in users)
             {
-                users.ForEach(Notify);
-
-                var userList = string.Join(", ", users.Select(u => u.UserName));
-                logger.LogInformation("Following users warned they will be deactivated soon: {Users}", userList);                
-            }
-            else
-            {
-                logger.LogInformation($"No accounts need notifying");
+                await bus.Publish(new NotifyInactiveUserCommand(user.Email!));
             }
 
-            async void Notify(ApplicationUser user) => await communicationsService.SendAccountDeactivationEmail(user.Email!);
         }
         catch (Exception ex)
         {

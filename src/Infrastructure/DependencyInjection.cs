@@ -52,6 +52,7 @@ using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Handlers;
 using ZiggyCreatures.Caching.Fusion;
+using Cfo.Cats.Application.Features.Identity.MessageBus;
 
 namespace Cfo.Cats.Infrastructure;
 
@@ -65,6 +66,16 @@ public static class DependencyInjection
         services.AddSettings(configuration, environment)
             .AddDatabase(configuration)
             .AddServices(configuration);
+
+        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
+            .GetTypes()
+            .Where(t => t.IsAbstract == false && t.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
+
+        foreach (var handler in handlerTypes)
+        {
+            services.AddScoped(handler);
+        }
 
         services.AddAuthenticationService(configuration)
             .AddFusionCacheService();
@@ -127,9 +138,9 @@ public static class DependencyInjection
         // In a Worker context it returns null for all user properties, which is acceptable for background jobs.
         services.AddHttpContextAccessor();
 
-        // Minimal Identity registration — only UserManager is needed (for NotifyAccountDeactivationJob).
-        // Does not include SignInManager, cookie auth, or other web-specific Identity services.
-        services.AddWorkerIdentityServices(configuration);
+        // Register a minimal set of Identity services required by the Worker.
+        services.AddScoped<IHandleMessages, SyncParticipantCommandHandler>();
+        services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
 
         // Quartz always runs in the Worker
         services.AddQuartzJobsAndTriggers(configuration);
@@ -194,16 +205,6 @@ public static class DependencyInjection
                     .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
                 .Start();
         });
-
-        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
-            .GetTypes()
-            .Where(t => t.IsAbstract == false && t.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
-
-        foreach (var handler in handlerTypes)
-        {
-            services.AddScoped(handler);
-        }
 
         return services;
     }

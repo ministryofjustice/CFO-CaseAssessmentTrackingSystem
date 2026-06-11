@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Features.Participants.MessageBus;
+﻿using Cfo.Cats.Application.Features.Identity.MessageBus;
+using Cfo.Cats.Application.Features.Participants.MessageBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Rebus.Activation;
@@ -17,6 +18,7 @@ internal class OvernightBackgroundService(IServiceProvider provider, IConfigurat
     {
         _activator = new BuiltinHandlerActivator();
         _activator.Handle<SyncParticipantCommandHandler>(provider);
+        _activator.Handle<NotifyInactiveUserCommandHandler>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.OvernightService)
@@ -31,6 +33,7 @@ internal class OvernightBackgroundService(IServiceProvider provider, IConfigurat
             .Start();
 
         await _bus.Subscribe<SyncParticipantCommand>();
+        await _bus.Subscribe<NotifyInactiveUserCommand>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
