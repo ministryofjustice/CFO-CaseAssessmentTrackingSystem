@@ -9,11 +9,16 @@ internal static class AppExtensions
     {
         var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
         
-        builder.AddProject<Projects.Server_UI>("cats")
-        .WithCatsDatabaseReference(databases.CatsDb)
-        .WithReference(rabbit)
-        .WaitFor(rabbit)
-        .WithReplicas(replicaCount);        
+        var cats = builder.AddProject<Projects.Server_UI>("cats")
+            .WithCatsDatabaseReference(databases.CatsDb)
+            .WithReference(rabbit)
+            .WaitFor(rabbit);
+
+        if(replicaCount > 1)
+        {
+            cats.WithReplicas(replicaCount);        
+        }
+
         return builder;
     }
 
