@@ -31,7 +31,17 @@ public partial class ActivitiesDialog
         Model.OrderBy = "Created";
         Model.SortDirection = $"{SortDirection.Descending}";
 
-        _activities = await GetNewMediator().Send(Model);
+        var result = await GetNewMediator().Send(Model);
+        
+        if (result.Succeeded)
+        {
+            _activities = result.Data;
+        }
+        else
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            _activities = null;
+        }
     }
 
     private Task OnPaginationChanged(int arg)

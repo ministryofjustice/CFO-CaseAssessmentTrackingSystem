@@ -1,6 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.AuditTrails.DTOs
 @using Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
-@using Cfo.Cats.Domain.Entities.Documents
 
 @inherits CatsComponentBase
 
@@ -9,11 +8,11 @@
              FixedHeader="true"
              FixedFooter="true"
              Virtualize="true"
-             @bind-RowsPerPage="defaultPageSize"
+             @bind-RowsPerPage="_defaultPageSize"
              Height="calc(100vh - 300px)"
-             Loading="@loading"
+             Loading="@_loading"
              Hover="true" 
-             @ref="table"
+             @ref="_table"
              BreakPoint="Breakpoint.Sm">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
@@ -25,13 +24,13 @@
                     </MudEnumSelect>
                 </div>
             </div>
-            <div class="flex-grow-1" />
+            <div class="flex-grow-1"></div>
 
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
-                               OnClick="@(() => OnRefresh())"
+                               OnClick="@OnRefresh"
                                StartIcon="@Icons.Material.Filled.Refresh" 
                                Color="Color.Secondary">
                         @ConstantString.Refresh
@@ -41,7 +40,7 @@
                 <MudStack Row="true" AlignItems="AlignItems.Stretch">
                     <MudEnumSelect TEnum="Cfo.Cats.Domain.Entities.Documents.DocumentAuditTrailRequestType?" Placeholder="Search for request type" Value="@Query.RequestType" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="min-width:120px" FullWidth="true"> </MudEnumSelect>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End" Style="min-width:120px" FullWidth="true"
+                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s!))" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End" Style="min-width:120px" FullWidth="true"
                                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                         </MudTextField>
                     </MudHidden>

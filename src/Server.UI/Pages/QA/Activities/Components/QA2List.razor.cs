@@ -27,8 +27,16 @@ public partial class QA2List
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+            var result = await GetNewMediator().Send(Query, cancellationToken);
+
+            if (result.Succeeded)
+            {
+                return new GridData<ActivityQueueEntryDto>
+                    { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return new GridData<ActivityQueueEntryDto> { TotalItems = 0, Items = [] };
         }
         finally
         {

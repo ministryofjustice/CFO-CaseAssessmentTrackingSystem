@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
+
 using static Cfo.Cats.Application.Features.Activities.DTOs.QAActivitiesResultsSummaryDto;
 
 namespace Cfo.Cats.Application.Features.Activities.Queries;
@@ -9,19 +10,19 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class QAActivitiesResultsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : QAActivitiesResultsAdvancedFilter, IRequest<PaginatedData<QAActivitiesResultsSummaryDto>>
+    public class Query : QAActivitiesResultsAdvancedFilter, IRequest<Result<PaginatedData<QAActivitiesResultsSummaryDto>>>
     {
         public QAActivitiesResultsAdvancedSpecification Specification => new(this);
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, PaginatedData<QAActivitiesResultsSummaryDto>>
+        : IRequestHandler<Query, Result<PaginatedData<QAActivitiesResultsSummaryDto>>>
     {
-        public async Task<PaginatedData<QAActivitiesResultsSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<QAActivitiesResultsSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
 
-            bool hideUser = ShouldHideUser(request.UserProfile);
+            var hideUser = ShouldHideUser(request.UserProfile);
             var CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
 
 #pragma warning disable CS8602

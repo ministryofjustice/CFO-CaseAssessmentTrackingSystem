@@ -10,15 +10,15 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class ActivitiesWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : ActivitiesAdvancedFilter, IRequest<PaginatedData<ActivitySummaryDto>>
+    public class Query : ActivitiesAdvancedFilter, IRequest<Result<PaginatedData<ActivitySummaryDto>>>
     {
         public ActivitiesAdvancedSpecification Specification => new(this);
     }
 
     private class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
-        : IRequestHandler<Query, PaginatedData<ActivitySummaryDto>>
+        : IRequestHandler<Query, Result<PaginatedData<ActivitySummaryDto>>>
     {
-        public async Task<PaginatedData<ActivitySummaryDto>> Handle(Query request, CancellationToken cancellationToken) =>
+        public async Task<Result<PaginatedData<ActivitySummaryDto>>> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.Activities
                 .Include(a => a.TookPlaceAtLocation)
                 .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value) // push "Pending" activities to top
