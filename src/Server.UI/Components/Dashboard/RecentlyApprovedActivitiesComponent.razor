@@ -1,0 +1,105 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetRecentlyApprovedActivities.ApprovedActivitiesDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null && Data.Details.Any())
+{
+    <MudGrid Spacing="2">
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
+    @if (VisualMode)
+    {
+        <ApexCharts.ApexChart TItem="GetRecentlyApprovedActivities.ActivityDetail" Options="Options" Height="650" Width="@("100%")">
+            <ApexCharts.ApexPointSeries TItem="GetRecentlyApprovedActivities.ActivityDetail"
+                                        Items="Data.Details"
+                                        Name="@($"Approved Activities ({Data.Details.Length})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.TookPlaceAtLocation)"
+                                        YAggregate="@(e => e.Count())"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+        </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Dense="true">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ParticipantId)">
+                        Participant ID
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ParticipantName)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ActivityType)">
+                        Activity Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.Category)">
+                        Category
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ApprovedOn ?? DateTime.MinValue)">
+                        Approved On
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.AddedOn ?? DateTime.MinValue)">
+                        Added On
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.TookPlaceOn ?? DateTime.MinValue)">
+                        Took Place On
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.TookPlaceAtLocation)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Participant ID">
+                    <MudButton Color="Color.Info" Variant="Variant.Text" Size="Size.Small" OnClick="@(() => EditParticipant(context.ParticipantId))">
+                        @context.ParticipantId
+                    </MudButton>
+                </MudTd>
+                <MudTd DataLabel="Participant">@context.ParticipantName</MudTd>
+                <MudTd DataLabel="Activity Type">@context.ActivityType</MudTd>
+                <MudTd DataLabel="Category">@context.Category</MudTd>
+                <MudTd DataLabel="Approved On">@context.ApprovedOn?.ToString("d")</MudTd>
+                <MudTd DataLabel="Added On">@context.AddedOn?.ToString("d")</MudTd>
+                <MudTd DataLabel="Took Place On">@context.TookPlaceOn?.ToString("d")</MudTd>
+                <MudTd DataLabel="Location">@context.TookPlaceAtLocation</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="[10, 20, 50]" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
+}
