@@ -1,0 +1,254 @@
+@using ApexCharts
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Domain.Common.Enums
+@using MudSize = MudBlazor.Size
+@using MudAlign = MudBlazor.Align
+
+@inherits CatsComponent<GetUnassignedCasesSummary.UnassignedCasesSummaryDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+<style>
+    /* Override for compact toolbars */
+.compact-toolbar .mud-table-toolbar {
+    height: 60px !important;
+    min-height: 60px !important;
+    padding: 8px 16px !important;
+}
+</style>
+@if (VisualMode)
+{
+    <!-- Chart View -->
+    <MudStack Class="mb-4">
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">Unassigned Cases</MudText>
+                    <MudText Typo="Typo.body2">Cases without an assigned owner</MudText>
+                </div>
+            </div>
+        </div>
+    </MudStack>
+
+    @if (Data is not null)
+    {
+        <MudGrid Spacing="2">
+            <MudItem>
+                <MudChip T="string">Custody (@Data.Custody)</MudChip>
+                <MudChip T="string">Community (@Data.Community)</MudChip>
+            </MudItem>
+        </MudGrid>
+    }
+
+    @if (!Loading && Data is not null && Data.Summaries.Any())
+    {
+        <ApexChart TItem="ChartDataPoint" Options="ChartOptions" Height="700">
+            @{
+                var chartData = ChartData();
+                var statuses = chartData
+                    .Select(x => x.Status)
+                    .DistinctBy(x => x.Value)
+                    .OrderBy(x => x.LogicalOrder);
+            }
+            
+            @foreach (var status in statuses)
+            {
+                <ApexPointSeries TItem="ChartDataPoint"
+                                Name="@status.Name"
+                                Items="@chartData.Where(x => x.Status == status).ToList()"
+                                XValue="@(x => x.LocationName)"
+                                YValue="@(x => x.Count)"
+                                SeriesType="SeriesType.Bar"
+                                ShowDataLabels
+                                Color="@status.Colour" />
+            }
+        </ApexChart>
+    }
+    else if (!Loading)
+    {
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudAlign.Center">No unassigned cases found</MudText>
+    }
+}
+else
+{
+    <!-- Tabular View -->
+<MudDataGrid T="UnassignedCaseDto"
+             ServerData="@(ServerReload)"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="_defaultPageSize"
+             Height="calc(100vh - 400px)"
+             Loading="@Loading"
+             Hover="true"
+             @ref="_table"
+             BreakPoint="Breakpoint.Sm"
+             Class="compact-toolbar">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1" style="padding: 0;">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">Unassigned Cases</MudText>
+                    <MudText Typo="Typo.body2">Cases without an assigned owner</MudText>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 align-center">
+            @if (_canSearch)
+            {
+                <MudTextField T="string" 
+                              ValueChanged="@OnSearch" 
+                              Value="@Query.Keyword" 
+                              Placeholder="Search by name or ID" 
+                              Clearable="true"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Filled.Search" 
+                              IconSize="MudSize.Small"
+                              Style="max-width: 250px;">
+                </MudTextField>
+            }
+            <MudMenu Size="MudSize.Small" 
+                     Label="@(Query.EnrolmentStatus.HasValue ? EnrolmentStatus.FromValue(Query.EnrolmentStatus.Value).Name : "All Statuses")" 
+                     EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All Statuses" OnClick="@(() => EnrolmentStatusChanged(null))" />
+                @foreach (var status in EnrolmentStatus.List)
+                {
+                    <MudMenuItem Label="@status.Name" OnClick="@(() => EnrolmentStatusChanged(status.Value))" />
+                }
+            </MudMenu>
+            <MudButton Size="MudSize.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if(Query.Locations is { Length: 0 })
+                {
+                    @("All Locations")
+                }
+                else
+                {
+                    @_locations[Query.Locations[0]]
+                }
+            </MudButton>
+            <MudSwitch Value="_includeTransferIn"
+                       T="bool"
+                       Color="Color.Primary"
+                       Size="MudBlazor.Size.Small"
+                       ValueChanged="@OnIncludeTransferInChanged">
+                Include Transfer In
+            </MudSwitch>   
+            <MudTooltip Text="Clear Filters">
+                <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearFilters())" />
+            </MudTooltip>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="Actions" Sortable="false">
+            <CellTemplate>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" 
+                         Variant="Variant.Filled" 
+                         Size="MudSize.Small" 
+                         Dense="true" 
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" 
+                         IconColor="Color.Info" 
+                         AnchorOrigin="Origin.CenterLeft">
+                    @if (context.Item.HasIncomingTransfer)
+                    {
+                        <MudMenuItem OnClick="@(() => NavigateToTransfers())">
+                            <MudIcon Icon="@Icons.Material.Filled.Input" Size="MudSize.Small" Class="mr-2" />
+                            Process Transfer First
+                        </MudMenuItem>
+                    }
+                    else
+                    {
+                        @if (_canReassign)
+                        {
+                            <MudMenuItem OnClick="@(() => AssignToSelf(context.Item))">
+                                <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="MudSize.Small" Class="mr-2" />
+                                Assign to Me
+                            </MudMenuItem>
+                            <MudMenuItem OnClick="@(() => AssignToOther(context.Item))">
+                                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Small" Class="mr-2" />
+                                Assign to Another User
+                            </MudMenuItem>
+                        }
+                    }
+                    <MudMenuItem OnClick="@(() => ViewParticipant(context.Item.Id))">
+                        <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="MudSize.Small" Class="mr-2" />
+                        View Participant
+                    </MudMenuItem>
+                </MudMenu>
+            </CellTemplate>
+        </PropertyColumn>
+        
+        <PropertyColumn Property="x => x.ParticipantName" Title="Participant" SortBy="@(x => x.LastName + x.FirstName + x.Id)">
+            <CellTemplate>
+                <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                    <div class="d-flex align-items-center gap-2">
+                        <MudLink Href="@($"/pages/participants/{context.Item.Id}")">
+                            @context.Item.ParticipantName
+                        </MudLink>
+                        @if (context.Item.HasIncomingTransfer)
+                        {
+                            <MudChip T="string" Size="MudSize.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.Input">
+                                Transfer In
+                            </MudChip>
+                        }
+                    </div>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Item.Id</MudText>
+                </MudStack>
+            </CellTemplate>
+        </PropertyColumn>
+        
+        <PropertyColumn Property="x => x.EnrolmentStatus" Title="Status">
+            <CellTemplate>
+                <EnrolmentStatusChip Status="@context.Item.EnrolmentStatus" />
+            </CellTemplate>
+        </PropertyColumn>
+        
+        <PropertyColumn Property="x => x.ConsentStatus" Title="Consent">
+            <CellTemplate>
+                <ConsentStatusChip Status="@context.Item.ConsentStatus" />
+            </CellTemplate>
+        </PropertyColumn>
+        
+        <PropertyColumn Property="x => x.CurrentLocation" Title="Location" SortBy="x => x.CurrentLocation.Name">
+            <CellTemplate>
+                <div class="d-flex align-items-center">
+                    @if (context.Item.CurrentLocation.LocationType.IsCustody)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" Size="MudSize.Small" Class="mr-2" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" Size="MudSize.Small" Class="mr-2" />
+                    }
+                    <span>@context.Item.CurrentLocation.Name</span>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    
+    <NoRecordsContent>
+        <MudText>No unassigned cases found</MudText>
+    </NoRecordsContent>
+    
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
+</MudDataGrid>
+}
