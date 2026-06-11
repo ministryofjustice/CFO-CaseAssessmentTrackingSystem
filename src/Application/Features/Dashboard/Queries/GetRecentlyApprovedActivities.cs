@@ -1,7 +1,4 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Dashboard.DTOs;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
@@ -9,93 +6,73 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetRecentlyApprovedActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>>
+    public class Query : IRequest<Result<ApprovedActivitiesDto>>
     {
-        public required UserProfile UserProfile { get; init; }
-        public required DateTime ApprovedStart { get; init; }
-        public required DateTime ApprovedEnd { get; init; }
-        public LocationDto? Location { get; init; }
-        public List<ActivityType>? IncludeTypes { get; init; }
-        public int PageNumber { get; init; } = 1;
-        public int PageSize { get; init; } = 10;
-        public string OrderBy { get; set; } = "ApprovedOn";
-        public string SortDirection { get; init; } = "Descending";
-        public string TenantId { get; init; } = null!;
+        public required DateTime StartDate { get; init; }
+        public required DateTime EndDate { get; init; }
+        public string? UserId { get; init; }
+        public string? TenantId { get; init; }
+        public required UserProfile CurrentUser { get; init; }
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>>
+        : IRequestHandler<Query, Result<ApprovedActivitiesDto>>
     {
-        public async Task<Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<ApprovedActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var db = unitOfWork.DbContext;
+            var context = unitOfWork.DbContext;
 
-#pragma warning disable CS8602
-            var query = from a in db.Activities
-                        where a.TenantId.StartsWith(request.UserProfile.TenantId!)
-                            && a.Status == ActivityStatus.ApprovedStatus.Value
-                            && a.CompletedOn >= request.ApprovedStart.Date
-                            && a.CompletedOn < request.ApprovedEnd.AddDays(1).Date
-                            && (string.IsNullOrWhiteSpace(request.TenantId) || a.TenantId.StartsWith(request.TenantId))
+            var baseQuery = context.Activities
+                .Where(a => a.Status == ActivityStatus.ApprovedStatus.Value
+                            && a.CompletedOn >= request.StartDate.Date
+                            && a.CompletedOn <= request.EndDate.Date);
 
-                        select a;
-            
-            if (request.Location is not null)
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
             {
-                query = query.Where(a => a.TookPlaceAtLocation.Id == request.Location.Id);
-            }
-            
-            if (request.IncludeTypes is { Count: > 0 })
-            {
-                var typeValues = request.IncludeTypes.Select(t => t.Value).ToList();
-                query = query.Where(a => typeValues.Contains(a.Type));
-            }
-            
-            var results = from a in query
-                         select new RecentlyApprovedActivitiesSummaryDto
-                         {
-                             ParticipantId = a.Participant.Id,
-                             Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
-                             Definition = a.Definition,
-                             ApprovedOn = a.CompletedOn,
-                             Created = a.Created,
-                             CommencedOn = a.CommencedOn,
-                             TookPlaceAtLocationName = a.TookPlaceAtLocation.Name,
-                             ApprovedBy = a.CompletedBy
-                         };
-            
-            results = request.SortDirection.ToLower() == "ascending"
-                ? results.OrderBy(a => a.ApprovedOn)
-                : results.OrderByDescending(a => a.ApprovedOn);
-#pragma warning restore CS8602
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(a => a.OwnerId == userId),
 
-            var count = await results.CountAsync(cancellationToken);
-            
-            var items = await results
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync(cancellationToken);
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(a => a.TenantId.StartsWith(tenantId)),
 
-            return Result<PaginatedData<RecentlyApprovedActivitiesSummaryDto>>.Success(
-                new PaginatedData<RecentlyApprovedActivitiesSummaryDto>(items, count, request.PageNumber, request.PageSize));
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var results = await (from a in baseQuery
+                          orderby a.CompletedOn descending
+                          select new ActivityDetail
+                          {
+                              ParticipantId = a.ParticipantId,
+                              ParticipantName = a.Participant!.FirstName + " " + a.Participant.LastName,
+                              Category = a.Definition.Category.Name,
+                              ActivityType = a.Definition.Type.Name,
+                              ApprovedOn = a.CompletedOn,
+                              AddedOn = a.Created,
+                              TookPlaceOn = a.CommencedOn,
+                              TookPlaceAtLocation = a.TookPlaceAtLocation.Name
+                          })
+                          .AsNoTracking()
+                          .ToArrayAsync(cancellationToken);
+
+            var custody = results.Count(r => r.TookPlaceAtLocation.Contains("HMP") || r.TookPlaceAtLocation.Contains("Wing"));
+            var community = results.Length - custody;
+
+            return new ApprovedActivitiesDto(results, custody, community);
         }
+    }
 
-        public class Validator : AbstractValidator<Query>
-        {
-            public Validator()
-            {
-                RuleFor(x => x.UserProfile.UserId)
-                    .NotNull();
-                
-                RuleFor(r => r.PageNumber)
-                    .GreaterThan(0)
-                    .WithMessage(string.Format(ValidationConstants.PositiveNumberMessage, "Page Number"));
+    public record ApprovedActivitiesDto(ActivityDetail[] Details, int Custody, int Community);
 
-                RuleFor(r => r.PageSize)
-                    .GreaterThan(0)
-                    .LessThanOrEqualTo(ValidationConstants.MaximumPageSize)
-                    .WithMessage(ValidationConstants.MaximumPageSizeMessage);
-            }
-        }
+    public record ActivityDetail
+    {
+        public required string ParticipantId { get; init; }
+        public required string ParticipantName { get; init; }
+        public required string Category { get; init; }
+        public required string ActivityType { get; init; }
+        public DateTime? ApprovedOn { get; init; }
+        public DateTime? AddedOn { get; init; }
+        public DateTime? TookPlaceOn { get; init; }
+        public required string TookPlaceAtLocation { get; init; }
     }
 }
