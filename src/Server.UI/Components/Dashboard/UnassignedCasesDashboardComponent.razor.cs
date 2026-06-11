@@ -78,8 +78,8 @@ public partial class UnassignedCasesDashboardComponent
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
-        _canReassign = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Reassign)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, null, SecurityPolicies.AuthorizedUser)).Succeeded;
+        _canReassign = (await AuthService.AuthorizeAsync(state.User, null, SecurityPolicies.Reassign)).Succeeded;
         _previousVisualMode = VisualMode;
         _previousTenantId = TenantId;
 
