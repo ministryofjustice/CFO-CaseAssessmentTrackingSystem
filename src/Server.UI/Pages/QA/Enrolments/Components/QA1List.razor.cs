@@ -8,9 +8,9 @@ public partial class QA1List
 {    
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    private bool _loading = false;
+    private bool _loading;
     private int _defaultPageSize = 30;
-    private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
+    private MudDataGrid<EnrolmentQueueEntryDto> _table = null!;
 
     private Qa1WithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
@@ -22,12 +22,20 @@ public partial class QA1List
             _loading = true;
             Query.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<EnrolmentQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+            var result = await GetNewMediator().Send(Query, cancellationToken);
+
+            if (result.Succeeded)
+            {
+                return new GridData<EnrolmentQueueEntryDto>
+                    { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return new GridData<EnrolmentQueueEntryDto> { TotalItems = 0, Items = [] };
         }
         finally
         {

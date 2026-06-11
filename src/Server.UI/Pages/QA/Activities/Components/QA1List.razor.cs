@@ -27,7 +27,15 @@ public partial class QA1List
             Query.PageSize = state.PageSize;
 
             var result = await GetNewMediator().Send(Query);
-            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+
+            if (result.Succeeded)
+            {
+                return new GridData<ActivityQueueEntryDto>
+                    { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return new GridData<ActivityQueueEntryDto> { TotalItems = 0, Items = [] };
         }
         finally
         {

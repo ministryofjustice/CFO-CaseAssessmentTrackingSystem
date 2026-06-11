@@ -9,21 +9,20 @@ namespace Cfo.Cats.Application.Features.Notifications.Queries;
 public static class NotificationsWithPaginationQuery
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : NotificationsAdvancedFilter, IRequest<PaginatedData<NotificationDto>>
+    public class Query : NotificationsAdvancedFilter, IRequest<Result<PaginatedData<NotificationDto>>>
     {
         public NotificationAdvancedSpecification Specification => new(this);
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper)
-        : IRequestHandler<Query, PaginatedData<NotificationDto>>
+        : IRequestHandler<Query, Result<PaginatedData<NotificationDto>>>
     {
-        public async Task<PaginatedData<NotificationDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<NotificationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext.Notifications.OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Notification, NotificationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
             return data;
-
         }
     }
 }
