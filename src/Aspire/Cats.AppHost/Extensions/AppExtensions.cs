@@ -11,7 +11,7 @@ internal static class AppExtensions
         var useSignalRBackplane = string.Equals(builder.Configuration["Features:UseSignalRBackplane"], "true", StringComparison.OrdinalIgnoreCase);
         var enablePresenceHub = string.Equals(builder.Configuration["Features:PresenceHub:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
         var relayUserPresenceNotifications = string.Equals(builder.Configuration["Features:PresenceHub:RelayUserPresenceNotifications"], "true", StringComparison.OrdinalIgnoreCase);
-        var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
+        var replicas = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 2;
         
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
@@ -22,9 +22,24 @@ internal static class AppExtensions
             .WithReference(rabbit)
             .WaitFor(rabbit);
 
-        if(replicaCount > 1)
+        var instances = Enumerable.Range(0, replicas)
+            .Select(i => builder.AddProject<Projects.Server_UI>($"cats-{i}")
+                .WithHttpsEndpoint(name: "https", port: 7060 + i, isProxied: false)
+                .WithHttpEndpoint(name: "http", port: 5030 + i, isProxied: false)
+                .WithCatsDatabaseReference(databases.CatsDb)
+                .WithReference(rabbit)
+                .WaitFor(rabbit))
+            .ToList();
+
+        if(replicas > 1)
         {
-            cats.WithReplicas(replicaCount);        
+            var proxy = builder.AddProject<Projects.Cats_Proxy>("cats-proxy")
+                .WithEnvironment("Replicas", replicas.ToString());
+
+            foreach (var instance in instances)
+            {
+                proxy.WithReference(instance).WaitFor(instance);
+            }
         }
 
         if(useSignalRBackplane)
