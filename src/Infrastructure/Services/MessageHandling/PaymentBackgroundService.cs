@@ -40,7 +40,8 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.PaymentService)
-                .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
+                .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange)
+                .InputQueueOptions(q => q.AddArgument(RabbitMQ.Client.Headers.XSingleActiveConsumer, true))) // Ensure only one instance of the service processes messages at a time to prevent duplicate payments
             .Options(o =>
             {
                 o.SetNumberOfWorkers(1);
