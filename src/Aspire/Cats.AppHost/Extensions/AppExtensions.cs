@@ -7,16 +7,31 @@ internal static class AppExtensions
         IResourceBuilder<RabbitMQServerResource> rabbit,
         CatsDatabaseResources databases)
     {
+        var useWorkerForJobs = string.Equals(builder.Configuration["Features:UseWorkerForJobs"], "true", StringComparison.OrdinalIgnoreCase);
         var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
         
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
+            .WithEnvironment("Features__UseWorkerForJobs", useWorkerForJobs.ToString().ToLowerInvariant())
             .WithReference(rabbit)
             .WaitFor(rabbit);
 
         if(replicaCount > 1)
         {
             cats.WithReplicas(replicaCount);        
+        }
+
+        if (useWorkerForJobs)
+        {
+            var worker = builder.AddProject<Projects.Worker>("cats-worker")
+                .WithCatsDatabaseReference(databases.CatsDb)
+                .WithEnvironment("Features__UseWorkerForJobs", "true")
+                .WithReference(rabbit)
+                .WaitFor(rabbit);
+
+            // Give CATS a reference to the Worker so it can resolve the Worker's
+            // job management API via Aspire service discovery ("https+http://cats-worker")
+            cats.WithReference(worker);
         }
 
         return builder;
