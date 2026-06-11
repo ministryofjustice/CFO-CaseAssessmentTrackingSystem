@@ -1,6 +1,4 @@
 ﻿@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
 @inherits CatsComponentBase;
@@ -27,10 +25,10 @@
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudText Typo="Typo.h6" Color="Color.Info">
-                    First Pass
-                </MudText>
+                <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Medium" Color="Color.Primary" />
+                First Pass
             </div>
+
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
@@ -38,7 +36,7 @@
                         <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@_loading"
-                                   OnClick="@(() => OnRefresh())"
+                                   OnClick="@(OnRefresh)"
                                    StartIcon="@Icons.Material.Filled.Refresh" 
                                    Color="Color.Secondary">
                             @ConstantString.Refresh
@@ -48,7 +46,7 @@
 
                     </MudHidden>
                 </div>
-                <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                <MudTextField T="string" ValueChanged="@(OnSearch!)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                 </MudTextField>
             </div>

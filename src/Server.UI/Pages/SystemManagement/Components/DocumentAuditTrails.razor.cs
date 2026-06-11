@@ -11,16 +11,16 @@ namespace Cfo.Cats.Server.UI.Pages.SystemManagement.Components;
 public partial class DocumentAuditTrails(IMediator mediator)
 {
     [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [CascadingParameter]
     private UserProfile? UserProfile { get; set; }
 
     private GetDocumentAuditTrailsWithPagination.Query Query { get; } = new();
 
-    private MudDataGrid<DocumentAuditTrailDto> table = null!;
-    private bool loading;
-    private int defaultPageSize = 15;
+    private MudDataGrid<DocumentAuditTrailDto> _table = null!;
+    private bool _loading;
+    private int _defaultPageSize = 15;
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,43 +31,53 @@ public partial class DocumentAuditTrails(IMediator mediator)
     {
         try
         {
-            loading = true;
+            _loading = true;
             Query.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await mediator.Send(Query);
-            return new GridData<DocumentAuditTrailDto> { TotalItems = result.TotalItems, Items = result.Items };
+            var result = await mediator.Send(Query, cancellationToken);
+
+            if (result.Succeeded)
+            {
+                return new GridData<DocumentAuditTrailDto>
+                    { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return new GridData<DocumentAuditTrailDto> { TotalItems = 0, Items = [] };
+
         }
         finally
         {
-            loading = false;
+            _loading = false;
         }
     }
 
     private async Task OnChangedListView(DocumentAuditTrailListView listview)
     {
         Query.ListView = listview;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
+    
     private async Task OnSearch(string text)
     {
         Query.Keyword = text;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private async Task OnSearch(DocumentAuditTrailRequestType? val)
     {
         Query.RequestType = val;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private async Task OnRefresh()
     {
         Query.Keyword = string.Empty;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private async Task Download(DocumentAuditTrailDto document)

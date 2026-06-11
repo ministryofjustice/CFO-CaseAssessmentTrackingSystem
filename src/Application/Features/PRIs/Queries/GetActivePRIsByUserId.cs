@@ -10,14 +10,14 @@ public static class GetActivePRIsByUserId
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Query : PRIAdvancedFilter, IRequest<PaginatedData<PRIPaginationDto>>
+    public class Query : PRIAdvancedFilter, IRequest<Result<PaginatedData<PRIPaginationDto>>>
     {
         public PRIAdvancedSpecification Specification => new(this);
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<PRIPaginationDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<PRIPaginationDto>>>
     {
-        public async Task<PaginatedData<PRIPaginationDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<PRIPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext.PRIs
                 .Where(x => (x.AssignedTo == request.CurrentUser!.UserId

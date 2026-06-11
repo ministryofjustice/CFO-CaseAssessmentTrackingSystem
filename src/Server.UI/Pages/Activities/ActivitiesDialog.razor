@@ -35,10 +35,10 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudDateRangePicker 
-                        Label="Commenced from/to range" 
-                        DateRangeChanged="OnDateRangeChanged" 
-                        Clearable 
-                        MaxDate="DateTime.Today" />
+                            Label="Commenced from/to range" 
+                            DateRangeChanged="@(OnDateRangeChanged!)" 
+                            Clearable 
+                            MaxDate="DateTime.Today" />
                     </MudItem>
                     <MudItem xs="12">
                         <LocationSelectComponent
@@ -50,13 +50,13 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudChipSet T="ActivityType"
-                        SelectedValuesChanged="OnActivityTypesChanged"
-                        SelectionMode="SelectionMode.MultiSelection">
+                                    SelectedValuesChanged="OnActivityTypesChanged"
+                                    SelectionMode="SelectionMode.MultiSelection">
                             @foreach (var type in ActivityType.List)
                             {
                                 <MudChip Value="type"
-                                SelectedColor="Color.Info"
-                                Text="@type.Name" />
+                                         SelectedColor="Color.Info"
+                                         Text="@type.Name" />
                             }
                         </MudChipSet>
                     </MudItem>
@@ -98,26 +98,26 @@
                                             at @activity.TookPlaceAtLocationName
                                         </MudText>                          
 
-										@if (activity.Status == ActivityStatus.AbandonedStatus)
-										{			
-											var justification = string.IsNullOrWhiteSpace(activity.AbandonJustification)
-																? string.Empty
-																: $" because {activity.AbandonJustification.Trim()}";
+                                        @if (activity.Status == ActivityStatus.AbandonedStatus)
+                                        {			
+                                            var justification = string.IsNullOrWhiteSpace(activity.AbandonJustification)
+                                                ? string.Empty
+                                                : $" because {activity.AbandonJustification.Trim()}";
 
-											<MudText Typo="Typo.body2" Class="pt-1">
-												Abandon Reason: @activity.AbandonReason@justification
-											</MudText>
-										}
+                                            <MudText Typo="Typo.body2" Class="pt-1">
+                                                Abandon Reason: @activity.AbandonReason@justification
+                                            </MudText>
+                                        }
 
-										@{
-											Color color = activity.Status switch
-											{
-												_ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
-												_ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
-												_ when activity.Status == ActivityStatus.AbandonedStatus => Color.Info,
-												_ => Color.Default
-											};
-										}
+                                        @{
+                                            Color color = activity.Status switch
+                                            {
+                                                _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
+                                                _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
+                                                _ when activity.Status == ActivityStatus.AbandonedStatus => Color.Info,
+                                                _ => Color.Default
+                                            };
+                                        }
                                         <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
 										
                                     </div>
@@ -126,8 +126,8 @@
                                 @if (activity.Status.AllowsChanges)
                                 {
                                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                                                Dense="true"
-                                                EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                                             Dense="true"
+                                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
 
                                         <MudMenuItem OnClick="() => Edit(activity)">
                                             @ConstantString.EditActivity
@@ -142,10 +142,10 @@
                         <NestedList>
                             <MudListItem>
                                 <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
-                                Value="@activity.AdditionalInformation"
-                                Lines="5"
-                                Class="mt-0"
-                                Disabled />
+                                              Value="@activity.AdditionalInformation"
+                                              Lines="5"
+                                              Class="mt-0"
+                                              Disabled />
                             </MudListItem>
                         </NestedList>
                     </MudListItem>

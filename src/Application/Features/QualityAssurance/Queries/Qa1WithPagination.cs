@@ -4,12 +4,13 @@ using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
+
 namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
 public static class Qa1WithPagination
 {
     [RequestAuthorize(Roles = $"{RoleNames.QAOfficer}, {RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
-    public class Query : QueueEntryFilter, IRequest<PaginatedData<EnrolmentQueueEntryDto>>
+    public class Query : QueueEntryFilter, IRequest<Result<PaginatedData<EnrolmentQueueEntryDto>>>
     {
         public Query()
         {
@@ -19,9 +20,9 @@ public static class Qa1WithPagination
         public EnrolmentQa1QueueEntrySpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<EnrolmentQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<EnrolmentQueueEntryDto>>>
     {
-        public async Task<PaginatedData<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<EnrolmentQueueEntryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = unitOfWork.DbContext
                 .EnrolmentQa1Queue

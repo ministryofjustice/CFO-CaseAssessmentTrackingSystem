@@ -11,7 +11,7 @@ namespace Cfo.Cats.Application.Features.AuditTrails.Queries;
 public static class GetDocumentAuditTrailsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.ServiceDeskManagement)]
-    public class Query : DocumentAuditTrailAdvancedFilter, ICacheableRequest<PaginatedData<DocumentAuditTrailDto>>
+    public class Query : DocumentAuditTrailAdvancedFilter, ICacheableRequest<Result<PaginatedData<DocumentAuditTrailDto>>>
     {
         public DocumentAuditTrailAdvancedSpecification Specification => new(this);
 
@@ -21,9 +21,9 @@ public static class GetDocumentAuditTrailsWithPagination
         public override string ToString() => $"Search:{Keyword},Sort:{SortDirection},OrderBy:{OrderBy},{PageNumber},{PageSize}";
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<DocumentAuditTrailDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<DocumentAuditTrailDto>>>
     {
-        public async Task<PaginatedData<DocumentAuditTrailDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<DocumentAuditTrailDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext
                 .DocumentAuditTrails.OrderBy($"{request.OrderBy} {request.SortDirection}")
@@ -57,5 +57,4 @@ public static class GetDocumentAuditTrailsWithPagination
                 .WithMessage(ValidationConstants.SortDirectionMessage);
         }
     }
-
 }
