@@ -8,7 +8,6 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Components.Locations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -29,20 +28,16 @@ public partial class UnassignedCasesDashboardComponent
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; }
-
     [Inject]
     public ILocationService LocationService { get; set; } = default!;
 
     private int _defaultPageSize = 15;
     private MudDataGrid<UnassignedCaseDto> _table = default!;
-    private bool _loading;
     private bool _canSearch;
-    private List<ChartDataPoint>? _chartData;
+    private bool _canReassign;
+    
     private bool _previousVisualMode;
     private string? _previousTenantId;
-    private GetUnassignedCasesSummary.UnassignedCasesSummaryDto? _summaryData;
     private IDictionary<int, string> _locations = null!;
     private bool _includeTransferIn = true;
 
@@ -53,35 +48,30 @@ public partial class UnassignedCasesDashboardComponent
     /// </summary>
     private UserProfile GetEffectiveUserProfile()
     {
-        if (UserProfile == null)
+        // If TenantId parameter matches CurrentUser's TenantId, use it as-is
+        if (TenantId == CurrentUser.TenantId)
         {
-            return null!;
-        }
-
-        // If TenantId parameter matches UserProfile's TenantId, use it as-is
-        if (TenantId == UserProfile.TenantId)
-        {
-            return UserProfile;
+            return CurrentUser;
         }
 
         // Create a copy with the selected TenantId
         return new UserProfile
         {
-            UserId = UserProfile.UserId,
-            UserName = UserProfile.UserName,
-            Email = UserProfile.Email,
-            DisplayName = UserProfile.DisplayName,
-            PhoneNumber = UserProfile.PhoneNumber,
+            UserId = CurrentUser.UserId,
+            UserName = CurrentUser.UserName,
+            Email = CurrentUser.Email,
+            DisplayName = CurrentUser.DisplayName,
+            PhoneNumber = CurrentUser.PhoneNumber,
             TenantId = TenantId,
-            TenantName = UserProfile.TenantName,
-            AssignedRoles = UserProfile.AssignedRoles,
-            DefaultRole = UserProfile.DefaultRole,
-            Contracts = UserProfile.Contracts,
-            IsActive = UserProfile.IsActive,
-            Provider = UserProfile.Provider,
-            SuperiorName = UserProfile.SuperiorName,
-            SuperiorId = UserProfile.SuperiorId,
-            ProfilePictureDataUrl = UserProfile.ProfilePictureDataUrl
+            TenantName = CurrentUser.TenantName,
+            AssignedRoles = CurrentUser.AssignedRoles,
+            DefaultRole = CurrentUser.DefaultRole,
+            Contracts = CurrentUser.Contracts,
+            IsActive = CurrentUser.IsActive,
+            Provider = CurrentUser.Provider,
+            SuperiorName = CurrentUser.SuperiorName,
+            SuperiorId = CurrentUser.SuperiorId,
+            ProfilePictureDataUrl = CurrentUser.ProfilePictureDataUrl
         };
     }
 
@@ -89,22 +79,20 @@ public partial class UnassignedCasesDashboardComponent
     {
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
+        _canReassign = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Reassign)).Succeeded;
         _previousVisualMode = VisualMode;
         _previousTenantId = TenantId;
-        
+
         _locations = LocationService.GetVisibleLocations(TenantId)
                         .ToDictionary(k => k.Id, e => e.Name);
-        
-        if (VisualMode && UserProfile != null)
-        {
-            await LoadChartData();
-        }
+
+        await base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
         var tenantChanged = _previousTenantId != TenantId;
-        
+
         // Reload locations if tenant changed
         if (tenantChanged)
         {
@@ -112,70 +100,47 @@ public partial class UnassignedCasesDashboardComponent
                 .ToDictionary(k => k.Id, e => e.Name);
             _previousTenantId = TenantId;
         }
-        
-        // Reload chart data when switching to visual mode or tenant changed
-        if (VisualMode && (tenantChanged || !_previousVisualMode || _chartData == null) && UserProfile != null)
+
+        // Reload summary data when switching to visual mode or tenant changed
+        if (VisualMode && (tenantChanged || !_previousVisualMode))
         {
-            await LoadChartData();
+            await LoadDataAsync();
         }
-        
+
         // Reload table data if tenant changed and in tabular mode
         if (!VisualMode && tenantChanged && _table != null)
         {
             await _table.ReloadServerData();
         }
-        
+
         _previousVisualMode = VisualMode;
     }
 
-    private async Task LoadChartData()
-    {
-        try
+    protected override IRequest<Result<GetUnassignedCasesSummary.UnassignedCasesSummaryDto>> CreateQuery()
+        => new GetUnassignedCasesSummary.Query
         {
-            _loading = true;
-            
-            var query = new GetUnassignedCasesSummary.Query
-            {
-                CurrentUser = GetEffectiveUserProfile()
-            };
-
-            var result = await GetNewMediator().Send(query);
-            
-            if (result.Succeeded && result.Data != null && result.Data.Summaries.Any())
-            {
-                _summaryData = result.Data;
-                _chartData = result.Data.Summaries
-                    .Select(s => new ChartDataPoint(s.LocationName, s.EnrolmentStatus, s.Count))
-                    .ToList();
-            }
-            else
-            {
-                _summaryData = null;
-                _chartData = new List<ChartDataPoint>();
-            }
-        }
-        finally
-        {
-            _loading = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
+            CurrentUser = GetEffectiveUserProfile()
+        };
 
     private List<ChartDataPoint> ChartData()
     {
-        if (_chartData is null || !_chartData.Any())
+        var chartSource = Data?.Summaries
+            .Select(s => new ChartDataPoint(s.LocationName, s.EnrolmentStatus, s.Count))
+            .ToList() ?? [];
+
+        if (!chartSource.Any())
         {
-            return new List<ChartDataPoint>();
+            return [];
         }
 
-        var locations = _chartData.Select(x => x.LocationName).Distinct().ToList();
-        var statuses = _chartData.Select(x => x.Status).Distinct().ToList();
+        var locations = chartSource.Select(x => x.LocationName).Distinct().ToList();
+        var statuses = chartSource.Select(x => x.Status).Distinct().ToList();
 
         return locations.SelectMany(location =>
             statuses.Select(status => new ChartDataPoint(
                 location,
                 status,
-                _chartData
+                chartSource
                     .Where(x => x.LocationName == location && x.Status == status)
                     .Sum(x => x.Count))))
             .ToList();
@@ -229,7 +194,7 @@ public partial class UnassignedCasesDashboardComponent
     {
         try
         {
-            _loading = true;
+            Loading = true;
             Query.CurrentUser = GetEffectiveUserProfile();
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "LastModified";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true 
@@ -239,7 +204,7 @@ public partial class UnassignedCasesDashboardComponent
             Query.PageSize = state.PageSize;
             Query.IncludeTransferIn = _includeTransferIn;
 
-            var result = await GetNewMediator().Send(Query, cancellationToken);
+            var result = await Service.Send(Query, cancellationToken);
 
             return new GridData<UnassignedCaseDto>()
             {
@@ -249,7 +214,7 @@ public partial class UnassignedCasesDashboardComponent
         }
         finally
         {
-            _loading = false;
+            Loading = false;
         }
     }
 
@@ -301,14 +266,16 @@ public partial class UnassignedCasesDashboardComponent
 
     private async Task AssignToSelf(UnassignedCaseDto participant)
     {
+        var effectiveUser = GetEffectiveUserProfile();
+
         var command = new AssignUnassignedCase.Command
         {
             ParticipantId = participant.Id,
-            CurrentUser = UserProfile,
-            AssigneeId = UserProfile!.UserId
+            CurrentUser = effectiveUser,
+            AssigneeId = effectiveUser.UserId
         };
 
-        var result = await GetNewMediator().Send(command);
+        var result = await Service.Send(command);
         
         if (result.Succeeded)
         {
@@ -323,11 +290,26 @@ public partial class UnassignedCasesDashboardComponent
 
     private async Task AssignToOther(UnassignedCaseDto participant)
     {
-        var parameters = new DialogParameters
+        var effectiveUser = GetEffectiveUserProfile();
+
+        var parameters = new DialogParameters<AssignCaseDialog>
         {
-            { "Participant", participant },
-            { "TenantId", TenantId },
-            { "CurrentUser", UserProfile }
+            {
+                x => x.Participant,
+                participant
+            },
+            {
+                x => x.TenantId,
+                TenantId
+            },
+            {
+                x => x.Model,
+                new AssignUnassignedCase.Command
+                {
+                    ParticipantId = participant.Id,
+                    CurrentUser = effectiveUser
+                }
+            }
         };
 
         var options = new DialogOptions 

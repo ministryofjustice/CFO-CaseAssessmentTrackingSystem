@@ -1,11 +1,25 @@
 @using ApexCharts
 @using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Domain.Common.Enums
 @using MudSize = MudBlazor.Size
 @using MudAlign = MudBlazor.Align
 
-@inherits CatsComponentBase
+@inherits CatsComponent<GetUnassignedCasesSummary.UnassignedCasesSummaryDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
 <style>
     /* Override for compact toolbars */
 .compact-toolbar .mud-table-toolbar {
@@ -29,21 +43,17 @@
         </div>
     </MudStack>
 
-    @if (_summaryData is not null)
+    @if (Data is not null)
     {
         <MudGrid Spacing="2">
             <MudItem>
-                <MudChip T="string">Custody (@_summaryData.Custody)</MudChip>
-                <MudChip T="string">Community (@_summaryData.Community)</MudChip>
+                <MudChip T="string">Custody (@Data.Custody)</MudChip>
+                <MudChip T="string">Community (@Data.Community)</MudChip>
             </MudItem>
         </MudGrid>
     }
 
-    @if (_loading)
-    {
-        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
-    }
-    else if (_chartData != null && _chartData.Any())
+    @if (!Loading && Data is not null && Data.Summaries.Any())
     {
         <ApexChart TItem="ChartDataPoint" Options="ChartOptions" Height="700">
             @{
@@ -67,7 +77,7 @@
             }
         </ApexChart>
     }
-    else
+    else if (!Loading)
     {
         <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudAlign.Center">No unassigned cases found</MudText>
     }
@@ -82,7 +92,7 @@ else
              Virtualize="true"
              @bind-RowsPerPage="_defaultPageSize"
              Height="calc(100vh - 400px)"
-             Loading="@_loading"
+             Loading="@Loading"
              Hover="true"
              @ref="_table"
              BreakPoint="Breakpoint.Sm"
@@ -161,14 +171,17 @@ else
                     }
                     else
                     {
-                        <MudMenuItem OnClick="@(() => AssignToSelf(context.Item))">
-                            <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="MudSize.Small" Class="mr-2" />
-                            Assign to Me
-                        </MudMenuItem>
-                        <MudMenuItem OnClick="@(() => AssignToOther(context.Item))">
-                            <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Small" Class="mr-2" />
-                            Assign to Another User
-                        </MudMenuItem>
+                        @if (_canReassign)
+                        {
+                            <MudMenuItem OnClick="@(() => AssignToSelf(context.Item))">
+                                <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="MudSize.Small" Class="mr-2" />
+                                Assign to Me
+                            </MudMenuItem>
+                            <MudMenuItem OnClick="@(() => AssignToOther(context.Item))">
+                                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Small" Class="mr-2" />
+                                Assign to Another User
+                            </MudMenuItem>
+                        }
                     }
                     <MudMenuItem OnClick="@(() => ViewParticipant(context.Item.Id))">
                         <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="MudSize.Small" Class="mr-2" />

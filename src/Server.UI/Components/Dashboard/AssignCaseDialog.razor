@@ -9,7 +9,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm Model="@_command" @ref="_form" Validation="@(Validator.ValidateValue(_command))">
+        <MudForm Model="@Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
             <MudGrid>
                 <MudItem xs="12">
                     <MudText Typo="Typo.body2">
@@ -52,26 +52,16 @@
     public string TenantId { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public UserProfile? CurrentUser { get; set; }
+    public AssignUnassignedCase.Command Model { get; set; } = null!;
 
     private MudForm? _form;
     private bool _saving;
-    private AssignUnassignedCase.Command _command = null!;
-
-    protected override void OnInitialized()
-    {
-        _command = new AssignUnassignedCase.Command
-        {
-            ParticipantId = Participant.Id,
-            CurrentUser = CurrentUser
-        };
-    }
 
     private void OnUserSelectedChanged(ApplicationUserDto? user)
     {
         if (user != null)
         {
-            _command.AssigneeId = user.Id;
+            Model.AssigneeId = user.Id;
         }
     }
 
@@ -87,7 +77,7 @@
 
             if (_form.IsValid)
             {
-                var result = await GetNewMediator().Send(_command);
+                var result = await GetNewMediator().Send(Model);
                 
                 if (result.Succeeded)
                 {
