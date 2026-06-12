@@ -8,10 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.Kubernetes"/>
-        <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
-        <PackageReference Include="Aspire.Hosting.SqlServer"/>
-        <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects"/>
+        <PackageReference Include="Aspire.Hosting.Kubernetes" />
+        <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+        <PackageReference Include="Aspire.Hosting.Redis" />
+        <PackageReference Include="Aspire.Hosting.SqlServer" />
+        <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" />
     </ItemGroup>
 
     <ItemGroup>
