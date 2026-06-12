@@ -53,6 +53,16 @@ jobs:
             /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
             /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
             /p:ContainerImageTag=cats-${{ github.sha }}
+
+      - name: Build and Push Worker Container
+        run: |
+          dotnet publish src/Worker/Worker.csproj \
+            --configuration Release \
+            --no-build \
+            /t:PublishContainer \
+            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
+            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
+            /p:ContainerImageTag=worker-${{ github.sha }}
       
       - name: Build and Push DatabaseSeeding Container
         run: |
