@@ -19,6 +19,9 @@ public static class AddObjective
         [Description("Initiative")]
         public Guid? InitiativeId { get; set; }
 
+        [Description("Initiative Start Date")]
+        public DateTime? InitiativeStartDate { get; set; }
+
         public class Mapping : Profile
         {
             public Mapping() =>
@@ -44,7 +47,7 @@ public static class AddObjective
 
             if (request.InitiativeId.HasValue)
             {
-                var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId);
+                var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId, DateOnly.FromDateTime(request.InitiativeStartDate!.Value));
                 await unitOfWork.DbContext.InitiativeObjectives.AddAsync(link, cancellationToken);
             }
 
@@ -74,11 +77,21 @@ public static class AddObjective
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
 
+            RuleFor(x => x.InitiativeStartDate)
+                .NotNull()
+                .When(x => x.InitiativeId.HasValue)
+                .WithMessage("You must provide a start date when linking an initiative");
+
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(x => x.PathwayPlanId)
                     .MustAsync(ParticipantMustNotBeArchived)
                     .WithMessage("Participant is archived");
+
+                RuleFor(x => x.InitiativeStartDate)
+                    .MustAsync((command, startDate, token) => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token))
+                    .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
+                    .WithMessage("The start date must fall within the initiative's lifetime");
             });
         }
 
@@ -94,6 +107,27 @@ public static class AddObjective
                             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
+        }
+
+        private async Task<bool> BeWithinInitiativeLifetime(Guid? initiativeId, DateTime? date, CancellationToken cancellationToken)
+        {
+            if (!initiativeId.HasValue || !date.HasValue)
+            {
+                return true;
+            }
+
+            var lifetime = await _unitOfWork.DbContext.Initiatives
+                .Where(i => i.Id == initiativeId.Value)
+                .Select(i => new { i.Lifetime.StartDate, i.Lifetime.EndDate })
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (lifetime is null)
+            {
+                return true;
+            }
+
+            return date.Value >= lifetime.StartDate && date.Value <= lifetime.EndDate;
         }
     }   
 }
