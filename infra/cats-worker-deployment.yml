@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cats-deployment
+  name: cats-worker-deployment
   labels:
-    app: cats
+    app: cats-worker
 spec:
-  replicas: 3
+  replicas: 1 # Quartz jobs must not run concurrently across multiple pods
   selector:
     matchLabels:
-      app: cats # this should match the selector in service.yml
+      app: cats-worker
   template:
     metadata:
       labels:
-        app: cats # this should match the selector in service.yml
+        app: cats-worker
     spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-        runAsUser: 1001 
-        runAsGroup: 1001  
+        runAsUser: 1001
+        runAsGroup: 1001
         runAsNonRoot: true
       serviceAccountName: ${NAMESPACE}
       containers:
-        - name: cats
-          image: ${REGISTRY}/${REPOSITORY}:cats-${IMAGE_TAG}
+        - name: cats-worker
+          image: ${REGISTRY}/${REPOSITORY}:worker-${IMAGE_TAG}
           ports:
             - containerPort: 8080
           startupProbe:
@@ -65,11 +65,6 @@ spec:
                 secretKeyRef:
                   name: rds-mssql-instance-output
                   key: database_password
-            - name: AWS__Bucket
-              valueFrom:
-                secretKeyRef:
-                  name: s3-bucket-output
-                  key: bucket_name
             - name: RABBIT_USER
               valueFrom:
                 secretKeyRef:
@@ -86,8 +81,6 @@ spec:
               value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
             - name: ConnectionStrings__rabbit
               value: "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
-            - name: AWS__RootFolder
-              value: "Files"
             - name: Sentry__Dsn
               valueFrom:
                 secretKeyRef:
@@ -99,7 +92,3 @@ spec:
               value: "${APP_VERSION}"
             - name: AppConfigurationSettings__Version
               value: "${APP_VERSION}"
-            - name: Features__UseWorkerForJobs
-              value: "true"
-            - name: WorkerOptions__BaseUrl
-              value: "http://cats-worker-service:8080"

@@ -1,5 +1,6 @@
 using Amazon.Runtime;
 using Amazon.S3;
+using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Interfaces.Initiatives;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
@@ -28,6 +29,7 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Initiatives;
 using Cfo.Cats.Infrastructure.Services.Delius;
+using Cfo.Cats.Infrastructure.Services.Jobs;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MessageHandling;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
@@ -37,7 +39,7 @@ using Cfo.Cats.Infrastructure.Services.Serialization;
 using Dapper;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +52,7 @@ using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Handlers;
 using ZiggyCreatures.Caching.Fusion;
+using Cfo.Cats.Application.Features.Identity.MessageBus;
 
 namespace Cfo.Cats.Infrastructure;
 
@@ -58,19 +61,92 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration,
-        IWebHostEnvironment environment)
+        IHostEnvironment environment)
     {
         services.AddSettings(configuration, environment)
             .AddDatabase(configuration)
             .AddServices(configuration);
 
+        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
+            .GetTypes()
+            .Where(t => t.IsAbstract == false && t.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
+
+        foreach (var handler in handlerTypes)
+        {
+            services.AddScoped(handler);
+        }
+
         services.AddAuthenticationService(configuration)
             .AddFusionCacheService();
+
+        // Rebus message consumer background services (CATS only)
+        services.AddHostedService<OvernightBackgroundService>();
+        services.AddHostedService<TasksBackgroundService>();
+        services.AddHostedService<PaymentBackgroundService>();
+        services.AddHostedService<DocumentsBackgroundService>();
+        services.AddSingleton<ISessionService, SessionService>();
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
         services.AddScoped<INetworkIpProvider, NetworkIpProvider>();
 
         services.AddScoped<INotificationHandler<IdentityAuditNotification>, IdentityCacheClearanceHandler>();
+
+        // Run Quartz in CATS only when a separate Worker process is not handling jobs
+        if (!configuration.GetValue<bool>("Features:UseWorkerForJobs"))
+        {
+            services.AddQuartzJobsAndTriggers(configuration);
+            // In-process implementation: talks directly to the local Quartz scheduler
+            services.AddScoped<IJobManagementService, QuartzJobManagementService>();
+        }
+        else
+        {
+            // Remote implementation: delegates to the Worker's job management REST API.
+            // The base URL is resolved via Aspire service discovery ("cats-worker") by default,
+            // or overridden with WorkerOptions:BaseUrl for non-Aspire deployments.
+            services.AddHttpClient<IJobManagementService, WorkerJobManagementService>(client =>
+            {
+                var baseUrl = configuration["WorkerOptions:BaseUrl"] ?? "https+http://cats-worker";
+                client.BaseAddress = new Uri(baseUrl);
+            });
+        }
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers infrastructure services required by the standalone Worker process.
+    /// Use this instead of <see cref="AddInfrastructure"/> when hosting Quartz jobs in a separate Worker.
+    /// Does not register Rebus consumer background services or web-specific services.
+    /// </summary>
+    public static IServiceCollection AddWorkerInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
+    {
+        services.AddSettings(configuration, environment)
+            .AddDatabase(configuration)
+            .AddServices(configuration)
+            .AddFusionCacheService();
+
+        // Localization services are required by FluentValidation validators in the Application layer
+        // that inject IStringLocalizer<T>. In the Worker there are no UI resources, so the default
+        // no-op localizer (which returns the resource key) is sufficient.
+        services.AddLocalization();
+
+        // IHttpContextAccessor is required by CurrentUserService (used by EF interceptors).
+        // In a Worker context it returns null for all user properties, which is acceptable for background jobs.
+        services.AddHttpContextAccessor();
+
+        // Register a minimal set of Identity services required by the Worker.
+        services.AddScoped<IHandleMessages, SyncParticipantCommandHandler>();
+        services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
+
+        // Quartz always runs in the Worker
+        services.AddQuartzJobsAndTriggers(configuration);
+
+        // In-process implementation for the Worker's own job management API endpoints
+        services.AddScoped<IJobManagementService, QuartzJobManagementService>();
 
         return services;
     }
@@ -78,7 +154,7 @@ public static class DependencyInjection
     private static IServiceCollection AddSettings(
         this IServiceCollection services,
         IConfiguration configuration,
-        IWebHostEnvironment environment)
+        IHostEnvironment environment)
     {
         services
             .Configure<IdentitySettings>(configuration.GetSection(IdentitySettings.Key))
@@ -130,23 +206,6 @@ public static class DependencyInjection
                 .Start();
         });
 
-        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
-            .GetTypes()
-            .Where(t => t.IsAbstract == false && t.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
-
-        foreach (var handler in handlerTypes)
-        {
-            services.AddScoped(handler);
-        }
-
-        services.AddHostedService<OvernightBackgroundService>();
-        services.AddHostedService<TasksBackgroundService>();
-        services.AddHostedService<PaymentBackgroundService>();
-        services.AddHostedService<DocumentsBackgroundService>();
-
-        services.AddSingleton<ISessionService,SessionService>();
-        
         return services;
     }
 
@@ -307,8 +366,6 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.Add("key", configuration.GetRequiredValue("Ordnance:Places:ApiKey"));
             client.BaseAddress = new Uri(configuration.GetRequiredValue("Ordnance:Places:ApplicationUrl"));
         });
-
-        services.AddQuartzJobsAndTriggers(configuration);
 
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
@@ -553,6 +610,49 @@ public static class DependencyInjection
                 FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
             }
             );
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the minimum ASP.NET Core Identity services needed by the Worker.
+    /// Only <see cref="UserManager{TUser}"/> is required (by <see cref="NotifyAccountDeactivationJob"/>).
+    /// Does not register SignInManager, authentication cookies, or other web-specific Identity services.
+    /// </summary>
+    private static IServiceCollection AddWorkerIdentityServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<IdentityOptions>(options =>
+        {
+            var identitySettings = configuration
+                .GetRequiredSection(IdentitySettings.Key)
+                .Get<IdentitySettings>();
+
+            options.Password.RequireDigit = identitySettings!.RequireDigit;
+            options.Password.RequiredLength = identitySettings.RequiredLength;
+            options.Password.RequireNonAlphanumeric = identitySettings.RequireNonAlphanumeric;
+            options.Password.RequireUppercase = identitySettings.RequireUpperCase;
+            options.Password.RequireLowercase = identitySettings.RequireLowerCase;
+
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(identitySettings.DefaultLockoutTimeSpan * 365);
+            options.Lockout.MaxFailedAccessAttempts = identitySettings.MaxFailedAccessAttempts;
+            options.Lockout.AllowedForNewUsers = true;
+
+            options.User.RequireUniqueEmail = true;
+            options.User.AllowedUserNameCharacters = identitySettings.AllowedUserNameCharacters;
+        });
+
+        services
+            .AddIdentityCore<ApplicationUser>()
+            .AddRoles<ApplicationRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddUserManager<ApplicationUserManager>();
+            // Note: AddDefaultTokenProviders() is intentionally omitted — it requires
+            // IDataProtectionProvider, which is not available in the Worker. The Worker
+            // only queries users (NotifyAccountDeactivationJob); it never generates tokens.
+
+        services.AddScoped<UserManager<ApplicationUser>, ApplicationUserManager>();
+
         return services;
     }
 }

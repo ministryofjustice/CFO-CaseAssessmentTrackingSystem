@@ -1,50 +1,43 @@
-﻿using Quartz;
-using Quartz.Impl.Matchers;
+﻿using Cfo.Cats.Application.Common.Interfaces;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
 public partial class JobManagement
 {
-
     [Inject]
-    private IServiceProvider ServiceProvider { get; set; } = null!;
+    private IJobManagementService JobManagementService { get; set; } = null!;
 
-    private List<JobDetailInfo> JobDetails = new();
+    private IReadOnlyList<JobSummary> _jobs = [];
+    private SchedulerInfo? _schedulerInfo;
     private bool _isTriggering = false;
-    private string? _message = string.Empty;
-    private IScheduler? _scheduler;
-    private TableGroupDefinition<JobDetailInfo>? _groupDefinition = new()
+
+    private TableGroupDefinition<JobSummary> _groupDefinition = new()
     {
-        GroupName="Job",
+        GroupName = "Job",
         Indentation = false,
         Expandable = false,
-        Selector = (e) => e.JobName
+        Selector = e => e.Name
     };
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => await RefreshAsync();
+
+    private async Task RefreshAsync()
     {
-        var factory = ServiceProvider.GetRequiredService<ISchedulerFactory>();
-        _scheduler = await factory.GetScheduler();
-        JobDetails = await GetAllJobs();
+        _schedulerInfo = await JobManagementService.GetSchedulerInfoAsync();
+        _jobs = await JobManagementService.GetJobsAsync();
     }
 
-    private async Task TriggerJob(string key)
+    private async Task TriggerJob(string jobName)
     {
         try
         {
             _isTriggering = true;
-            if (_scheduler == null)
-            {
-                throw new InvalidOperationException("Scheduler not initialized");
-            }
-
-            await _scheduler.TriggerJob(new JobKey(key));
-
-            Snackbar.Add($"Job '{key}' triggered successfully", Severity.Info);
+            await JobManagementService.TriggerJobAsync(jobName);
+            Snackbar.Add($"Job '{jobName}' triggered successfully", Severity.Info);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Job '{key}' failed. {ex.Message}", Severity.Error);
+            Snackbar.Add($"Job '{jobName}' failed. {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -53,100 +46,54 @@ public partial class JobManagement
         }
     }
 
-    private async Task<List<JobDetailInfo>> GetAllJobs()
-    {
-        List<JobDetailInfo> jobDetails = [];
-
-        if (_scheduler is not null)
-        {
-            var jobGroups = await _scheduler.GetJobGroupNames();
-            foreach (var group in jobGroups)
-            {
-                var jobKeys = await _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(group));
-
-                foreach (var jobKey in jobKeys)
-                {
-                    var jobDetail = await _scheduler.GetJobDetail(jobKey);
-
-                    var triggers = await _scheduler.GetTriggersOfJob(jobKey);
-
-                    foreach (var trigger in triggers)
-                    {
-                        var triggerState = await _scheduler.GetTriggerState(trigger.Key);
-
-                        jobDetails.Add(new JobDetailInfo
-                        {
-                            JobName = jobKey.Name,
-                            Group = group,
-                            Description = jobDetail!.Description ?? jobKey.Name,
-                            TriggerState = triggerState.ToString(),
-                            NextFireTime = trigger.GetNextFireTimeUtc()?.DateTime,
-                            PreviousFireTime = trigger.GetPreviousFireTimeUtc()?.DateTime,
-                            TriggerDescription = trigger.Description ?? string.Empty,
-                        });
-                    }
-                }
-            }
-        }
-
-        return jobDetails;
-    }
-
     private async Task PauseScheduler()
     {
-        if (_scheduler is null)
+        try
         {
-            throw new InvalidOperationException("Scheduler not initialized");
+            await JobManagementService.StandbyAsync();
+            _schedulerInfo = await JobManagementService.GetSchedulerInfoAsync();
         }
-
-        await _scheduler.Standby();
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to pause scheduler: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task StartScheduler()
     {
-        if (_scheduler is null)
+        try
         {
-            throw new InvalidOperationException("Scheduler not initialized");
+            await JobManagementService.StartAsync();
+            _schedulerInfo = await JobManagementService.GetSchedulerInfoAsync();
         }
-
-        await _scheduler.Start();
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to resume scheduler: {ex.Message}", Severity.Error);
+        }
     }
 
     private string GetSchedulerStatus()
     {
-        if (_scheduler is null)
+        if (_schedulerInfo is null)
         {
-            return "Scheduler not defined";
+            return "Scheduler not available";
         }
 
-        if (_scheduler.InStandbyMode)
-        {
-            return "Scheduler is in standby mode";
-        }
-
-        if (_scheduler.IsShutdown)
+        if (_schedulerInfo.IsShutdown)
         {
             return "Scheduler is shutdown";
         }
 
-        if (_scheduler.IsStarted)
+        if (_schedulerInfo.IsInStandby)
         {
-            return "Scheduler is active";
+            return $"Scheduler '{_schedulerInfo.Name}' is in standby mode";
+        }
+
+        if (_schedulerInfo.IsStarted)
+        {
+            return $"Scheduler '{_schedulerInfo.Name}' is active";
         }
 
         return "Unknown";
-    }
-
-    public class JobDetailInfo
-    {
-        public string JobName { get; set; } = default!;
-        public string Group { get; set; } = default!;
-        public string Description { get; set; } = default!;
-        public string TriggerState { get; set; } = default!;
-
-        public string TriggerDescription { get; set; } = default!;
-
-        public DateTime? NextFireTime { get; set; } = default!;
-        public DateTime? PreviousFireTime { get; set; } = default!;
     }
 }
