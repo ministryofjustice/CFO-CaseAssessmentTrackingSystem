@@ -5,16 +5,15 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class SetStickyLocationDialog
 {
-
     private SetCandidateStickyLocation.Command? Model { get; set; }
 
     private MudForm? _form;
     private bool _saving;
 
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [EditorRequired][Parameter] public string ParticipantId { get; set; } = default!;
+    [EditorRequired][Parameter] public string ParticipantId { get; set; } = null!;
 
     protected override void OnInitialized() => Model = new SetCandidateStickyLocation.Command()
     {
@@ -31,11 +30,12 @@ public partial class SetStickyLocationDialog
 
             if (_form!.IsValid == false)
             {
-                Snackbar.Add("Failed to set sticky location", Severity.Error);
+                Snackbar.Add("Please resolve the validation errors on the form before saving.", Severity.Warning);
                 return;
             }
 
             var result = await Service.Send(Model!); 
+            
             if (result.Succeeded)
             {
                 MudDialog.Close(DialogResult.Ok(true));
@@ -43,8 +43,16 @@ public partial class SetStickyLocationDialog
             }
             else
             {
-                Snackbar.Add("Failed to set sticky location", Severity.Error);
+                var displayError = string.IsNullOrWhiteSpace(result.ErrorMessage) 
+                    ? "An unexpected error occurred while setting sticky location." 
+                    : result.ErrorMessage;
+
+                Snackbar.Add(displayError, Severity.Error);
             }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("A critical error occurred while submitting the request.", Severity.Error);
         }
         finally
         {
