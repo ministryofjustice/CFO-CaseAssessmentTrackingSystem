@@ -21,6 +21,7 @@ public class EmploymentPaymentDto
     public required bool EligibleForPayment { get; set; }
     public required string? IneligibilityReason { get; set; }
     public required string ParticipantName { get; set; }
+    public required string SupportWorkerName { get; set; }
     public required string EmploymentType { get; set; }
     public required string EmploymentCategory { get; set; }
 }

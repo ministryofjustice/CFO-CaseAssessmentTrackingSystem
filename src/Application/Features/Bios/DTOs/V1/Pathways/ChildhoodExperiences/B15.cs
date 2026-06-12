@@ -6,6 +6,7 @@ public class B15() : SingleChoiceQuestion("Had someone you looked up to",
     NA
 ])
 {
+    public override string Code => nameof(B15);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

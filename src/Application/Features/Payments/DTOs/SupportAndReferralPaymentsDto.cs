@@ -20,6 +20,7 @@ public record SupportAndReferralPaymentDto
     public required string Location { get; set; } = "";
     public required string? IneligibilityReason { get; set; }
     public required string ParticipantName { get; set; } = "";
+    public required string SupportWorkerName { get; set; } = "";
     public required DateTime PaymentPeriod { get; set; }
 }
 

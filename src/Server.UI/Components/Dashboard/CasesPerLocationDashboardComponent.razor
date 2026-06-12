@@ -1,7 +1,5 @@
-﻿@using ActualLab.Fusion.Extensions
-@using ApexCharts
+﻿@using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponent<GetCasesPerLocation.CasesPerLocationDto>
 
@@ -31,8 +29,12 @@
         <ApexChart TItem="GetCasesPerLocation.LocationDetail" Options="Options" Height="700">
 			@{
 				var chartData = ChartData();
-				var statuses = chartData.Select(x => x.Status).OrderBy(x => x.LogicalOrder).Distinct();
-			}
+                var statuses = chartData
+                    .Select(x => x.Status)
+                    .DistinctBy(x => x.Value)
+                    .OrderBy(x => x.LogicalOrder);
+            }
+            
 			@foreach (var status in statuses)
 			{
                 <ApexPointSeries TItem="GetCasesPerLocation.LocationDetail"

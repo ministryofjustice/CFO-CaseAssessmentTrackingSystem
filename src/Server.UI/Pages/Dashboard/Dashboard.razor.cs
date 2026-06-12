@@ -14,7 +14,8 @@ public partial class Dashboard
     private bool _showRiskDueAggregate;
     private bool _showSyncComponent;
     private bool _showSearchParticipant;
-
+    private bool _showMyTeamsActivitiesInQAPots;
+    
     private readonly string _title  = "Dashboard";
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -32,6 +33,7 @@ public partial class Dashboard
         _showMyTeamsParticipants = hasAdditionalRoles;
         _showCaseWorkload = hasAdditionalRoles;
         _showRiskDueAggregate = hasAdditionalRoles;
+        _showMyTeamsActivitiesInQAPots = hasAdditionalRoles;
         
         _showQaPots = isInternalUser;
         _showSearchParticipant = isInternalUser;

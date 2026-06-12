@@ -6,4 +6,7 @@ public class QueueEntryFilter
     : PaginationFilter
 {
     public UserProfile? CurrentUser { get; set; }
+    public string? SupportWorkerId { get; set; }
+
+    public string? TenantId { get; set; }
 }

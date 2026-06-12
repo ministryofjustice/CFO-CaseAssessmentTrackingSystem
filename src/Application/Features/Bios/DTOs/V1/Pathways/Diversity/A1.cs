@@ -7,6 +7,7 @@ public class A1() : SingleChoiceQuestion("Consider yourself a religious person",
     NA
 ])
 {
+    public override string Code => nameof(A1);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

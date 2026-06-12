@@ -12,6 +12,7 @@ public class EnrolmentQueueEntryDto
     public string ParticipantName { get; init; } = null!;
 
     public string SupportWorker { get; init; } = null!;
+    public string SupportWorkerId { get; init; } = null!;
 
     public string? AssignedTo { get; init; } 
 
@@ -64,6 +65,9 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                     source => source.SupportWorker!.DisplayName
                 ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                    source => source.SupportWorkerId
+                ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                  .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
@@ -84,6 +88,9 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                     source => source.SupportWorker!.DisplayName
                 ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                    source => source.SupportWorkerId
+                ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
@@ -103,6 +110,9 @@ public class EnrolmentQueueEntryDto
                 })
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                     source => source.SupportWorker!.DisplayName
+                ))
+                .ForMember(target => target.SupportWorkerId, options => options.MapFrom(
+                    source => source.SupportWorkerId
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))

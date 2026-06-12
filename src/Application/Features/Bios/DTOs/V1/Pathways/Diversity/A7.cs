@@ -7,6 +7,7 @@ public class A7() : SingleChoiceQuestion("Served in the British Armed Forces, in
     NA
 ])
 {
+    public override string Code => nameof(A7);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

@@ -5,7 +5,6 @@ namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
 public partial class CasesPerLocationDashboardComponent
 {
-
     [Parameter]
     public string UserId { get; set; } = null!;
     [Parameter]
@@ -27,10 +26,17 @@ public partial class CasesPerLocationDashboardComponent
 
     private ApexChartOptions<GetCasesPerLocation.LocationDetail> Options => new()
     {
-        Chart = new ApexCharts.Chart
+        Chart = new Chart
         {
             Stacked = true,
         },
+        
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true
+        },
+        
         PlotOptions = new PlotOptions
         {
             Bar = new PlotOptionsBar
@@ -48,14 +54,14 @@ public partial class CasesPerLocationDashboardComponent
                 },
             },
         },
-        Yaxis = new List<YAxis>
+        Yaxis =
+        [
+            new YAxis
             {
-                new YAxis
-                {
-                    Min = 0,
-                    ForceNiceScale = true
-                }
-            },
+                Min = 0,
+                ForceNiceScale = true
+            }
+        ],
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
@@ -83,6 +89,5 @@ public partial class CasesPerLocationDashboardComponent
                             .Where(x => x.LocationName == location && x.Status == status)
                             .Sum(x => x.Count))))
             .ToList();
-          
     }
 }

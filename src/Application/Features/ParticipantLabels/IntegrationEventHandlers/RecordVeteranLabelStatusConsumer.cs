@@ -1,10 +1,11 @@
 using Cfo.Cats.Application.Features.Bios.DTOs;
 using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.Diversity;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.ChildhoodExperiences;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.RecentExperiences;
 using Cfo.Cats.Application.Features.Bios.IntegrationEvents;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
 using Cfo.Cats.Domain.Participants;
-using Newtonsoft.Json;
 using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ParticipantLabels.IntegrationEventHandlers;
@@ -26,10 +27,17 @@ public class RecordVeteranLabelStatusConsumer(IUnitOfWork unitOfWork, IParticipa
                 return;
             }
 
-            var bio = JsonConvert.DeserializeObject<Bio>(participantBio.BioJson, new JsonSerializerSettings
+            var bio = new Bio
             {
-                TypeNameHandling = TypeNameHandling.Auto
-            })!;
+                Id = participantBio.Id,
+                ParticipantId = participantBio.ParticipantId,
+                Pathways =
+                [
+                    new DiversityPathway(),
+                    new ChildhoodExperiencesPathway(),
+                    new RecentExperiencesPathway(),
+                ]
+            }.WithAnswers(participantBio.Answers.ToLookup(a => a.QuestionCode, a => a.Answer));
 
             var pathway = bio.Pathways.OfType<DiversityPathway>().First();
 

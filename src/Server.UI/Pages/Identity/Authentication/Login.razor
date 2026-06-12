@@ -141,8 +141,6 @@
     {
         var user = await UserManager.FindByNameAsync(Input.UserName);
 
-
-
         if(user is null)
         {
             await Sender.Publish( IdentityAuditNotification.UnknownUserNameNotification(Input.UserName, NetworkIpProvider.IpAddress));
@@ -157,7 +155,7 @@
         if (result.Succeeded)
         {
             await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName, NetworkIpProvider.IpAddress));
-            RedirectManager.RedirectTo(ReturnUrl);
+            RedirectManager.RedirectTo(user.HomePage ?? ReturnUrl);
         }
         else if(result is CustomSignInResult customSignInResult)
         {

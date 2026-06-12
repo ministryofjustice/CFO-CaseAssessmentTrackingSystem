@@ -24,6 +24,7 @@ internal static class DatabaseConstants
         public const string Participant = nameof(Participant);
         public const string Assessment = nameof(Assessment);
         public const string Bio = nameof(Bio);
+        public const string BioAnswer = nameof(BioAnswer);
         public const string Note = nameof(Note);
         public const string ExternalIdentifier = nameof(ExternalIdentifier);
         public const string Tenant = nameof(Tenant);
@@ -178,5 +179,7 @@ internal static class DatabaseConstants
         /// The maximum length for the description of an initiative.
         /// </summary>
         public const int InitiativeDescription = 256;
+
+        public const int Fifty = 50;
     }
 }

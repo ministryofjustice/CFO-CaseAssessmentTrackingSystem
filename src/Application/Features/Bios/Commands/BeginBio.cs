@@ -5,7 +5,6 @@ using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.ChildhoodExperiences;
 using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.RecentExperiences;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Bios;
-using Newtonsoft.Json;
 using Cfo.Cats.Application.Common.Validators;
 
 namespace Cfo.Cats.Application.Features.Bios.Commands;
@@ -26,48 +25,55 @@ public static class BeginBio
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var oldBio = await GetPreviousBio(request);
+            var oldBio = await GetPreviousBio(request, cancellationToken);
 
-            Bio bio = new Bio()
-            {
-                Id = Guid.CreateVersion7(),
-                ParticipantId = request.ParticipantId,
-                Pathways =
-                [
-                    oldBio?.Pathways[0] ?? new DiversityPathway(),
-                    oldBio?.Pathways[1] ?? new ChildhoodExperiencesPathway(),                    
-                    oldBio?.Pathways[2] ?? new RecentExperiencesPathway(),
-                ]
-            };
-
-            string json = JsonConvert.SerializeObject(bio, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
+            Guid bioId = Guid.CreateVersion7();
             
-            ParticipantBio bioSurvey = ParticipantBio.Create(bio.Id, request.ParticipantId, bioJson: json);
+            ParticipantBio bioEntity = ParticipantBio.Create(bioId, request.ParticipantId);
 
-            await _unitOfWork.DbContext.ParticipantBios.AddAsync(bioSurvey);
+            // Copy answers from previous bio if it exists
+            if (oldBio != null)
+            {
+                foreach (var pathway in oldBio.Pathways)
+                {
+                    foreach (var question in pathway.Questions())
+                    {
+                        if (question is SingleChoiceQuestion single && single.Answer is not null)
+                        {
+                            bioEntity.SetAnswer(single.Code, single.Answer);
+                        }
+                    }
+                }
+            }
 
-            return Result<Guid>.Success(bio.Id);
+            await _unitOfWork.DbContext.ParticipantBios.AddAsync(bioEntity);
+
+            return Result<Guid>.Success(bioId);
         }
 
-        private async Task<Bio?> GetPreviousBio(Command request)
+        private async Task<Bio?> GetPreviousBio(Command request, CancellationToken cancellationToken)
         {
-            var oldBio = await _unitOfWork.DbContext.ParticipantBios.Where(b => b.ParticipantId == request.ParticipantId)
-                           .OrderByDescending(b => b.Created)
-                           .FirstOrDefaultAsync();
+            var oldBioEntity = await _unitOfWork.DbContext.ParticipantBios
+                .Where(b => b.ParticipantId == request.ParticipantId)
+                .OrderByDescending(b => b.Created)
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if (oldBio == null)
+            if (oldBioEntity == null)
             {
                 return null;
             }
 
-            var bio = JsonConvert.DeserializeObject<Bio>(oldBio.BioJson,
-            new JsonSerializerSettings
+            var bio = new Bio
             {
-                TypeNameHandling = TypeNameHandling.Auto
-            })!;
+                Id = oldBioEntity.Id,
+                ParticipantId = oldBioEntity.ParticipantId,
+                Pathways =
+                [
+                    new DiversityPathway(),
+                    new ChildhoodExperiencesPathway(),
+                    new RecentExperiencesPathway(),
+                ]
+            }.WithAnswers(oldBioEntity.Answers.ToLookup(a => a.QuestionCode, a => a.Answer));
 
             return bio;
         }

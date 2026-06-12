@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -54,6 +55,8 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.Property(x => x.PhoneNumber)
             .HasMaxLength(20);
         
+        builder.Property(u => u.HomePage)
+            .HasMaxLength(DatabaseConstants.FieldLengths.Fifty);
         
         // Each User can have many UserLogins
         builder.HasMany(e => e.Logins).WithOne().HasForeignKey(ul => ul.UserId).IsRequired();

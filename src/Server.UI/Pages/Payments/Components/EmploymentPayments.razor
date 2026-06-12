@@ -24,7 +24,7 @@
             Loading="@_loading"
             LoadingProgressColor="Color.Info">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Activities</MudText>
+                    <MudText Typo="Typo.h6">Employment</MudText>
                     <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -77,6 +77,11 @@
                             Location
                         </MudTableSortLabel>
                     </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<EmploymentPaymentDto, object>(x => x.SupportWorkerName)">
+                            Support Worker
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Details</MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
@@ -103,6 +108,7 @@
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
                         </div>
                     </MudTd>
+                    <MudTd DataLabel="Support Worker">@context.SupportWorkerName</MudTd>
                     <MudTd DataLabel="Details" Style="max-width: 192px; overflow: hidden; padding: 0;">
                         <div class="d-flex flex-column">
                             <MudTooltip Text="@context.EmploymentCategory">

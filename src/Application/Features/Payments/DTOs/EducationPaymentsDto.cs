@@ -23,6 +23,7 @@ public class EducationPaymentDto
     public string Location { get; set; } = "";
     public string? IneligibilityReason { get; set; }
     public string ParticipantName { get; set; } = "";
+    public string SupportWorkerName { get; set; } = "";
     public string CourseLevel { get; set; } = string.Empty;
     public string CourseTitle { get; set; } = string.Empty;
 }

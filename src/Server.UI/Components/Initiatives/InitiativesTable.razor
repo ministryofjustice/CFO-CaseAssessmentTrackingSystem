@@ -18,11 +18,19 @@
             <MudText Typo="Typo.h6">Initiatives</MudText>
             <MudSpacer />
             <MudCheckBox @bind-Value="_showExpired" @bind-Value:after="RefreshAsync" Label="Show expired" Color="Color.Default" Size="Size.Small" Class="mr-2" />
+            <MudButton Variant="Variant.Filled"
+                       Size="Size.Small"
+                       Disabled="@Loading"
+                       OnClick="@OnExport"
+                       StartIcon="@Icons.Material.Filled.Download"
+                       Color="Color.Secondary">
+                @ConstantString.Export
+            </MudButton>
             <AuthorizeView Policy="@SecurityPolicies.ManageInitiatives">
                 <MudButton Variant="Variant.Filled"
                            Size="Size.Small"
                            Disabled="@Loading"
-                           OnClick="@(() => OnAdd())"
+                           OnClick="@OnAdd"
                            StartIcon="@Icons.Material.Filled.Add"
                            Color="Color.Primary">
                     Add Initiative

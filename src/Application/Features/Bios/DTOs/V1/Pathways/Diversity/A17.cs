@@ -7,6 +7,7 @@ public class A17() : SingleChoiceQuestion("Feel you are always getting into trou
     NA
 ])
 {
+    public override string Code => nameof(A17);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

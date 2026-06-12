@@ -6,6 +6,7 @@ public class B1() : SingleChoiceQuestion("Spent time in care as a child",
     NA
 ])
 {
+    public override string Code => nameof(B1);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

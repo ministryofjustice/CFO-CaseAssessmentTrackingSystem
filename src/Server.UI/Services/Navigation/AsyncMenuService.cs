@@ -322,15 +322,6 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             ]
         };
 
-        if (await PassesPolicy(principal, SecurityPolicies.Reassign))
-        {
-            participants.MenuItems.Add(new()
-            {
-                Title = "Reassign",
-                Href = "/pages/participants/reassign",
-            });
-        }
-
         if (await PassesPolicy(principal, SecurityPolicies.Transfers))
         {
             participants.MenuItems.Add(new()

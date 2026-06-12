@@ -20,33 +20,28 @@ public static class EditTask
 
         [Description("Description")]
         public string? Description { get; set; }
-
-        [Description("Due")]
-        public DateTime? Due { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId, cancellationToken)
+            var pathwayPlan =
+                await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId, cancellationToken)
                 ?? throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
 
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
-                ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
+                            ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
 
             var task = objective.Tasks.FirstOrDefault(x => x.Id == request.TaskId)
-                ?? throw new NotFoundException("Cannot find task", request.TaskId);
+                       ?? throw new NotFoundException("Cannot find task", request.TaskId);
 
-            if(request.Description is not null)
+            if (string.IsNullOrWhiteSpace(request.Description))
             {
-                task.Rename(request.Description);
+                return Result.Failure("You must provide a Description");
             }
 
-            if(request.Due.HasValue)
-            {
-                task.Extend(request.Due.Value);
-            }
+            task.Rename(request.Description);
 
             return Result.Success();
         }
@@ -59,17 +54,15 @@ public static class EditTask
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
-            var today = DateTime.UtcNow;
-
+            
             RuleFor(x => x.ObjectiveId)
-                .NotNull();
+                .NotEmpty();
 
             RuleFor(x => x.TaskId)
-                .NotNull();
+                .NotEmpty();
 
             RuleFor(x => x.PathwayPlanId)
-                .NotNull()
+                .NotEmpty()
                 .WithMessage("You must provide a Pathway Plan");
                 
             RuleFor(x => x.Description)
@@ -79,19 +72,6 @@ public static class EditTask
                 .WithMessage($"Maximum length of description is 2000")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
-
-            RuleFor(x => x.Due)
-                .Must(x => x.HasValue)
-                .WithMessage("You must provide a Due date");
-
-            When(x => x.Due.HasValue, () =>
-            {
-                RuleFor(x => x.Due)
-                    .GreaterThanOrEqualTo(new DateTime(today.Year, today.Month, 1))
-                    .WithMessage(ValidationConstants.DateMustBeInFuture)
-                    .Must(x => x!.Value.Day.Equals(1))
-                    .WithMessage("Due date must fall on the first day of the month");
-            });
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {

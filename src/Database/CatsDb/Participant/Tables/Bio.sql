@@ -1,7 +1,7 @@
 CREATE TABLE [Participant].[Bio] (
     [Id]             UNIQUEIDENTIFIER NOT NULL,
     [ParticipantId]  NVARCHAR (9)     NOT NULL,
-    [BioJson]        NVARCHAR (MAX)   NOT NULL,
+    [BioJson]        NVARCHAR (MAX)   NULL,
     [Status]         INT              NOT NULL,
     [Created]        DATETIME2 (7)    NULL,
     [CreatedBy]      NVARCHAR (36)    NULL,

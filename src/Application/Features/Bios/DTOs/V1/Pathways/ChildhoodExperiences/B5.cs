@@ -6,6 +6,7 @@ public class B5() : SingleChoiceQuestion("Both parents/guardians were mostly pre
     NA
 ])
 {
+    public override string Code => nameof(B5);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

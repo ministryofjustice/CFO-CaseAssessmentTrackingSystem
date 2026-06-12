@@ -31,7 +31,8 @@ CREATE TABLE [Identity].[User] (
     [LockoutEnd]             DATETIMEOFFSET (7) NULL,
     [LockoutEnabled]         BIT                NOT NULL,
     [AccessFailedCount]      INT                NOT NULL,
-    [LastLogin]              DATETIME2 (7)      NULL
+    [LastLogin]              DATETIME2 (7)      NULL,
+    [HomePage]               NVARCHAR(50)       NULL
 );
 GO
 

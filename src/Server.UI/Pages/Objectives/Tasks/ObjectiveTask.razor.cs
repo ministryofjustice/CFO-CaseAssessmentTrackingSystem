@@ -82,11 +82,10 @@ public partial class ObjectiveTask
 
     private async Task AdjustDate()
     {
-        var command = new EditTask.Command()
+        var command = new AdjustTaskDueDate.Command()
         {
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
-            Description = Model.Description,
             Due = Model.Due,
             PathwayPlanId = PathwayPlanId
         };
@@ -118,25 +117,24 @@ public partial class ObjectiveTask
         }
     }
 
-    private async Task Rename()
+    private async Task Edit()
     {
         var command = new EditTask.Command()
         {
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
             Description = Model.Description,
-            Due = Model.Due,
             PathwayPlanId = PathwayPlanId
         };
 
-        var parameters = new DialogParameters<RenameTaskDialog>()
+        var parameters = new DialogParameters<EditTaskDialog>()
         {
             { x => x.Model, command }
         };
 
         var options = SetDialogOptions();
-        var dialogTitle = "Rename task for " + ParticipantName + " Ref: " + ParticipantId;
-        var dialog = await DialogService.ShowAsync<RenameTaskDialog>(dialogTitle, parameters, options);
+        var dialogTitle = "Edit task for " + ParticipantName + ". Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<EditTaskDialog>(dialogTitle, parameters, options);
 
         var state = await dialog.Result;
 
@@ -146,7 +144,7 @@ public partial class ObjectiveTask
 
             if (result.Succeeded)
             {
-                Snackbar.Add(ConstantString.TaskSuccessfullyRenamed, Severity.Info);
+                Snackbar.Add(ConstantString.TaskSuccessfullyEdited, Severity.Info);
                 await OnChange.InvokeAsync();
             }
             else

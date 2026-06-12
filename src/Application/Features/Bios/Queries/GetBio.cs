@@ -2,7 +2,9 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Features.Bios.DTOs;
-using Newtonsoft.Json;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.Diversity;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.ChildhoodExperiences;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.RecentExperiences;
 
 namespace Cfo.Cats.Application.Features.Bios.Queries;
 
@@ -35,19 +37,26 @@ public static class GetBio
                 query = query.Where(p => p.Id == request.BioId);
             }
 
-            var bioSurvey = await query.OrderByDescending(bioSurvey => bioSurvey.Created)
+            var bioEntity = await query.OrderByDescending(bioEntity => bioEntity.Created)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (bioSurvey is null)
+            if (bioEntity is null)
             {
                 return Result<Bio>.Failure(["Participant not found"]);
             }
 
-            Bio bio = JsonConvert.DeserializeObject<Bio>(bioSurvey.BioJson,
-            new JsonSerializerSettings
+            var bio = new Bio
             {
-                TypeNameHandling = TypeNameHandling.Auto
-            })!;
+                Id = bioEntity.Id,
+                ParticipantId = bioEntity.ParticipantId,
+                Pathways =
+                [
+                    new DiversityPathway(),
+                    new ChildhoodExperiencesPathway(),
+                    new RecentExperiencesPathway(),
+                ]
+            }.WithAnswers(bioEntity.Answers.ToLookup(a => a.QuestionCode, a => a.Answer));
+
             return Result<Bio>.Success(bio);
         }
     }

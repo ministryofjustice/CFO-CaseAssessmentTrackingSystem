@@ -13,6 +13,20 @@
     <link href="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.css?v=@Version" rel="stylesheet"/>
     <link href="css/app.css?v=@Version" rel="stylesheet" />
     <link href="Cfo.Cats.Server.UI.styles.css?v=@Version" rel="stylesheet" />
+    @* Seed the primary palette colour into the first server-rendered paint so the
+       correct environment colour shows immediately, before MudThemeProvider runs.
+       This eliminates the default-colour flash on every page, including the
+       statically-rendered authentication pages. *@
+    <style>
+        :root {
+            --mud-palette-primary: @PrimaryColour;
+            --mud-palette-primary-rgb: @PrimaryColourRgb;
+            --mud-palette-primary-text: #ffffff;
+            --mud-palette-appbar-background: @PrimaryColour;
+            --mud-palette-appbar-text: #ffffff;
+            --mud-palette-table-lines: @PrimaryColour;
+        }
+    </style>
     <title>Case Assessment and Tracking System (CATS)</title>
     <link href="cats.ico" rel="icon" />
 </head>
@@ -44,7 +58,31 @@
 
     string Version => Configuration["AppConfigurationSettings:Version"]!;
 
+    private string PrimaryColour => Configuration["PrimaryColour"] ?? Constants.Theme.DefaultPrimaryColour;
+
+    private string PrimaryColourRgb => HexToRgb(PrimaryColour);
+
     private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/pages/authentication")
         ? null
         : new InteractiveServerRenderMode(false);
+
+    private static string HexToRgb(string hex)
+    {
+        var value = hex.TrimStart('#');
+
+        if (value.Length == 3)
+        {
+            value = string.Concat(value[0], value[0], value[1], value[1], value[2], value[2]);
+        }
+
+        if (value.Length != 6
+            || !int.TryParse(value.AsSpan(0, 2), System.Globalization.NumberStyles.HexNumber, null, out var r)
+            || !int.TryParse(value.AsSpan(2, 2), System.Globalization.NumberStyles.HexNumber, null, out var g)
+            || !int.TryParse(value.AsSpan(4, 2), System.Globalization.NumberStyles.HexNumber, null, out var b))
+        {
+            return "110,53,98"; // fallback: DefaultPrimaryColour (#6E3562)
+        }
+
+        return $"{r},{g},{b}";
+    }
 }

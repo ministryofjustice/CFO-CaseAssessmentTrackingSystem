@@ -4,17 +4,17 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 
 public class ObjectiveTaskDto
 {
-    public required Guid Id { get; set; }
-    public required string Description { get; set; }
-    public required Guid ObjectiveId { get; set; }
-    public required DateTime Due { get; set; }
-    public required DateTime Created { get; set; }
-    public required string CreatedBy { get; set; }
-    public DateTime? Completed { get; set; }
-    public string? CompletedBy { get; set; }
-    public CompletionStatus? CompletedStatus { get; set; }
-    public required int Index { get; set; }
-    public string? Justification { get; set; }
+    public required Guid Id { get; init; }
+    public required string Description { get; init; }
+    public required Guid ObjectiveId { get; init; }
+    public required DateTime Due { get; init; }
+    public required DateTime Created { get; init; }
+    public required string CreatedBy { get; init; }
+    public DateTime? Completed { get; init; }
+    public string? CompletedBy { get; init; }
+    public CompletionStatus? CompletedStatus { get; init; }
+    public required int Index { get; init; }
+    public string? Justification { get; init; }
     public string DisplayName => $"{Index}. {Description}";
     public bool IsCompleted => Completed.HasValue;
     public bool IsOverdue => IsCompleted is false
@@ -24,8 +24,8 @@ public class ObjectiveTaskDto
         && (ToFirstDayOfMonth(DateTime.UtcNow).Equals(ToFirstDayOfMonth(Due))
         || IsOverdue is false && (DateTime.UtcNow.AddDays(14) > ToFirstDayOfMonth(Due)));
 
-    public required bool IsMandatory { get; set; }
-    public bool CanBeRenamed => IsMandatory is false;
+    public required bool IsMandatory { get; init; }
+    public bool CanBeEdited => IsMandatory is false;
     public bool CanAddActivity => IsMandatory is false;
 
     public class Mapping : Profile

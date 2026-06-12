@@ -478,3 +478,6 @@ Uploads/
 
 # Aspire
 aspire-output/
+
+# ls cache files for C# develop extension
+*csproj.lscache

@@ -2,6 +2,7 @@
 
 public class A22() : SingleChoiceQuestion("Have carried a knife or blade for the purpose of self-defence or to harm others", [Yes, No, NA])
 {
+    public override string Code => nameof(A22);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

@@ -6,6 +6,7 @@ public class C1() : SingleChoiceQuestion("Had a loved one become seriously ill o
     NA
 ])
 {
+    public override string Code => nameof(C1);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

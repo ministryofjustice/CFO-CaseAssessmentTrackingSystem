@@ -1,14 +1,7 @@
-@using Cfo.Cats.Application.Features.Identity.DTOs
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard
-@using Cfo.Cats.Server.UI.Components.Users
-@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 
 @page "/pages/dashboard/tenant"
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
-@inject ITenantService TenantsService
-
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <MudText Typo="Typo.h3">
@@ -95,9 +88,6 @@
                 </MudTabs>
             </MudTabPanel>
         </MudTabs>
-        
-        
-		
     }
     
 </MudStack>

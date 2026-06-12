@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cats-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: cats-ingress-${NAMESPACE}-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    # Enable stickiness
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "http-cookie"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+spec:
+  ingressClassName: default # modsec
+  tls:
+    - hosts:
+        - ${NAMESPACE}.live.cloud-platform.service.justice.gov.uk
+  rules:
+    - host: ${NAMESPACE}.live.cloud-platform.service.justice.gov.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cats-service # this should match the metadata.name in service.yml
+                port:
+                  number: 8080

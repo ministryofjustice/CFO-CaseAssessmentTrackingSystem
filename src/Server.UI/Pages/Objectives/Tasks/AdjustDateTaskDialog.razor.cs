@@ -8,7 +8,7 @@ public partial class AdjustDateTaskDialog
     private bool _saving;
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter, EditorRequired] public required EditTask.Command Model { get; set; }
+    [Parameter, EditorRequired] public required AdjustTaskDueDate.Command Model { get; set; }
 
     private void Cancel() => MudDialog.Cancel();
 

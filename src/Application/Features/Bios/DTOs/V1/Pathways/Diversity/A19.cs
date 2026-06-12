@@ -7,6 +7,7 @@ public class A19() : SingleChoiceQuestion("Feel your current situation is not yo
     NA
 ])
 {
+    public override string Code => nameof(A19);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

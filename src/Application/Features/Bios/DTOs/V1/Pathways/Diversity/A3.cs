@@ -7,6 +7,7 @@ public class A3() : SingleChoiceQuestion("Gay, lesbian, bisexual, or other non-h
     NA
 ])
 {
+    public override string Code => nameof(A3);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Bios.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Bios;
-using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Bios.Commands;
 
@@ -28,11 +27,17 @@ public static class SaveBio
             {
                 return Result.Failure("Bio not found");
             }
-            
-            bio.UpdateJson(JsonConvert.SerializeObject(request.Bio, new JsonSerializerSettings
+
+            foreach (var pathway in request.Bio.Pathways)
             {
-                TypeNameHandling = TypeNameHandling.Auto
-            }));
+                foreach (var question in pathway.Questions())
+                {
+                    if (question is SingleChoiceQuestion single && single.Answer is not null)
+                    {
+                        bio.SetAnswer(single.Code, single.Answer);
+                    }
+                }
+            }
 
             bio.UpdateStatus(BioStatus.InProgress);
 

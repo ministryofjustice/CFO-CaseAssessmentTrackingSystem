@@ -27,6 +27,8 @@ public static class GetEducationPayments
                         join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
                         join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
                         join a in unitOfWork.DbContext.EducationTrainingActivities on ep.ActivityId equals a.Id
+                        join u in unitOfWork.DbContext.Users on a.OwnerId equals u.Id into userJoin
+                        from u in userJoin.DefaultIfEmpty()
                         where dd.TheMonth == request.Month && dd.TheYear == request.Year
                         select new
                         {
@@ -44,7 +46,8 @@ public static class GetEducationPayments
                             ep.PaymentPeriod,
                             ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
                             a.CourseLevel,
-                            a.CourseTitle
+                            a.CourseTitle,
+                            SupportWorkerName = u.DisplayName ?? ""
                         };
 
             query = request.ContractId is null
@@ -58,7 +61,8 @@ public static class GetEducationPayments
                       || x.ParticipantId.Contains(request.Keyword)
                       || x.IneligibilityReason != null && x.IneligibilityReason.Contains(request.Keyword)
                       || x.Location.Contains(request.Keyword)
-                      || x.LocationType.Contains(request.Keyword));
+                      || x.LocationType.Contains(request.Keyword)
+                      || x.SupportWorkerName.Contains(request.Keyword));
             }
 
             result.Items = await query.AsNoTracking()
@@ -76,7 +80,8 @@ public static class GetEducationPayments
                     ParticipantName = x.ParticipantName,
                     PaymentPeriod = x.PaymentPeriod,
                     CourseLevel = x.CourseLevel,
-                    CourseTitle = x.CourseTitle
+                    CourseTitle = x.CourseTitle,
+                    SupportWorkerName = x.SupportWorkerName
                 })
                 .OrderBy(e => e.Contract)
                 .ThenByDescending(e => e.CreatedOn)

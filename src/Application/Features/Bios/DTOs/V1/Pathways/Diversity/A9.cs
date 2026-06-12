@@ -7,6 +7,7 @@ public class A9() : SingleChoiceQuestion("Have seen combat while a member of the
     NA
 ])
 {
+    public override string Code => nameof(A9);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

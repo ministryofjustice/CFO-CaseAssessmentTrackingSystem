@@ -6,6 +6,7 @@ public class B13() : SingleChoiceQuestion("Parent or guardian was seriously ill 
     NA
 ])
 {
+    public override string Code => nameof(B13);
     public const string Yes = "Yes";
     public const string No = "No";
     public const string NA = "PNTS";

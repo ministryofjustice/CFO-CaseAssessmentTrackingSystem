@@ -7,14 +7,14 @@
                           Label="@Model.GetMemberDescription(x => x.Description)"
                           For="@(() => Model.Description)"
                           Lines="4"  
-                          MaxLength=2000 
+                          MaxLength="2000" 
                           Immediate="true" 
-                          Counter=2000
+                          Counter="2000"
                           />
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>

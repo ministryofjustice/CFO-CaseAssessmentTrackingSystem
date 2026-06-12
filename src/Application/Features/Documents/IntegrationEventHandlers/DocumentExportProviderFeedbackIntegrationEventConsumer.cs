@@ -46,6 +46,8 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 await BuildActivitiesReturnsSheet(request, stubUser),
                 await BuildEnrolmentAdvisoriesSheet(request, stubUser),
                 await BuildActivitiesAdvisoriesSheet(request, stubUser),
+                await BuildEnrolmentTeamFeedbackSheet(request, stubUser),
+                await BuildActivitiesTeamFeedbackSheet(request, stubUser),
             };
 
             var merged = await excelService.MergeSheetsAsync(sheets);
@@ -206,5 +208,73 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Advisory Notes",     r => r.Message },
             });
         return ("Activities Advisories", sheet);
+    }
+
+    private async Task<(string SheetName, byte[] Data)> BuildEnrolmentTeamFeedbackSheet(
+        ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
+    {
+        var query = new GetEnrolmentsFeedback.Query
+        {
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            TenantId = request.TenantId,
+            CurrentUser = stubUser
+        };
+        var data = await new GetEnrolmentsFeedback.Handler(unitOfWork).Handle(query, CancellationToken.None);
+        if (data is not { Succeeded: true })
+        {
+            throw new Exception(data.ErrorMessage);
+        }
+
+        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+            new Dictionary<string, Func<GetEnrolmentsFeedback.EnrolmentsFeedbackTabularData, object?>>
+            {
+                { "Participant",                r => r.ParticipantId },
+                { "Queue",                      r => r.Queue },
+                { "Recipient",                  r => r.RecipientUser },
+                { "QA User",                    r => r.QaUser },
+                { "QA1 Outcome",                r => r.Qa1Outcome },
+                { "Outcome",                    r => r.Outcome },
+                { "Feedback Reason",            r => r.EnrolmentFeedbackReason },
+                { "Enrolment Processed Date",   r => r.EnrolmentProcessedDate },
+                { "Feedback Date",              r => r.Created },
+                { "Message",                    r => r.Message },
+            });
+        return ("Enrolment Team Feedback", sheet);
+    }
+
+    private async Task<(string SheetName, byte[] Data)> BuildActivitiesTeamFeedbackSheet(
+        ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
+    {
+        var query = new GetActivitiesFeedback.Query
+        {
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            TenantId = request.TenantId,
+            CurrentUser = stubUser
+        };
+        var data = await new GetActivitiesFeedback.Handler(unitOfWork).Handle(query, CancellationToken.None);
+        if (data is not { Succeeded: true })
+        {
+            throw new Exception(data.ErrorMessage);
+        }
+
+        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+            new Dictionary<string, Func<GetActivitiesFeedback.ActivitiesFeedbackTabularData, object?>>
+            {
+                { "Participant",                r => r.ParticipantId },
+                { "Activity Category",          r => r.ActivityCategory },
+                { "Activity Type",              r => r.ActivityType },
+                { "Queue",                      r => r.Queue },
+                { "Recipient",                  r => r.RecipientUser },
+                { "QA User",                    r => r.QaUser },
+                { "QA1 Outcome",                r => r.Qa1Outcome },
+                { "Outcome",                    r => r.Outcome },
+                { "Feedback Reason",            r => r.ActivityFeedbackReason },
+                { "Activity Processed Date",    r => r.ActivityProcessedDate },
+                { "Feedback Date",              r => r.Created },
+                { "Message",                    r => r.Message },
+            });
+        return ("Activities Team Feedback", sheet);
     }
 }
