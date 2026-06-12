@@ -60,7 +60,7 @@ internal static class AppExtensions
 
     public static IResourceBuilder<RedisResource> AddSignalRBackplane(this IDistributedApplicationBuilder builder)
     {
-        var redis = builder.AddRedis("signalr-redis")
+        var redis = builder.AddRedis("redis")
             // 7.4-alpine
             .WithImageSHA256("b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7")
             .WithDataVolume("cats-aspire-redis")

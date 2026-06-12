@@ -96,7 +96,7 @@ public static class DependencyInjection
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
         
-        var redisConnectionString = config.GetConnectionString("signalr-redis");
+        var redisConnectionString = config.GetConnectionString("redis");
         if (!string.IsNullOrEmpty(redisConnectionString))
         {
             signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
