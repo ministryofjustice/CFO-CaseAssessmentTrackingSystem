@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis # this should match the selector in service.yml
+  template:
+    metadata:
+      labels:
+        app: redis # this should match the selector in service.yml
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001 
+        runAsGroup: 1001  
+        runAsNonRoot: true
+      serviceAccountName: ${NAMESPACE}
+      containers:
+        - name: redis
+          image: redis:7.4-alpine@sha256:b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7
+          imagePullPolicy: Always 
+          ports:
+            - containerPort: 6379
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
