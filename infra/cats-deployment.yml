@@ -86,8 +86,8 @@ spec:
               value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
             - name: ConnectionStrings__rabbit
               value: "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
-            - name: ConnectionStrings__signalr-redis
-             value: "redis-service:6379"
+            - name: ConnectionStrings__redis
+              value: "redis-service:6379"
             - name: AWS__RootFolder
               value: "Files"
             - name: Sentry__Dsn
