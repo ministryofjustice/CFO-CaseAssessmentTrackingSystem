@@ -28,6 +28,7 @@
         <!-- Direct Reference to MessagePack (resolves ActualLab vulnerable transitive dependency issue) -->
         <PackageReference Include="MessagePack" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

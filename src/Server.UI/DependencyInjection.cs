@@ -18,6 +18,7 @@ using ApexCharts;
 using Cfo.Cats.Server.UI.Pages.Participants;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 using Cfo.Cats.Server.UI.Pages.QA.Activities;
+using StackExchange.Redis;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -88,12 +89,21 @@ public static class DependencyInjection
         services.AddMvc();
         services.AddControllers();
         
-        services.AddSignalR(options =>
+        var signalRBuilder = services.AddSignalR(options =>
             {
-                options.HandshakeTimeout = TimeSpan.FromSeconds(60); // Adjust as needed
-                options.KeepAliveInterval = TimeSpan.FromSeconds(10); // SignalR keep-alive interval
-                options.ClientTimeoutInterval = TimeSpan.FromSeconds(120); // SignalR client timeout interval
+                options.HandshakeTimeout = TimeSpan.FromSeconds(60);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
+        
+        var redisConnectionString = config.GetConnectionString("signalr-redis");
+        if (!string.IsNullOrEmpty(redisConnectionString))
+        {
+            signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
+            {
+                options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
+            });
+        }
         services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
         services.AddScoped<PresenceHubClient>();
         services.AddExceptionHandler<GlobalExceptionHandler>();

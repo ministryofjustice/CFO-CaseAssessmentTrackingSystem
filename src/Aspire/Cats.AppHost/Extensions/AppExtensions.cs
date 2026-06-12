@@ -5,6 +5,7 @@ internal static class AppExtensions
 
     public static IDistributedApplicationBuilder AddCatsServices(this IDistributedApplicationBuilder builder,
         IResourceBuilder<RabbitMQServerResource> rabbit,
+        IResourceBuilder<RedisResource> redis,
         CatsDatabaseResources databases)
     {
         var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
@@ -12,7 +13,9 @@ internal static class AppExtensions
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
             .WithReference(rabbit)
-            .WaitFor(rabbit);
+            .WithReference(redis)
+            .WaitFor(rabbit)
+            .WaitFor(redis);
 
         if(replicaCount > 1)
         {
@@ -38,6 +41,16 @@ internal static class AppExtensions
             .WithHttpEndpoint(port: 15672, targetPort: 15672);            
 
         return rabbit;
+    }
 
+    public static IResourceBuilder<RedisResource> AddSignalRBackplane(this IDistributedApplicationBuilder builder)
+    {
+        var redis = builder.AddRedis("signalr-redis")
+            // 7.4-alpine
+            .WithImageSHA256("b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7")
+            .WithDataVolume("cats-aspire-redis")
+            .WithLifetime(ContainerLifetime.Persistent);
+
+        return redis;
     }
 }
