@@ -90,6 +90,8 @@ public partial class Users
             .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
             .ToListAsync();
 
+        UsersStateContainer.OnChange += OnPresenceChanged;
+
         _initialised = true;
     }
 
@@ -554,4 +556,17 @@ public partial class Users
             _processing = false;
         }
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            UsersStateContainer.OnChange -= OnPresenceChanged;
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private void OnPresenceChanged() => InvokeAsync(StateHasChanged);
+
 }
