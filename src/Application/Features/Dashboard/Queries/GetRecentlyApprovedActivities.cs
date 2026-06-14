@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetRecentlyApprovedActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ApprovedActivitiesDto>>
+    public class Query : IQuery<Result<ApprovedActivitiesDto>>
     {
         public required DateTime StartDate { get; init; }
         public required DateTime EndDate { get; init; }
@@ -16,7 +16,7 @@ public static class GetRecentlyApprovedActivities
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<ApprovedActivitiesDto>>
+        : IQueryHandler<Query, Result<ApprovedActivitiesDto>>
     {
         public async Task<Result<ApprovedActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
         {
