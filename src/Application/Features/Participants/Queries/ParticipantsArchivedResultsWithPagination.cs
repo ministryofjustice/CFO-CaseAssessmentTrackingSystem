@@ -9,13 +9,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class ParticipantsArchivedResultsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : ParticipantsArchivedResultsAdvancedFilter, IRequest<Result<PaginatedData<ParticipantsArchivedResultsSummaryDto>>>
+    public class Query : ParticipantsArchivedResultsAdvancedFilter, IQuery<Result<PaginatedData<ParticipantsArchivedResultsSummaryDto>>>
     {
         public ParticipantsArchivedResultsAdvancedSpecification Specification => new(this);
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<PaginatedData<ParticipantsArchivedResultsSummaryDto>>>
+        : IQueryHandler<Query, Result<PaginatedData<ParticipantsArchivedResultsSummaryDto>>>
     {
         public async Task<Result<PaginatedData<ParticipantsArchivedResultsSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

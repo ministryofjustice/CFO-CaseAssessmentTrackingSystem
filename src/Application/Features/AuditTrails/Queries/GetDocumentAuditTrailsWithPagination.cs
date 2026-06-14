@@ -21,7 +21,7 @@ public static class GetDocumentAuditTrailsWithPagination
         public override string ToString() => $"Search:{Keyword},Sort:{SortDirection},OrderBy:{OrderBy},{PageNumber},{PageSize}";
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<DocumentAuditTrailDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PaginatedData<DocumentAuditTrailDto>>>
     {
         public async Task<Result<PaginatedData<DocumentAuditTrailDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

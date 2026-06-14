@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class AddConsent
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<string>>
+    public class Command : ICommand<Result<string>>
     {
         [Description("Participant Id")]
         public required string ParticipantId { get; set; }
@@ -28,7 +28,7 @@ public static class AddConsent
         public bool Certify { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Command, Result<string>>
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : ICommandHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -108,7 +108,7 @@ public static class AddConsent
                 .Equal(true)
                 .WithMessage("You must upload a document and certify");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

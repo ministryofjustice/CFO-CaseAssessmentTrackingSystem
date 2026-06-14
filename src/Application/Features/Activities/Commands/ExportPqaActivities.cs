@@ -11,12 +11,12 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 public static class ExportPqaActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required ActivityPqaQueueWithPagination.Query Query { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -42,7 +42,7 @@ public static class ExportPqaActivities
             this.currentUserService = currentUserService;
             this.unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)

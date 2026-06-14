@@ -11,7 +11,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands;
 public static class AddDomainCommand
 {
     [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("Tenant Id")]
         public string? TenantId { get; set; }
@@ -25,7 +25,7 @@ public static class AddDomainCommand
         }
     }
 
-    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {

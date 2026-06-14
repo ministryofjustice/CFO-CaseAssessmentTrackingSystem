@@ -4,7 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Infrastructure.Persistence;
-using MediatR;
+using Cortex.Mediator.Commands;
+using Cortex.Mediator.Queries;
 using NUnit.Framework;
 using Shouldly;
 
@@ -18,7 +19,10 @@ public class RequestHandlerTests
     public void HandlersDoNotReferToDbContextDirectly()
     {
         var handlerTypes = ApplicationAssembly.GetTypes()
-            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)))
+            .Where(t => t.GetInterfaces().Any(i =>
+                i.IsGenericType
+                && (i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>)
+                    || i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>))))
             .ToList();
 
         List<string> failures = [];

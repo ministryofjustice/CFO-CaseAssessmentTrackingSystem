@@ -9,13 +9,13 @@ namespace Cfo.Cats.Application.Features.Notifications.Queries;
 public static class NotificationsWithPaginationQuery
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : NotificationsAdvancedFilter, IRequest<Result<PaginatedData<NotificationDto>>>
+    public class Query : NotificationsAdvancedFilter, IQuery<Result<PaginatedData<NotificationDto>>>
     {
         public NotificationAdvancedSpecification Specification => new(this);
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper)
-        : IRequestHandler<Query, Result<PaginatedData<NotificationDto>>>
+        : IQueryHandler<Query, Result<PaginatedData<NotificationDto>>>
     {
         public async Task<Result<PaginatedData<NotificationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

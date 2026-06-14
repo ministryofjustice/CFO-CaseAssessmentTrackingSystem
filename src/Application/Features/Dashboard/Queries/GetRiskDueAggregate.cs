@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetRiskDueAggregate
 {
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
-    public class Query : IRequest<Result<RiskDueAggregateDto[]>>
+    public class Query : IQuery<Result<RiskDueAggregateDto[]>>
     {
         public required string TenantId { get; set; }
         public required RiskAggregateGroupingType GroupingType { get; set; }
@@ -19,7 +19,7 @@ public static class GetRiskDueAggregate
         Tenant
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<RiskDueAggregateDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<RiskDueAggregateDto[]>>
     {
         public async Task<Result<RiskDueAggregateDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

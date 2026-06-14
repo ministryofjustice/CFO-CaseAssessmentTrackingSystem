@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Transfers.Queries;
 public static class GetParticipantLatestArchiveDetails
 {
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
-    public class Query : IRequest<Result<ArchiveDetailsDto>>
+    public class Query : IQuery<Result<ArchiveDetailsDto>>
     {
         public required string ParticipantId { get; set; }
     }
@@ -19,7 +19,7 @@ public static class GetParticipantLatestArchiveDetails
         public DateTime ArchivedOn { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ArchiveDetailsDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ArchiveDetailsDto>>
     {
         public async Task<Result<ArchiveDetailsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

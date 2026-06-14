@@ -35,7 +35,6 @@ using Cfo.Cats.Infrastructure.Services.OffLoc;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using Dapper;
-using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

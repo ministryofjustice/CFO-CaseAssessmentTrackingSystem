@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 public static class GetOutcomeQualityDipSample
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-    public class Query : IRequest<Result<DipSampleSummaryDto>>
+    public class Query : IQuery<Result<DipSampleSummaryDto>>
     {
         public required Guid DipSampleId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<DipSampleSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<DipSampleSummaryDto>>
     {
         public async Task<Result<DipSampleSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {

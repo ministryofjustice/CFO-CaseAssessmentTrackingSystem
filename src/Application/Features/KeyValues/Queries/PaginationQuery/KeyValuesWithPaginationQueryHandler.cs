@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
 public class KeyValuesQueryHandler(
     IUnitOfWork unitOfWork,
     IMapper mapper
-) : IRequestHandler<KeyValuesWithPaginationQuery, PaginatedData<KeyValueDto>>
+) : IQueryHandler<KeyValuesWithPaginationQuery, PaginatedData<KeyValueDto>>
 {
  
     public async Task<PaginatedData<KeyValueDto>> Handle(KeyValuesWithPaginationQuery request,

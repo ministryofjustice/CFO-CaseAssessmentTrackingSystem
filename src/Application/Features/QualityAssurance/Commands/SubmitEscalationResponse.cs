@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 public static class SubmitEscalationResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required Guid QueueEntryId { get; init; }
         
@@ -40,7 +40,7 @@ public static class SubmitEscalationResponse
         Comment = 2
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -199,7 +199,7 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.QueueEntryId)
                     .MustAsync(MustExist)
@@ -219,7 +219,7 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.QueueEntryId)
                     .MustAsync(MustBeOpen)
@@ -244,7 +244,7 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.QueueEntryId)
                     .MustAsync(MustBeAtSubmittedToAuthority)
@@ -268,7 +268,7 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .MustAsync(OwnerMustNotBeApprover)

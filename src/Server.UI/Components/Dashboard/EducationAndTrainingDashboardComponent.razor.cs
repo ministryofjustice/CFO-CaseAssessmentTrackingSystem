@@ -20,7 +20,7 @@ public partial class EducationAndTrainingDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetEducationAndTrainings.EducationAndTrainingDto>> CreateQuery()
+    protected override IQuery<Result<GetEducationAndTrainings.EducationAndTrainingDto>> CreateQuery()
      => new GetEducationAndTrainings.Query()
      {
          CurrentUser = CurrentUser,

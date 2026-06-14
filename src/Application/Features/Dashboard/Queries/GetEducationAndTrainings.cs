@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetEducationAndTrainings
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<EducationAndTrainingDto>>
+    public class Query : IQuery<Result<EducationAndTrainingDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -14,7 +14,7 @@ public static class GetEducationAndTrainings
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<EducationAndTrainingDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<EducationAndTrainingDto>>
     {
         public async Task<Result<EducationAndTrainingDto>> Handle(Query request, CancellationToken cancellationToken)
         {

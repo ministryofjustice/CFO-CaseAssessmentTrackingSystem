@@ -10,12 +10,12 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 public static class GrabQa2Entry
 {
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
-    public class Command : IRequest<Result<EnrolmentQueueEntryDto>>
+    public class Command : ICommand<Result<EnrolmentQueueEntryDto>>
     {
         public required UserProfile CurrentUser { get; init; }        
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<EnrolmentQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result<EnrolmentQueueEntryDto>>
     {
         private static readonly SemaphoreSlim Semaphore = new(1, 1);
         

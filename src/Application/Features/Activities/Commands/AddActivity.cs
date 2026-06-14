@@ -13,7 +13,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 public static class AddActivity
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public record class Command(string ParticipantId) : IRequest<Result>
+    public record class Command(string ParticipantId) : ICommand<Result>
     {
         public Guid? ActivityId { get; set; }
 
@@ -78,11 +78,11 @@ public static class AddActivity
         }
     }
 
-    private class Handler(
+    public class Handler(
         IUnitOfWork unitOfWork, 
         ICurrentUserService currentUserService, 
         IUploadService uploadService,
-        IMapper mapper) : IRequestHandler<Command, Result>
+        IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -249,7 +249,7 @@ public static class AddActivity
                     .WithMessage("The activity must have taken place within the last three months");
             });
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 When(c => c.ActivityId is not null, () =>
                 {

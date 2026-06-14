@@ -16,7 +16,7 @@ public static class GetParticipantByIdResult
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<ParticipantDto>>
+        : IQueryHandler<Query, Result<ParticipantDto>>
     {
         public async Task<Result<ParticipantDto>> Handle(
             Query request,

@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class ChangeEnrolmentLocation
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public string? ParticipantId { get; set; }
         public int? NewLocationId { get; set; }
@@ -17,7 +17,7 @@ public static class ChangeEnrolmentLocation
         public UserProfile? CurrentUser { get; set; } 
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -61,7 +61,7 @@ public static class ChangeEnrolmentLocation
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification Reason"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId!)
                     .MustAsync(Exist)

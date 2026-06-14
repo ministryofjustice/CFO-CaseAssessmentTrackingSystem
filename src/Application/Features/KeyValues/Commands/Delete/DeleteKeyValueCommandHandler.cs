@@ -1,6 +1,6 @@
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.Delete;
 
-public class DeleteKeyValueCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteKeyValueCommand, Result<int>>
+public class DeleteKeyValueCommandHandler(IUnitOfWork unitOfWork) : ICommandHandler<DeleteKeyValueCommand, Result<int>>
 {
     public async Task<Result<int>> Handle(DeleteKeyValueCommand request, CancellationToken cancellationToken)
     {

@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 public static class SubmitCpmResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipVerification)]
-    public record Command : IRequest<Result>
+    public record Command : ICommand<Result>
     {
         public required UserProfile CurrentUser { get; set; }
         public required string ParticipantId { get; set; }
@@ -20,7 +20,7 @@ public static class SubmitCpmResponse
         public ComplianceAnswer ComplianceAnswer { get; set; } = ComplianceAnswer.NotAnswered;
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -70,7 +70,7 @@ public static class SubmitCpmResponse
                 .Must(x => x.IsAnswer)
                 .WithMessage("Compliance must be answered");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => 
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => 
             {
                 const string message = "Cannot submit CPM review: {0}";
 

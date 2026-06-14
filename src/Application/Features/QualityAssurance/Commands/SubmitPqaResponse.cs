@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 public static class SubmitPqaResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required Guid QueueEntryId { get; set; }
         
@@ -24,7 +24,7 @@ public static class SubmitPqaResponse
         Comment = 2
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -87,7 +87,7 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c.QueueEntryId)
                     .Must(MustExist)
                     .WithMessage("Enrolment queue item does not exist");
@@ -106,7 +106,7 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c.QueueEntryId)
                     .Must(MustBeOpen)
                     .WithMessage("Enrolment queue item is already completed.");    
@@ -130,7 +130,7 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c)
                     .Must(OwnerMustNotBeApprover)
                     .WithMessage("This enrolment was assigned to you hence must not be processed at PQA stage by you");    
@@ -154,7 +154,7 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(f => f)
                     .Must(EnrolmentOccurredWithin3Months)
                     .WithMessage($"The enrolment consent date is over 3 months ago")
@@ -181,7 +181,7 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 When(g => g.Response is PqaResponse.Accept, () =>
                 {
                     RuleFor(g => g.QueueEntryId)
@@ -209,7 +209,7 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 When(g => g.Response is PqaResponse.Accept, () =>
                 {

@@ -11,14 +11,14 @@ namespace Cfo.Cats.Application.Features.PRIs.Commands;
 public static class AddPRI
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public record Command(string ParticipantId) : IRequest<Result>
+    public record Command(string ParticipantId) : ICommand<Result>
     {
         public PriCodeDto Code { get; } = new() { ParticipantId = ParticipantId };
         public PriReleaseDto Release { get; } = new();
         public PriMeetingDto Meeting { get; } = new();
     }
 
-    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -72,7 +72,7 @@ public static class AddPRI
             _currentUserService = currentUserService;
             _locationService = locationService;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(NotAlreadyHavePri)
@@ -80,13 +80,13 @@ public static class AddPRI
                     .DependentRules(() =>
                     {
                         RuleFor(c => c.Code)
-                            .SetValidator(priCodeValidator, ValidationConstants.RuleSet.MediatR);
+                            .SetValidator(priCodeValidator, ValidationConstants.RuleSet.Mediator);
                         
                         RuleFor(c => c.Release)
-                            .SetValidator(priReleaseValidator, ValidationConstants.RuleSet.MediatR);
+                            .SetValidator(priReleaseValidator, ValidationConstants.RuleSet.Mediator);
 
                         RuleFor(c => c.Meeting)
-                            .SetValidator(priMeetingValidator, ValidationConstants.RuleSet.MediatR);
+                            .SetValidator(priMeetingValidator, ValidationConstants.RuleSet.Mediator);
 
                         RuleFor(c => c)
                             .MustAsync(BeAuthorised)

@@ -4,7 +4,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-internal class PublishParticipantTransitionedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
+public class PublishParticipantTransitionedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken) => await unitOfWork.DbContext.InsertOutboxMessage(new ParticipantTransitionedIntegrationEvent(notification.Item.Id, notification.From.Name, notification.To.Name, notification.DateOccurred.DateTime));
 }

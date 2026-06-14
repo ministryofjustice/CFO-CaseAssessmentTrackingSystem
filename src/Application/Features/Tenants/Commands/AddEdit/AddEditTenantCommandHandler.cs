@@ -9,7 +9,7 @@ public class AddEditTenantCommandHandler(
     IStringLocalizer<AddEditTenantCommandHandler> localizer,
     IMapper mapper
 )
-    : IRequestHandler<AddEditTenantCommand, Result<string>>
+    : ICommandHandler<AddEditTenantCommand, Result<string>>
 {
     private readonly IStringLocalizer<AddEditTenantCommandHandler> localizer = localizer;
 

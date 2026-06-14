@@ -10,13 +10,13 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 public static class GetOutcomeQualityDipSampleParticipant
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-    public class Query : IRequest<Result<ParticipantDipSampleDto>>
+    public class Query : IQuery<Result<ParticipantDipSampleDto>>
     {
         public required string ParticipantId { get; set; }
         public required Guid SampleId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IEnumerable<IPertinentEventProvider> eventProviders) : IRequestHandler<Query, Result<ParticipantDipSampleDto>>
+    public class Handler(IUnitOfWork unitOfWork, IEnumerable<IPertinentEventProvider> eventProviders) : IQueryHandler<Query, Result<ParticipantDipSampleDto>>
     {
         public async Task<Result<ParticipantDipSampleDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -85,7 +85,7 @@ public static class GetOutcomeQualityDipSampleParticipant
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(async (_, id, context, ct) =>

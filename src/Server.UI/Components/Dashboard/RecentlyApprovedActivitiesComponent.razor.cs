@@ -20,7 +20,7 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetRecentlyApprovedActivities.ApprovedActivitiesDto>> CreateQuery()
+    protected override IQuery<Result<GetRecentlyApprovedActivities.ApprovedActivitiesDto>> CreateQuery()
         => new GetRecentlyApprovedActivities.Query()
         {
             CurrentUser = CurrentUser,

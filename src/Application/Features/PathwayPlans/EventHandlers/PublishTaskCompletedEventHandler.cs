@@ -4,7 +4,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.EventHandlers;
 
-internal class PublishTaskCompletedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ObjectiveTaskCompletedDomainEvent>
+public class PublishTaskCompletedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ObjectiveTaskCompletedDomainEvent>
 {
     public async Task Handle(ObjectiveTaskCompletedDomainEvent notification, CancellationToken cancellationToken) =>
         await unitOfWork.DbContext.InsertOutboxMessage(new ObjectiveTaskCompletedIntegrationEvent(

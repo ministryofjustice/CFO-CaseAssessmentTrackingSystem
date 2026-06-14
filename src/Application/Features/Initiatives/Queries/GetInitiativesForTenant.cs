@@ -10,13 +10,13 @@ namespace Cfo.Cats.Application.Features.Initiatives.Queries;
 public static class GetInitiativesForTenant
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<InitiativeDto[]>>
+    public class Query : IQuery<Result<InitiativeDto[]>>
     {
         public bool ActiveOnly { get; init; } = true;
     }
 
     public class Handler(ISqlConnectionFactory sqlConnectionFactory, ICurrentUserService currentUserService)
-        : IRequestHandler<Query, Result<InitiativeDto[]>>
+        : IQueryHandler<Query, Result<InitiativeDto[]>>
     {
         public async Task<Result<InitiativeDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

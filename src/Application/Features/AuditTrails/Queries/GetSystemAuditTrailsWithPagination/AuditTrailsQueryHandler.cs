@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 namespace Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination;
 
 public class AuditTrailsQueryHandler
-    : IRequestHandler<AuditTrailsWithPaginationQuery, PaginatedData<AuditTrailDto>>
+    : IQueryHandler<AuditTrailsWithPaginationQuery, PaginatedData<AuditTrailDto>>
 {
     private readonly IUnitOfWork unitOfWork;
     private readonly ICurrentUserService currentUserService;

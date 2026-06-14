@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Entities.Administration;
 namespace Cfo.Cats.Application.Features.Initiatives.Commands.AddInitiative;
 
 public class AddInitiativeCommandHandler(IInitiativeRepository repository)
-    : IRequestHandler<AddInitiativeCommand, Result>
+    : ICommandHandler<AddInitiativeCommand, Result>
 {
     public async Task<Result> Handle(AddInitiativeCommand request, CancellationToken cancellationToken)
     {

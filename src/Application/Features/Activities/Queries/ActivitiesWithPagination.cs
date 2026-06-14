@@ -10,13 +10,13 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class ActivitiesWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : ActivitiesAdvancedFilter, IRequest<Result<PaginatedData<ActivitySummaryDto>>>
+    public class Query : ActivitiesAdvancedFilter, IQuery<Result<PaginatedData<ActivitySummaryDto>>>
     {
         public ActivitiesAdvancedSpecification Specification => new(this);
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
-        : IRequestHandler<Query, Result<PaginatedData<ActivitySummaryDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
+        : IQueryHandler<Query, Result<PaginatedData<ActivitySummaryDto>>>
     {
         public async Task<Result<PaginatedData<ActivitySummaryDto>>> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.Activities

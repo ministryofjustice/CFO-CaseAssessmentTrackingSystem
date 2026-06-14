@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 public static class GetOutcomeQualityDipSampleParticipants 
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-    public class Query : PaginationFilter, IRequest<Result<PaginatedData<DipSampleParticipantSummaryDto>>>
+    public class Query : PaginationFilter, IQuery<Result<PaginatedData<DipSampleParticipantSummaryDto>>>
     {
         public required Guid DipSampleId { get; set; }
         public bool HideReviewed { get; set; } = false;
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<DipSampleParticipantSummaryDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<DipSampleParticipantSummaryDto>>>
     {
         public async Task<Result<PaginatedData<DipSampleParticipantSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -100,7 +100,7 @@ public static class GetOutcomeQualityDipSampleParticipants
         {
             this.unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(q => q.DipSampleId)
                     .Must(Exist)

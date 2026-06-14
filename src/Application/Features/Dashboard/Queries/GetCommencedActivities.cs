@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetCommencedActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<CommencedActivitiesDto>>
+    public class Query : IQuery<Result<CommencedActivitiesDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -13,7 +13,7 @@ public static class GetCommencedActivities
         public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<CommencedActivitiesDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<CommencedActivitiesDto>>
     {
         public async Task<Result<CommencedActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
         {

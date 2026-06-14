@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 namespace Cfo.Cats.Application.Features.Initiatives.Commands.AmendInitiativeLifetime;
 
 [RequestAuthorize(Policy = SecurityPolicies.ManageInitiatives)]
-public class AmendInitiativeLifetimeCommand : IRequest<Result>
+public class AmendInitiativeLifetimeCommand : ICommand<Result>
 {
     public required Guid Id { get; set; }
 

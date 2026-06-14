@@ -66,6 +66,6 @@ public static class ValidationConstants
         /// These rules probably touch the database and should not run
         /// in the UI 
         /// </summary>
-        public const string MediatR = "MediatR";
+        public const string Mediator = "Mediator";
     }
 }

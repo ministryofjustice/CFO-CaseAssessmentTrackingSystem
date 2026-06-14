@@ -10,12 +10,12 @@ public static class GetDocumentById
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Query : IRequest<Result<DownloadDocumentDto>>
+    public class Query : IQuery<Result<DownloadDocumentDto>>
     {
         public Guid Id { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Query, Result<DownloadDocumentDto>>
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IQueryHandler<Query, Result<DownloadDocumentDto>>
     {
         public async Task<Result<DownloadDocumentDto>> Handle(Query request, CancellationToken cancellationToken)
         {

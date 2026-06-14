@@ -11,14 +11,14 @@ namespace Cfo.Cats.Application.Features.KeyValues.Commands.Export;
 public static class ExportKeyValues
 {
     [RequestAuthorize(Roles = RoleNames.SystemSupport)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required KeyValuesWithPaginationQuery? Query { get; set; }
     }
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {

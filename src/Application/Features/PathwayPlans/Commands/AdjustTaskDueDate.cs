@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 public static class AdjustTaskDueDate
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("Task Id")]
         public required Guid TaskId { get; init; }
@@ -22,7 +22,7 @@ public static class AdjustTaskDueDate
         public DateTime? Due { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -80,7 +80,7 @@ public static class AdjustTaskDueDate
                     .WithMessage("Due date must fall on the first day of the month");
             });
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.PathwayPlanId)
                     .MustAsync(ParticipantMustNotBeArchived)

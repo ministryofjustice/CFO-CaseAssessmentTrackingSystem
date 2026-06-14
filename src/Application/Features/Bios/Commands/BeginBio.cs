@@ -12,12 +12,12 @@ namespace Cfo.Cats.Application.Features.Bios.Commands;
 public static class BeginBio
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<Guid>>
+    public class Command : ICommand<Result<Guid>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler : IRequestHandler<Command, Result<Guid>>
+    public class Handler : ICommandHandler<Command, Result<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
         
@@ -93,7 +93,7 @@ public static class BeginBio
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

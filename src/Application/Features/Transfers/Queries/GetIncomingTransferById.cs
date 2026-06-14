@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Transfers.Queries;
 public static class GetIncomingTransferById
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<IncomingTransferDto>>
+    public class Query : IQuery<Result<IncomingTransferDto>>
     {
         public required Guid IncomingTransferId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<IncomingTransferDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<IncomingTransferDto>>
     {
         public async Task<Result<IncomingTransferDto>> Handle(Query request, CancellationToken cancellationToken)
         {

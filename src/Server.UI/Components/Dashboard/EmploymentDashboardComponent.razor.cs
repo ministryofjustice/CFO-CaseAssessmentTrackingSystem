@@ -20,7 +20,7 @@ public partial class EmploymentDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetEmployments.EmploymentsDto>> CreateQuery()
+    protected override IQuery<Result<GetEmployments.EmploymentsDto>> CreateQuery()
      => new GetEmployments.Query()
      {
          CurrentUser = CurrentUser,

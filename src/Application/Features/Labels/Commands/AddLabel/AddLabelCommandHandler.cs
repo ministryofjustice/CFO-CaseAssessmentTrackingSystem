@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public class AddLabelCommandHandler(
         ILabelRepository repository, 
-        ILabelCounter labelCounter) : IRequestHandler<AddLabelCommand, Result>
+        ILabelCounter labelCounter) : ICommandHandler<AddLabelCommand, Result>
 {
     public async Task<Result> Handle(
         AddLabelCommand request, 

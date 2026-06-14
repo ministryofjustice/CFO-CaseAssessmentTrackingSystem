@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class AddRisk
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<Guid>>
+    public class Command : ICommand<Result<Guid>>
     {
         public required string ParticipantId { get; init; }
         [Description("Risk location")]
@@ -18,7 +18,7 @@ public static class AddRisk
         [Description("Justification for reason")] public string? Justification { get; set; }
     }
 
-    public class Handler : IRequestHandler<Command, Result<Guid>>
+    public class Handler : ICommandHandler<Command, Result<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -77,7 +77,7 @@ public static class AddRisk
                 .NotNull()
                 .WithMessage("You must choose a location");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ParticipantId)
                     .MustAsync(Exist)

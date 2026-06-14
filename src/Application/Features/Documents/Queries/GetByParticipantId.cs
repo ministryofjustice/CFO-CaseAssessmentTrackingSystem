@@ -10,12 +10,12 @@ public static class GetByParticipantId
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Query : IRequest<Result<DocumentDto[]>>
+    public class Query : IQuery<Result<DocumentDto[]>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<DocumentDto[]>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<DocumentDto[]>>
     {
         public async Task<Result<DocumentDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

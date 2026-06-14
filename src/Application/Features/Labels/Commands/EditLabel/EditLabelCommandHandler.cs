@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Labels;
 
 namespace Cfo.Cats.Application.Features.Labels.Commands;
 
-public class EditLabelCommandHandler(ILabelRepository repository, ILabelCounter labelCounter) : IRequestHandler<EditLabelCommand, Result>
+public class EditLabelCommandHandler(ILabelRepository repository, ILabelCounter labelCounter) : ICommandHandler<EditLabelCommand, Result>
 {
     public async Task<Result> Handle(EditLabelCommand request, CancellationToken cancellationToken)
     {

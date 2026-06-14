@@ -9,12 +9,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantNotes
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : ParticipantNotesFilter, IRequest<Result<PaginatedData<ParticipantNoteDto>>>
+    public class Query : ParticipantNotesFilter, IQuery<Result<PaginatedData<ParticipantNoteDto>>>
     {
         public ParticipantNotesSpecification Specification => new();
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantNoteDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantNoteDto>>>
     {
         public async Task<Result<PaginatedData<ParticipantNoteDto>>> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.Participants
@@ -53,7 +53,7 @@ public static class GetParticipantNotes
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

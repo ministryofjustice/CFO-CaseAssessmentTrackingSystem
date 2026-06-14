@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class GetPreviousSameTypeActivitiesById
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<List<ActivityQaDetailsDto>>
+    public class Query : IQuery<List<ActivityQaDetailsDto>>
     {
         public required Guid? Id { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper)
-        : IRequestHandler<Query, List<ActivityQaDetailsDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper)
+        : IQueryHandler<Query, List<ActivityQaDetailsDto>>
     {
         public async Task<List<ActivityQaDetailsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class GetActivityQaNotes
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ActivityQaNoteDto[]>>
+    public class Query : IQuery<Result<ActivityQaNoteDto[]>>
     {
         public Guid? ActivityId { get; set; }
 
@@ -18,7 +18,7 @@ public static class GetActivityQaNotes
     }
 
     public class Handler(
-        IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ActivityQaNoteDto[]>>
+        IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ActivityQaNoteDto[]>>
     {
             public async Task<Result<ActivityQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
             {

@@ -13,7 +13,7 @@ namespace Cfo.Cats.Server.UI.Components.Labels;
 
 public partial class LabelsTable
 {
-    protected override IRequest<Result<LabelDto[]>> CreateQuery()
+    protected override IQuery<Result<LabelDto[]>> CreateQuery()
         => new GetVisibleLabels.Query(CurrentUser);
 
     private async Task OnAddLabel()

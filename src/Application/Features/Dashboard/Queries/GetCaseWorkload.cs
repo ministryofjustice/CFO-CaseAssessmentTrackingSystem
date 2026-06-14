@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetCaseWorkload
 {
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
-    public class Query : IRequest<Result<CaseSummaryDto[]>>
+    public class Query : IQuery<Result<CaseSummaryDto[]>>
     {
         public UserProfile? CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<CaseSummaryDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<CaseSummaryDto[]>>
     {
         public async Task<Result<CaseSummaryDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

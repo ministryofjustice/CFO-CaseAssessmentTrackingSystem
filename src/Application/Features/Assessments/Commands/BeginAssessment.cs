@@ -32,7 +32,7 @@ public static class BeginAssessment
             => AssessmentsCacheKey.SharedExpiryTokenSource();
     }
 
-    public class Handler : IRequestHandler<Command, Result<Guid>>
+    public class Handler : ICommandHandler<Command, Result<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
@@ -92,7 +92,7 @@ public static class BeginAssessment
                 .NotNull()
                 .WithMessage("You must choose a location");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                 .MustAsync(Exist)

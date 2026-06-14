@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Outbox.Commands;
 public static class RescheduleOutboxMessage
 {
     [RequestAuthorize(Roles = RoleNames.SystemSupport)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid OutboxMessageId { get;set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -42,7 +42,7 @@ public static class RescheduleOutboxMessage
             RuleFor(x => x.OutboxMessageId)
                 .NotEmpty();
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.OutboxMessageId)
                     .MustAsync(Exist)

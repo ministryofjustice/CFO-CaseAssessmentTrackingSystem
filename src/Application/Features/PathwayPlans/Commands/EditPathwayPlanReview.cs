@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 public static class EditPathwayPlanReview
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid ReviewId { get; init; }
         public int LocationId { get; set; }
@@ -17,7 +17,7 @@ public static class EditPathwayPlanReview
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Command, Result>
+        : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -62,7 +62,7 @@ public static class EditPathwayPlanReview
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Review"));
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ReviewId)
                     .MustAsync(ParticipantMustNotBeArchived)

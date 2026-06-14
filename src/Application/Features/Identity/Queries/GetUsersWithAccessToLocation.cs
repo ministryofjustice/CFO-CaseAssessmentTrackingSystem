@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.Identity.Queries;
 public static class GetUsersWithAccessToLocation
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<IEnumerable<ApplicationUserDto>>>
+    public class Query : IQuery<Result<IEnumerable<ApplicationUserDto>>>
     {
         public required int LocationId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService userService) : IRequestHandler<Query, Result<IEnumerable<ApplicationUserDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService userService) : IQueryHandler<Query, Result<IEnumerable<ApplicationUserDto>>>
     {
         public async Task<Result<IEnumerable<ApplicationUserDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -57,7 +57,7 @@ public static class GetUsersWithAccessToLocation
             RuleFor(q => q.LocationId)
                 .NotEmpty();
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(q => q.LocationId)
                     .MustAsync(Exist);

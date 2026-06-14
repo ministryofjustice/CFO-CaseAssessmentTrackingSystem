@@ -21,7 +21,7 @@ public partial class QAEnrolmentsResults
     [Parameter, EditorRequired]
     public bool JustMyParticipants { get; set; } = false;
 
-    protected override IRequest<Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>> CreateQuery() 
+    protected override IQuery<Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>> CreateQuery() 
         => new QAEnrolmentsResultsWithPagination.Query()
         {
             UserProfile = CurrentUser,

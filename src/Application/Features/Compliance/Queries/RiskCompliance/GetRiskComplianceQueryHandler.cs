@@ -4,7 +4,7 @@ using Dapper;
 
 namespace Cfo.Cats.Application.Features.Compliance.Queries;
 
-public class GetRiskComplianceQueryHandler(ISqlConnectionFactory sqlConnectionFactory, ICurrentUserService currentUserService, IContractService contractService) : IRequestHandler<GetRiskComplianceQuery, Result<RiskComplianceSummaryDto[]>>
+public class GetRiskComplianceQueryHandler(ISqlConnectionFactory sqlConnectionFactory, ICurrentUserService currentUserService, IContractService contractService) : IQueryHandler<GetRiskComplianceQuery, Result<RiskComplianceSummaryDto[]>>
 {
     public async Task<Result<RiskComplianceSummaryDto[]>> Handle(GetRiskComplianceQuery request, CancellationToken cancellationToken)
     {

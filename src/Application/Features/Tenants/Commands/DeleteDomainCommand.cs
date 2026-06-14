@@ -11,7 +11,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands;
 public static class DeleteDomainCommand
 {
     [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
-    public class Command : IRequest<Result<int>>
+    public class Command : ICommand<Result<int>>
     {
         [Description("Tenant Id")]
         public string? TenantId { get; set; }
@@ -25,7 +25,7 @@ public static class DeleteDomainCommand
         }
     }
 
-    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper, ITenantService tenantService) : IRequestHandler<Command, Result<int>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ITenantService tenantService) : ICommandHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {

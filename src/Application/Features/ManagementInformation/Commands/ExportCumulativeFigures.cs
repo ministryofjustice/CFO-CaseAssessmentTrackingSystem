@@ -10,14 +10,14 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Commands;
 public static class ExportCumulativeFigures
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public DateOnly EndDate { get; init; }
         public string? ContractId { get; init; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ISerializer serializer)
-        : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ISerializer serializer)
+        : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -46,7 +46,7 @@ public static class ExportCumulativeFigures
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)

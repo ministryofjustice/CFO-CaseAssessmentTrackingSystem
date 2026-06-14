@@ -20,13 +20,13 @@ public static class GetAssessment
     /// the latest on if that is not specified
     /// </summary>
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<Assessment>>
+    public class Query : IQuery<Result<Assessment>>
     {
         public required string ParticipantId { get; set; }
         public Guid? AssessmentId { get; set; }
     }
 
-    internal class Handler : IRequestHandler<Query, Result<Assessment>>
+    public class Handler : IQueryHandler<Query, Result<Assessment>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -88,7 +88,7 @@ public static class GetAssessment
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ParticipantId)
                     .MustAsync(Exist)

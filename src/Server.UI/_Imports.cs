@@ -1,11 +1,14 @@
 ﻿global using System.Data;
 global using AutoMapper.QueryableExtensions;
+global using Cfo.Cats.Application.Common.Extensions;
 global using Cfo.Cats.Application.Common.Interfaces;
 global using Cfo.Cats.Application.Common.Models;
 global using Cfo.Cats.Domain.Entities;
 global using Cfo.Cats.Infrastructure.Extensions;
 global using Cfo.Cats.Server.UI.Components;
-global using MediatR;
+global using Cortex.Mediator;
+global using Cortex.Mediator.Commands;
+global using Cortex.Mediator.Queries;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.Extensions.Logging;
 global using MudBlazor;

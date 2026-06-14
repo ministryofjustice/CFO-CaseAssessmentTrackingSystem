@@ -23,7 +23,7 @@ public partial class InitiativeObjectivesDashboardComponent
     private bool _downloading;
     private bool ShowActiveOnly { get; set; } = false;
 
-    protected override IRequest<Result<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>> CreateQuery()
+    protected override IQuery<Result<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>> CreateQuery()
      => new GetInitiativeObjectivesDashboard.Query
      {
          CurrentUser = CurrentUser,

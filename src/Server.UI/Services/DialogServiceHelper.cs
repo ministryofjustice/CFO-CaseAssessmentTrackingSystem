@@ -13,7 +13,7 @@ public class DialogServiceHelper
         _snackbar = snackbar;
     }
     
-    public async Task ShowDeleteConfirmationDialog(IRequest<Result<int>> command,string title, string contentText, Func<Task> onConfirm, Func<Task>? onCancel = null)
+    public async Task ShowDeleteConfirmationDialog(ICommand<Result<int>> command,string title, string contentText, Func<Task> onConfirm, Func<Task>? onCancel = null)
     {
         var parameters = new DialogParameters
         {

@@ -17,7 +17,7 @@ public static class GetParticipantSummary
         public string Identifier() => ParticipantId;
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IRightToWorkSettings rtwSettings) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IRightToWorkSettings rtwSettings) : IQueryHandler<Query, Result<ParticipantSummaryDto>>
     {
         public async Task<Result<ParticipantSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -174,7 +174,7 @@ public static class GetParticipantSummary
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));        
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

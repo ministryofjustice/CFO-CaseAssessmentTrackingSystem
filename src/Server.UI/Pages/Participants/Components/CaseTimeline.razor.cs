@@ -54,7 +54,7 @@ public partial class CaseTimeline
         return LoadDataAsync();
     }
 
-    protected override IRequest<Result<PaginatedData<TimelineDto>>> CreateQuery() 
+    protected override IQuery<Result<PaginatedData<TimelineDto>>> CreateQuery() 
         => new TimelinesWithPaginationQuery.Query()
             {
                 ParticipantId = ParticipantSummaryDto.Id,

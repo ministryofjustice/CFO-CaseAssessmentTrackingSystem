@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetOwnerByParticipantId
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ApplicationUserDto>>
+    public class Query : IQuery<Result<ApplicationUserDto>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ApplicationUserDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<ApplicationUserDto>>
     {
         public async Task<Result<ApplicationUserDto>> Handle(Query request, CancellationToken cancellationToken)
         {

@@ -8,7 +8,7 @@ public static class CompletePRI
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("Participant Id")]
         public required string ParticipantId { get; set; }
@@ -17,7 +17,7 @@ public static class CompletePRI
         public required string? CompletedBy { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -61,7 +61,7 @@ public static class CompletePRI
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(p => p.ParticipantId)
                     .Must(Exist)
@@ -82,7 +82,7 @@ public static class CompletePRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .Must(ActualReleaseDateMustExist)
@@ -106,7 +106,7 @@ public static class CompletePRI
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(p => p.ParticipantId)
                     .Must(NotBeCompletedRejected)
@@ -131,7 +131,7 @@ public static class CompletePRI
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(p => p.ParticipantId)
                     .Must(PRIMustHaveClosedTasks)
@@ -169,7 +169,7 @@ public static class CompletePRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(e => e.ParticipantId)
                     .Must(MustNotBeArchived)
@@ -189,7 +189,7 @@ public static class CompletePRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(f => f.ParticipantId)
                     .Must(Exist)

@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetArchivedCasesByTenantAndReason
 {
     [RequestAuthorize(Policy = SecurityPolicies.Internal)]
-    public class Query : IRequest<Result<ArchivedCasesByTenantAndReasonDto>>
+    public class Query : IQuery<Result<ArchivedCasesByTenantAndReasonDto>>
     {
         public string? TenantId { get; init; }
         public required UserProfile CurrentUser { get; init; }
@@ -16,7 +16,7 @@ public static class GetArchivedCasesByTenantAndReason
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<ArchivedCasesByTenantAndReasonDto>>
+        : IQueryHandler<Query, Result<ArchivedCasesByTenantAndReasonDto>>
     {
         public async Task<Result<ArchivedCasesByTenantAndReasonDto>> Handle(
             Query request,

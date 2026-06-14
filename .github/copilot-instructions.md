@@ -36,7 +36,7 @@ Run the application via .NET Aspire — use the `Cats.AppHost` project (F5 in VS
 The solution follows **Clean Architecture** with four main layers:
 
 - **`Domain`** — Entities, value objects, business rules, domain events, enums. No dependencies on other layers.
-- **`Application`** — CQRS (MediatR), validators (FluentValidation), DTOs, AutoMapper profiles, and integration event contracts. Depends only on Domain.
+- **`Application`** — CQRS (Cortex.Mediator), validators (FluentValidation), DTOs, AutoMapper profiles, and integration event contracts. Depends only on Domain.
 - **`Infrastructure`** — EF Core (SQL Server), Quartz background jobs, Rebus message bus (outbox), Amazon S3, identity, and external service integrations. Implements Application interfaces.
 - **`Server.UI`** — Blazor Server UI using MudBlazor. Pages use a code-behind pattern (`.razor` + `.razor.cs`).
 
@@ -48,15 +48,15 @@ Supporting projects:
 
 ## Key Conventions
 
-### CQRS & MediatR
+### CQRS & Cortex.Mediator
 
-Every command/query (`IRequest<T>`) **must** have either `[RequestAuthorize(Policy = SecurityPolicies.XYZ)]` or `[AllowAnonymous]`. This is enforced by an architecture test (`RequestTests.Commands_Should_HaveAuthorizeAttribute`).
+Every command/query (`ICommand<T>` or `IQuery<T>`) **must** have either `[RequestAuthorize(Policy = SecurityPolicies.XYZ)]` or `[AllowAnonymous]`. This is enforced by an architecture test (`RequestTests.Commands_Should_HaveAuthorizeAttribute`).
 
 Security policies are defined in `Application/SecurityConstants/SecurityPolicies.cs`. Roles in `RoleNames.cs`.
 
 ```csharp
 [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-public class AddLabelCommand : IRequest<Result> { ... }
+public class AddLabelCommand : ICommand<Result> { ... }
 ```
 
 Commands return `Result` or `Result<T>`. Use `Result.Success()`, `Result.Failure(...)`, `Result<T>.Success(data)`.
@@ -79,7 +79,7 @@ Business rules live alongside the entity or feature they protect (e.g., `Domain/
 
 ### Domain Events & Integration Events
 
-- Domain events: raised on entities via `AddDomainEvent(...)`, handled in Application via MediatR `INotificationHandler<>`.
+- Domain events: raised on entities via `AddDomainEvent(...)`, handled in Application via Cortex.Mediator `INotificationHandler<>`.
 - Integration events: written to the outbox via `context.InsertOutboxMessage(message)` and published to the Rebus message bus by `PublishOutboxMessagesJob`. Handlers live in `Application/Features/{Feature}/IntegrationEvents/` and `IntegrationEventHandlers/`.
 
 ### Multi-Tenancy & Auditing
@@ -98,17 +98,16 @@ RuleFor(v => v.Name)
     .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
 ```
 
-### MediatR Pipeline Behaviours (order matters)
+### Cortex.Mediator Pipeline Behaviours (order matters)
 
 Registered in `Application/DependencyInjection.cs`:
 1. `TraceMetricsBehaviour` — Sentry performance tracing
 2. `ValidationBehaviour` — runs FluentValidation validators
 3. `UnhandledExceptionBehaviour` — catches and logs unhandled exceptions
-4. `RequestExceptionProcessorBehavior`
-5. `SessionValidatingBehaviour`
-6. `AuthorizationBehaviour` — checks `[RequestAuthorize]` policy
-7. `TransactionBehaviour` — wraps commands in a DB transaction
-8. `AccessAuditingBehaviour` — records participant access audit trails (for `IAuditableRequest`)
+4. `SessionValidatingBehaviour`
+5. `AuthorizationBehaviour` — checks `[RequestAuthorize]` policy
+6. `TransactionBehaviour` — wraps commands and queries in a DB transaction
+7. `AccessAuditingBehaviour` — records participant access audit trails (for `IAuditableRequest`)
 
 ### Blazor UI Patterns
 

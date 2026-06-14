@@ -10,12 +10,12 @@ namespace Cfo.Cats.Application.Features.Outbox.Queries.PaginationQuery;
 public static class OutboxMessagesWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.ServiceDeskManagement)]
-    public class Query : OutboxMessageAdvancedFilter, IRequest<Result<PaginatedData<OutboxMessageDto>>>
+    public class Query : OutboxMessageAdvancedFilter, IQuery<Result<PaginatedData<OutboxMessageDto>>>
     {
         public OutboxMessageAdvancedSpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<OutboxMessageDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PaginatedData<OutboxMessageDto>>>
     {
         public async Task<Result<PaginatedData<OutboxMessageDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

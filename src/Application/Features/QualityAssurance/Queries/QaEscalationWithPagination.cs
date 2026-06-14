@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 public static class QaEscalationWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-    public class Query : QueueEntryFilter, IRequest<Result<PaginatedData<EnrolmentQueueEntryDto>>>
+    public class Query : QueueEntryFilter, IQuery<Result<PaginatedData<EnrolmentQueueEntryDto>>>
     {
         public Query()
         {
@@ -21,7 +21,7 @@ public static class QaEscalationWithPagination
         public EnrolmentQaEscalationQueueEntrySpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<EnrolmentQueueEntryDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PaginatedData<EnrolmentQueueEntryDto>>>
     {
         public async Task<Result<PaginatedData<EnrolmentQueueEntryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

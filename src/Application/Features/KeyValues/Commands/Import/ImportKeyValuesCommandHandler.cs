@@ -3,8 +3,8 @@ using Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit;
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.Import;
 
 public class ImportKeyValuesCommandHandler :
-    IRequestHandler<CreateKeyValueTemplateCommand, byte[]>,
-    IRequestHandler<ImportKeyValuesCommand, Result>
+    ICommandHandler<CreateKeyValueTemplateCommand, byte[]>,
+    ICommandHandler<ImportKeyValuesCommand, Result>
 {
     private readonly IValidator<AddEditKeyValueCommand> _addValidator;
     private readonly IUnitOfWork _unitOfWork;

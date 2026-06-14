@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class UpsertPriCode
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<int>>
+    public class Command : ICommand<Result<int>>
     {
         [Description("Participant Id")]
         public string ParticipantId { get; set; } = string.Empty;
     }
     
-    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService userService) : IRequestHandler<Command, Result<int>>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService userService) : ICommandHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -43,7 +43,7 @@ public static class UpsertPriCode
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ParticipantId)
                     .MustAsync(Exist)

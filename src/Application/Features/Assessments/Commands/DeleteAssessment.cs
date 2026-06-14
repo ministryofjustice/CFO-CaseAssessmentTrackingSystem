@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Assessments.Commands;
 public static class DeleteAssessment
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<int>>
+    public class Command : ICommand<Result<int>>
     {
         public required Guid AssessmentId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<int>>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -35,7 +35,7 @@ public static class DeleteAssessment
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.AssessmentId)
                     .Must(ExistAndIncomplete)
