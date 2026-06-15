@@ -14,7 +14,7 @@ public class OfflocService(HttpClient client, ILogger<OfflocService> logger) : I
             
             if (result is null)
             {
-                return Result<SentenceDataDto>.Failure("OffLoc returned no data.");
+                return Result<SentenceDataDto>.Failure("Nomis returned no data.");
             }
             
             return result;
@@ -26,12 +26,12 @@ public class OfflocService(HttpClient client, ILogger<OfflocService> logger) : I
         catch (HttpRequestException e)
         {
             logger.LogError(e, "Offloc service is unavailable when calling get sentence");
-            return Result<SentenceDataDto>.Failure("OffLoc service is currently unavailable.");
+            return Result<SentenceDataDto>.Failure("Nomis service is currently unavailable.");
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error calling Offloc get sentence for NOMS: {NomsNumber}", nomsNumber);
-            return Result<SentenceDataDto>.Failure("An unexpected error occurred while retrieving sentence data.");
+            return Result<SentenceDataDto>.Failure("An unexpected error occurred while retrieving sentence data from Nomis.");
         }
     }
 }
