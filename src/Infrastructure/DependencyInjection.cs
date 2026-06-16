@@ -616,7 +616,7 @@ public static class DependencyInjection
 
         if(configuration.GetValue<bool>("Features:UseSignalRBackplane"))
         {
-            cache.WithSerializer(new FusionCacheSystemTextJsonSerializer(DefaultJsonSerializerOptions.Options))
+            cache.WithSerializer(new FusionCacheSystemTextJsonSerializer(CacheJsonSerializerOptions.Options))
                  .WithDistributedCache(new RedisCache(new RedisCacheOptions { Configuration = configuration.GetConnectionString("redis") }))
                  .WithBackplane(new RedisBackplane(new RedisBackplaneOptions { Configuration = configuration.GetConnectionString("redis") }));
         }

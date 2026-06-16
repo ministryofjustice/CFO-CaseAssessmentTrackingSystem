@@ -15,7 +15,6 @@ public class DefaultJsonSerializerOptions
             ),
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase), new SmartEnumJsonConverterFactory() },
-            ReferenceHandler = ReferenceHandler.Preserve,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
 }
