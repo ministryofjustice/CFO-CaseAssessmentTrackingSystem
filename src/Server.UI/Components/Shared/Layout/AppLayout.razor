@@ -2,6 +2,7 @@
 @inherits LayoutComponentBase
 
 @inject IWebHostEnvironment Env
+@inject IConfiguration Configuration
 
 <MudLayout>
     <AuthorizeView>
@@ -9,7 +10,10 @@
             <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
-            <PresenceConnector />
+            @if (Configuration.GetValue<bool>("Features:UseSignalRBackplane"))
+            {
+                <PresenceConnector />
+            }
             <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
                         OpenSearchDialog="OpenSearchDialog"
                         ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"/>

@@ -108,9 +108,14 @@ public static class DependencyInjection
             }
         }
         
-        // TODO: Disable when not using SignalR backplane
-        services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
-        services.AddScoped<PresenceHubClient>();
+        // Presence tracking depends on the SignalR backplane to function correctly
+        // across replicas, so it is only wired up when the backplane is enabled.
+        if (config.GetValue<bool>("Features:UseSignalRBackplane"))
+        {
+            services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
+            services.AddScoped<PresenceHubClient>();
+        }
+
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         
@@ -216,8 +221,12 @@ public static class DependencyInjection
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
-        // TODO: Disable when not using SignalR backplane
-        app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+        // Presence tracking depends on the SignalR backplane, so the hub is only
+        // mapped when the backplane is enabled.
+        if (app.Configuration.GetValue<bool>("Features:UseSignalRBackplane"))
+        {
+            app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+        }
         
         app.MapGet("/.well-known/security.txt", () =>
             Results.Redirect(
