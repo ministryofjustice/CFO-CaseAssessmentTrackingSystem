@@ -103,5 +103,7 @@ spec:
               value: "${APP_VERSION}"
             - name: Features__UseWorkerForJobs
               value: "true"
+            - name: Features__UseSignalRBackplane
+              value: "true"
             - name: WorkerOptions__BaseUrl
               value: "http://cats-worker-service:8080"

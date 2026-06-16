@@ -129,7 +129,7 @@ public static class DependencyInjection
         services.AddSettings(configuration, environment)
             .AddDatabase(configuration)
             .AddServices(configuration)
-            .AddFusionCacheService();
+            .AddFusionCacheService(configuration);
 
         // Localization services are required by FluentValidation validators in the Application layer
         // that inject IStringLocalizer<T>. In the Worker there are no UI resources, so the default

@@ -9,11 +9,13 @@ internal static class AppExtensions
         CatsDatabaseResources databases)
     {
         var useWorkerForJobs = string.Equals(builder.Configuration["Features:UseWorkerForJobs"], "true", StringComparison.OrdinalIgnoreCase);
+        var useSignalRBackplane = string.Equals(builder.Configuration["Features:UseSignalRBackplane"], "true", StringComparison.OrdinalIgnoreCase);
         var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
         
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
             .WithEnvironment("Features__UseWorkerForJobs", useWorkerForJobs.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__UseSignalRBackplane", useSignalRBackplane.ToString().ToLowerInvariant())
             .WithReference(rabbit)
             .WithReference(redis)
             .WaitFor(rabbit)
@@ -28,7 +30,6 @@ internal static class AppExtensions
         {
             var worker = builder.AddProject<Projects.Worker>("cats-worker")
                 .WithCatsDatabaseReference(databases.CatsDb)
-                .WithEnvironment("Features__UseWorkerForJobs", "true")
                 .WithReference(rabbit)
                 .WaitFor(rabbit);
 
