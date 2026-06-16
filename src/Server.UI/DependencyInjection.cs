@@ -95,20 +95,24 @@ public static class DependencyInjection
                 options.KeepAliveInterval = TimeSpan.FromSeconds(10);
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
-        
-        var redisConnectionString = config.GetConnectionString("redis");
-        if (!string.IsNullOrEmpty(redisConnectionString))
+
+        if(config.GetValue<bool>("Features:UseSignalRBackplane"))
         {
-            signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
+            var redisConnectionString = config.GetConnectionString("redis");
+            if (!string.IsNullOrEmpty(redisConnectionString))
             {
-                options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
-            });
+                signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
+                {
+                    options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
+                });
+            }
         }
+        
+        // TODO: Disable when not using SignalR backplane
         services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
         services.AddScoped<PresenceHubClient>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-            
         
         services.AddScoped<LocalTimezoneOffset>();
         services.AddHttpContextAccessor();
@@ -212,6 +216,7 @@ public static class DependencyInjection
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
+        // TODO: Disable when not using SignalR backplane
         app.MapHub<PresenceHub>(PresenceHub.HubUrl);
         
         app.MapGet("/.well-known/security.txt", () =>

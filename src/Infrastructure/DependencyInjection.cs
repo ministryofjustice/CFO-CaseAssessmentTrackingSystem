@@ -52,6 +52,9 @@ using Rebus.Config;
 using Rebus.Handlers;
 using ZiggyCreatures.Caching.Fusion;
 using Cfo.Cats.Application.Features.Identity.MessageBus;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
+using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 namespace Cfo.Cats.Infrastructure;
 
@@ -77,7 +80,7 @@ public static class DependencyInjection
         }
 
         services.AddAuthenticationService(configuration)
-            .AddFusionCacheService();
+            .AddFusionCacheService(configuration);
 
         // Rebus message consumer background services (CATS only)
         services.AddHostedService<OvernightBackgroundService>();
@@ -433,7 +436,9 @@ public static class DependencyInjection
             })
             .AddIdentityCookies(options => {});
 
-        services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
+        services.AddDataProtection()
+            .PersistKeysToDbContext<ApplicationDbContext>()
+            .SetApplicationName("Cats");
 
         services.AddSingleton<IPasswordService, PasswordService>();
 
@@ -590,25 +595,32 @@ public static class DependencyInjection
     public static string GetRequiredValue(this IConfiguration configuration, string name) =>
         configuration[name] ?? throw new InvalidOperationException($"Configuration missing value for: {(configuration is IConfigurationSection s ? s.Path + ":" + name : name)}");
     
-    private static IServiceCollection AddFusionCacheService(this IServiceCollection services)
+    private static IServiceCollection AddFusionCacheService(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMemoryCache();
-        services
+        var cache = services
             .AddFusionCache()
             .WithDefaultEntryOptions(
-            new FusionCacheEntryOptions
-            {
-                // CACHE DURATION
-                Duration = TimeSpan.FromMinutes(120),
-                // FAIL-SAFE OPTIONS
-                IsFailSafeEnabled = true,
-                FailSafeMaxDuration = TimeSpan.FromHours(8),
-                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
-                // FACTORY TIMEOUTS
-                FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
-                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
-            }
+                new FusionCacheEntryOptions
+                {
+                    // CACHE DURATION
+                    Duration = TimeSpan.FromMinutes(120),
+                    // FAIL-SAFE OPTIONS
+                    IsFailSafeEnabled = true,
+                    FailSafeMaxDuration = TimeSpan.FromHours(8),
+                    FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+                    // FACTORY TIMEOUTS
+                    FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
+                    FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
+                }
             );
+
+        if(configuration.GetValue<bool>("Features:UseSignalRBackplane"))
+        {
+            cache.WithSerializer(new FusionCacheSystemTextJsonSerializer(DefaultJsonSerializerOptions.Options))
+                 .WithDistributedCache(new RedisCache(new RedisCacheOptions { Configuration = configuration.GetConnectionString("redis") }))
+                 .WithBackplane(new RedisBackplane(new RedisBackplaneOptions { Configuration = configuration.GetConnectionString("redis") }));
+        }
+
         return services;
     }
 
