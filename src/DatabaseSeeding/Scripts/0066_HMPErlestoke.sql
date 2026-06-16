@@ -23,4 +23,4 @@ END;
 UPDATE [Dms].[LocationMapping]
 SET LocationId = (SELECT Id FROM [Configuration].[Location] WHERE [Name] = N'HMP Erlestoke')
 WHERE Code = N'EEI'
-    AND LocationId = -1;
+    AND ISNULL(LocationId, -1) = -1;
