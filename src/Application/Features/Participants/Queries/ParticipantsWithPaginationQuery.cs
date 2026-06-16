@@ -172,8 +172,8 @@ public static class ParticipantsWithPagination
 
             var count = await query.AsNoTracking().CountAsync(cancellationToken);
 
-            // Get the latest ownership assignment date for each participant if recently assigned filter is active
-            var transformedQuery = recentlyAssignedCutoff.HasValue
+                        // Only join to the extra history tables when the selected filter needs those dates.
+                        var transformedSource = recentlyAssignedCutoff.HasValue
                 ? from p in query
                   join oh in (
                       from h in context.ParticipantOwnershipHistories
@@ -187,56 +187,13 @@ public static class ParticipantsWithPagination
                       }
                   ) on p.Id equals oh.ParticipantId into ownershipGroup
                   from ownership in ownershipGroup.DefaultIfEmpty()
-                  select new ParticipantPaginationDto()
+                  select new
                   {
                       AssignedOn = ownership != null ? ownership.MostRecentFrom : (DateTime?)null,
-                      EnrolmentStatus = p.EnrolmentStatus!,
-                      Owner = p.Owner!.DisplayName!,
-                      ConsentStatus = p.ConsentStatus!,
-                      CurrentLocation = new LocationDto
-                      {
-                          Id = p.CurrentLocation.Id,
-                          Name = p.CurrentLocation.Name,
-                          GenderProvision = p.CurrentLocation.GenderProvision,
-                          LocationType = p.CurrentLocation.LocationType,
-                          ContractName = p.CurrentLocation.Contract!.Description
-                      },
-                      Id = p.Id,
-                      EnrolmentLocation = p.EnrolmentLocation == null
-                          ? null
-                          : new LocationDto
-                          {
-                              Name = p.EnrolmentLocation.Name,
-                              GenderProvision = p.EnrolmentLocation.GenderProvision,
-                              LocationType = p.EnrolmentLocation.LocationType,
-                              Id = p.EnrolmentLocation.Id,
-                              ContractName = p.EnrolmentLocation.Contract!.Description
-                          },
-                      FirstName = p.FirstName,
-                      LastName = p.LastName,
-                      RiskDue = p.RiskDue,
-                      RiskDueReason = p.RiskDueReason!,
-                      Tenant = p.Owner!.TenantName!,
-                      Labels = (
-                              from pl in context.ParticipantLabels
-                              where EF.Property<string>(pl, "_participantId") == p.Id
-                                  && pl.Lifetime.EndDate > DateTime.UtcNow
-                              orderby pl.Lifetime.StartDate descending
-                              select new LabelDto
-                              {
-                                  Name = pl.Label.Name,
-                                  Description = pl.Label.Description,
-                                  Scope = pl.Label.Scope,
-                                  Contract = pl.Label.ContractId!,
-                                  Id = pl.Label.Id.Value,
-                                  AppIcon = pl.Label.AppIcon,
-                                  Colour = pl.Label.Colour,
-                                  Variant = pl.Label.Variant
-                              }).ToArray(),
-                      ConsentGranted = p.DateOfFirstConsent
+                      AccessedOn = (DateTime?)null,
+                      Participant = p
                   }
-                : 
-                (recentlyVisitedCutoff.HasValue
+                : recentlyVisitedCutoff.HasValue
                 ? from p in query
                   join oh in (
                       from h in context.AccessAuditTrails
@@ -249,102 +206,71 @@ public static class ParticipantsWithPagination
                       }
                   ) on p.Id equals oh.ParticipantId into visitedGroup
                   from visited in visitedGroup.DefaultIfEmpty()
-                  select new ParticipantPaginationDto()
+                  select new
                   {
+                      AssignedOn = (DateTime?)null,
                       AccessedOn = visited != null ? visited.MostRecentAccess : (DateTime?)null,
-                      EnrolmentStatus = p.EnrolmentStatus!,
-                      Owner = p.Owner!.DisplayName!,
-                      ConsentStatus = p.ConsentStatus!,
-                      CurrentLocation = new LocationDto
-                      {
-                          Id = p.CurrentLocation.Id,
-                          Name = p.CurrentLocation.Name,
-                          GenderProvision = p.CurrentLocation.GenderProvision,
-                          LocationType = p.CurrentLocation.LocationType,
-                          ContractName = p.CurrentLocation.Contract!.Description
-                      },
-                      Id = p.Id,
-                      EnrolmentLocation = p.EnrolmentLocation == null
-                          ? null
-                          : new LocationDto
-                          {
-                              Name = p.EnrolmentLocation.Name,
-                              GenderProvision = p.EnrolmentLocation.GenderProvision,
-                              LocationType = p.EnrolmentLocation.LocationType,
-                              Id = p.EnrolmentLocation.Id,
-                              ContractName = p.EnrolmentLocation.Contract!.Description
-                          },
-                      FirstName = p.FirstName,
-                      LastName = p.LastName,
-                      RiskDue = p.RiskDue,
-                      RiskDueReason = p.RiskDueReason!,
-                      Tenant = p.Owner!.TenantName!,
-                      Labels = (
-                              from pl in context.ParticipantLabels
-                              where EF.Property<string>(pl, "_participantId") == p.Id
-                                  && pl.Lifetime.EndDate > DateTime.UtcNow
-                              orderby pl.Lifetime.StartDate descending
-                              select new LabelDto
-                              {
-                                  Name = pl.Label.Name,
-                                  Description = pl.Label.Description,
-                                  Scope = pl.Label.Scope,
-                                  Contract = pl.Label.ContractId!,
-                                  Id = pl.Label.Id.Value,
-                                  AppIcon = pl.Label.AppIcon,
-                                  Colour = pl.Label.Colour,
-                                  Variant = pl.Label.Variant
-                              }).ToArray(),
-                      ConsentGranted = p.DateOfFirstConsent
+                      Participant = p
                   }
-                :from p in query
-                  select new ParticipantPaginationDto()
+                : from p in query
+                  select new
                   {
-                      EnrolmentStatus = p.EnrolmentStatus!,
-                      Owner = p.Owner!.DisplayName!,
-                      ConsentStatus = p.ConsentStatus!,
-                      CurrentLocation = new LocationDto
-                      {
-                          Id = p.CurrentLocation.Id,
-                          Name = p.CurrentLocation.Name,
-                          GenderProvision = p.CurrentLocation.GenderProvision,
-                          LocationType = p.CurrentLocation.LocationType,
-                          ContractName = p.CurrentLocation.Contract!.Description
-                      },
-                      Id = p.Id,
-                      EnrolmentLocation = p.EnrolmentLocation == null
-                          ? null
-                          : new LocationDto
-                          {
-                              Name = p.EnrolmentLocation.Name,
-                              GenderProvision = p.EnrolmentLocation.GenderProvision,
-                              LocationType = p.EnrolmentLocation.LocationType,
-                              Id = p.EnrolmentLocation.Id,
-                              ContractName = p.EnrolmentLocation.Contract!.Description
-                          },
-                      FirstName = p.FirstName,
-                      LastName = p.LastName,
-                      RiskDue = p.RiskDue,
-                      RiskDueReason = p.RiskDueReason!,
-                      Tenant = p.Owner!.TenantName!,
-                      Labels = (
-                              from pl in context.ParticipantLabels
-                              where EF.Property<string>(pl, "_participantId") == p.Id
-                                  && pl.Lifetime.EndDate > DateTime.UtcNow
-                              orderby pl.Lifetime.StartDate descending
-                              select new LabelDto
-                              {
-                                  Name = pl.Label.Name,
-                                  Description = pl.Label.Description,
-                                  Scope = pl.Label.Scope,
-                                  Contract = pl.Label.ContractId!,
-                                  Id = pl.Label.Id.Value,
-                                  AppIcon = pl.Label.AppIcon,
-                                  Colour = pl.Label.Colour,
-                                  Variant = pl.Label.Variant
-                              }).ToArray(),
-                      ConsentGranted = p.DateOfFirstConsent
-                  });
+                      AssignedOn = (DateTime?)null,
+                      AccessedOn = (DateTime?)null,
+                      Participant = p
+                  };
+
+            var transformedQuery =
+                from item in transformedSource
+                select new ParticipantPaginationDto()
+                {
+                    AssignedOn = item.AssignedOn,
+                    AccessedOn = item.AccessedOn,
+                    EnrolmentStatus = item.Participant.EnrolmentStatus!,
+                    Owner = item.Participant.Owner!.DisplayName!,
+                    ConsentStatus = item.Participant.ConsentStatus!,
+                    CurrentLocation = new LocationDto
+                    {
+                        Id = item.Participant.CurrentLocation.Id,
+                        Name = item.Participant.CurrentLocation.Name,
+                        GenderProvision = item.Participant.CurrentLocation.GenderProvision,
+                        LocationType = item.Participant.CurrentLocation.LocationType,
+                        ContractName = item.Participant.CurrentLocation.Contract!.Description
+                    },
+                    Id = item.Participant.Id,
+                    EnrolmentLocation = item.Participant.EnrolmentLocation == null
+                        ? null
+                        : new LocationDto
+                        {
+                            Name = item.Participant.EnrolmentLocation.Name,
+                            GenderProvision = item.Participant.EnrolmentLocation.GenderProvision,
+                            LocationType = item.Participant.EnrolmentLocation.LocationType,
+                            Id = item.Participant.EnrolmentLocation.Id,
+                            ContractName = item.Participant.EnrolmentLocation.Contract!.Description
+                        },
+                    FirstName = item.Participant.FirstName,
+                    LastName = item.Participant.LastName,
+                    RiskDue = item.Participant.RiskDue,
+                    RiskDueReason = item.Participant.RiskDueReason!,
+                    Tenant = item.Participant.Owner!.TenantName!,
+                    Labels = (
+                            from pl in context.ParticipantLabels
+                            where EF.Property<string>(pl, "_participantId") == item.Participant.Id
+                                && pl.Lifetime.EndDate > DateTime.UtcNow
+                            orderby pl.Lifetime.StartDate descending
+                            select new LabelDto
+                            {
+                                Name = pl.Label.Name,
+                                Description = pl.Label.Description,
+                                Scope = pl.Label.Scope,
+                                Contract = pl.Label.ContractId!,
+                                Id = pl.Label.Id.Value,
+                                AppIcon = pl.Label.AppIcon,
+                                Colour = pl.Label.Colour,
+                                Variant = pl.Label.Variant
+                            }).ToArray(),
+                    ConsentGranted = item.Participant.DateOfFirstConsent
+                };
 
             var sortColumn = request.OrderBy.Trim().ToLowerInvariant() switch
             {
