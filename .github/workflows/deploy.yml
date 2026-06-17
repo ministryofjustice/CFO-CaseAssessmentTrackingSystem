@@ -113,6 +113,7 @@ jobs:
 
       - name: Run database migration
         run: |
+          kubectl -n ${KUBE_NAMESPACE} delete pod -l app=migrator --wait=false || true
           kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-pod.yml
           if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/migrator-${{ github.sha }}; then
             echo "Migration pod did not succeed within timeout."
@@ -124,6 +125,7 @@ jobs:
 
       - name: Run database seeding
         run: |
+          kubectl -n ${KUBE_NAMESPACE} delete pod -l app=seeder --wait=false || true
           kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-pod.yml
           if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/seeder-${{ github.sha }}; then
             echo "Seeder pod did not succeed within timeout."
@@ -135,6 +137,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
+          rm -f deploy/migrator-pod.yml deploy/seeder-pod.yml
           kubectl -n ${KUBE_NAMESPACE} apply -f deploy/
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
