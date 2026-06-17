@@ -113,17 +113,15 @@ jobs:
 
       - name: Run database migration
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete job migrator-job --ignore-not-found=true
           kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/migrator-job
+          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/migrator-job-${{ github.sha }}
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 
       - name: Run database seeding
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete job seeder-job --ignore-not-found=true
           kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/seeder-job
+          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/seeder-job-${{ github.sha }}
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: seeder-job
+  name: seeder-job-${IMAGE_TAG}
   labels:
     app: seeder
 spec:
