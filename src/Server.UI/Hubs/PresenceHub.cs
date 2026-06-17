@@ -39,10 +39,9 @@ public sealed class PresenceHub : Hub
 
         // Whether this user already had a live connection (e.g. another tab) before this one.
         var alreadyOnline = !string.IsNullOrEmpty(name)
-            && _usersStateContainer.UsersByConnectionId.Values
-                .Any(v => v.Equals(name, StringComparison.OrdinalIgnoreCase));
+            && await _usersStateContainer.IsOnlineAsync(name!).ConfigureAwait(false);
 
-        _usersStateContainer.AddOrUpdate(Context.ConnectionId, name);
+        await _usersStateContainer.AddOrUpdateAsync(Context.ConnectionId, name).ConfigureAwait(false);
 
         if (!string.IsNullOrWhiteSpace(tenantId))
         {
@@ -62,7 +61,7 @@ public sealed class PresenceHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _usersStateContainer.Remove(Context.ConnectionId);
+        await _usersStateContainer.RemoveAsync(Context.ConnectionId).ConfigureAwait(false);
         await base.OnDisconnectedAsync(exception).ConfigureAwait(false);
     }
 

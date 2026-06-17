@@ -42,6 +42,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
@@ -89,7 +90,6 @@ public static class DependencyInjection
         services.AddHostedService<DocumentsBackgroundService>();
         services.AddSingleton<ISessionService, SessionService>();
 
-        services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
         services.AddScoped<INetworkIpProvider, NetworkIpProvider>();
 
         services.AddScoped<INotificationHandler<IdentityAuditNotification>, IdentityCacheClearanceHandler>();

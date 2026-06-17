@@ -19,6 +19,8 @@ using Cfo.Cats.Server.UI.Pages.Participants;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 using Cfo.Cats.Server.UI.Pages.QA.Activities;
 using StackExchange.Redis;
+using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Infrastructure.Services.Identity;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -96,24 +98,27 @@ public static class DependencyInjection
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
 
-        if(config.GetValue<bool>("Features:UseSignalRBackplane"))
+        if(config.GetValue<bool>("Features:UseSignalRBackplane") is not true)
         {
-            var redisConnectionString = config.GetConnectionString("redis");
-            if (!string.IsNullOrEmpty(redisConnectionString))
-            {
-                signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
-                {
-                    options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
-                });
-            }
+            services.AddSingleton<IUsersStateContainer, InMemoryUsersStateContainer>();
         }
-        
-        // Presence tracking depends on the SignalR backplane to function correctly
-        // across replicas, so it is only wired up when the backplane is enabled.
-        if (config.GetValue<bool>("Features:UseSignalRBackplane"))
+        else
         {
+            var redisConnectionString = config.GetConnectionString("redis") 
+                ?? throw new InvalidOperationException("Redis connection must be configured to use the SignalR backplane. Please set the 'redis' connection string in your configuration.");
+
+            signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
+            {
+                options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisConnectionString));
+
             services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
             services.AddScoped<PresenceHubClient>();
+
+            services.AddSingleton<IUsersStateContainer, RedisUsersStateContainer>();
         }
 
         services.AddExceptionHandler<GlobalExceptionHandler>();

@@ -55,6 +55,7 @@ public partial class Users
     private List<ApplicationRoleDto> _roles = new();
     private string? _searchRole;
     private Dictionary<string, bool>? _policies;
+    private HashSet<string> _onlineUsers = new(StringComparer.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,6 +92,7 @@ public partial class Users
             .ToListAsync();
 
         UsersStateContainer.OnChange += OnPresenceChanged;
+        await RefreshOnlineUsersAsync();
 
         _initialised = true;
     }
@@ -107,8 +109,7 @@ public partial class Users
         return _canResetPassword && currentUserRole?.RoleRank <= userRole?.RoleRank;
     }
 
-    private bool IsOnline(string username) => UsersStateContainer.UsersByConnectionId.Any(x =>
-                                                       x.Value.Equals(username, StringComparison.OrdinalIgnoreCase));
+    private bool IsOnline(string username) => _onlineUsers.Contains(username);
 
     private Expression<Func<ApplicationUser, bool>> CreateSearchPredicate() =>
         x =>
@@ -567,6 +568,13 @@ public partial class Users
         base.Dispose(disposing);
     }
 
-    private void OnPresenceChanged() => InvokeAsync(StateHasChanged);
+    private void OnPresenceChanged() => InvokeAsync(RefreshOnlineUsersAsync);
+
+    private async Task RefreshOnlineUsersAsync()
+    {
+        var online = await UsersStateContainer.GetOnlineUsersAsync();
+        _onlineUsers = new HashSet<string>(online, StringComparer.OrdinalIgnoreCase);
+        StateHasChanged();
+    }
 
 }
