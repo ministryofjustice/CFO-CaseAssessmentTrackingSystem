@@ -10,11 +10,8 @@ var databases = builder.AddCatsDatabases(sql);
 
 var rabbit = builder.AddMessageBroker();
 
-var redis = builder.AddSignalRBackplane();
-
 builder.AddCatsServices(
     rabbit,
-    redis,
     databases);
 
 builder.Build().Run();

@@ -5,7 +5,6 @@ internal static class AppExtensions
 
     public static IDistributedApplicationBuilder AddCatsServices(this IDistributedApplicationBuilder builder,
         IResourceBuilder<RabbitMQServerResource> rabbit,
-        IResourceBuilder<RedisResource> redis,
         CatsDatabaseResources databases)
     {
         var useWorkerForJobs = string.Equals(builder.Configuration["Features:UseWorkerForJobs"], "true", StringComparison.OrdinalIgnoreCase);
@@ -17,13 +16,19 @@ internal static class AppExtensions
             .WithEnvironment("Features__UseWorkerForJobs", useWorkerForJobs.ToString().ToLowerInvariant())
             .WithEnvironment("Features__UseSignalRBackplane", useSignalRBackplane.ToString().ToLowerInvariant())
             .WithReference(rabbit)
-            .WithReference(redis)
-            .WaitFor(rabbit)
-            .WaitFor(redis);
+            .WaitFor(rabbit);
 
         if(replicaCount > 1)
         {
             cats.WithReplicas(replicaCount);        
+        }
+
+        if(useSignalRBackplane)
+        {
+            var redis = builder.AddSignalRBackplane();
+            
+            cats.WithReference(redis)
+                .WaitFor(redis);
         }
 
         if (useWorkerForJobs)
