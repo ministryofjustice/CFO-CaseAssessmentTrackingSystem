@@ -113,15 +113,23 @@ jobs:
 
       - name: Run database migration
         run: |
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/migrator-job-${{ github.sha }}
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-pod.yml
+          if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/migrator-${{ github.sha }}; then
+            echo "Migration pod did not succeed within timeout."
+            kubectl -n ${KUBE_NAMESPACE} describe pod/migrator-${{ github.sha }} || true
+            exit 1
+          fi
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 
       - name: Run database seeding
         run: |
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/seeder-job-${{ github.sha }}
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-pod.yml
+          if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/seeder-${{ github.sha }}; then
+            echo "Seeder pod did not succeed within timeout."
+            kubectl -n ${KUBE_NAMESPACE} describe pod/seeder-${{ github.sha }} || true
+            exit 1
+          fi
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 
