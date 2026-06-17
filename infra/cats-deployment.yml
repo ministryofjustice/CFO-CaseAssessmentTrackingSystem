@@ -103,6 +103,8 @@ spec:
               value: "${APP_VERSION}"
             - name: Features__UseWorkerForJobs
               value: "true"
+            - name: Features__RelayUserPresenceNotifications
+              value: "true" 
             - name: Features__UseSignalRBackplane
               value: "true"
             - name: WorkerOptions__BaseUrl
