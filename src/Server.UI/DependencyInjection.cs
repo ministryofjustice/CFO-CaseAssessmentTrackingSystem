@@ -98,6 +98,9 @@ public static class DependencyInjection
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
 
+        services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
+        services.AddScoped<PresenceHubClient>();
+
         if(config.GetValue<bool>("Features:UseSignalRBackplane") is not true)
         {
             services.AddSingleton<IUsersStateContainer, InMemoryUsersStateContainer>();
@@ -114,9 +117,6 @@ public static class DependencyInjection
 
             services.AddSingleton<IConnectionMultiplexer>(_ =>
                 ConnectionMultiplexer.Connect(redisConnectionString));
-
-            services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
-            services.AddScoped<PresenceHubClient>();
 
             services.AddSingleton<IUsersStateContainer, RedisUsersStateContainer>();
         }
@@ -225,14 +225,9 @@ public static class DependencyInjection
         app.UseExceptionHandler();
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-
-        // Presence tracking depends on the SignalR backplane, so the hub is only
-        // mapped when the backplane is enabled.
-        if (app.Configuration.GetValue<bool>("Features:UseSignalRBackplane"))
-        {
-            app.MapHub<PresenceHub>(PresenceHub.HubUrl);
-        }
         
+        app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+
         app.MapGet("/.well-known/security.txt", () =>
             Results.Redirect(
                 "https://security-guidance.service.justice.gov.uk/.well-known/security.txt",

@@ -1,6 +1,7 @@
 @using Cfo.Cats.Server.UI.Hubs
 @inject PresenceHubClient PresenceClient
 @inject ISnackbar Snackbar
+@inject IConfiguration Configuration
 @implements IAsyncDisposable
 
 @code {
@@ -17,7 +18,10 @@
             _currentUserId = state.User.GetUserId();
         }
 
-        PresenceClient.UserOnline += OnUserOnline;
+        if (Configuration.GetValue<bool>("Features:RelayUserPresenceNotifications"))
+        {
+            PresenceClient.UserOnline += OnUserOnline;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

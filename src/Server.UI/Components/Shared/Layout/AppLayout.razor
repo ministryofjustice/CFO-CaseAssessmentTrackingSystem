@@ -10,10 +10,7 @@
             <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
-            @if (Configuration.GetValue<bool>("Features:UseSignalRBackplane"))
-            {
-                <PresenceConnector />
-            }
+            <PresenceConnector />
             <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
                         OpenSearchDialog="OpenSearchDialog"
                         ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"/>
