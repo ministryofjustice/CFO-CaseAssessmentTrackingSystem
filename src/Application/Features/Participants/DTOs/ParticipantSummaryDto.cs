@@ -53,9 +53,19 @@ public class ParticipantSummaryDto
     public string? OwnerName { get; set; }
 
     /// <summary>
+    /// The id of the user who "owns" this participant's case.
+    /// </summary>
+    public string? OwnerId { get; set; }
+
+    /// <summary>
     /// The Tenant who "owns" this participant's case. 
     /// </summary>
     public string? TenantName { get; set; }
+
+    /// <summary>
+    /// The TenantId of the owner. Used for archive access gating.
+    /// </summary>
+    public string? OwnerTenantId { get; set; }
 
     public AssessmentSummaryDto[] Assessments { get; set; } = [];
 
@@ -98,7 +108,9 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation.Name))
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.OwnerId, options => options.MapFrom(source => source.OwnerId))
                 .ForMember(target => target.TenantName, options => options.MapFrom(source => source.Owner!.TenantName))
+                .ForMember(target => target.OwnerTenantId, options => options.MapFrom(source => source.Owner!.TenantId))
                 .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))

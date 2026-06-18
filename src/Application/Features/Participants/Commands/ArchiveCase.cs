@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -59,6 +60,36 @@ public static class ArchiveCase
 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+    }
+
+    public class B_UserMustHaveArchiveAccess : AbstractValidator<Command>
+    {
+        public B_UserMustHaveArchiveAccess(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        {
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(async (participantId, cancellationToken) =>
+                    {
+                        var participant = await unitOfWork.DbContext.Participants
+                            .Where(p => p.Id == participantId)
+                            .Select(p => new { p.OwnerId, OwnerTenantId = p.Owner!.TenantId })
+                            .FirstOrDefaultAsync(cancellationToken);
+
+                        if (participant is null)
+                        {
+                            return false;
+                        }
+
+                        return ParticipantArchiveAccess.CanAccess(
+                            currentUserService.UserId,
+                            currentUserService.TenantId,
+                            participant.OwnerId,
+                            participant.OwnerTenantId);
+                    })
+                    .WithMessage("You are not authorized to archive this participant");
+            });
+        }
     }
 
     public class Validator : AbstractValidator<Command>
