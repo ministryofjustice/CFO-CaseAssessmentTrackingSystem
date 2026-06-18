@@ -2,6 +2,7 @@ using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Participants.Rules;
 using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.ValueObjects;
 
@@ -135,16 +136,14 @@ public class Participant : OwnerPropertyEntity<string>
     /// </summary>
     /// <param name="to">The new enrolment status</param>
     /// <returns>This entity.</returns>
-    /// <exception cref="InvalidEnrolmentTransition">If the new enrolment status is not valid</exception>
+    /// <exception cref="BusinessRuleValidationException">If the new enrolment status is not valid</exception>
     public Participant TransitionTo(EnrolmentStatus to, string? Reason, string? AdditionalInformation)
     {
-        if (EnrolmentStatus!.CanTransitionTo(to))
-        {
-            AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus, to, Reason, AdditionalInformation));
-            EnrolmentStatus = to;
-            return this;
-        }
-        throw new InvalidEnrolmentTransition(EnrolmentStatus, to);
+        CheckRule(new EnrolmentStatusTransitionMustBeValid(EnrolmentStatus!, to));
+
+        AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus!, to, Reason, AdditionalInformation));
+        EnrolmentStatus = to;
+        return this;
     }
 
     /// <summary>
