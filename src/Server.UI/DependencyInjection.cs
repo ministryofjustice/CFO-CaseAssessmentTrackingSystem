@@ -198,7 +198,13 @@ public static class DependencyInjection
         app.UseExceptionHandler();
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-        
+
+        app.MapGet("/.well-known/security.txt", () =>
+            Results.Redirect(
+                "https://security-guidance.service.justice.gov.uk/.well-known/security.txt",
+                permanent: true))
+            .AllowAnonymous();
+
         app.MapAdditionalIdentityEndpoints();
         app.UseForwardedHeaders();
       
