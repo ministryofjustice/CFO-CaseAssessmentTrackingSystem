@@ -624,46 +624,4 @@ public static class DependencyInjection
         return services;
     }
 
-    /// <summary>
-    /// Registers the minimum ASP.NET Core Identity services needed by the Worker.
-    /// Only <see cref="UserManager{TUser}"/> is required (by <see cref="NotifyAccountDeactivationJob"/>).
-    /// Does not register SignInManager, authentication cookies, or other web-specific Identity services.
-    /// </summary>
-    private static IServiceCollection AddWorkerIdentityServices(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.Configure<IdentityOptions>(options =>
-        {
-            var identitySettings = configuration
-                .GetRequiredSection(IdentitySettings.Key)
-                .Get<IdentitySettings>();
-
-            options.Password.RequireDigit = identitySettings!.RequireDigit;
-            options.Password.RequiredLength = identitySettings.RequiredLength;
-            options.Password.RequireNonAlphanumeric = identitySettings.RequireNonAlphanumeric;
-            options.Password.RequireUppercase = identitySettings.RequireUpperCase;
-            options.Password.RequireLowercase = identitySettings.RequireLowerCase;
-
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(identitySettings.DefaultLockoutTimeSpan * 365);
-            options.Lockout.MaxFailedAccessAttempts = identitySettings.MaxFailedAccessAttempts;
-            options.Lockout.AllowedForNewUsers = true;
-
-            options.User.RequireUniqueEmail = true;
-            options.User.AllowedUserNameCharacters = identitySettings.AllowedUserNameCharacters;
-        });
-
-        services
-            .AddIdentityCore<ApplicationUser>()
-            .AddRoles<ApplicationRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddUserManager<ApplicationUserManager>();
-            // Note: AddDefaultTokenProviders() is intentionally omitted — it requires
-            // IDataProtectionProvider, which is not available in the Worker. The Worker
-            // only queries users (NotifyAccountDeactivationJob); it never generates tokens.
-
-        services.AddScoped<UserManager<ApplicationUser>, ApplicationUserManager>();
-
-        return services;
-    }
 }
