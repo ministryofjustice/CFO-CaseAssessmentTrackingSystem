@@ -50,6 +50,9 @@
                     <MudTabPanel Text="Initiatives" Class="pa-3">
                         <InitiativeObjectivesDashboardComponent TenantId="@SelectedTenantId" @key="@SelectedTenantId" VisualMode="@_visualMode" />
                     </MudTabPanel>
+                    <MudTabPanel Text="Unassigned Cases" Class="pa-3">
+                        <UnassignedCasesDashboardComponent TenantId="@SelectedTenantId" @key="@SelectedTenantId" VisualMode="@_visualMode" />
+                    </MudTabPanel>
                 </MudTabs>
             </MudTabPanel>
             <MudTabPanel Text="Performance" Icon="@Icons.Material.Filled.Score">
