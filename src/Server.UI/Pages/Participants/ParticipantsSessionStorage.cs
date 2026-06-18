@@ -29,7 +29,7 @@ public record ParticipantsSessionData
             LabelId = query.Label,
             OwnerId = query.OwnerId,
             RiskDue = query.RiskDue,
-            RecentlyAssigned = query.RecentlyAssigned,
+            RecentlyAssigned = query.RecentAction,
             Tabular = tabular
         };
 
@@ -43,7 +43,7 @@ public record ParticipantsSessionData
     public required LabelId? LabelId { get; init; }
     public required string? OwnerId { get; init; } 
     public required DateTime? RiskDue { get; init; } 
-    public RecentlyAssignedFilter RecentlyAssigned { get; init; } = RecentlyAssignedFilter.All;
+    public RecentParticipantFilter RecentlyAssigned { get; init; } = RecentParticipantFilter.All;
 
     public bool Tabular {get; init; }
     

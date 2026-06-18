@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using ActualLab.Fusion;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
@@ -31,8 +29,9 @@ public enum QuickFilter
     All,
     MyParticipants,
     OverdueRisk,
-    Last10Days,
-    Last30Days
+    AssignedLast10Days,
+    AssignedLast30Days,
+    VisitedLast7Days
 }
 
 public partial class ParticipantsV2
@@ -133,14 +132,15 @@ public partial class ParticipantsV2
             Query.OwnerId = sd.OwnerId;
             Query.TenantId = sd.TenantId;
             Query.RiskDue = sd.RiskDue;
-            Query.RecentlyAssigned = sd.RecentlyAssigned;
+            Query.RecentAction = sd.RecentlyAssigned;
             Tabular = sd.Tabular;
             
             // Sync _currentFilter based on restored state
             _currentFilter = sd.RecentlyAssigned switch
             {
-                RecentlyAssignedFilter.Last10Days => QuickFilter.Last10Days,
-                RecentlyAssignedFilter.Last30Days => QuickFilter.Last30Days,
+                RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
+                RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
+                RecentParticipantFilter.VisitedLast7Days => QuickFilter.VisitedLast7Days,
                 _ when sd.RiskDue.HasValue => QuickFilter.OverdueRisk,
                 _ when !string.IsNullOrEmpty(sd.OwnerId) => QuickFilter.MyParticipants,
                 _ => QuickFilter.All
@@ -168,24 +168,35 @@ public partial class ParticipantsV2
         await OnRefresh();
     }
 
-    private async Task RecentlyAssignedFilterChanged(RecentlyAssignedFilter filter)
+    private async Task RecentlyAssignedFilterChanged(RecentParticipantFilter filter)
     {
         // Reset query like other quick filters to avoid unintended filter combinations
         ResetQuery();
         
-        Query.RecentlyAssigned = filter;
+        Query.RecentAction = filter;
         
         // Update the current filter tracking
         _currentFilter = filter switch
         {
-            RecentlyAssignedFilter.Last10Days => QuickFilter.Last10Days,
-            RecentlyAssignedFilter.Last30Days => QuickFilter.Last30Days,
+            RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
+            RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
             _ => QuickFilter.All
         };
         
         await OnRefresh();
     }
 
+    private async Task RecentlyVisitedFilterChanged()
+    {
+        // Reset query like other quick filters to avoid unintended filter combinations
+        ResetQuery();
+        
+        Query.RecentAction = RecentParticipantFilter.VisitedLast7Days;
+        // Update the current filter tracking
+        _currentFilter = QuickFilter.VisitedLast7Days;
+        
+        await OnRefresh();
+    }
     private async Task OnSearch(string text)
     {
         Query.Keyword = text;
@@ -390,7 +401,7 @@ public partial class ParticipantsV2
         Query.Label = null;
         Query.OwnerId = null;
         Query.RiskDue = null;
-        Query.RecentlyAssigned = RecentlyAssignedFilter.All;
+        Query.RecentAction = RecentParticipantFilter.All;
         Query.JustMyCases = false;
         Tabular = false;
     }
@@ -400,8 +411,9 @@ public partial class ParticipantsV2
         {
             QuickFilter.MyParticipants => "My Participants",
             QuickFilter.OverdueRisk => "Overdue Risk",
-            QuickFilter.Last10Days => "Assigned (Last 10 Days)",
-            QuickFilter.Last30Days => "Assigned (Last 30 Days)",
+            QuickFilter.AssignedLast10Days => "Assigned (Last 10 Days)",
+            QuickFilter.AssignedLast30Days => "Assigned (Last 30 Days)",
+            QuickFilter.VisitedLast7Days => "Visited (Last 7 Days)",
             _ => "All"
         };
     
