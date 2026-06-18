@@ -3,35 +3,31 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using FluentValidation;
-using static Cfo.Cats.Application.Features.Participants.Commands.AddOrUpdateContactDetail;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class AddressDialog(IAddressLookupService addressLookupService)
 {
     private MudForm _form = new();
-    private bool _saving = false;
+    private bool _saving;
 
-    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = null!;
 
-    [Parameter]
-    public required AddOrUpdateContactDetail.Command Model { get; set; }
+    [Parameter] public required AddOrUpdateContactDetail.Command Model { get; set; }
 
-    private async Task<IEnumerable<ParticipantAddressDto?>> Search(string searchText, CancellationToken cancellationToken)
+    private async Task<IEnumerable<ParticipantAddressDto?>> Search(string? searchText,
+        CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(searchText) is false)
+        if (string.IsNullOrWhiteSpace(searchText))
         {
-            var response = await addressLookupService.SearchAsync(searchText, CancellationToken.None);
-
-            if (response is { Succeeded: true, Data: not null })
-            {
-                return response.Data;
-            }
-
-            Snackbar.Add(response.ErrorMessage, Severity.Error);
+            return [];
         }
 
-        return [];
+        var response = await addressLookupService.SearchAsync(searchText, cancellationToken);
+
+        return response is { Succeeded: true, Data: not null }
+            ? response.Data
+            : [];
     }
 
     private async Task Submit()
@@ -58,24 +54,24 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
             {
                 Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
-
         }
         finally
         {
             _saving = false;
         }
     }
+
     public static async Task<(bool IsValid, string? ObjectLevelError)>
-    ValidateFormWithFluent<TModel>(
-        MudForm form,
-        TModel model,
-        IValidator<TModel> validator)
+        ValidateFormWithFluent<TModel>(
+            MudForm form,
+            TModel model,
+            IValidator<TModel> validator)
     {
         // Run MudBlazor validation (field-level)
         await form.ValidateAsync();
 
         // Run FluentValidation (model-level)
-        var fluentResult = validator.Validate(model);
+        var fluentResult = await validator.ValidateAsync(model);
 
         // Get only object-level error (no PropertyName)
         var objectLevelError = fluentResult.Errors
@@ -87,5 +83,4 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
 
         return (isValid, objectLevelError);
     }
-
 }

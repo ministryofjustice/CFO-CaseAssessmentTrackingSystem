@@ -10,11 +10,11 @@ public static class SetCandidateStickyLocation
     [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
     public class Command : ICommand<Result>
     {
-        public string? ParticipantId { get; set; }
+        public string? ParticipantId { get; init; }
         public string? Region { get; set; }
         
         [Description("Justification")]
-        public string? Justification { get;set; }
+        public string? Justification { get; set; }
         
         [Description("Call Reference")]
         public string? CallReference { get; set; }
@@ -24,23 +24,30 @@ public static class SetCandidateStickyLocation
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var participant = unitOfWork.DbContext.Participants.FirstOrDefault(x => x.Id == request.ParticipantId!);
-            
-            if(participant is not null)
+            var participant = await unitOfWork.DbContext.Participants
+                .FirstOrDefaultAsync(x => x.Id == request.ParticipantId!, cancellationToken);
+
+            if (participant is null)
             {
-                var callResult = await candidateService.SetStickyLocation(request.ParticipantId!, request.Region!);
-                if(callResult is { Succeeded: true, Data: true })
-                {
-                    participant.AddNote(new Note()
-                    {
-                        Message = request.Justification!,
-                        CallReference = request.CallReference!
-                    });
-                    return Result.Success();
-                }
-                return callResult;
+                return Result.Failure("Participant not found.");
             }
-            return Result.Failure();
+
+            var callResult = await candidateService.SetStickyLocation(request.ParticipantId!, request.Region!);
+
+            if (!callResult.Succeeded || !callResult.Data)
+            {
+                return Result.Failure(callResult.ErrorMessage);
+            }
+
+            participant.AddNote(new Note()
+            {
+                Message = request.Justification!,
+                CallReference = request.CallReference!
+            });
+                
+            await unitOfWork.SaveChangesAsync(cancellationToken); 
+        
+            return Result.Success();
         }
     }
 
@@ -54,8 +61,8 @@ public static class SetCandidateStickyLocation
 
             RuleFor(x => x.ParticipantId)
                 .NotNull()
-                .MaximumLength(9)
-                .MinimumLength(9)
+                .MaximumLength(ValidationConstants.ParticipantIdLength)
+                .MinimumLength(ValidationConstants.ParticipantIdLength)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));                
 
@@ -68,11 +75,15 @@ public static class SetCandidateStickyLocation
 
             RuleFor(x => x.Justification)
                 .NotEmpty()
+                .WithMessage("Justification is required")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
             
             RuleFor(x => x.CallReference)
                 .NotEmpty()
+                .WithMessage("Call Reference is required")
+                .MaximumLength(ValidationConstants.CallReferenceLength)
+                .WithMessage("Call Reference must be less than or equal to 20 characters")
                 .Matches(ValidationConstants.Numbers)
                 .WithMessage(string.Format(ValidationConstants.NumbersMessage, "Call Reference"));
 
