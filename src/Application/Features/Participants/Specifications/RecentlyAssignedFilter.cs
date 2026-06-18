@@ -1,14 +1,17 @@
 namespace Cfo.Cats.Application.Features.Participants.Specifications;
 
-public enum RecentlyAssignedFilter
+public enum RecentParticipantFilter
 {
     [Description("All")]
     All,
     
-    [Description("Last 10 Days")]
-    Last10Days,
+    [Description("Assigned (Last 10 Days)")]
+    AssignedLast10Days,
     
-    [Description("Last 30 Days")]
-    Last30Days,
+    [Description("Assigned (Last 30 Days)")]
+    AssignedLast30Days,
+    
+    [Description("Visited (Last 7 Days)")]
+    VisitedLast7Days,
 
 }
