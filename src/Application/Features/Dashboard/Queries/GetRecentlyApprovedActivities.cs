@@ -21,23 +21,32 @@ public static class GetRecentlyApprovedActivities
         public async Task<Result<ApprovedActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
-
-            var baseQuery = context.Activities
+            var startDate = request.StartDate.Date;
+            var endDate = request.EndDate.Date.AddDays(1);
+            
+            var baseQuery = context.Activities.AsNoTracking()
                 .Where(a => a.Status == ActivityStatus.ApprovedStatus.Value
-                            && a.CompletedOn >= request.StartDate.Date
-                            && a.CompletedOn <= request.EndDate.Date);
+                            && a.CompletedOn >= startDate
+                            && a.CompletedOn <= endDate);
 
-            // Checks and applies filter based on UserId or TenantId else throws exception
-            baseQuery = request switch
+            var hasFilter = false;
+
+            if (!string.IsNullOrWhiteSpace(request.UserId))
             {
-                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
-                    => baseQuery.Where(a => a.OwnerId == userId),
+                baseQuery = baseQuery.Where(a => a.OwnerId == request.UserId);
+                hasFilter = true;
+            }
 
-                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
-                    => baseQuery.Where(a => a.TenantId.StartsWith(tenantId)),
+            if (!string.IsNullOrWhiteSpace(request.TenantId))
+            {
+                baseQuery = baseQuery.Where(a => a.TenantId.StartsWith(request.TenantId));
+                hasFilter = true;
+            }
 
-                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
-            };
+            if (!hasFilter)
+            {
+                throw new ArgumentException("Invalid request: At least UserId or TenantId must be provided.");
+            }
 
             var results = await (from a in baseQuery
                           orderby a.CompletedOn descending
@@ -52,7 +61,7 @@ public static class GetRecentlyApprovedActivities
                               TookPlaceOn = a.CommencedOn,
                               TookPlaceAtLocation = a.TookPlaceAtLocation.Name
                           })
-                          .AsNoTracking()
+                          
                           .ToArrayAsync(cancellationToken);
 
             var custody = results.Count(r => r.TookPlaceAtLocation.Contains("HMP") || r.TookPlaceAtLocation.Contains("Wing"));
