@@ -53,6 +53,12 @@ public static class ValidationConstants
     public const int RiskEmail = 320;
     public const int RiskReferrerName = 200;
     
+    public const int CallReferenceLength = 20;
+    public const int EmailAddressLength = 256;
+    public const int MobileLength = 16;
+    public const int ParticipantIdLength = 9;
+    public const int ContactDetailsDescription = 100;
+    
     public static class RuleSet
     {
         /// <summary>
