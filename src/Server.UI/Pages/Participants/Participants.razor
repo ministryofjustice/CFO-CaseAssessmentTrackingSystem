@@ -16,7 +16,10 @@
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
-
+<MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
+    This page will be replaced by participants version 2 in August 2026.
+    Please contact Service Desk if you have any issues accessing the version 2 page.
+</MudAlert>
 <MudGrid Class="mt-2">        
     @if (Query is not null)
         {
