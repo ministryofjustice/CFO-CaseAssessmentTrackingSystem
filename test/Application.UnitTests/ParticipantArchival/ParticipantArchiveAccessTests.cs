@@ -11,8 +11,8 @@ public class ParticipantArchiveAccessTests
     private const string OwnerTenantId = "1.1.1.";
 
     [Test]
-    public void CanAccess_WhenCurrentUserIsOwner_ReturnsTrue() =>
-        ParticipantArchiveAccess.CanAccess(
+    public void CanArchive_WhenCurrentUserIsOwner_ReturnsTrue() =>
+        ParticipantArchiveAccess.CanArchive(
             currentUserId: OwnerId,
             currentUserTenantId: OwnerTenantId,
             participantOwnerId: OwnerId,
@@ -20,8 +20,8 @@ public class ParticipantArchiveAccessTests
         .ShouldBeTrue();
 
     [Test]
-    public void CanAccess_WhenUserIsAtHigherTenantLevel_ReturnsTrue() =>
-        ParticipantArchiveAccess.CanAccess(
+    public void CanArchive_WhenUserIsAtHigherTenantLevel_ReturnsTrue() =>
+        ParticipantArchiveAccess.CanArchive(
             currentUserId: "user-manager",
             currentUserTenantId: "1.1.",
             participantOwnerId: OwnerId,
@@ -29,8 +29,8 @@ public class ParticipantArchiveAccessTests
         .ShouldBeTrue();
 
     [Test]
-    public void CanAccess_WhenUserIsAtSameTenantLevel_ReturnsTrue() =>
-        ParticipantArchiveAccess.CanAccess(
+    public void CanArchive_WhenUserIsAtSameTenantLevel_ReturnsTrue() =>
+        ParticipantArchiveAccess.CanArchive(
             currentUserId: "user-peer",
             currentUserTenantId: OwnerTenantId,
             participantOwnerId: OwnerId,
@@ -38,8 +38,8 @@ public class ParticipantArchiveAccessTests
         .ShouldBeTrue();
 
     [Test]
-    public void CanAccess_WhenUserIsAtRootTenantLevel_ReturnsTrue() =>
-        ParticipantArchiveAccess.CanAccess(
+    public void CanArchive_WhenUserIsAtRootTenantLevel_ReturnsTrue() =>
+        ParticipantArchiveAccess.CanArchive(
             currentUserId: "systemuser",
             currentUserTenantId: "1.",
             participantOwnerId: OwnerId,
@@ -47,8 +47,8 @@ public class ParticipantArchiveAccessTests
         .ShouldBeTrue();
 
     [Test]
-    public void CanAccess_WhenUserIsAtLowerTenantLevel_ReturnsFalse() =>
-        ParticipantArchiveAccess.CanAccess(
+    public void CanArchive_WhenUserIsAtLowerTenantLevel_ReturnsFalse() =>
+        ParticipantArchiveAccess.CanArchive(
             currentUserId: "user-junior",
             currentUserTenantId: OwnerTenantId + "1.",
             participantOwnerId: OwnerId,
@@ -56,8 +56,8 @@ public class ParticipantArchiveAccessTests
         .ShouldBeFalse();
 
     [Test]
-    public void CanAccess_WhenUserIsInDifferentTenantBranch_ReturnsFalse() =>
-        ParticipantArchiveAccess.CanAccess(
+    public void CanArchive_WhenUserIsInDifferentTenantBranch_ReturnsFalse() =>
+        ParticipantArchiveAccess.CanArchive(
             currentUserId: "user-other-branch",
             currentUserTenantId: "1.1.3.",
             participantOwnerId: OwnerId,

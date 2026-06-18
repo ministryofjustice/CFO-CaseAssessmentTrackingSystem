@@ -17,7 +17,7 @@
     <ChildContent>
 
         @if (Participant.EnrolmentStatus.AllowArchive()
-            && ParticipantArchiveAccess.CanAccess(UserProfile.UserId, UserProfile.TenantId, Participant.OwnerId, Participant.OwnerTenantId))
+            && ParticipantArchiveAccess.CanArchive(UserProfile.UserId, UserProfile.TenantId, Participant.OwnerId, Participant.OwnerTenantId))
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }

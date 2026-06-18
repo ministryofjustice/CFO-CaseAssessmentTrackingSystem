@@ -1,7 +1,7 @@
 namespace Cfo.Cats.Application.Features.Participants;
 
 /// <summary>
-/// Determines whether a user has access to archive or unarchive a participant.
+/// Determines whether a user has access to archive a participant.
 /// Access is granted when the user is the current owner of the participant, or
 /// when the participant's owner sits within the user's tenant branch (i.e. the
 /// owner's TenantId starts with the user's TenantId, meaning the user is at the
@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants;
 /// </summary>
 public static class ParticipantArchiveAccess
 {
-    public static bool CanAccess(
+    public static bool CanArchive(
         string? currentUserId,
         string? currentUserTenantId,
         string? participantOwnerId,

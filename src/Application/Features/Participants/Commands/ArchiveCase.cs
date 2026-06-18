@@ -15,7 +15,7 @@ public static class ArchiveCase
         [Description("Justification for Archive")] public string? Justification { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -24,7 +24,24 @@ public static class ArchiveCase
                 return Result.Failure("Invalid archive reason");
             }
 
-            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
+            var participant = await unitOfWork.DbContext.Participants
+                .Include(p => p.Owner)
+                .FirstOrDefaultAsync(p => p.Id == request.ParticipantId, cancellationToken);
+
+            if (participant is null)
+            {
+                return Result.Failure("Participant does not exist");
+            }
+
+                if (!ParticipantArchiveAccess.CanArchive(
+                    currentUserService.UserId,
+                    currentUserService.TenantId,
+                    participant.OwnerId,
+                    participant.Owner?.TenantId))
+            {
+                return Result.Failure("You are not authorized to archive this participant");
+            }
+
             participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.ArchiveReason.Name, request.Justification);
 
             // ReSharper disable once MethodHasAsyncOverload
@@ -60,36 +77,6 @@ public static class ArchiveCase
 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
-    }
-
-    public class B_UserMustHaveArchiveAccess : AbstractValidator<Command>
-    {
-        public B_UserMustHaveArchiveAccess(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
-        {
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(c => c.ParticipantId)
-                    .MustAsync(async (participantId, cancellationToken) =>
-                    {
-                        var participant = await unitOfWork.DbContext.Participants
-                            .Where(p => p.Id == participantId)
-                            .Select(p => new { p.OwnerId, OwnerTenantId = p.Owner!.TenantId })
-                            .FirstOrDefaultAsync(cancellationToken);
-
-                        if (participant is null)
-                        {
-                            return false;
-                        }
-
-                        return ParticipantArchiveAccess.CanAccess(
-                            currentUserService.UserId,
-                            currentUserService.TenantId,
-                            participant.OwnerId,
-                            participant.OwnerTenantId);
-                    })
-                    .WithMessage("You are not authorized to archive this participant");
-            });
-        }
     }
 
     public class Validator : AbstractValidator<Command>
