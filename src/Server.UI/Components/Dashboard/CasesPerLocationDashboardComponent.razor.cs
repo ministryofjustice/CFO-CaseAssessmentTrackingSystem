@@ -1,5 +1,7 @@
 using ApexCharts;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
@@ -16,7 +18,9 @@ public partial class CasesPerLocationDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
     
-    protected override IQuery<Result<GetCasesPerLocation.CasesPerLocationDto>> CreateQuery()
+    private bool _downloading;
+    
+    protected override IRequest<Result<GetCasesPerLocation.CasesPerLocationDto>> CreateQuery()
      => new GetCasesPerLocation.Query()
      {
          CurrentUser = CurrentUser,
@@ -89,5 +93,40 @@ public partial class CasesPerLocationDashboardComponent
                             .Where(x => x.LocationName == location && x.Status == status)
                             .Sum(x => x.Count))))
             .ToList();
+    }
+    
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var result = await Service.Send(new ExportCasesPerLocationDashboard.Command
+            {
+                Request = new ExportCasesPerLocationDashboard.CasesPerLocationDashboardExportRequest
+                {
+                    UserId = UserId,
+                    TenantId = TenantId
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error has occurred while generating the cases per location dashboard export");
+            Snackbar.Add("An error has occurred while generating the cases per location dashboard export.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 }

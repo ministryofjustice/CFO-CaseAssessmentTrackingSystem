@@ -1,8 +1,5 @@
-@using ActualLab.Fusion.Extensions
-@using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Domain.Common.Enums
-@using Humanizer
 
 @inherits CatsComponent<GetPathwayPlans.PathwayPlanDto>
 
@@ -21,14 +18,24 @@
 @if (Data is not null && Data.TabularData.Any())
 {
     <MudGrid Spacing="2" Class="mb-3">
-        <!-- This is the left column -->
-        <MudItem xs="12" sm="6">
+        <MudItem xs="12" Class="d-flex justify-space-between align-center">
+            <MudText Typo="Typo.h6">Pathway Plan Reviews</MudText>
+            <div class="d-flex align-center gap-3">
+                <MudSwitch T="bool" @bind-Value="ShowOverdueOnly" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
+                <MudLoadingButton Variant="Variant.Filled"
+                                  Size="MudBlazor.Size.Small"
+                                  Loading="@_downloading"
+                                  Disabled="@Loading"
+                                  OnClick="@OnExport"
+                                  StartIcon="@Icons.Material.Filled.Download"
+                                  Color="Color.Secondary">
+                    @ConstantString.Export
+                </MudLoadingButton>
+            </div>
+        </MudItem>
+        <MudItem xs="12">
             <MudChip T="string">Custody (@CustodyCount)</MudChip>
             <MudChip T="string">Community (@CommunityCount)</MudChip>
-        </MudItem>
-        <!-- Toggle button -->
-        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-            <MudSwitch T="bool" @bind-Value="ShowOverdueOnly" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
         </MudItem>
     </MudGrid>
     @if(VisualMode)
@@ -156,4 +163,3 @@ else
 {
     <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }
-

@@ -17,9 +17,20 @@
 
 @if (Data is not null && Data.Records.Any())
 {
-    <MudGrid Spacing="2">
-        <!-- This is the left column -->
-        <MudItem>
+    <MudGrid Spacing="2" Class="mb-3">
+        <MudItem xs="12" Class="d-flex justify-space-between align-center">
+            <MudText Typo="Typo.h6">Location Breakdown</MudText>
+            <MudLoadingButton Variant="Variant.Filled"
+                              Size="MudBlazor.Size.Small"
+                              Loading="@_downloading"
+                              Disabled="@Loading"
+                              OnClick="@OnExport"
+                              StartIcon="@Icons.Material.Filled.Download"
+                              Color="Color.Secondary">
+                @ConstantString.Export
+            </MudLoadingButton>
+        </MudItem>
+        <MudItem xs="12">
             <MudChip T="string">Custody (@Data.Custody)</MudChip>
             <MudChip T="string">Community (@Data.Community)</MudChip>
         </MudItem>

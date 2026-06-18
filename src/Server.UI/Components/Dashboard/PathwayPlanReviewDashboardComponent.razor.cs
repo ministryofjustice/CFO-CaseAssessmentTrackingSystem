@@ -1,5 +1,7 @@
 using ApexCharts;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
@@ -17,6 +19,7 @@ public partial class PathwayPlanReviewDashboardComponent
     public bool IsDarkMode { get; set; }
 
     private bool ShowOverdueOnly { get; set; } = false;
+    private bool _downloading;
 
     private GetPathwayPlans.Query Query { get; set; } = default!;
 
@@ -109,6 +112,42 @@ public partial class PathwayPlanReviewDashboardComponent
         };
         
         await DialogService.ShowAsync<ReviewNotesDialog>("Review Notes", parameters, options);
+    }
+    
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var result = await Service.Send(new ExportPathwayPlanReviewDashboard.Command
+            {
+                Request = new ExportPathwayPlanReviewDashboard.PathwayPlanReviewDashboardExportRequest
+                {
+                    UserId = UserId,
+                    TenantId = TenantId,
+                    ShowOverdueOnly = ShowOverdueOnly
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error has occurred while generating the pathway plan review dashboard export");
+            Snackbar.Add("An error has occurred while generating the pathway plan review dashboard export.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 
 }
