@@ -1,5 +1,4 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.Queries
-@using Cfo.Cats.Application.Features.Participants
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.MessageBus
@@ -17,7 +16,10 @@
     <ChildContent>
 
         @if (Participant.EnrolmentStatus.AllowArchive()
-            && ParticipantArchiveAccess.CanArchive(UserProfile.UserId, UserProfile.TenantId, Participant.OwnerId, Participant.OwnerTenantId))
+            && (UserProfile.UserId == Participant.OwnerId
+            || (!string.IsNullOrEmpty(UserProfile.TenantId)
+                && !string.IsNullOrEmpty(Participant.OwnerTenantId)
+                && Participant.OwnerTenantId.StartsWith(UserProfile.TenantId, StringComparison.Ordinal))))
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }

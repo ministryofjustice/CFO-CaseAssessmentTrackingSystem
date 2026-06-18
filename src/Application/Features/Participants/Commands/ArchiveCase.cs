@@ -33,16 +33,11 @@ public static class ArchiveCase
                 return Result.Failure("Participant does not exist");
             }
 
-                if (!ParticipantArchiveAccess.CanArchive(
-                    currentUserService.UserId,
-                    currentUserService.TenantId,
-                    participant.OwnerId,
-                    participant.Owner?.TenantId))
-            {
-                return Result.Failure("You are not authorized to archive this participant");
-            }
-
-            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.ArchiveReason.Name, request.Justification);
+            participant.Archive(
+                currentUserService.UserId,
+                currentUserService.TenantId,
+                request.ArchiveReason.Name,
+                request.Justification);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
