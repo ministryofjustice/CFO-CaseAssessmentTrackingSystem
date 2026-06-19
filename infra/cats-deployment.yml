@@ -103,7 +103,9 @@ spec:
               value: "${APP_VERSION}"
             - name: Features__UseWorkerForJobs
               value: "true"
-            - name: Features__RelayUserPresenceNotifications
+            - name: Features__PresenceHub__Enabled
+              value: "true"
+            - name: Features__PresenceHub__RelayUserPresenceNotifications
               value: "true" 
             - name: Features__UseSignalRBackplane
               value: "true"

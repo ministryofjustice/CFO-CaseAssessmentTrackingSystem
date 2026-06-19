@@ -98,8 +98,11 @@ public static class DependencyInjection
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
 
-        services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
-        services.AddScoped<PresenceHubClient>();
+        if (config.GetValue<bool>("Features:PresenceHub:Enabled"))
+        {
+            services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
+            services.AddScoped<PresenceHubClient>();
+        }
 
         if(config.GetValue<bool>("Features:UseSignalRBackplane") is not true)
         {
@@ -226,7 +229,10 @@ public static class DependencyInjection
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
         
-        app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+        if (app.Configuration.GetValue<bool>("Features:PresenceHub:Enabled"))
+        {
+            app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+        }
 
         app.MapGet("/.well-known/security.txt", () =>
             Results.Redirect(
