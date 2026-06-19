@@ -74,7 +74,7 @@ jobs:
       
       - name: Generate app version
         id: version
-        run: echo "app_version=$(date +'%Y.%m').${{ github.run_number }}" >> $GITHUB_OUTPUT
+        run: echo "app_version=$(date +'%Y.%m.%d').${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Generate Kubernetes Manifests
         run: |
