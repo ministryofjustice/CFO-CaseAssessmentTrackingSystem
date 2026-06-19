@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Commands;
 
-public static class ExportCasesPerLocationDashboard
+public static class ExportUnassignedCasesDashboard
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
-        public required CasesPerLocationDashboardExportRequest Request { get; init; }
+        public required UnassignedCasesDashboardExportRequest Request { get; init; }
     }
 
     public class Handler(
@@ -24,9 +24,9 @@ public static class ExportCasesPerLocationDashboard
             var json = JsonConvert.SerializeObject(request.Request);
 
             var document = GeneratedDocument.Create(
-                DocumentTemplate.CasesPerLocationDashboard,
-                "LocationBreakdownDashboard.xlsx",
-                "Location Breakdown Dashboard Export",
+                DocumentTemplate.UnassignedCasesDashboard,
+                "UnassignedCasesDashboard.xlsx",
+                "Unassigned Cases Dashboard Export",
                 currentUser.UserId!,
                 currentUser.TenantId!,
                 json);
@@ -67,7 +67,7 @@ public static class ExportCasesPerLocationDashboard
         }
     }
 
-    public class CasesPerLocationDashboardExportRequest
+    public class UnassignedCasesDashboardExportRequest
     {
         public string? UserId { get; init; }
         public string? TenantId { get; init; }

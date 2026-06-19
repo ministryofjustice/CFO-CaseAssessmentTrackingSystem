@@ -69,8 +69,6 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate InductionPayments = new(nameof(InductionPayments), 11);
     public static readonly DocumentTemplate SupportAndReferralPayments = new(nameof(SupportAndReferralPayments), 12);
     public static readonly DocumentTemplate ParticipantsLatestEngagement = new(nameof(ParticipantsLatestEngagement), 13);
-    public static readonly DocumentTemplate EnrolmentAdvisoriesToProvider = new(nameof(EnrolmentAdvisoriesToProvider), 14);
-    public static readonly DocumentTemplate ActivitiesAdvisoriesToProvider = new(nameof(ActivitiesAdvisoriesToProvider), 15);
     public static readonly DocumentTemplate ProviderFeedback = new(nameof(ProviderFeedback), 16);
     public static readonly DocumentTemplate PerformanceDashboard = new(nameof(PerformanceDashboard), 17);
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
@@ -80,4 +78,5 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate Users = new(nameof(Users), 1400);
     public static readonly DocumentTemplate CasesPerLocationDashboard = new(nameof(CasesPerLocationDashboard), 1500);
     public static readonly DocumentTemplate PathwayPlanReviewDashboard = new(nameof(PathwayPlanReviewDashboard), 1600);
+    public static readonly DocumentTemplate UnassignedCasesDashboard = new(nameof(UnassignedCasesDashboard), 1700);
 }

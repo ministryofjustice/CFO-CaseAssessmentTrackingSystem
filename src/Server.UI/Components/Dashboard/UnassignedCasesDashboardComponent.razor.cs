@@ -1,5 +1,6 @@
 using ApexCharts;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
@@ -7,6 +8,7 @@ using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -35,6 +37,7 @@ public partial class UnassignedCasesDashboardComponent
     private MudDataGrid<UnassignedCaseDto> _table = default!;
     private bool _canSearch;
     private bool _canReassign;
+    private bool _downloading;
     
     private bool _previousVisualMode;
     private string? _previousTenantId;
@@ -85,6 +88,8 @@ public partial class UnassignedCasesDashboardComponent
 
         _locations = LocationService.GetVisibleLocations(TenantId)
                         .ToDictionary(k => k.Id, e => e.Name);
+
+        Query.IncludeTransferIn = _includeTransferIn;
 
         await base.OnInitializedAsync();
     }
@@ -221,13 +226,19 @@ public partial class UnassignedCasesDashboardComponent
     private async Task OnSearch(string text)
     {
         Query.Keyword = text;
-        await _table.ReloadServerData();
+        if (!VisualMode)
+        {
+            await _table.ReloadServerData();
+        }
     }
 
     private async Task EnrolmentStatusChanged(int? statusValue)
     {
         Query.EnrolmentStatus = statusValue;
-        await _table.ReloadServerData();
+        if (!VisualMode)
+        {
+            await _table.ReloadServerData();
+        }
     }
 
     private async Task ShowSelectLocationDialog()
@@ -244,7 +255,10 @@ public partial class UnassignedCasesDashboardComponent
         if (result is { Canceled: false, Data: LocationDto location })
         {
             Query.Locations = [location.Id];
-            await _table.ReloadServerData();
+            if (!VisualMode)
+            {
+                await _table.ReloadServerData();
+            }
         }
     }
 
@@ -254,14 +268,20 @@ public partial class UnassignedCasesDashboardComponent
         Query.EnrolmentStatus = null;
         Query.Locations = [];
         Query.IncludeTransferIn = _includeTransferIn;
-        await _table.ReloadServerData();
+        if (!VisualMode)
+        {
+            await _table.ReloadServerData();
+        }
     }
 
     private async Task OnIncludeTransferInChanged(bool value)
     {
         _includeTransferIn = value;
         Query.IncludeTransferIn = value;
-        await _table.ReloadServerData();
+        if (!VisualMode)
+        {
+            await _table.ReloadServerData();
+        }
     }
 
     private async Task AssignToSelf(UnassignedCaseDto participant)
@@ -337,6 +357,41 @@ public partial class UnassignedCasesDashboardComponent
 
     private void NavigateToTransfers() =>
         Navigation.NavigateTo("/pages/participants/transfers");
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var result = await Service.Send(new ExportUnassignedCasesDashboard.Command
+            {
+                Request = new ExportUnassignedCasesDashboard.UnassignedCasesDashboardExportRequest
+                {
+                    UserId = null,
+                    TenantId = TenantId
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error has occurred while generating the unassigned cases dashboard export");
+            Snackbar.Add("An error has occurred while generating the unassigned cases dashboard export.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }
 
 public record ChartDataPoint(string LocationName, EnrolmentStatus Status, int Count);

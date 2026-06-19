@@ -28,30 +28,77 @@
     padding: 8px 16px !important;
 }
 </style>
+
+<!-- Header with filters and export - shown in both modes -->
+<MudGrid Spacing="2" Class="mb-3">
+    <MudItem xs="12" Class="d-flex justify-space-between align-center">
+        <MudText Typo="Typo.h6">Unassigned Cases</MudText>
+        <div class="d-flex gap-2 align-center">
+            @if (_canSearch)
+            {
+                <MudTextField T="string" 
+                              ValueChanged="@OnSearch" 
+                              Value="@Query.Keyword" 
+                              Placeholder="Search by name or ID" 
+                              Clearable="true"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Filled.Search" 
+                              IconSize="MudSize.Small"
+                              Style="max-width: 250px;">
+                </MudTextField>
+            }
+            <MudMenu Size="MudSize.Small" 
+                     Label="@(Query.EnrolmentStatus.HasValue ? EnrolmentStatus.FromValue(Query.EnrolmentStatus.Value).Name : "All Statuses")" 
+                     EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All Statuses" OnClick="@(() => EnrolmentStatusChanged(null))" />
+                @foreach (var status in EnrolmentStatus.List)
+                {
+                    <MudMenuItem Label="@status.Name" OnClick="@(() => EnrolmentStatusChanged(status.Value))" />
+                }
+            </MudMenu>
+            <MudButton Size="MudSize.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if(Query.Locations is { Length: 0 })
+                {
+                    @("All Locations")
+                }
+                else
+                {
+                    @_locations[Query.Locations[0]]
+                }
+            </MudButton>
+            <MudSwitch Value="_includeTransferIn"
+                       T="bool"
+                       Color="Color.Primary"
+                       Size="MudBlazor.Size.Small"
+                       ValueChanged="@OnIncludeTransferInChanged">
+                Include Transfer In
+            </MudSwitch>   
+            <MudTooltip Text="Clear Filters">
+                <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearFilters())" />
+            </MudTooltip>
+            <MudLoadingButton Variant="Variant.Filled"
+                              Size="MudSize.Small"
+                              Loading="@_downloading"
+                              Disabled="@Loading"
+                              OnClick="@OnExport"
+                              StartIcon="@Icons.Material.Filled.Download"
+                              Color="Color.Secondary">
+                @ConstantString.Export
+            </MudLoadingButton>
+        </div>
+    </MudItem>
+    @if (Data is not null || VisualMode)
+    {
+        <MudItem xs="12">
+            <MudChip T="string">Custody (@(Data?.Custody ?? 0))</MudChip>
+            <MudChip T="string">Community (@(Data?.Community ?? 0))</MudChip>
+        </MudItem>
+    }
+</MudGrid>
+
 @if (VisualMode)
 {
     <!-- Chart View -->
-    <MudStack Class="mb-4">
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Large" />
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Unassigned Cases</MudText>
-                    <MudText Typo="Typo.body2">Cases without an assigned owner</MudText>
-                </div>
-            </div>
-        </div>
-    </MudStack>
-
-    @if (Data is not null)
-    {
-        <MudGrid Spacing="2">
-            <MudItem>
-                <MudChip T="string">Custody (@Data.Custody)</MudChip>
-                <MudChip T="string">Community (@Data.Community)</MudChip>
-            </MudItem>
-        </MudGrid>
-    }
 
     @if (!Loading && Data is not null && Data.Summaries.Any())
     {
@@ -98,59 +145,7 @@ else
              BreakPoint="Breakpoint.Sm"
              Class="compact-toolbar">
     <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1" style="padding: 0;">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="MudSize.Large" />
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Unassigned Cases</MudText>
-                    <MudText Typo="Typo.body2">Cases without an assigned owner</MudText>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex gap-2 align-center">
-            @if (_canSearch)
-            {
-                <MudTextField T="string" 
-                              ValueChanged="@OnSearch" 
-                              Value="@Query.Keyword" 
-                              Placeholder="Search by name or ID" 
-                              Clearable="true"
-                              Adornment="Adornment.End"
-                              AdornmentIcon="@Icons.Material.Filled.Search" 
-                              IconSize="MudSize.Small"
-                              Style="max-width: 250px;">
-                </MudTextField>
-            }
-            <MudMenu Size="MudSize.Small" 
-                     Label="@(Query.EnrolmentStatus.HasValue ? EnrolmentStatus.FromValue(Query.EnrolmentStatus.Value).Name : "All Statuses")" 
-                     EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                <MudMenuItem Label="All Statuses" OnClick="@(() => EnrolmentStatusChanged(null))" />
-                @foreach (var status in EnrolmentStatus.List)
-                {
-                    <MudMenuItem Label="@status.Name" OnClick="@(() => EnrolmentStatusChanged(status.Value))" />
-                }
-            </MudMenu>
-            <MudButton Size="MudSize.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                @if(Query.Locations is { Length: 0 })
-                {
-                    @("All Locations")
-                }
-                else
-                {
-                    @_locations[Query.Locations[0]]
-                }
-            </MudButton>
-            <MudSwitch Value="_includeTransferIn"
-                       T="bool"
-                       Color="Color.Primary"
-                       Size="MudBlazor.Size.Small"
-                       ValueChanged="@OnIncludeTransferInChanged">
-                Include Transfer In
-            </MudSwitch>   
-            <MudTooltip Text="Clear Filters">
-                <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearFilters())" />
-            </MudTooltip>
-        </div>
+        <MudSpacer />
     </ToolBarContent>
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Actions" Sortable="false">

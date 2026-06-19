@@ -27,7 +27,7 @@ public static class GetUnassignedCasesSummary
                                     && !t.Completed 
                                     && !t.ToLocation.Tenants.Any(lt => lt.Id.StartsWith(currentTenantId))))
                             select p;
-
+            
             // Group by location and status for chart data
             var groupedQuery = from p in baseQuery
                                group p by new
