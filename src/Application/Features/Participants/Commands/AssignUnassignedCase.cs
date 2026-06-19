@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class AssignUnassignedCase
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<bool>>
+    public class Command : ICommand<Result<bool>>
     {
         public required string ParticipantId { get; set; }
 
@@ -16,7 +16,7 @@ public static class AssignUnassignedCase
         public string? AssigneeId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<bool>>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result<bool>>
     {
         public async Task<Result<bool>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -63,7 +63,7 @@ public static class AssignUnassignedCase
                 .NotNull()
                 .WithMessage("Current user is required");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(p => p.ParticipantId)
                     .MustAsync(ParticipantExists)
