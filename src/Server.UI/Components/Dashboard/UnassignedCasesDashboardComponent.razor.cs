@@ -116,7 +116,7 @@ public partial class UnassignedCasesDashboardComponent
         _previousVisualMode = VisualMode;
     }
 
-    protected override IRequest<Result<GetUnassignedCasesSummary.UnassignedCasesSummaryDto>> CreateQuery()
+    protected override IQuery<Result<GetUnassignedCasesSummary.UnassignedCasesSummaryDto>> CreateQuery()
         => new GetUnassignedCasesSummary.Query
         {
             CurrentUser = GetEffectiveUserProfile()

@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class UnassignedCasesWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : PaginationFilter, IRequest<Result<PaginatedData<UnassignedCaseDto>>>
+    public class Query : PaginationFilter, IQuery<Result<PaginatedData<UnassignedCaseDto>>>
     {
         /// <summary>
         /// The currently logged in user
@@ -32,7 +32,7 @@ public static class UnassignedCasesWithPagination
         public bool IncludeTransferIn { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<UnassignedCaseDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<UnassignedCaseDto>>>
     {
         public async Task<Result<PaginatedData<UnassignedCaseDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
