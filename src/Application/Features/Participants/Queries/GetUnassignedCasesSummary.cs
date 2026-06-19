@@ -6,12 +6,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetUnassignedCasesSummary
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<UnassignedCasesSummaryDto>>
+    public class Query : IQuery<Result<UnassignedCasesSummaryDto>>
     {
         public required UserProfile CurrentUser { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<UnassignedCasesSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<UnassignedCasesSummaryDto>>
     {
         public async Task<Result<UnassignedCasesSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
