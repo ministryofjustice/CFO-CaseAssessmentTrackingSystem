@@ -20,7 +20,7 @@ public partial class CasesPerLocationDashboardComponent
     
     private bool _downloading;
     
-    protected override IRequest<Result<GetCasesPerLocation.CasesPerLocationDto>> CreateQuery()
+    protected override IQuery<Result<GetCasesPerLocation.CasesPerLocationDto>> CreateQuery()
      => new GetCasesPerLocation.Query()
      {
          CurrentUser = CurrentUser,

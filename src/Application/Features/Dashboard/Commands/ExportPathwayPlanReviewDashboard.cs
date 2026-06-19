@@ -10,14 +10,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Commands;
 public static class ExportPathwayPlanReviewDashboard
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required PathwayPlanReviewDashboardExportRequest Request { get; init; }
     }
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -48,7 +48,7 @@ public static class ExportPathwayPlanReviewDashboard
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
