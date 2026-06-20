@@ -1,6 +1,5 @@
 # Production overrides.
 # NOTE: confirm the production namespace / hostname before first deploy.
-dotnetEnvironment: Production
 
 app:
   replicaCount: 4

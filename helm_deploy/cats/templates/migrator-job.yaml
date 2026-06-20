@@ -1,35 +1,38 @@
-{{- if .Values.migrator.enabled }}
+{{- if eq .Values.job "migrate" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: cats-migrator
+  # Revision-suffixed so each upgrade of the cats-migrate release runs a fresh Job
+  # (a Job's pod template is immutable, so a stable name could not be re-applied).
+  name: cats-migrator-{{ .Release.Revision }}
   labels:
     app: migrator
-  annotations:
-    # Run before the application is upgraded; deploy fails if the migration fails.
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   backoffLimit: {{ .Values.migrator.backoffLimit }}
+  # Auto-clean finished Jobs; Helm also prunes the previous revision's Job on upgrade.
+  ttlSecondsAfterFinished: 3600
   template:
     metadata:
       labels:
         app: migrator
     spec:
-      serviceAccountName: {{ include "cats.serviceAccountName" . }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
       restartPolicy: Never
       securityContext:
-        {{- include "cats.podSecurityContext" . | nindent 8 }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
       containers:
         - name: migrator
           image: "{{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag }}"
           securityContext:
-            {{- include "cats.containerSecurityContext" . | nindent 12 }}
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
           env:
             {{- include "cats.databaseEnv" . | nindent 12 }}
-          {{- with .Values.migrator.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
 {{- end }}

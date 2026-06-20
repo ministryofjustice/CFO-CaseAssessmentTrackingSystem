@@ -36,7 +36,7 @@ jobs:
             helm lint ./helm_deploy/cats --values ./helm_deploy/cats/values-$env.yaml
             echo "::endgroup::"
 
-            echo "::group::helm template ($env)"
+            echo "::group::helm template app ($env)"
             # Render with placeholder per-deploy values that CI normally supplies via --set,
             # so templating exercises the same paths as a real deploy.
             helm template cats ./helm_deploy/cats \
@@ -49,8 +49,28 @@ jobs:
               --set worker.serviceAccountName="cfocats-$env" \
               --set worker.image.repository="example/cfocats" \
               --set worker.image.tag="worker-validate" \
+              > /dev/null
+            echo "::endgroup::"
+
+            echo "::group::helm template migrate ($env)"
+            helm template cats-migrate ./helm_deploy/cats \
+              --namespace "cfocats-$env" \
+              --values ./helm_deploy/cats/values-$env.yaml \
+              --set application.enabled=false \
+              --set job=migrate \
+              --set serviceAccountName="cfocats-$env" \
               --set migrator.image.repository="example/cfocats" \
               --set migrator.image.tag="migrator-validate" \
+              > /dev/null
+            echo "::endgroup::"
+
+            echo "::group::helm template seed ($env)"
+            helm template cats-seed ./helm_deploy/cats \
+              --namespace "cfocats-$env" \
+              --values ./helm_deploy/cats/values-$env.yaml \
+              --set application.enabled=false \
+              --set job=seed \
+              --set serviceAccountName="cfocats-$env" \
               --set seeder.image.repository="example/cfocats" \
               --set seeder.image.tag="seeder-validate" \
               > /dev/null

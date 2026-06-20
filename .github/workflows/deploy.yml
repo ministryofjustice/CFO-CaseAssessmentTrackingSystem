@@ -109,14 +109,49 @@ jobs:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
 
-      - name: Deploy CATS with Helm
-        # A single release deploys the web tier, worker, ephemeral RabbitMQ/Redis, and runs
-        # the migrator + seeder as pre-upgrade hook Jobs (Helm waits for them before rollout).
+      - name: Build Helm dependencies
         run: |
           set -euo pipefail
           helm repo add hmpps-helm-charts https://ministryofjustice.github.io/hmpps-helm-charts
           helm dependency build ./helm_deploy/cats
 
+      - name: Run database migrations
+        run: |
+          set -euo pipefail
+          helm upgrade --install cats-migrate ./helm_deploy/cats \
+            --namespace "${KUBE_NAMESPACE}" \
+            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set application.enabled=false \
+            --set job=migrate \
+            --set serviceAccountName="${KUBE_NAMESPACE}" \
+            --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
+            --set migrator.image.tag="migrator-${{ github.sha }}" \
+            --wait --timeout 5m
+        env:
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+
+      - name: Seed the database
+        run: |
+          set -euo pipefail
+          helm upgrade --install cats-seed ./helm_deploy/cats \
+            --namespace "${KUBE_NAMESPACE}" \
+            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set application.enabled=false \
+            --set job=seed \
+            --set serviceAccountName="${KUBE_NAMESPACE}" \
+            --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
+            --set seeder.image.tag="seeder-${{ github.sha }}" \
+            --wait --timeout 5m
+        env:
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+
+      - name: Deploy CATS and Worker
+        run: |
+          set -euo pipefail
           IMAGE_REPOSITORY="${REGISTRY}/${REPOSITORY}"
 
           helm upgrade --install cats ./helm_deploy/cats \
@@ -133,10 +168,6 @@ jobs:
             --set worker.image.tag="worker-${{ github.sha }}" \
             --set worker.env.Sentry__Release="${APP_VERSION}" \
             --set worker.env.AppConfigurationSettings__Version="${APP_VERSION}" \
-            --set migrator.image.repository="${IMAGE_REPOSITORY}" \
-            --set migrator.image.tag="migrator-${{ github.sha }}" \
-            --set seeder.image.repository="${IMAGE_REPOSITORY}" \
-            --set seeder.image.tag="seeder-${{ github.sha }}" \
             --atomic --wait --timeout 10m
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}

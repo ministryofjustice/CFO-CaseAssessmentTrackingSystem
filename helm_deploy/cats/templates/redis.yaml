@@ -1,4 +1,4 @@
-{{- if .Values.redis.enabled }}
+{{- if .Values.application.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,8 +16,12 @@ spec:
         app: redis
     spec:
       securityContext:
-        {{- include "cats.podSecurityContext" . | nindent 8 }}
-      serviceAccountName: {{ include "cats.serviceAccountName" . }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
+      serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
         - name: redis
           image: {{ .Values.redis.image | quote }}
@@ -33,28 +37,32 @@ spec:
           ports:
             - containerPort: 6379
           securityContext:
-            {{- include "cats.containerSecurityContext" . | nindent 12 }}
+            allowPrivilegeEscalation: false
+            privileged: false
           startupProbe:
-            exec:
-              command: ["redis-cli", "ping"]
+            tcpSocket:
+              port: 6379
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
+            tcpSocket:
+              port: 6379
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
+            tcpSocket:
+              port: 6379
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
-          {{- with .Values.redis.resources }}
           resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service

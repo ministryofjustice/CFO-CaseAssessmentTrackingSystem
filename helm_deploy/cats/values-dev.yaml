@@ -1,5 +1,4 @@
 # Development overrides. Namespace: cfocats-dev
-dotnetEnvironment: Development
 
 app:
   replicaCount: 3

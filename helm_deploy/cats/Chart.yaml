@@ -2,9 +2,11 @@ apiVersion: v2
 name: cats
 description: |
   Case Assessment and Tracking System (CATS) — HMPPS Creating Future Opportunities (CFO).
-  A single release deploying the Blazor Server web tier and the Quartz worker (both via the
-  HMPPS generic-service chart), the ephemeral in-cluster RabbitMQ and Redis dependencies,
-  and the database migrator/seeder as pre-upgrade Helm hook Jobs.
+  Deploys the Blazor Server web tier and the Quartz worker (both via the HMPPS
+  generic-service chart) and the ephemeral in-cluster RabbitMQ and Redis dependencies.
+  The same chart also provides the database migrator and seeder Jobs, which the CI
+  pipeline installs as their own short-lived releases (cats-migrate, cats-seed) before
+  the application release.
 type: application
 
 # Version of this chart. Bump on every change to the chart/values.
@@ -19,12 +21,14 @@ dependencies:
     alias: app
     version: "3.17.2"
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
+    condition: application.enabled
 
   # Background worker (Quartz jobs) — single instance, no ingress.
   - name: generic-service
     alias: worker
     version: "3.17.2"
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
+    condition: application.enabled
 
   # Standard HMPPS Prometheus alert rules. Disabled by default — enable once an
   # Alertmanager receiver exists for the alertSeverity (see helm_deploy/README.md).

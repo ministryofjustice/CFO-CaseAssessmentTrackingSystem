@@ -1,4 +1,4 @@
-{{- if .Values.rabbitmq.enabled }}
+{{- if .Values.application.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,8 +16,12 @@ spec:
         app: rabbitmq
     spec:
       securityContext:
-        {{- include "cats.podSecurityContext" . | nindent 8 }}
-      serviceAccountName: {{ include "cats.serviceAccountName" . }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
+      serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
         - name: rabbitmq
           image: {{ .Values.rabbitmq.image | quote }}
@@ -26,23 +30,24 @@ spec:
             - containerPort: 5672
             - containerPort: 15672
           securityContext:
-            {{- include "cats.containerSecurityContext" . | nindent 12 }}
+            allowPrivilegeEscalation: false
+            privileged: false
           startupProbe:
-            exec:
-              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            tcpSocket:
+              port: 5672
             periodSeconds: 10
             failureThreshold: 30
           livenessProbe:
-            exec:
-              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            tcpSocket:
+              port: 5672
             periodSeconds: 30
-            timeoutSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
-            exec:
-              command: ["rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+            tcpSocket:
+              port: 5672
             periodSeconds: 15
-            timeoutSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 3
           env:
             - name: RABBITMQ_DEFAULT_USER
@@ -55,10 +60,13 @@ spec:
                 secretKeyRef:
                   name: config
                   key: RABBIT_PASS
-          {{- with .Values.rabbitmq.resources }}
           resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service

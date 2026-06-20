@@ -1,6 +1,5 @@
 # Staging overrides.
 # NOTE: confirm the staging namespace / hostname before first deploy.
-dotnetEnvironment: Staging
 
 app:
   replicaCount: 3

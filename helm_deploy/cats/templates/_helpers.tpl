@@ -1,35 +1,4 @@
 {{/*
-Service account name. Cloud Platform creates a service account named after the
-namespace (with IRSA role bindings for S3/RDS), so default to the release namespace.
-*/}}
-{{- define "cats.serviceAccountName" -}}
-{{- .Values.serviceAccountName | default .Release.Namespace -}}
-{{- end -}}
-
-{{/*
-Pod-level security context shared by the local (non generic-service) workloads.
-*/}}
-{{- define "cats.podSecurityContext" -}}
-seccompProfile:
-  type: RuntimeDefault
-runAsUser: 1001
-runAsGroup: 1001
-runAsNonRoot: true
-{{- end -}}
-
-{{/*
-Restricted container-level security context shared by the local workloads. Matches the
-generic-service (app/worker) posture and the Cloud Platform Gatekeeper defaults.
-*/}}
-{{- define "cats.containerSecurityContext" -}}
-allowPrivilegeEscalation: false
-privileged: false
-capabilities:
-  drop:
-    - ALL
-{{- end -}}
-
-{{/*
 Environment variables that expose the MSSQL connection details from the
 rds-mssql-instance-output namespace secret, plus the composed connection string.
 Used by the migrator and seeder Jobs.
