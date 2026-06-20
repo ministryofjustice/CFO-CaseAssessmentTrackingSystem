@@ -2,17 +2,24 @@ name: deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [dev, staging, production]
+        required: true
 
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  ecr:
+  deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
