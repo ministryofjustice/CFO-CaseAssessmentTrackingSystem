@@ -1,0 +1,19 @@
+# Development overrides. Namespace: cfocats-dev
+dotnetEnvironment: Development
+
+app:
+  replicaCount: 3
+  ingress:
+    host: cfocats-dev.live.cloud-platform.service.justice.gov.uk
+  env:
+    DOTNET_ENVIRONMENT: "Development"
+    Sentry__Environment: "Development-CloudPlatform"
+
+worker:
+  replicaCount: 1
+  env:
+    DOTNET_ENVIRONMENT: "Development"
+    Sentry__Environment: "Development-CloudPlatform"
+
+generic-prometheus-alerts:
+  alertSeverity: cfo-alerts-nonprod

@@ -19,7 +19,7 @@ jobs:
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
-      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -46,7 +46,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.ECR_REGION }}
-      
+
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@33f92af657bba1882ab79d8621debd2f6769a0c9
         id: login-ecr
@@ -70,7 +70,7 @@ jobs:
             /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
             /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
             /p:ContainerImageTag=worker-${{ github.sha }}
-      
+
       - name: Build and Push DatabaseSeeding Container
         run: |
           dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj \
@@ -88,25 +88,11 @@ jobs:
             -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:migrator-${{ github.sha }} \
             .
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:migrator-${{ github.sha }}
-      
+
       - name: Generate app version
         id: version
         run: echo "app_version=$(date +'%Y.%m.%d').${{ github.run_number }}" >> $GITHUB_OUTPUT
 
-      - name: Generate Kubernetes Manifests
-        run: |
-          mkdir -p deploy
-          for file in infra/*.yml; do
-            envsubst < "$file" > "deploy/$(basename "$file")"
-          done
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-          APP_VERSION: ${{ steps.version.outputs.app_version }}
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
-          DOTNET_ENVIRONMENT: "Development"
-      
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
@@ -118,33 +104,37 @@ jobs:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
 
-      - name: Run database migration
+      - name: Deploy CATS with Helm
+        # A single release deploys the web tier, worker, ephemeral RabbitMQ/Redis, and runs
+        # the migrator + seeder as pre-upgrade hook Jobs (Helm waits for them before rollout).
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete pod -l app=migrator --wait=false || true
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-pod.yml
-          if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/migrator-${{ github.sha }}; then
-            echo "Migration pod did not succeed within timeout."
-            kubectl -n ${KUBE_NAMESPACE} describe pod/migrator-${{ github.sha }} || true
-            exit 1
-          fi
-        env:
-          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          set -euo pipefail
+          helm repo add hmpps-helm-charts https://ministryofjustice.github.io/hmpps-helm-charts
+          helm dependency build ./helm_deploy/cats
 
-      - name: Run database seeding
-        run: |
-          kubectl -n ${KUBE_NAMESPACE} delete pod -l app=seeder --wait=false || true
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-pod.yml
-          if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/seeder-${{ github.sha }}; then
-            echo "Seeder pod did not succeed within timeout."
-            kubectl -n ${KUBE_NAMESPACE} describe pod/seeder-${{ github.sha }} || true
-            exit 1
-          fi
-        env:
-          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          IMAGE_REPOSITORY="${REGISTRY}/${REPOSITORY}"
 
-      - name: Deploy to Kubernetes
-        run: |
-          rm -f deploy/migrator-pod.yml deploy/seeder-pod.yml
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/
+          helm upgrade --install cats ./helm_deploy/cats \
+            --namespace "${KUBE_NAMESPACE}" \
+            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set serviceAccountName="${KUBE_NAMESPACE}" \
+            --set app.serviceAccountName="${KUBE_NAMESPACE}" \
+            --set app.image.repository="${IMAGE_REPOSITORY}" \
+            --set app.image.tag="cats-${{ github.sha }}" \
+            --set app.env.Sentry__Release="${APP_VERSION}" \
+            --set app.env.AppConfigurationSettings__Version="${APP_VERSION}" \
+            --set worker.serviceAccountName="${KUBE_NAMESPACE}" \
+            --set worker.image.repository="${IMAGE_REPOSITORY}" \
+            --set worker.image.tag="worker-${{ github.sha }}" \
+            --set worker.env.Sentry__Release="${APP_VERSION}" \
+            --set worker.env.AppConfigurationSettings__Version="${APP_VERSION}" \
+            --set migrator.image.repository="${IMAGE_REPOSITORY}" \
+            --set migrator.image.tag="migrator-${{ github.sha }}" \
+            --set seeder.image.repository="${IMAGE_REPOSITORY}" \
+            --set seeder.image.tag="seeder-${{ github.sha }}" \
+            --wait --timeout 10m
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          APP_VERSION: ${{ steps.version.outputs.app_version }}

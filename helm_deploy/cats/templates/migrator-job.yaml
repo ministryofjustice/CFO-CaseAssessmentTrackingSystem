@@ -1,0 +1,38 @@
+{{- if .Values.migrator.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cats-migrator
+  labels:
+    app: migrator
+  annotations:
+    # Run before the application is upgraded; deploy fails if the migration fails.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrator.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        app: migrator
+    spec:
+      serviceAccountName: {{ include "cats.serviceAccountName" . }}
+      restartPolicy: Never
+      securityContext:
+        {{- include "cats.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: migrator
+          image: "{{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            {{- include "cats.databaseEnv" . | nindent 12 }}
+          {{- with .Values.migrator.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

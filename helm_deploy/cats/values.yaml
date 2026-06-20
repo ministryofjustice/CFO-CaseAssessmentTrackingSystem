@@ -1,0 +1,228 @@
+# Default values for the CATS umbrella chart (single release).
+# Environment-specific overrides live in values-<env>.yaml.
+#
+# generic-service values are nested under the dependency aliases `app:` (web) and
+# `worker:`. Local workloads (rabbitmq, redis, migrator, seeder) and alerts use the
+# top-level keys below.
+#
+# Values that change per deploy (image registry/tags, app version, service account)
+# are supplied by CI via --set. See helm_deploy/README.md.
+
+# Service account for the local workloads (rabbitmq/redis/jobs). Defaults to the
+# release namespace, which is the Cloud Platform IRSA-enabled service account.
+serviceAccountName: ""
+
+# .NET environment for the seeder Job. The app/worker set their own DOTNET_ENVIRONMENT
+# via app.env / worker.env. Overridden per environment.
+dotnetEnvironment: Development
+
+# ---------------------------------------------------------------------------
+# Web tier (Blazor Server UI) — generic-service
+# ---------------------------------------------------------------------------
+app:
+  nameOverride: cats
+  fullnameOverride: cats
+  # serviceAccountName is supplied by CI via --set (the namespace's IRSA account).
+
+  replicaCount: 3
+
+  image:
+    repository: example.dkr.ecr.eu-west-2.amazonaws.com/cfocats
+    tag: latest
+    pullPolicy: IfNotPresent
+    port: 8080
+
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    enabled: true
+    path: /
+    healthPath: /health
+    tlsSecretName: ""
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: "cookie"
+      nginx.ingress.kubernetes.io/session-cookie-name: "http-cookie"
+      nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+      nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+
+  startupProbe:
+    httpGet:
+      path: /alive
+      port: http
+    failureThreshold: 30
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    periodSeconds: 10
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /alive
+      port: http
+    periodSeconds: 20
+    failureThreshold: 3
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+  poddisruptionbudget:
+    enabled: true
+    minAvailable: 1
+
+  namespace_secrets:
+    rds-mssql-instance-output:
+      DATABASE_ADDRESS: "rds_instance_address"
+      DATABASE_USERNAME: "database_username"
+      DATABASE_PASSWORD: "database_password"
+    s3-bucket-output:
+      AWS__Bucket: "bucket_name"
+    config:
+      RABBIT_USER: "RABBIT_USER"
+      RABBIT_PASS: "RABBIT_PASS"
+      Sentry__Dsn: "SentryDsn"
+
+  env:
+    ConnectionStrings__CatsDb: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
+    ConnectionStrings__rabbit: "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
+    ConnectionStrings__redis: "redis-service:6379"
+    AWS__RootFolder: "Files"
+    Features__UseWorkerForJobs: "true"
+    Features__PresenceHub__Enabled: "true"
+    Features__PresenceHub__RelayUserPresenceNotifications: "true"
+    Features__UseSignalRBackplane: "true"
+    WorkerOptions__BaseUrl: "http://cats-worker:8080"
+    # Overridden by CI at deploy time.
+    Sentry__Release: "0.0.0"
+    AppConfigurationSettings__Version: "0.0.0"
+    # DOTNET_ENVIRONMENT and Sentry__Environment are set per environment.
+
+# ---------------------------------------------------------------------------
+# Background worker (Quartz jobs) — generic-service
+# ---------------------------------------------------------------------------
+worker:
+  nameOverride: cats-worker
+  fullnameOverride: cats-worker
+
+  # MUST remain a single instance: Quartz jobs must not run concurrently across pods.
+  replicaCount: 1
+
+  autoscaling:
+    enabled: false
+
+  # Recreate (not RollingUpdate) so a new worker pod never overlaps the old one.
+  strategy:
+    type: Recreate
+
+  image:
+    repository: example.dkr.ecr.eu-west-2.amazonaws.com/cfocats
+    tag: latest
+    pullPolicy: IfNotPresent
+    port: 8080
+
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    enabled: false
+
+  poddisruptionbudget:
+    enabled: false
+
+  startupProbe:
+    httpGet:
+      path: /alive
+      port: http
+    failureThreshold: 30
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    periodSeconds: 10
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /alive
+      port: http
+    periodSeconds: 20
+    failureThreshold: 3
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  namespace_secrets:
+    rds-mssql-instance-output:
+      DATABASE_ADDRESS: "rds_instance_address"
+      DATABASE_USERNAME: "database_username"
+      DATABASE_PASSWORD: "database_password"
+    config:
+      RABBIT_USER: "RABBIT_USER"
+      RABBIT_PASS: "RABBIT_PASS"
+      Sentry__Dsn: "SentryDsn"
+
+  env:
+    ConnectionStrings__CatsDb: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
+    ConnectionStrings__rabbit: "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
+    Sentry__Release: "0.0.0"
+    AppConfigurationSettings__Version: "0.0.0"
+
+# ---------------------------------------------------------------------------
+# Ephemeral in-cluster dependencies (no persistence)
+# ---------------------------------------------------------------------------
+rabbitmq:
+  enabled: true
+  # rabbitmq:4.3-management-alpine
+  image: "rabbitmq:4.3-management-alpine@sha256:1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3"
+  resources: {}
+
+redis:
+  enabled: true
+  # redis:7.4-alpine
+  image: "redis:7.4-alpine@sha256:b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7"
+  resources: {}
+
+# ---------------------------------------------------------------------------
+# Database lifecycle Jobs (run as pre-upgrade Helm hooks)
+# ---------------------------------------------------------------------------
+migrator:
+  enabled: true
+  image:
+    repository: example.dkr.ecr.eu-west-2.amazonaws.com/cfocats
+    # migrator-<sha>, supplied by CI via --set.
+    tag: latest
+  backoffLimit: 3
+  resources: {}
+
+seeder:
+  enabled: true
+  image:
+    repository: example.dkr.ecr.eu-west-2.amazonaws.com/cfocats
+    # seeder-<sha>, supplied by CI via --set.
+    tag: latest
+  backoffLimit: 3
+  resources: {}
+
+# ---------------------------------------------------------------------------
+# Prometheus alerts
+# ---------------------------------------------------------------------------
+generic-prometheus-alerts:
+  targetApplication: cats
+  businessUnit: hmpps
+  alertSeverity: cfo-alerts

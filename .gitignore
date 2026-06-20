@@ -481,3 +481,6 @@ aspire-output/
 
 # ls cache files for C# develop extension
 *csproj.lscache
+
+# Helm chart dependencies (fetched via `helm dependency build`)
+helm_deploy/*/charts/

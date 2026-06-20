@@ -1,0 +1,34 @@
+# Production overrides.
+# NOTE: confirm the production namespace / hostname before first deploy.
+dotnetEnvironment: Production
+
+app:
+  replicaCount: 4
+  ingress:
+    host: cfocats-production.live.cloud-platform.service.justice.gov.uk
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+  env:
+    DOTNET_ENVIRONMENT: "Production"
+    Sentry__Environment: "Production-CloudPlatform"
+
+worker:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  env:
+    DOTNET_ENVIRONMENT: "Production"
+    Sentry__Environment: "Production-CloudPlatform"
+
+generic-prometheus-alerts:
+  alertSeverity: cfo-alerts
