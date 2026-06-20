@@ -23,7 +23,6 @@ flags — so there are no per-mode values files:
 | Worker (Quartz jobs)          | `generic-service` dependency, alias `worker`      |
 | RabbitMQ (ephemeral)          | local template `templates/rabbitmq.yaml`          |
 | Redis (ephemeral backplane)   | local template `templates/redis.yaml`             |
-| Prometheus alerts             | `generic-prometheus-alerts` dependency (off by default) |
 
 The web tier reaches the worker at `http://cats-worker:8080` and the in-cluster broker/cache
 at `rabbitmq-service:5672` / `redis-service:6379`.
@@ -44,10 +43,12 @@ never rolled out.
 > RabbitMQ and Redis are **ephemeral** (no persistence): RabbitMQ carries only the
 > transient Rebus message flow and Redis is purely a SignalR backplane / Fusion cache.
 
-> **Prometheus alerts are disabled by default** (`generic-prometheus-alerts.enabled: false`).
-> The rules only reach a human once an Alertmanager receiver is configured for the
-> `alertSeverity` (a separate `cloud-platform-environments` change). To turn them on,
-> set `generic-prometheus-alerts.enabled: true` in the relevant `values-<env>.yaml`.
+> **Prometheus alerts are commented out** for now. The `generic-prometheus-alerts`
+> dependency (Chart.yaml) and its values blocks (`values.yaml` + each `values-<env>.yaml`)
+> are left in place but commented, because the rules only reach a human once an Alertmanager
+> receiver is configured for the `alertSeverity` (a separate `cloud-platform-environments`
+> change). To re-enable: uncomment those blocks and run
+> `helm dependency update ./helm_deploy/cats` to refresh `Chart.lock`.
 
 ## Layout
 

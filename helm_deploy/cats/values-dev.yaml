@@ -14,5 +14,6 @@ worker:
     DOTNET_ENVIRONMENT: "Development"
     Sentry__Environment: "Development-CloudPlatform"
 
-generic-prometheus-alerts:
-  alertSeverity: cfo-alerts-nonprod
+# todo: enable prometheus alerts
+# generic-prometheus-alerts:
+#   alertSeverity: cfo-alerts-nonprod

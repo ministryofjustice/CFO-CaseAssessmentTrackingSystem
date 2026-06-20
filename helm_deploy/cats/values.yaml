@@ -198,13 +198,8 @@ seeder:
     tag: ""         # set by CI via --set (seeder-<sha>)
   backoffLimit: 3
 
-# ---------------------------------------------------------------------------
-# Prometheus alerts — disabled by default; rules only reach a human once an
-# Alertmanager receiver exists for alertSeverity (a separate cloud-platform
-# change). Set enabled: true per environment to turn on.
-# ---------------------------------------------------------------------------
-generic-prometheus-alerts:
-  enabled: false
-  targetApplication: cats
-  businessUnit: hmpps
-  alertSeverity: cfo-alerts
+# todo: enable prometheus alerts
+# generic-prometheus-alerts:
+#   targetApplication: cats
+#   businessUnit: hmpps
+#   alertSeverity: cfo-alerts

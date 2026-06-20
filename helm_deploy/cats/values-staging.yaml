@@ -15,5 +15,6 @@ worker:
     DOTNET_ENVIRONMENT: "Staging"
     Sentry__Environment: "Staging-CloudPlatform"
 
-generic-prometheus-alerts:
-  alertSeverity: cfo-alerts-nonprod
+# todo: enable prometheus alerts
+# generic-prometheus-alerts:
+#   alertSeverity: cfo-alerts-nonprod
