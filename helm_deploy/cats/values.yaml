@@ -134,8 +134,11 @@ worker:
     enabled: false
 
   # Recreate (not RollingUpdate) so a new worker pod never overlaps the old one.
+  # rollingUpdate must be nulled: it deep-merges from the generic-service default and
+  # is forbidden by Kubernetes when type is Recreate.
   strategy:
     type: Recreate
+    rollingUpdate: null
 
   image:
     repository: example.dkr.ecr.eu-west-2.amazonaws.com/cfocats
