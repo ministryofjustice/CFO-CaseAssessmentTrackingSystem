@@ -246,9 +246,11 @@ seeder:
   resources: {}
 
 # ---------------------------------------------------------------------------
-# Prometheus alerts
-# ---------------------------------------------------------------------------
+# Prometheus alerts. Disabled by default: the rules only reach a human once an
+# Alertmanager receiver is configured for the alertSeverity below (a separate
+# cloud-platform-environments change). Set enabled: true per environment to turn on.
 generic-prometheus-alerts:
+  enabled: false
   targetApplication: cats
   businessUnit: hmpps
   alertSeverity: cfo-alerts

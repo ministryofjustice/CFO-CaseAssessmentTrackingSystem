@@ -14,7 +14,7 @@ so there is no `envsubst` or `kubectl apply` of raw manifests in the pipeline.
 | Redis (ephemeral backplane)   | local template `templates/redis.yaml`             |
 | DB migrator (run-once)        | `templates/migrator-job.yaml` — pre-upgrade hook  |
 | DB seeder (run-once)          | `templates/seeder-job.yaml` — pre-upgrade hook    |
-| Prometheus alerts             | `generic-prometheus-alerts` dependency            |
+| Prometheus alerts             | `generic-prometheus-alerts` dependency (off by default) |
 
 The migrator (hook-weight `-5`) and seeder (hook-weight `0`) run as **`pre-install`/
 `pre-upgrade` Helm hooks**: Helm runs them in weight order and waits for each to succeed
@@ -24,6 +24,11 @@ the worker at `http://cats-worker:8080` and the in-cluster broker/cache at
 
 > RabbitMQ and Redis are **ephemeral** (no persistence): RabbitMQ carries only the
 > transient Rebus message flow and Redis is purely a SignalR backplane / Fusion cache.
+
+> **Prometheus alerts are disabled by default** (`generic-prometheus-alerts.enabled: false`).
+> The rules only reach a human once an Alertmanager receiver is configured for the
+> `alertSeverity` (a separate `cloud-platform-environments` change). To turn them on,
+> set `generic-prometheus-alerts.enabled: true` in the relevant `values-<env>.yaml`.
 
 ## Layout
 
