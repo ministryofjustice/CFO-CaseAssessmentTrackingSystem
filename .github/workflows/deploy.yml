@@ -121,8 +121,7 @@ jobs:
           helm upgrade --install cats-migrate ./helm_deploy/cats \
             --namespace "${KUBE_NAMESPACE}" \
             --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
-            --set application.enabled=false \
-            --set job=migrate \
+            --set migrator.enabled=true \
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set migrator.image.tag="migrator-${{ github.sha }}" \
@@ -138,8 +137,7 @@ jobs:
           helm upgrade --install cats-seed ./helm_deploy/cats \
             --namespace "${KUBE_NAMESPACE}" \
             --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
-            --set application.enabled=false \
-            --set job=seed \
+            --set seeder.enabled=true \
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set seeder.image.tag="seeder-${{ github.sha }}" \
@@ -157,6 +155,10 @@ jobs:
           helm upgrade --install cats ./helm_deploy/cats \
             --namespace "${KUBE_NAMESPACE}" \
             --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set app.enabled=true \
+            --set worker.enabled=true \
+            --set rabbitmq.enabled=true \
+            --set redis.enabled=true \
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set app.serviceAccountName="${KUBE_NAMESPACE}" \
             --set app.image.repository="${IMAGE_REPOSITORY}" \

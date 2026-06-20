@@ -5,15 +5,15 @@ Platform from **one chart**. There is one templating mechanism at the deploy lay
 so there is no `envsubst` or `kubectl apply` of raw manifests in the pipeline.
 
 The CI pipeline installs **three releases from this single chart**, run in order so each
-stage has isolated logs and its own timeout. Which slice of the chart renders is chosen by
-two `--set` selectors — `application.enabled` (the long-running stack) and `job` (the one-off
-Job to run) — so there are no per-mode values files:
+stage has isolated logs and its own timeout. Every workload is **off by default** and each
+release opts in to exactly the components it needs via per-component `--set X.enabled=true`
+flags — so there are no per-mode values files:
 
-| Release        | Contains                                   | Selectors                                  |
-|----------------|--------------------------------------------|--------------------------------------------|
-| `cats-migrate` | DB migrator Job                            | `application.enabled=false`, `job=migrate` |
-| `cats-seed`    | DB seeder Job                              | `application.enabled=false`, `job=seed`    |
-| `cats`         | web tier, worker, ephemeral RabbitMQ/Redis | *(defaults: `application.enabled=true`, `job=""`)* |
+| Release        | Contains                                   | Enabled components                                       |
+|----------------|--------------------------------------------|----------------------------------------------------------|
+| `cats-migrate` | DB migrator Job                            | `migrator.enabled=true`                                  |
+| `cats-seed`    | DB seeder Job                              | `seeder.enabled=true`                                    |
+| `cats`         | web tier, worker, ephemeral RabbitMQ/Redis | `app.enabled`, `worker.enabled`, `rabbitmq.enabled`, `redis.enabled` = `true` |
 
 ## What the `cats` release contains
 
@@ -30,14 +30,15 @@ at `rabbitmq-service:5672` / `redis-service:6379`.
 
 ## Migrator / seeder Jobs
 
-The migrator and seeder live in this same chart but render **only when selected**
-(`--set job=migrate` / `--set job=seed`); the default `job=""` renders neither. The pipeline
-runs one at a time — with `--set application.enabled=false` so the app, worker and ephemeral
-deps are skipped — installing each as its own release **before** the `cats` application
-release. Each Job is named per release revision (`cats-migrator-<rev>`), so every deploy
-runs a fresh Job — Job pod templates are immutable, so a stable name could not be re-applied
-— and `helm upgrade --wait` blocks until it completes. A failed migration therefore fails
-its own step (with the Job left in place for log inspection) and the app is never rolled out.
+The migrator and seeder live in this same chart but render **only when enabled**
+(`--set migrator.enabled=true` / `--set seeder.enabled=true`); by default every component is
+off. The pipeline runs one at a time — enabling only that Job, so the app, worker and
+ephemeral deps are skipped — installing each as its own release **before** the `cats`
+application release. Each Job is named per release revision (`cats-migrator-<rev>`), so every
+deploy runs a fresh Job — Job pod templates are immutable, so a stable name could not be
+re-applied — and `helm upgrade --wait` blocks until it completes. A failed migration
+therefore fails its own step (with the Job left in place for log inspection) and the app is
+never rolled out.
 
 > RabbitMQ and Redis are **ephemeral** (no persistence): RabbitMQ carries only the
 > transient Rebus message flow and Redis is purely a SignalR backplane / Fusion cache.
@@ -80,7 +81,7 @@ helm dependency build ./helm_deploy/cats
 helm upgrade --install cats-migrate ./helm_deploy/cats \
   --namespace "$KUBE_NAMESPACE" \
   --values ./helm_deploy/cats/values-$ENV.yaml \
-  --set application.enabled=false --set job=migrate \
+  --set migrator.enabled=true \
   --set serviceAccountName="$KUBE_NAMESPACE" \
   --set migrator.image.repository="$REGISTRY/$ECR_REPOSITORY" \
   --set migrator.image.tag="migrator-$SHA" \
@@ -90,7 +91,7 @@ helm upgrade --install cats-migrate ./helm_deploy/cats \
 helm upgrade --install cats-seed ./helm_deploy/cats \
   --namespace "$KUBE_NAMESPACE" \
   --values ./helm_deploy/cats/values-$ENV.yaml \
-  --set application.enabled=false --set job=seed \
+  --set seeder.enabled=true \
   --set serviceAccountName="$KUBE_NAMESPACE" \
   --set seeder.image.repository="$REGISTRY/$ECR_REPOSITORY" \
   --set seeder.image.tag="seeder-$SHA" \
@@ -100,6 +101,8 @@ helm upgrade --install cats-seed ./helm_deploy/cats \
 helm upgrade --install cats ./helm_deploy/cats \
   --namespace "$KUBE_NAMESPACE" \
   --values ./helm_deploy/cats/values-$ENV.yaml \
+  --set app.enabled=true --set worker.enabled=true \
+  --set rabbitmq.enabled=true --set redis.enabled=true \
   --set serviceAccountName="$KUBE_NAMESPACE" \
   --set app.serviceAccountName="$KUBE_NAMESPACE" \
   --set app.image.repository="$REGISTRY/$ECR_REPOSITORY" \
@@ -121,12 +124,14 @@ helm dependency build ./helm_deploy/cats
 helm lint ./helm_deploy/cats -f ./helm_deploy/cats/values-dev.yaml
 # app release
 helm template cats ./helm_deploy/cats \
-  --namespace cfocats-dev --values ./helm_deploy/cats/values-dev.yaml
+  --namespace cfocats-dev --values ./helm_deploy/cats/values-dev.yaml \
+  --set app.enabled=true --set worker.enabled=true \
+  --set rabbitmq.enabled=true --set redis.enabled=true
 # migrate / seed releases
 helm template cats-migrate ./helm_deploy/cats --namespace cfocats-dev \
-  -f ./helm_deploy/cats/values-dev.yaml --set application.enabled=false --set job=migrate
+  -f ./helm_deploy/cats/values-dev.yaml --set migrator.enabled=true
 helm template cats-seed ./helm_deploy/cats --namespace cfocats-dev \
-  -f ./helm_deploy/cats/values-dev.yaml --set application.enabled=false --set job=seed
+  -f ./helm_deploy/cats/values-dev.yaml --set seeder.enabled=true
 ```
 
 ## First-time migration from the previous (kubectl) deploy

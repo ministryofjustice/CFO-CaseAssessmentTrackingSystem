@@ -42,6 +42,10 @@ jobs:
             helm template cats ./helm_deploy/cats \
               --namespace "cfocats-$env" \
               --values ./helm_deploy/cats/values-$env.yaml \
+              --set app.enabled=true \
+              --set worker.enabled=true \
+              --set rabbitmq.enabled=true \
+              --set redis.enabled=true \
               --set serviceAccountName="cfocats-$env" \
               --set app.serviceAccountName="cfocats-$env" \
               --set app.image.repository="example/cfocats" \
@@ -56,8 +60,7 @@ jobs:
             helm template cats-migrate ./helm_deploy/cats \
               --namespace "cfocats-$env" \
               --values ./helm_deploy/cats/values-$env.yaml \
-              --set application.enabled=false \
-              --set job=migrate \
+              --set migrator.enabled=true \
               --set serviceAccountName="cfocats-$env" \
               --set migrator.image.repository="example/cfocats" \
               --set migrator.image.tag="migrator-validate" \
@@ -68,8 +71,7 @@ jobs:
             helm template cats-seed ./helm_deploy/cats \
               --namespace "cfocats-$env" \
               --values ./helm_deploy/cats/values-$env.yaml \
-              --set application.enabled=false \
-              --set job=seed \
+              --set seeder.enabled=true \
               --set serviceAccountName="cfocats-$env" \
               --set seeder.image.repository="example/cfocats" \
               --set seeder.image.tag="seeder-validate" \

@@ -1,4 +1,4 @@
-{{- if eq .Values.job "seed" }}
+{{- if .Values.seeder.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:

@@ -1,13 +1,13 @@
 serviceAccountName: ""
 
 # ---------------------------------------------------------------------------
-# Deploy-mode selectors (set by CI via --set; see README)
+# Component toggles — every workload is off by default and each release opts in
+# via --set (see README). The shared values-<env>.yaml files are used by all
+# three releases, so enabling happens per release in CI, not in those files:
+#   app deploy : --set app.enabled=true worker.enabled=true rabbitmq.enabled=true redis.enabled=true
+#   migrate    : --set migrator.enabled=true
+#   seed       : --set seeder.enabled=true
 # ---------------------------------------------------------------------------
-#   application.enabled — render the application stack (web + worker + rabbitmq/redis)
-#   job                 — "migrate" or "seed" renders that one-off Job; "" renders none
-application:
-  enabled: true
-job: ""
 
 connectionStrings:
   catsDb: &catsDb "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
@@ -15,6 +15,7 @@ connectionStrings:
   redis: &redis "redis-service:6379"
 
 app:
+  enabled: false
   nameOverride: cats
   fullnameOverride: cats
 
@@ -102,6 +103,7 @@ app:
 # Background worker
 # ---------------------------------------------------------------------------
 worker:
+  enabled: false
   nameOverride: cats-worker
   fullnameOverride: cats-worker
 
@@ -175,18 +177,22 @@ worker:
     AppConfigurationSettings__Version: "0.0.0"
 
 rabbitmq:
+  enabled: false
   image: "rabbitmq:4.3-management-alpine@sha256:1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3"
 
 redis:
+  enabled: false
   image: "redis:7.4-alpine@sha256:b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7"
 
 migrator:
+  enabled: false
   image:
     repository: ""  # set by CI via --set
     tag: ""         # set by CI via --set (migrator-<sha>)
   backoffLimit: 3
 
 seeder:
+  enabled: false
   image:
     repository: ""  # set by CI via --set
     tag: ""         # set by CI via --set (seeder-<sha>)
