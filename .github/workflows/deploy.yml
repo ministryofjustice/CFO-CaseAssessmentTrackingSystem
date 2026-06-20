@@ -125,7 +125,7 @@ jobs:
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set migrator.image.tag="migrator-${{ github.sha }}" \
-            --wait --timeout 5m
+            --wait --wait-for-jobs --timeout 5m
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -141,7 +141,7 @@ jobs:
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set seeder.image.tag="seeder-${{ github.sha }}" \
-            --wait --timeout 5m
+            --wait --wait-for-jobs --timeout 5m
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
