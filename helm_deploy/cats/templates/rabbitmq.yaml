@@ -26,8 +26,24 @@ spec:
             - containerPort: 5672
             - containerPort: 15672
           securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
+            {{- include "cats.containerSecurityContext" . | nindent 12 }}
+          startupProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:

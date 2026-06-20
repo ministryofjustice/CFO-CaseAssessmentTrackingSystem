@@ -33,8 +33,24 @@ spec:
           ports:
             - containerPort: 6379
           securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
+            {{- include "cats.containerSecurityContext" . | nindent 12 }}
+          startupProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           {{- with .Values.redis.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

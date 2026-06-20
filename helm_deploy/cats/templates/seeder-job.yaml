@@ -25,10 +25,7 @@ spec:
         - name: seeder
           image: "{{ .Values.seeder.image.repository }}:{{ .Values.seeder.image.tag }}"
           securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "cats.containerSecurityContext" . | nindent 12 }}
           env:
             {{- include "cats.databaseEnv" . | nindent 12 }}
             - name: DOTNET_ENVIRONMENT

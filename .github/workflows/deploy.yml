@@ -137,7 +137,7 @@ jobs:
             --set migrator.image.tag="migrator-${{ github.sha }}" \
             --set seeder.image.repository="${IMAGE_REPOSITORY}" \
             --set seeder.image.tag="seeder-${{ github.sha }}" \
-            --wait --timeout 10m
+            --atomic --wait --timeout 10m
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}

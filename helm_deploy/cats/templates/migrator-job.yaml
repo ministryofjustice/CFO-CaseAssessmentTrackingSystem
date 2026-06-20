@@ -25,10 +25,7 @@ spec:
         - name: migrator
           image: "{{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag }}"
           securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "cats.containerSecurityContext" . | nindent 12 }}
           env:
             {{- include "cats.databaseEnv" . | nindent 12 }}
           {{- with .Values.migrator.resources }}

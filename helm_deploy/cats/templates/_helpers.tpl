@@ -18,6 +18,18 @@ runAsNonRoot: true
 {{- end -}}
 
 {{/*
+Restricted container-level security context shared by the local workloads. Matches the
+generic-service (app/worker) posture and the Cloud Platform Gatekeeper defaults.
+*/}}
+{{- define "cats.containerSecurityContext" -}}
+allowPrivilegeEscalation: false
+privileged: false
+capabilities:
+  drop:
+    - ALL
+{{- end -}}
+
+{{/*
 Environment variables that expose the MSSQL connection details from the
 rds-mssql-instance-output namespace secret, plus the composed connection string.
 Used by the migrator and seeder Jobs.
@@ -39,5 +51,5 @@ Used by the migrator and seeder Jobs.
       name: rds-mssql-instance-output
       key: database_password
 - name: ConnectionStrings__CatsDb
-  value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
+  value: {{ .Values.connectionStrings.catsDb | quote }}
 {{- end -}}
