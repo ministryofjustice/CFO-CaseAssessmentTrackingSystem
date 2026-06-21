@@ -28,6 +28,7 @@ worker:
   env:
     DOTNET_ENVIRONMENT: "Production"
     Sentry__Environment: "Production-CloudPlatform"
+    Features__PresenceHub__RelayUserPresenceNotifications: "false"
 
 # todo: enable prometheus alerts
 # generic-prometheus-alerts:

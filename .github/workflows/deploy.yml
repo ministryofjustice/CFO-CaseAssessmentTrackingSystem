@@ -125,7 +125,8 @@ jobs:
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set migrator.image.tag="migrator-${{ github.sha }}" \
-            --wait --wait-for-jobs --timeout 5m
+            --timeout 5m
+          kubectl -n "${KUBE_NAMESPACE}" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=migrator
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -141,7 +142,8 @@ jobs:
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set seeder.image.tag="seeder-${{ github.sha }}" \
-            --wait --wait-for-jobs --timeout 5m
+            --timeout 5m
+          kubectl -n "${KUBE_NAMESPACE}" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=seeder
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}

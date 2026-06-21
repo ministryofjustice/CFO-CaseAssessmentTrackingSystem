@@ -209,14 +209,12 @@ migrator:
   image:
     repository: ""  # set by CI via --set
     tag: ""         # set by CI via --set (migrator-<sha>)
-  backoffLimit: 3
 
 seeder:
   enabled: false
   image:
     repository: ""  # set by CI via --set
     tag: ""         # set by CI via --set (seeder-<sha>)
-  backoffLimit: 3
 
 # todo: enable prometheus alerts
 # generic-prometheus-alerts:

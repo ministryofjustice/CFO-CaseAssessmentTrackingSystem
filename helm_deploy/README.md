@@ -27,18 +27,29 @@ flags — so there are no per-mode values files:
 The web tier reaches the worker at `http://cats-worker:8080` and the in-cluster broker/cache
 at `rabbitmq-service:5672` / `redis-service:6379`.
 
-## Migrator / seeder Jobs
+## Migrator / seeder Pods
 
 The migrator and seeder live in this same chart but render **only when enabled**
 (`--set migrator.enabled=true` / `--set seeder.enabled=true`); by default every component is
-off. The pipeline runs one at a time — enabling only that Job, so the app, worker and
+off. The pipeline runs one at a time — enabling only that component, so the app, worker and
 ephemeral deps are skipped — installing each as its own release **before** the `cats`
-application release. Each Job is named per release revision (`cats-migrator-<rev>`), so every
-deploy runs a fresh Job — Job pod templates are immutable, so a stable name could not be
-re-applied — and `helm upgrade --wait --wait-for-jobs` blocks until it completes (`--wait`
-alone does **not** wait for Jobs, only for Pods/Deployments). A failed migration
-therefore fails its own step (with the Job left in place for log inspection) and the app is
-never rolled out.
+application release. Each is named per release revision (`cats-migrator-<rev>`), so every
+deploy runs a fresh Pod (a Pod spec is immutable, so a stable name could not be re-applied)
+and Helm prunes the previous revision's Pod on upgrade. `restartPolicy: OnFailure` retries a
+transient failure in place.
+
+They are plain **Pods**, not Jobs, deliberately. Measured on Cloud Platform, the migrate/seed
+*work* takes 2–15s, but a **Job** object takes a further **~70–90s** to be marked `Complete`
+after its pod has already reached `Succeeded` — control-plane (kube-controller-manager)
+latency that no chart/Job setting can influence. A bare Pod's `Succeeded` phase is set by the
+kubelet ~1s after the container exits, so the pipeline waits on that instead.
+
+Because they run to completion, the pipeline does **not** use `helm --wait` (Helm judges a Pod
+ready via its `Ready` condition, which is never true for a `Succeeded` pod, so `--wait` would
+hang until timeout even on success). Each step runs `helm upgrade` (no wait) then
+`kubectl wait --for=jsonpath='{.status.phase}'=Succeeded -l app=<migrator|seeder>`. A failed
+migration therefore fails its own step (Pod left in place, with `describe`/`logs` dumped for
+inspection) and the app is never rolled out.
 
 > RabbitMQ and Redis are **ephemeral** (no persistence): RabbitMQ carries only the
 > transient Rebus message flow and Redis is purely a SignalR backplane / Fusion cache.
@@ -96,8 +107,8 @@ helm_deploy/cats/
     _helpers.tpl
     rabbitmq.yaml
     redis.yaml
-    migrator-job.yaml
-    seeder-job.yaml
+    migrator-pod.yaml
+    seeder-pod.yaml
 ```
 
 `infra/` now contains only `port-forward-deployment.yml`, a manual developer convenience
@@ -120,7 +131,8 @@ helm upgrade --install cats-migrate ./helm_deploy/cats \
   --set serviceAccountName="$KUBE_NAMESPACE" \
   --set migrator.image.repository="$REGISTRY/$ECR_REPOSITORY" \
   --set migrator.image.tag="migrator-$SHA" \
-  --wait --wait-for-jobs --timeout 5m
+  --timeout 5m
+kubectl -n "$KUBE_NAMESPACE" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=migrator
 
 # 2. Seed
 helm upgrade --install cats-seed ./helm_deploy/cats \
@@ -130,7 +142,8 @@ helm upgrade --install cats-seed ./helm_deploy/cats \
   --set serviceAccountName="$KUBE_NAMESPACE" \
   --set seeder.image.repository="$REGISTRY/$ECR_REPOSITORY" \
   --set seeder.image.tag="seeder-$SHA" \
-  --wait --wait-for-jobs --timeout 5m
+  --timeout 5m
+kubectl -n "$KUBE_NAMESPACE" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=seeder
 
 # 3. Deploy the application
 helm upgrade --install cats ./helm_deploy/cats \
