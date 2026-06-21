@@ -59,7 +59,7 @@ inspection) and the app is never rolled out.
 > are left in place but commented, because the rules only reach a human once an Alertmanager
 > receiver is configured for the `alertSeverity` (a separate `cloud-platform-environments`
 > change). To re-enable: uncomment those blocks and run
-> `helm dependency update ./helm_deploy/cats` to refresh `Chart.lock`.
+> `helm dependency update ./helm_deploy/cats` to fetch the new dependency.
 
 ## ModSecurity WAF
 
@@ -121,7 +121,7 @@ the four images share one ECR repository but use different tag prefixes
 (`cats-`, `worker-`, `migrator-`, `seeder-`). The pipeline runs three releases in order:
 
 ```bash
-helm dependency build ./helm_deploy/cats
+helm dependency update ./helm_deploy/cats
 
 # 1. Migrate
 helm upgrade --install cats-migrate ./helm_deploy/cats \
@@ -168,7 +168,7 @@ helm upgrade --install cats ./helm_deploy/cats \
 ## Local validation
 
 ```bash
-helm dependency build ./helm_deploy/cats
+helm dependency update ./helm_deploy/cats
 helm lint ./helm_deploy/cats -f ./helm_deploy/cats/values-dev.yaml
 # app release
 helm template cats ./helm_deploy/cats \

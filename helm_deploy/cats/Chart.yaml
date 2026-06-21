@@ -27,7 +27,7 @@ dependencies:
 
   # todo: enable prometheus alerts
   # https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
-  # uncomment and `helm dependency update ./helm_deploy/cats` to refresh Chart.lock.
+  # uncomment and re-run `helm dependency update ./helm_deploy/cats` to fetch it.
   # - name: generic-prometheus-alerts
   #   version: "1.17.1"
   #   repository: https://ministryofjustice.github.io/hmpps-helm-charts

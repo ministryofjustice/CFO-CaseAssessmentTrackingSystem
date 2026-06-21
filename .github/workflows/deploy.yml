@@ -113,7 +113,7 @@ jobs:
         run: |
           set -euo pipefail
           helm repo add hmpps-helm-charts https://ministryofjustice.github.io/hmpps-helm-charts
-          helm dependency build ./helm_deploy/cats
+          helm dependency update ./helm_deploy/cats
 
       - name: Run database migrations
         run: |
