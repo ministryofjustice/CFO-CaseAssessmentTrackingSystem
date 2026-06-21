@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -14,7 +15,7 @@ public static class ArchiveCase
         [Description("Justification for Archive")] public string? Justification { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -23,8 +24,20 @@ public static class ArchiveCase
                 return Result.Failure("Invalid archive reason");
             }
 
-            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.ArchiveReason.Name, request.Justification);
+            var participant = await unitOfWork.DbContext.Participants
+                .Include(p => p.Owner)
+                .FirstOrDefaultAsync(p => p.Id == request.ParticipantId, cancellationToken);
+
+            if (participant is null)
+            {
+                return Result.Failure("Participant does not exist");
+            }
+
+            participant.Archive(
+                currentUserService.UserId,
+                currentUserService.TenantId,
+                request.ArchiveReason.Name,
+                request.Justification);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
