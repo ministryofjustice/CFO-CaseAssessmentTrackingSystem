@@ -50,6 +50,39 @@ never rolled out.
 > change). To re-enable: uncomment those blocks and run
 > `helm dependency update ./helm_deploy/cats` to refresh `Chart.lock`.
 
+## ModSecurity WAF
+
+The web tier's ingress runs behind Cloud Platform's ModSecurity ingress controllers
+(OWASP Core Rule Set, anomaly scoring). Config lives entirely in values — the
+`generic-service` subchart renders the annotations from `app.ingress`:
+
+| Setting | Where | Value |
+| --- | --- | --- |
+| `className` | `values.yaml` / `values-production.yaml` | `modsec-non-prod` (dev/staging), `modsec` (production) |
+| `modsecurity_enabled` | `values.yaml` | `true` |
+| `modsecurity_github_team` | `values.yaml` | `hmpps-creating-future-opportunities-devs` (controls who can read the logs) |
+| `modsecurity_mode` | `values.yaml` (+ overlays) | `DetectionOnly` (current) → `On` (block) |
+
+`modsecurity_mode` is a local knob fed into the snippet's `SecRuleEngine`. The snippet
+also pins Paranoia Level 1 and tags every event with the GitHub team + namespace so the
+logs are reachable in OpenSearch (`live_kubernetes_ingress*`, search `ModSecurity`).
+
+> **Class default is non-prod by design.** The subchart hardcodes the *production*
+> `modsec` class whenever `modsecurity_enabled` is true and no `className` is set, so the
+> base `values.yaml` pins `modsec-non-prod` and only `values-production.yaml` overrides it
+> to `modsec`.
+
+### Phased rollout (monitor → block)
+
+Everything currently runs in **`DetectionOnly`** (logs, never blocks). To promote:
+
+1. Exercise CATS in dev/staging — uploads, long forms, SignalR/WebSocket sessions.
+2. Review WAF hits in OpenSearch; add `SecRuleRemoveById <id>` lines to the snippet for
+   any false positives.
+3. Flip dev/staging to blocking: set `modsecurity_mode: On` in `values-dev.yaml` /
+   `values-staging.yaml`.
+4. Once staging is clean, set `modsecurity_mode: On` in `values-production.yaml`.
+
 ## Layout
 
 ```
