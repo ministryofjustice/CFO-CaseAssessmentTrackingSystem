@@ -146,6 +146,17 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
+    public Participant Archive(string? currentUserId, string? currentUserTenantId, string? reason, string? additionalInformation)
+    {
+        CheckRule(new ParticipantMustBeArchivableByUser(
+            currentUserId,
+            currentUserTenantId,
+            OwnerId,
+            Owner?.TenantId));
+
+        return TransitionTo(EnrolmentStatus.ArchivedStatus, reason, additionalInformation);
+    }
+
     /// <summary>
     /// Assigns the participant to alternate Enrolment Location
     /// </summary>

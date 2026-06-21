@@ -31,8 +31,10 @@ public static class GetParticipantSummary
                         {
                             Id = p.Id,
                             TenantName = p.Owner.TenantName,
+                            OwnerTenantId = p.Owner.TenantId,
                             ParticipantName = $"{p.FirstName} {p.LastName}",
                             OwnerName = p.Owner.DisplayName,
+                            OwnerId = p.OwnerId,
                             LocationType = p.CurrentLocation.LocationType,
                             Location = p.CurrentLocation.Name,
                             EnrolmentLocation = p.EnrolmentLocation.Name,
