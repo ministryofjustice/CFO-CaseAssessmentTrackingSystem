@@ -30,7 +30,7 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork, ILogg
             if (previous is null)
             {
                 var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/participants/?listView=Approved");
+                n.SetLink($"/pages/workspace/participants/?listView=Approved");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
            
