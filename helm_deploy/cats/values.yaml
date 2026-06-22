@@ -43,20 +43,9 @@ app:
     # WAF engine: "DetectionOnly" (log only) or "On" (block). Flip per-env in overlays once tuned.
     modsecurity_mode: DetectionOnly
     modsecurity_snippet: |
-      SecRuleEngine {{ .Values.ingress.modsecurity_mode }}
       SecAuditEngine On
-      SecAuditLog /var/log/nginx/error.log
-      SecAuditLogType Serial
+      SecRuleEngine {{ .Values.ingress.modsecurity_mode }}
       SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-creating-future-opportunities-devs,tag:namespace={{ .Release.Namespace }}"
-      SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
-      SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
-      SecAction \
-        "id:900000,\
-         phase:1,\
-         nolog,\
-         pass,\
-         t:none,\
-         setvar:tx.paranoia_level=1"
     annotations:
       nginx.ingress.kubernetes.io/affinity: "cookie"
       nginx.ingress.kubernetes.io/session-cookie-name: "http-cookie"
