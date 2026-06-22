@@ -60,7 +60,7 @@ public partial class BioSummary
 
         if (result.Succeeded)
         {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{result.Data}");
+            Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantSummaryDto.Id}/bio/{result.Data}");
         }
         else
         {
@@ -68,7 +68,7 @@ public partial class BioSummary
         }
     }
 
-    public void ContinueBio() => Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
+    public void ContinueBio() => Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
 
     /// <summary>
     /// If true, indicates we are creating Bio. 

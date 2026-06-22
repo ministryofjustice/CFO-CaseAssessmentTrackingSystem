@@ -7,7 +7,7 @@
 
 @inherits CatsComponentBase
 
-@page "/pages/participants/{Upci}/bio/{BioId:guid}"
+@page "/pages/workspace/participants/{Upci}/bio/{BioId:guid}"
 
 @if (_model != null && string.IsNullOrEmpty(bioWarningMessage))
 {    
@@ -177,7 +177,7 @@ else
 
     private void Cancel()
     {
-        Navigation.NavigateTo($"/pages/participants/{Upci}");        
+        Navigation.NavigateTo($"/pages/workspace/participants/{Upci}");        
     }
 
     private async Task<bool> CheckParticipantActive()
