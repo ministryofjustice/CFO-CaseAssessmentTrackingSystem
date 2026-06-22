@@ -1,0 +1,77 @@
+@using Cfo.Cats.Server.UI.Hubs
+@using Microsoft.Extensions.DependencyInjection
+@inject IServiceProvider ServiceProvider
+@inject ISnackbar Snackbar
+@inject IConfiguration Configuration
+@implements IAsyncDisposable
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    private string? _currentUserId;
+    private PresenceHubClient? _presenceClient;
+    private bool _relayNotifications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // The presence hub (and its client) is only registered when the feature is enabled.
+        // Resolve the client optionally so this connector is a no-op when the hub is gated off.
+        if (Configuration.GetValue<bool>("Features:PresenceHub:Enabled") is not true)
+        {
+            return;
+        }
+
+        _presenceClient = ServiceProvider.GetService<PresenceHubClient>();
+        if (_presenceClient is null)
+        {
+            return;
+        }
+
+        if (AuthState is not null)
+        {
+            var state = await AuthState;
+            _currentUserId = state.User.GetUserId();
+        }
+
+        // Relaying notifications requires the hub, so it is only honoured when the hub is enabled.
+        _relayNotifications = Configuration.GetValue<bool>("Features:PresenceHub:RelayUserPresenceNotifications");
+        if (_relayNotifications)
+        {
+            _presenceClient.UserOnline += OnUserOnline;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _presenceClient is not null)
+        {
+            await _presenceClient.StartAsync();
+        }
+    }
+
+    private void OnUserOnline(string userId, string name)
+    {
+        if (string.Equals(userId, _currentUserId, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _ = InvokeAsync(() => Snackbar.Add($"{name} is now online", Severity.Info));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_presenceClient is null)
+        {
+            return;
+        }
+
+        if (_relayNotifications)
+        {
+            _presenceClient.UserOnline -= OnUserOnline;
+        }
+
+        await _presenceClient.DisposeAsync();
+    }
+}

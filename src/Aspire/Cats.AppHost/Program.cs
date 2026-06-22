@@ -11,7 +11,7 @@ var databases = builder.AddCatsDatabases(sql);
 var rabbit = builder.AddMessageBroker();
 
 builder.AddCatsServices(
-    rabbit, 
+    rabbit,
     databases);
 
 builder.Build().Run();
