@@ -27,7 +27,7 @@ public class NotifyUserOnUnassignment(
             heading: "Participant unassigned", 
             details: $"{notification.Item.FullName} ({notification.Item.Id}), who you were previously working with, was unassigned from you.", 
             userId: oldAssignee.Id)
-            .SetLink($"/pages/participants/{notification.Item.Id}");
+            .SetLink($"/pages/workspace/participants/{notification.Item.Id}");
 
         await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
     }
