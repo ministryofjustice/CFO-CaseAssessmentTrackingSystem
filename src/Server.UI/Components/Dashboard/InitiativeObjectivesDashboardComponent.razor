@@ -122,7 +122,7 @@
             <RowTemplate>
                 <MudTd DataLabel="Participant">
                     <MudStack AlignItems="AlignItems.Start" Spacing="0">
-                        <MudLink Href="@($"/pages/participants/{context.ParticipantId}")">
+                        <MudLink Href="@($"/pages/workspace/participants/{context.ParticipantId}")">
                             @context.ParticipantName
                         </MudLink>
                         <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>
