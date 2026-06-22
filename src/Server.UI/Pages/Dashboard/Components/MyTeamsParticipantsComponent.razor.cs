@@ -80,9 +80,9 @@ public partial class MyTeamsParticipantsComponent
     }
 
     private string GetParticipantsUrl(ParticipantListView listView) =>
-        $"/pages/participants?listView={listView.ToString()}";
+        $"/pages/workspace/participants?listView={listView.ToString()}";
 
-    private void GotoParticipants() => Navigation.NavigateTo("/pages/participants");
+    private void GotoParticipants() => Navigation.NavigateTo("/pages/workspace/participants");
 
     public record ChartData(string Description, int Count);
 }
