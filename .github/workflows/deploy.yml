@@ -50,36 +50,27 @@ jobs:
 
       - name: Build and Push Server.UI Container
         run: |
-          dotnet publish src/Server.UI/Server.UI.csproj \
-            --configuration Release \
-            --no-build \
-            /t:PublishContainer \
-            /p:ContainerBaseImage=mcr.microsoft.com/dotnet/aspnet:10.0.9@sha256:f30905fa931d5d33242b1c52ee3b4319e5eb4914821d79d4fde0d59eafdaea66 \
-            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
-            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
-            /p:ContainerImageTag=cats-${{ github.sha }}
+          docker build \
+            -f src/Server.UI/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:cats-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:cats-${{ github.sha }}
 
       - name: Build and Push Worker Container
         run: |
-          dotnet publish src/Worker/Worker.csproj \
-            --configuration Release \
-            --no-build \
-            /t:PublishContainer \
-            /p:ContainerBaseImage=mcr.microsoft.com/dotnet/aspnet:10.0.9@sha256:f30905fa931d5d33242b1c52ee3b4319e5eb4914821d79d4fde0d59eafdaea66 \
-            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
-            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
-            /p:ContainerImageTag=worker-${{ github.sha }}
+          docker build \
+            -f src/Worker/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:worker-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:worker-${{ github.sha }}
 
       - name: Build and Push DatabaseSeeding Container
         run: |
-          dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj \
-            --configuration Release \
-            --no-build \
-            /t:PublishContainer \
-            /p:ContainerBaseImage=mcr.microsoft.com/dotnet/runtime:10.0.9@sha256:23d7a947c6cf4160e37bde9e394c13ab8c725355288850d42e83d31126928d70 \
-            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
-            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
-            /p:ContainerImageTag=seeder-${{ github.sha }}
+          docker build \
+            -f src/DatabaseSeeding/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:seeder-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:seeder-${{ github.sha }}
 
       - name: Build and Push DatabaseMigrator Container
         run: |
