@@ -32,9 +32,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Install dotnet sql package
-        run: dotnet tool install --global microsoft.sqlpackage --version 170.3.93
-
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
