@@ -53,6 +53,16 @@ jobs:
             /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
             /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
             /p:ContainerImageTag=cats-${{ github.sha }}
+
+      - name: Build and Push Worker Container
+        run: |
+          dotnet publish src/Worker/Worker.csproj \
+            --configuration Release \
+            --no-build \
+            /t:PublishContainer \
+            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
+            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
+            /p:ContainerImageTag=worker-${{ github.sha }}
       
       - name: Build and Push DatabaseSeeding Container
         run: |
@@ -103,22 +113,31 @@ jobs:
 
       - name: Run database migration
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete job migrator-job --ignore-not-found=true
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/migrator-job
+          kubectl -n ${KUBE_NAMESPACE} delete pod -l app=migrator --wait=false || true
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-pod.yml
+          if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/migrator-${{ github.sha }}; then
+            echo "Migration pod did not succeed within timeout."
+            kubectl -n ${KUBE_NAMESPACE} describe pod/migrator-${{ github.sha }} || true
+            exit 1
+          fi
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 
       - name: Run database seeding
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete job seeder-job --ignore-not-found=true
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/seeder-job
+          kubectl -n ${KUBE_NAMESPACE} delete pod -l app=seeder --wait=false || true
+          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-pod.yml
+          if ! kubectl -n ${KUBE_NAMESPACE} wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod/seeder-${{ github.sha }}; then
+            echo "Seeder pod did not succeed within timeout."
+            kubectl -n ${KUBE_NAMESPACE} describe pod/seeder-${{ github.sha }} || true
+            exit 1
+          fi
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 
       - name: Deploy to Kubernetes
         run: |
+          rm -f deploy/migrator-pod.yml deploy/seeder-pod.yml
           kubectl -n ${KUBE_NAMESPACE} apply -f deploy/
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}

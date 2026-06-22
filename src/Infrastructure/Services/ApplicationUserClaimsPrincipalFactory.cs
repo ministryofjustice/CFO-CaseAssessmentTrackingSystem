@@ -22,9 +22,17 @@ public class ApplicationUserClaimsPrincipalFactory(
     {
         var cacheKey = GetCacheKey(user.Id);
 
+        // A ClaimsPrincipal cannot be round-tripped through the distributed (Redis)
+        // cache because ClaimsPrincipal/ClaimsIdentity are not JSON-serializable -
+        // deserialization yields a principal with no identities. Keep this entry in
+        // the local memory cache only; cross-node eviction still works via the
+        // backplane when the entry is removed on identity changes.
+        var options = new FusionCacheEntryOptions(TimeSpan.FromHours(8))
+            .SetSkipDistributedCache(true, true);
+
         var principal = await fusionCache.GetOrSetAsync(cacheKey,
             _ => GetPrincipleFromDatabase(user),
-            new FusionCacheEntryOptions(TimeSpan.FromHours(8)));
+            options);
 
         return principal;
     }
