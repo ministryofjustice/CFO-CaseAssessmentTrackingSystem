@@ -13,6 +13,7 @@ Task("Clean")
             Force = true
         };
         CleanDirectories("./src/**/bin/{configuration}", settings);
+        CleanDirectories("./src/**/bin/obj", settings);
         CleanDirectory("./artifacts", settings);
     });
 
