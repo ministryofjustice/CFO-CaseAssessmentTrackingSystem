@@ -94,7 +94,7 @@ public partial class RiskSummary
         
         if (command.ReviewReason.RequiresFurtherInformation)
         {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+            Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
         }
         
         await ReloadParticipant!.Invoke();

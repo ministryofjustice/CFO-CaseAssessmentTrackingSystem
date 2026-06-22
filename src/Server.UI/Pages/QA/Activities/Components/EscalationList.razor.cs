@@ -16,7 +16,7 @@ public partial class EscalationList
   
     private void ViewActivity(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}");
 
-    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}");
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state, CancellationToken cancellationToken)
     {
