@@ -21,7 +21,7 @@ public partial class MyParticipantsComponent
     ];
 
     private string GetParticipantsUrl(ParticipantListView listView) =>
-        $"/pages/participants?listView={listView.ToString()}";
+        $"/pages/workspace/participants?listView={listView.ToString()}";
 
     private ParticipantCountSummaryDto? _participantSteps;
 
@@ -48,5 +48,5 @@ public partial class MyParticipantsComponent
         }
     }
 
-    private void GotoParticipants() => Navigation.NavigateTo("/pages/participants");
+    private void GotoParticipants() => Navigation.NavigateTo("/pages/workspace/participants");
 }

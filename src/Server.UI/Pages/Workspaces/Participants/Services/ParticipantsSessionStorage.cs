@@ -4,7 +4,7 @@ using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 public class ParticipantsSessionStorage(ProtectedSessionStorage protectedSessionStorage, ICurrentUserService currentUserService) : CatsSessionStorage<ParticipantsSessionData>(protectedSessionStorage, currentUserService)
 {

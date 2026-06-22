@@ -307,17 +307,12 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
                 new()
                 {
                     Title = "All",
-                    Href = "/pages/participants",
-                },
-                new()
-                {
-                    Title = "All (Version 2)",
-                    Href = "/pages/participantsV2",
+                    Href = "/pages/workspace/participants",
                 },
                 new()
                 {
                     Title = "Moved Participants",
-                    Href = "/pages/participants/movedparticipants",
+                    Href = "/pages/workspace/participants/movedparticipants",
                 },
             ]
         };
@@ -327,14 +322,14 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             participants.MenuItems.Add(new()
             {
                 Title = "Transfers",
-                Href = "/pages/participants/transfers",
+                Href = "/pages/workspace/participants/transfers",
             });
         }
 
         participants.MenuItems.Add(new()
         {
             Title = "Active PRI's",
-            Href = "/pages/participants/pre-release-inventory",
+            Href = "/pages/workspace/participants/pre-release-inventory",
         });
         return participants;
         
