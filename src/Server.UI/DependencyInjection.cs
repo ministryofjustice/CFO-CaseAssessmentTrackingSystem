@@ -15,12 +15,12 @@ using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
 using Cfo.Cats.Server.UI.Hubs;
 using ApexCharts;
-using Cfo.Cats.Server.UI.Pages.Participants;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 using Cfo.Cats.Server.UI.Pages.QA.Activities;
 using StackExchange.Redis;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Infrastructure.Services.Identity;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI;
 

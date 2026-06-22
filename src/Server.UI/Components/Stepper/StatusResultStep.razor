@@ -42,7 +42,7 @@
     [Parameter, EditorRequired]
     public required string Upci { get; set; }
     
-    private void GotoParticipant() => Navigation.NavigateTo($"/pages/participants/{Upci}");
+    private void GotoParticipant() => Navigation.NavigateTo($"/pages/workspace/participants/{Upci}");
 
     
 
