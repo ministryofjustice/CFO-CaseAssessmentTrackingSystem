@@ -1,10 +1,13 @@
 using ApexCharts;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
 public partial class EnrolmentDashboardComponent
 {
+    private bool _downloading;
 
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
@@ -31,22 +34,22 @@ public partial class EnrolmentDashboardComponent
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
 
-    private ApexCharts.ApexChartOptions<GetEnrolments.LocationDetail> Options => new()
+    private ApexChartOptions<GetEnrolments.LocationDetail> Options => new()
     {
-        Chart = new ApexCharts.Chart
+        Chart = new Chart
         {
             Stacked = true,
         },
-        PlotOptions = new ApexCharts.PlotOptions
+        PlotOptions = new PlotOptions
         {
-            Bar = new ApexCharts.PlotOptionsBar
+            Bar = new PlotOptionsBar
             {
-                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                DataLabels = new PlotOptionsBarDataLabels
                 {
-                    Total = new ApexCharts.BarTotalDataLabels
+                    Total = new BarTotalDataLabels
                     {
                         Enabled = true,
-                        Style = new ApexCharts.BarDataLabelsStyle
+                        Style = new BarDataLabelsStyle
                         {
                             FontWeight = "800",
                             Color = IsDarkMode ? "#FFFFFF" : "#000000",
@@ -63,10 +66,43 @@ public partial class EnrolmentDashboardComponent
                 ForceNiceScale = true
             }
         },
-        Theme = new ApexCharts.Theme
+        Theme = new Theme
         {
-            Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
         }
     };
 
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await Service.Send(new ExportEnrolmentsDashboard.Command()
+            {
+                Request = new ExportEnrolmentsDashboard.EnrolmentsDashboardExportRequest
+                {
+                    StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
+                    EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
+                    TenantId = TenantId,
+                    UserId = UserId
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }

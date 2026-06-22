@@ -1,10 +1,14 @@
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
 public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRecentlyApprovedActivities.ApprovedActivitiesDto>
 {
+    private bool _downloading;
+
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
 
@@ -71,4 +75,38 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
     };
 
     private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await Service.Send(new ExportRecentApprovedActivitiesDashboard.Command()
+            {
+                Request = new ExportRecentApprovedActivitiesDashboard.RecentApprovedActivitiesDashboardExportRequest
+                {
+                    StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
+                    EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
+                    TenantId = TenantId,
+                    UserId = UserId
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }

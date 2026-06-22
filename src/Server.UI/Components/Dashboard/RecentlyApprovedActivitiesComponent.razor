@@ -15,12 +15,20 @@
 
 @if (Data is not null && Data.Details.Any())
 {
-    <MudGrid Spacing="2">
-        <MudItem>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
             <MudChip T="string">Custody (@Data.Custody)</MudChip>
             <MudChip T="string">Community (@Data.Community)</MudChip>
-        </MudItem>
-    </MudGrid>
+        </MudStack>
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          OnClick="OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
     @if (VisualMode)
     {
         <ApexCharts.ApexChart TItem="GetRecentlyApprovedActivities.ActivityDetail" Options="Options" Height="650" Width="@("100%")">

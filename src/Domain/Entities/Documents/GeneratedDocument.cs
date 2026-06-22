@@ -79,4 +79,12 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate CasesPerLocationDashboard = new(nameof(CasesPerLocationDashboard), 1500);
     public static readonly DocumentTemplate PathwayPlanReviewDashboard = new(nameof(PathwayPlanReviewDashboard), 1600);
     public static readonly DocumentTemplate UnassignedCasesDashboard = new(nameof(UnassignedCasesDashboard), 1700);
+    public static readonly DocumentTemplate EnrolmentsDashboard = new(nameof(EnrolmentsDashboard), 1800);
+    public static readonly DocumentTemplate InductionsDashboard = new(nameof(InductionsDashboard), 1900);
+    public static readonly DocumentTemplate SupportAndReferralDashboard = new(nameof(SupportAndReferralDashboard), 2000);
+    public static readonly DocumentTemplate ActivitiesDashboard = new(nameof(ActivitiesDashboard), 2100);
+    public static readonly DocumentTemplate EducationAndTrainingDashboard = new(nameof(EducationAndTrainingDashboard), 2200);
+    public static readonly DocumentTemplate EmploymentDashboard = new(nameof(EmploymentDashboard), 2300);
+    public static readonly DocumentTemplate ReassessmentsDashboard = new(nameof(ReassessmentsDashboard), 2400);
+    public static readonly DocumentTemplate RecentApprovedActivitiesDashboard = new(nameof(RecentApprovedActivitiesDashboard), 2500);
 }

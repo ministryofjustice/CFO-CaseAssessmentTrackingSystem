@@ -1,5 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
 @using ApexCharts
+
 @inherits CatsComponent<GetSupportReferrals.SupportAndReferralDto>
 
 @if (Loading)
@@ -14,12 +15,20 @@
 }
 @if (Data is not null && Data.Details.Any())
 {
-    <MudGrid Spacing="2">
-        <MudItem>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
             <MudChip T="string">Custody (@Data.Custody)</MudChip>
             <MudChip T="string">Community (@Data.Community)</MudChip>
-        </MudItem>
-    </MudGrid>
+        </MudStack>
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="MudBlazor.Size.Small"
+                          OnClick="@OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
     <MudGrid Spacing="2">
         @if (VisualMode)
         {
@@ -29,11 +38,11 @@
                 @if (GetChartData(ConstantString.PreReleaseSupport).Any())
                 {
                     <ApexChart TItem="ChartDataPoint"
-                               Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.PreReleaseSupport, ConstantString.Payable))" Height="335">
+                               Options="@GetChartOptions("#10b981", $"{ConstantString.PreReleaseSupport} - {ConstantString.Payable}")" Height="335">
                         <ApexPointSeries TItem="ChartDataPoint"
                                          Items="@GetChartData(ConstantString.PreReleaseSupport)"
                                          Name="Payable"
-                                         SeriesType="ApexCharts.SeriesType.Bar"
+                                         SeriesType="SeriesType.Bar"
                                          XValue="@(e => e.Location)"
                                          YValue="@(e => (decimal)e.Count)"
                                          OrderBy="e => e.X" />
@@ -50,7 +59,7 @@
                 @if (GetChartData(ConstantString.ThroughTheGate).Any())
                 {
                     <ApexChart TItem="ChartDataPoint"
-                               Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.ThroughTheGate, ConstantString.Payable))" Height="335">
+                               Options="@GetChartOptions("#10b981", $"{ConstantString.ThroughTheGate} - {ConstantString.Payable}")" Height="335">
                         <ApexPointSeries TItem="ChartDataPoint"
                                          Items="@GetChartData(ConstantString.ThroughTheGate)"
                                          Name="Payable"
@@ -75,7 +84,8 @@
                             <MudTableSortLabel SortBy="new Func<GetSupportReferrals.LocationDetail, object>(x => x.LocationName)">
                                 Location
                             </MudTableSortLabel>
-                        </MudTh>                        <MudTh>
+                        </MudTh>                        
+                        <MudTh>
                             <MudTableSortLabel SortBy="new Func<GetSupportReferrals.LocationDetail, object>(x => x.LocationType.Name)">
                                 Location Type
                             </MudTableSortLabel>

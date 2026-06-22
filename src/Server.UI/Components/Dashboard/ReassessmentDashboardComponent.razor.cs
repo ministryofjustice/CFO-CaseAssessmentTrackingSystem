@@ -1,52 +1,52 @@
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Application.Features.Dashboard.Commands;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
+
 public partial class ReassessmentDashboardComponent
 {
+    private bool _downloading;
+    
+    [EditorRequired, Parameter] public DateRange? DateRange { get; set; }
 
-    [EditorRequired, Parameter]
-    public DateRange? DateRange { get; set; }
+    [Parameter] public string UserId { get; set; } = null!;
 
-    [Parameter]
-    public string UserId { get; set; } = null!;
+    [Parameter] public string TenantId { get; set; } = null!;
 
-    [Parameter]
-    public string TenantId { get; set; } = null!;
-
-    [EditorRequired, Parameter]
-    public bool VisualMode { get; set; }
+    [EditorRequired, Parameter] public bool VisualMode { get; set; }
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
     protected override IQuery<Result<GetReassessments.ReassessmentsDto>> CreateQuery()
-     => new GetReassessments.Query()
-     {
-         CurrentUser = CurrentUser,
-         UserId = UserId,
-         TenantId = TenantId,
-         StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
-         EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
-     };
+        => new GetReassessments.Query()
+        {
+            CurrentUser = CurrentUser,
+            UserId = UserId,
+            TenantId = TenantId,
+            StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
+            EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
+        };
 
-    private ApexCharts.ApexChartOptions<GetReassessments.LocationDetails> Options => new()
+    private ApexChartOptions<GetReassessments.LocationDetails> Options => new()
     {
-        Chart = new ApexCharts.Chart
+        Chart = new Chart
         {
             Stacked = true
         },
-        PlotOptions = new ApexCharts.PlotOptions
+        PlotOptions = new PlotOptions
         {
-            Bar = new ApexCharts.PlotOptionsBar
+            Bar = new PlotOptionsBar
             {
                 Horizontal = false,
-                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                DataLabels = new PlotOptionsBarDataLabels
                 {
-                    Total = new ApexCharts.BarTotalDataLabels
+                    Total = new BarTotalDataLabels
                     {
                         Enabled = true,
-                        Style = new ApexCharts.BarDataLabelsStyle
+                        Style = new BarDataLabelsStyle
                         {
                             FontWeight = "800",
                             Color = IsDarkMode ? "#FFFFFF" : "#000000",
@@ -63,11 +63,44 @@ public partial class ReassessmentDashboardComponent
                 ForceNiceScale = true,
             }
         },
-        Theme = new ApexCharts.Theme
+        Theme = new Theme
         {
-            Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
         Colors = new List<string> { "#5cb85c", "#d9534f" }
     };
 
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await Service.Send(new ExportReassessmentsDashboard.Command()
+            {
+                Request = new ExportReassessmentsDashboard.ReassessmentsDashboardExportRequest
+                {
+                    StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
+                    EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
+                    TenantId = TenantId,
+                    UserId = UserId
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }

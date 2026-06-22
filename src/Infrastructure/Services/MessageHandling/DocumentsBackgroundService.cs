@@ -43,6 +43,14 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportCasesPerLocationDashboardIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportPathwayPlanReviewDashboardIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportUnassignedCasesDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportActivitiesDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEducationAndTrainingDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEmploymentDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEnrolmentsDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportInductionsDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportReassessmentsDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportRecentApprovedActivitiesDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportSupportAndReferralDashboardIntegrationEventConsumer>(provider);
        
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.DocumentService)
