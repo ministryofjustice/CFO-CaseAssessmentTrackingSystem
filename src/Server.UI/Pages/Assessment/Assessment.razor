@@ -7,7 +7,7 @@
 
 @inherits CatsComponentBase
 
-@page "/pages/participants/{Upci}/assessment/{AssessmentId:guid}"
+@page "/pages/workspace/participants/{Upci}/assessment/{AssessmentId:guid}"
 
 @if (_model != null && string.IsNullOrEmpty(assessmentWarningMessage))
 {
@@ -200,7 +200,7 @@ else
         if (!result!.Canceled)
         {
             Snackbar.Add("Deletion Successful!", Severity.Info);
-            Navigation.NavigateTo(string.Format("/pages/participants/{0}", Upci), true);
+            Navigation.NavigateTo(string.Format("/pages/workspace/participants/{0}", Upci), true);
         }
     }
 
@@ -225,6 +225,6 @@ else
 
     private void Cancel()
     {
-        Navigation.NavigateTo($"/pages/participants/{Upci}");
+        Navigation.NavigateTo($"/pages/workspace/participants/{Upci}");
     }
 }

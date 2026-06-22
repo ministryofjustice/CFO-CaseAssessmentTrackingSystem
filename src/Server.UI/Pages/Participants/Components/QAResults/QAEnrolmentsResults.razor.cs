@@ -56,5 +56,5 @@ public partial class QAEnrolmentsResults
         return LoadDataAsync();
     }
 
-    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
+    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
 }

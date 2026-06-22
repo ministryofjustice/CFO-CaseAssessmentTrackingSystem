@@ -24,7 +24,7 @@ public class NotifyOwnerActivityHasBeenReturnedEventHandler(IUnitOfWork unitOfWo
             if(previous is null)
             {
                 var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/participants/" + notification.Item.ParticipantId);                
+                n.SetLink($"/pages/workspace/participants/" + notification.Item.ParticipantId);                
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
