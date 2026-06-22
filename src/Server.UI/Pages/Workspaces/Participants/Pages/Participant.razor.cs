@@ -7,7 +7,7 @@ using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Models;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class Participant
 {
