@@ -14,7 +14,7 @@ public partial class QA2List
 
     private Qa2WithPagination.Query Query { get; } = new();
     
-    private void OnEdit(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+    private void OnEdit(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}");
 
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state, CancellationToken cancellationToken)
     {
