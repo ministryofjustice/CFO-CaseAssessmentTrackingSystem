@@ -76,7 +76,7 @@ public partial class AssessmentSummary
 
         if (state is { Canceled: false })
         {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{state.Data}");
+            Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantSummaryDto.Id}/assessment/{state.Data}");
         }
     }
 
@@ -84,7 +84,7 @@ public partial class AssessmentSummary
     {
         if (CanContinueAssessment())
         {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
+            Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
         }
         else
         {
