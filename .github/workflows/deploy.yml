@@ -161,6 +161,7 @@ jobs:
             --set worker.enabled=true \
             --set rabbitmq.enabled=true \
             --set redis.enabled=true \
+            --set rdsPortForward.enabled=true \
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set app.serviceAccountName="${KUBE_NAMESPACE}" \
             --set app.image.repository="${IMAGE_REPOSITORY}" \
