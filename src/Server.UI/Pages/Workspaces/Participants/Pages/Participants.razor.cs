@@ -17,12 +17,13 @@ using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Participants.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public enum QuickFilter
 {
@@ -34,7 +35,7 @@ public enum QuickFilter
     VisitedLast7Days
 }
 
-public partial class ParticipantsV2
+public partial class Participants
 {
 
      [Inject]
@@ -452,7 +453,7 @@ public partial class ParticipantsV2
     {
         var targetUrl = item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus
             ? $"/pages/enrolments/{item.Id}"
-            : $"/pages/participants/{item.Id}";
+            : $"/pages/workspace/participants/{item.Id}";
         
         Navigation.NavigateTo(targetUrl);
     }

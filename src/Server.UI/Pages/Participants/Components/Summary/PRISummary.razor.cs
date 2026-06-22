@@ -79,5 +79,5 @@ public partial class PRISummary
         && ParticipantSummaryDto.LocationType.IsMapped
         && ParticipantSummaryDto.IsActive;
 
-    private void BeginPri() => Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
+    private void BeginPri() => Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantSummaryDto.Id}/PRI");
 }
