@@ -20,7 +20,7 @@ public partial class ParticipantById
             ParticipantId = _participantId!
         };
 
-    protected override void OnDataLoaded(ParticipantDto data) => Navigation.NavigateTo($"/pages/participants/{data.Id}");
+    protected override void OnDataLoaded(ParticipantDto data) => Navigation.NavigateTo($"/pages/workspace/participants/{data.Id}");
 
     private async Task OnKeyUp(KeyboardEventArgs args)
     {
