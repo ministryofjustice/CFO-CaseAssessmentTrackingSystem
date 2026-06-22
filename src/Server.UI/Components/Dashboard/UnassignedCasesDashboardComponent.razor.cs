@@ -299,10 +299,10 @@ public partial class UnassignedCasesDashboardComponent
     }
 
     private void ViewParticipant(string participantId) =>
-        Navigation.NavigateTo($"/pages/participants/{participantId}");
+        Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
 
     private void NavigateToTransfers() =>
-        Navigation.NavigateTo("/pages/participants/transfers");
+        Navigation.NavigateTo("/pages/workspace/participants/transfers");
 }
 
 public record ChartDataPoint(string LocationName, EnrolmentStatus Status, int Count);
