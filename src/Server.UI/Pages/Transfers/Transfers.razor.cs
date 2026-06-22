@@ -103,7 +103,7 @@ public partial class Transfers
         }
     }
 
-    private void View(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
+    private void View(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
 
     private async Task ViewOffenderManagerSummary(string participantId)
     {
