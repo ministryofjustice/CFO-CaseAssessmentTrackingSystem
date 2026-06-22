@@ -8,6 +8,7 @@
         <PackageReference Include="Dapper" />
         <PackageReference Include="Humanizer.Core.uk" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" />
+        <PackageReference Include="Ardalis.SmartEnum" />
         <PackageReference Include="Ardalis.Specification" />
         <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
         <PackageReference Include="AutoMapper" />

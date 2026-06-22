@@ -7,16 +7,44 @@ internal static class AppExtensions
         IResourceBuilder<RabbitMQServerResource> rabbit,
         CatsDatabaseResources databases)
     {
+        var useWorkerForJobs = string.Equals(builder.Configuration["Features:UseWorkerForJobs"], "true", StringComparison.OrdinalIgnoreCase);
+        var useSignalRBackplane = string.Equals(builder.Configuration["Features:UseSignalRBackplane"], "true", StringComparison.OrdinalIgnoreCase);
+        var enablePresenceHub = string.Equals(builder.Configuration["Features:PresenceHub:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
+        var relayUserPresenceNotifications = string.Equals(builder.Configuration["Features:PresenceHub:RelayUserPresenceNotifications"], "true", StringComparison.OrdinalIgnoreCase);
         var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
         
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
+            .WithEnvironment("Features__UseWorkerForJobs", useWorkerForJobs.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__UseSignalRBackplane", useSignalRBackplane.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__PresenceHub__Enabled", enablePresenceHub.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__PresenceHub__RelayUserPresenceNotifications", relayUserPresenceNotifications.ToString().ToLowerInvariant())
             .WithReference(rabbit)
             .WaitFor(rabbit);
 
         if(replicaCount > 1)
         {
             cats.WithReplicas(replicaCount);        
+        }
+
+        if(useSignalRBackplane)
+        {
+            var redis = builder.AddSignalRBackplane();
+            
+            cats.WithReference(redis)
+                .WaitFor(redis);
+        }
+
+        if (useWorkerForJobs)
+        {
+            var worker = builder.AddProject<Projects.Worker>("cats-worker")
+                .WithCatsDatabaseReference(databases.CatsDb)
+                .WithReference(rabbit)
+                .WaitFor(rabbit);
+
+            // Give CATS a reference to the Worker so it can resolve the Worker's
+            // job management API via Aspire service discovery ("https+http://cats-worker")
+            cats.WithReference(worker);
         }
 
         return builder;
@@ -38,6 +66,16 @@ internal static class AppExtensions
             .WithHttpEndpoint(port: 15672, targetPort: 15672);            
 
         return rabbit;
+    }
 
+    public static IResourceBuilder<RedisResource> AddSignalRBackplane(this IDistributedApplicationBuilder builder)
+    {
+        var redis = builder.AddRedis("redis")
+            // 7.4-alpine
+            .WithImageSHA256("b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7")
+            .WithDataVolume("cats-aspire-redis")
+            .WithLifetime(ContainerLifetime.Persistent);
+
+        return redis;
     }
 }

@@ -1,18 +1,22 @@
 ﻿using Cfo.Cats.Application.Common.Security;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class SessionService(IMemoryCache cache, IConfiguration configuration) : ISessionService
+public class SessionService(IFusionCache cache, IConfiguration configuration) : ISessionService
 {
     private readonly TimeSpan _timeout =
         TimeSpan.FromMinutes(configuration.GetValue<int>("IdleTimeOutMinutes"));
 
     private static string Key(string userId) => $"LastActivity_{userId}";
 
-    private MemoryCacheEntryOptions IdleOptions() =>
-        new() { SlidingExpiration = _timeout };
+    private FusionCacheEntryOptions IdleOptions() =>
+        new FusionCacheEntryOptions
+        {
+            Duration = _timeout,
+            IsFailSafeEnabled = false
+        };
 
     public void StartSession(string? userId)
         => SetSafe(userId);
@@ -35,7 +39,7 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
         {
             return false;
         }
-        return cache.TryGetValue<DateTime>(Key(userId), out _);
+        return cache.TryGet<DateTime>(Key(userId)).HasValue;
     }
 
     public TimeSpan? GetRemainingSessionTime(string? userId)
@@ -45,11 +49,13 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
             return null;
         }
 
-        if (cache.TryGetValue<DateTime>(Key(userId), out var lastActivityUtc) == false)
+        var entry = cache.TryGet<DateTime>(Key(userId));
+        if (entry.HasValue == false)
         {
-            return null; 
+            return null;
         }
 
+        var lastActivityUtc = entry.Value;
         var elapsed = DateTime.UtcNow - lastActivityUtc;
         var remaining = _timeout - elapsed;
 
@@ -60,12 +66,12 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
 
         if (remaining > _timeout)
         {
-            return _timeout; 
+            return _timeout;
         }
 
         return remaining;
     }
-    
+
     private void SetSafe(string? userId)
     {
         if (!string.IsNullOrWhiteSpace(userId))
@@ -73,5 +79,4 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
             cache.Set(Key(userId), DateTime.UtcNow, IdleOptions());
         }
     }
-    
 }
