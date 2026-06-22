@@ -102,7 +102,7 @@ public partial class ActivePRIs
         await _table.ReloadServerData();
     }
 
-    private void ViewParticipant(PRIPaginationDto PRI) => Navigation.NavigateTo($"/pages/Participants/{PRI.ParticipantId}");
+    private void ViewParticipant(PRIPaginationDto PRI) => Navigation.NavigateTo($"/pages/workspace/participants/{PRI.ParticipantId}");
 
     private async Task CreatePriCode()
     {

@@ -27,7 +27,7 @@ public class NotifyUserOnAssignment(
             heading: "Participant assigned", 
             details: $"{notification.Item.FullName} ({notification.Item.Id}) was assigned to you.", 
             userId: newAssignee.Id)
-            .SetLink($"/pages/participants/{notification.Item.Id}");
+            .SetLink($"/pages/workspace/participants/{notification.Item.Id}");
 
         await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
     }

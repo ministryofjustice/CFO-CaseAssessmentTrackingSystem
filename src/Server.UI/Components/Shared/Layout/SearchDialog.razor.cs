@@ -47,7 +47,7 @@ public partial class SearchDialog
     {
         _pages.Add("Home", "/");
         _pages.Add("Support Worker Dashboard", "/pages/dashboard/supportworker");
-        _pages.Add("Participants", "/pages/participants");
+        _pages.Add("Participants", "/pages/workspace/participants");
         _pages.Add("New Enrolment", "/pages/candidates/search");
         _pages.Add("My Documents", "/pages/analytics/my-documents");
 
@@ -55,10 +55,10 @@ public partial class SearchDialog
         {
             if (UserProfile.AssignedRoles.Any())
             {
-                _pages.Add("Reassign", "/pages/participants/reassign");
-                _pages.Add("Transfers", "/pages/participants/transfers");
-                _pages.Add("Moved Participants", "/pages/participants/movedparticipants");
-                _pages.Add("Active PRI's", "/pages/participants/pre-release-inventory");
+                _pages.Add("Reassign", "/pages/workspace/participants/reassign");
+                _pages.Add("Transfers", "/pages/workspace/participants/transfers");
+                _pages.Add("Moved Participants", "/pages/workspace/participants/movedparticipants");
+                _pages.Add("Active PRI's", "/pages/workspace/participants/pre-release-inventory");
             }
 
             string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
