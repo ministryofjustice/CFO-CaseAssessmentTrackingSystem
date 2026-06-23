@@ -1,6 +1,6 @@
 ﻿namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
-public class QAActivitiesResultsSummaryDto
+public class ActivityPaginationDto
 {
     public required Guid ActivityId { get; set; }
     public required string ParticipantId { get; set; }

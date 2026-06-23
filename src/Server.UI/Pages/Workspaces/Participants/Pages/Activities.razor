@@ -12,7 +12,7 @@
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @{
-    RenderFragment<QAActivitiesResultsSummaryDto> ActivityDetails = activity =>
+    RenderFragment<ActivityPaginationDto> ActivityDetails = activity =>
     @<MudStack Class="pa-2">
         <MudText Typo="Typo.subtitle2">Notes</MudText>
         @{
@@ -45,7 +45,7 @@
                       ReadOnly />
     </MudStack>;
 
-    RenderFragment<QAActivitiesResultsSummaryDto> ActivityActions = activity =>
+    RenderFragment<ActivityPaginationDto> ActivityActions = activity =>
     @<MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
         @if (activity.Status.AllowsChanges)
         {
@@ -116,7 +116,7 @@
             <MudSpacer />
 
             <!-- Status -->
-            <MudMenu Size="Size.Small" Label="@(Query.Status is null ? "All Statuses" : Query.Status.Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenu Size="Size.Small" Label="@(Query.Status is null ? "All Statuses" : ActivityStatus.FromValue(Query.Status.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudMenuItem Label="All" OnClick="@(() => StatusChanged(null))" />
                 @foreach (var status in ActivityStatus.List)
                 {
@@ -150,7 +150,7 @@
 
             <!-- Location (Took place at) -->
             <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                @(Query.Location is null ? "All Locations" : Query.Location.Name)
+                @(Query.LocationId is null ? "All Locations" : Query.LocationName)
             </MudButton>
 
             <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -158,8 +158,6 @@
                 <MudMenuItem Label="Took Place On" OnClick="@(() => SortBy("CommencedOn"))" />
                 <MudMenuItem Label="Last Updated" OnClick="@(() => SortBy("LastModified"))" />
                 <MudMenuItem Label="Status" OnClick="@(() => SortBy("Status"))" />
-                <MudMenuItem Label="Participant" OnClick="@(() => SortBy("Participant"))" />
-                <MudMenuItem Label="Submitted By" OnClick="@(() => SortBy("SubmittedBy"))" />
                 <MudMenuItem Label="Location" OnClick="@(() => SortBy("Location"))" />
             </MudMenu>
 
@@ -170,7 +168,7 @@
 
         <!-- Activity type quick chips -->
         <MudChipSet T="ActivityType"
-                    SelectedValues="@(Query.IncludeTypes is null ? null : new HashSet<ActivityType>(Query.IncludeTypes))"
+                    SelectedValues="@(Query.IncludeTypes is null ? null : new HashSet<ActivityType>(Query.IncludeTypes.Select(ActivityType.FromValue)))"
                     SelectedValuesChanged="ActivityTypesChanged"
                     SelectionMode="SelectionMode.MultiSelection">
             @foreach (var type in ActivityType.List.Where(x => x.Value is 1 or 2 or 4))
@@ -184,7 +182,7 @@
     {
         @if (Tabular)
         {
-            <MudTable T="QAActivitiesResultsSummaryDto" Items="@_data" Hover="true" Striped="true" Class="mt-4">
+            <MudTable T="ActivityPaginationDto" Items="@_data" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
                 <HeaderContent>
                     <MudTh></MudTh>
                     <MudTh>Participant</MudTh>
@@ -287,18 +285,10 @@
                     </MudPaper>
                 }
             </MudStack>
-
-            <MudStack Row="true" Justify="Justify.Center" Class="mt-2">
-                <MudPagination Selected="Query.PageNumber"
-                               Count="@_totalPages"
-                               ShowFirstButton="true"
-                               ShowLastButton="true"
-                               SelectedChanged="PageChanged" />
-            </MudStack>
         }
     }
     else
     {
-        <MudAlert Severity="Severity.Info" Class="mt-4">No activities match the current filters.</MudAlert>
+        <MudAlert Severity="Severity.Info">No activities match the current filters.</MudAlert>
     }
 </MudContainer>

@@ -1,26 +1,27 @@
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
+using Newtonsoft.Json;
 
-using static Cfo.Cats.Application.Features.Activities.DTOs.QAActivitiesResultsSummaryDto;
+using static Cfo.Cats.Application.Features.Activities.DTOs.ActivityPaginationDto;
 
 namespace Cfo.Cats.Application.Features.Activities.Queries;
 
 public static class AllActivitiesWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : AllActivitiesAdvancedFilter, IQuery<Result<PaginatedData<QAActivitiesResultsSummaryDto>>>
+    public class Query : AllActivitiesAdvancedFilter, IQuery<Result<PaginatedData<ActivityPaginationDto>>>
     {
         [JsonIgnore]
         public AllActivitiesAdvancedSpecification Specification => new(this);
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IQueryHandler<Query, Result<PaginatedData<QAActivitiesResultsSummaryDto>>>
+        : IQueryHandler<Query, Result<PaginatedData<ActivityPaginationDto>>>
     {
-        public async Task<Result<PaginatedData<QAActivitiesResultsSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<ActivityPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
 
@@ -51,7 +52,7 @@ public static class AllActivitiesWithPagination
 
 #pragma warning disable CS8602
             var query = from a in activities
-                        select new QAActivitiesResultsSummaryDto
+                        select new ActivityPaginationDto
                         {
                             ParticipantId = a.Participant.Id,
                             Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
@@ -127,8 +128,6 @@ public static class AllActivitiesWithPagination
                 "commencedon" => "CommencedOn",
                 "status" => "Status",
                 "lastmodified" => "LastModified",
-                "participant" => "Participant",
-                "submittedby" => "SubmittedBy",
                 "location" => "TookPlaceAtLocationName",
                 _ => "Created"
             };
@@ -143,7 +142,7 @@ public static class AllActivitiesWithPagination
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
-            return new PaginatedData<QAActivitiesResultsSummaryDto>(results, count, request.PageNumber, request.PageSize);
+            return new PaginatedData<ActivityPaginationDto>(results, count, request.PageNumber, request.PageSize);
         }
 
         private bool ShouldHideUser(UserProfile user)

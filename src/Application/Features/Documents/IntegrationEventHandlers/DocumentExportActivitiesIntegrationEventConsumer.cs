@@ -41,7 +41,7 @@ public class DocumentExportActivitiesIntegrationEventConsumer(
             var data = await new AllActivitiesWithPagination.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
             var results = await excelService.ExportAsync(data.Data!.Items!,
-                new Dictionary<string, Func<QAActivitiesResultsSummaryDto, object?>>
+                new Dictionary<string, Func<ActivityPaginationDto, object?>>
                 {
                     { "Participant Id", item => item.ParticipantId },
                     { "Participant Name", item => item.Participant },

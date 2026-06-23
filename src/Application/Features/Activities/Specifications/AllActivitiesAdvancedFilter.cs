@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 
 namespace Cfo.Cats.Application.Features.Activities.Specifications;
 
@@ -18,11 +17,16 @@ public class AllActivitiesAdvancedFilter : PaginationFilter
     /// </summary>
     public string? OwnerId { get; set; }
 
-    public LocationDto? Location { get; set; }
+    public int? LocationId { get; set; }
 
-    public ActivityStatus? Status { get; set; }
+    /// <summary>
+    /// Display name for the selected location (not used for filtering).
+    /// </summary>
+    public string? LocationName { get; set; }
 
-    public List<ActivityType>? IncludeTypes { get; set; }
+    public int? Status { get; set; }
+
+    public List<int>? IncludeTypes { get; set; }
 
     /// <summary>
     /// When set, restrict to activities that were returned to the provider within the

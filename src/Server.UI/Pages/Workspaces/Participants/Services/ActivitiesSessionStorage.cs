@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.Features.Activities.Queries;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
@@ -21,9 +20,10 @@ public record ActivitiesSessionData
         {
             TenantId = query.TenantId,
             OwnerId = query.OwnerId,
-            Location = query.Location,
-            Status = query.Status?.Value,
-            IncludeTypes = query.IncludeTypes?.Select(t => t.Value).ToArray(),
+            LocationId = query.LocationId,
+            LocationName = query.LocationName,
+            Status = query.Status,
+            IncludeTypes = query.IncludeTypes?.ToArray(),
             ReturnedWithinDays = query.ReturnedWithinDays,
             Keyword = query.Keyword,
             OrderBy = query.OrderBy,
@@ -34,7 +34,8 @@ public record ActivitiesSessionData
 
     public string? TenantId { get; init; }
     public string? OwnerId { get; init; }
-    public LocationDto? Location { get; init; }
+    public int? LocationId { get; init; }
+    public string? LocationName { get; init; }
     public int? Status { get; init; }
     public int[]? IncludeTypes { get; init; }
     public int? ReturnedWithinDays { get; init; }

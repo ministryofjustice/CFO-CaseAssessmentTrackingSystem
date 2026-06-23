@@ -44,7 +44,7 @@ public partial class Activities
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
 
-    private QAActivitiesResultsSummaryDto[] _data = [];
+    private ActivityPaginationDto[] _data = [];
     private int _totalPages;
     private int _totalItems;
 
@@ -68,6 +68,14 @@ public partial class Activities
         SortDirection = "Descending"
     };
 
+    private void OnRowClick(TableRowClickEventArgs<ActivityPaginationDto> args)
+    {
+        if(args?.Item is not null)
+        {
+            ViewParticipant(args.Item.ParticipantId);
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         Query.UserProfile = UserProfile;
@@ -88,9 +96,10 @@ public partial class Activities
         {
             Query.TenantId = sd.TenantId;
             Query.OwnerId = sd.OwnerId;
-            Query.Location = sd.Location;
-            Query.Status = sd.Status is null ? null : ActivityStatus.FromValue(sd.Status.Value);
-            Query.IncludeTypes = sd.IncludeTypes?.Select(ActivityType.FromValue).ToList();
+            Query.LocationId = sd.LocationId;
+            Query.LocationName = sd.LocationName;
+            Query.Status = sd.Status;
+            Query.IncludeTypes = sd.IncludeTypes?.ToList();
             Query.ReturnedWithinDays = sd.ReturnedWithinDays;
             Query.Keyword = sd.Keyword;
             Query.OrderBy = sd.OrderBy ?? "Created";
@@ -211,14 +220,14 @@ public partial class Activities
 
     private async Task StatusChanged(ActivityStatus? status)
     {
-        Query.Status = status;
+        Query.Status = status?.Value;
         Query.PageNumber = 1;
         await OnRefresh();
     }
 
     private async Task ActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
     {
-        Query.IncludeTypes = types is { Count: > 0 } ? types.ToList() : null;
+        Query.IncludeTypes = types is { Count: > 0 } ? types.Select(t => t.Value).ToList() : null;
         Query.PageNumber = 1;
         await OnRefresh();
     }
@@ -262,7 +271,8 @@ public partial class Activities
 
         if (result is { Canceled: false, Data: LocationDto location })
         {
-            Query.Location = location;
+            Query.LocationId = location.Id;
+            Query.LocationName = location.Name;
             Query.PageNumber = 1;
             await OnRefresh();
         }
@@ -281,7 +291,7 @@ public partial class Activities
         ResetQuery();
         _currentFilter = ActivitiesQuickFilter.ReturnedToMe;
         Query.OwnerId = UserProfile.UserId;
-        Query.Status = ActivityStatus.PendingStatus;
+        Query.Status = ActivityStatus.PendingStatus.Value;
         await OnRefresh();
     }
 
@@ -317,14 +327,16 @@ public partial class Activities
     {
         Query.TenantId = null;
         Query.OwnerId = null;
-        Query.Location = null;
+        Query.LocationId = null;
+        Query.LocationName = null;
         Query.Status = null;
         Query.IncludeTypes = null;
         Query.ReturnedWithinDays = null;
         Query.Keyword = null;
         Query.OrderBy = "Created";
-        Query.SortDirection = "Descending";
+        Query.SortDirection = SortDirection.Descending.ToString();
         Query.PageNumber = 1;
+        Tabular = false;
     }
 
     private string GetCurrentFilterLabel()
@@ -338,7 +350,7 @@ public partial class Activities
             _ => "All"
         };
 
-    private async Task EditActivity(QAActivitiesResultsSummaryDto activity)
+    private async Task EditActivity(ActivityPaginationDto activity)
     {
         var parameters = new DialogParameters<EditActivityDialog>
         {
@@ -362,4 +374,5 @@ public partial class Activities
 
     private void ViewParticipant(string participantId)
         => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+
 }
