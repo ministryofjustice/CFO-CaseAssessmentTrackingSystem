@@ -1,0 +1,23 @@
+# Development overrides. Namespace: cfocats-dev
+
+app:
+  replicaCount: 3
+  ingress:
+    host: cfocats-dev.live.cloud-platform.service.justice.gov.uk
+  env:
+    DOTNET_ENVIRONMENT: "Development"
+    Sentry__Environment: "Development-CloudPlatform"
+
+worker:
+  replicaCount: 1
+  env:
+    DOTNET_ENVIRONMENT: "Development"
+    Sentry__Environment: "Development-CloudPlatform"
+
+# RDS bridge - disabled in non-development environments
+rdsPortForward:
+  enabled: true
+
+# todo: enable prometheus alerts
+# generic-prometheus-alerts:
+#   alertSeverity: cfo-alerts-nonprod
