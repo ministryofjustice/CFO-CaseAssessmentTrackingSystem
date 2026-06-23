@@ -46,7 +46,6 @@ jobs:
               --set worker.enabled=true \
               --set rabbitmq.enabled=true \
               --set redis.enabled=true \
-              --set rdsPortForward.enabled=true \
               --set serviceAccountName="cfocats-$env" \
               --set app.serviceAccountName="cfocats-$env" \
               --set app.image.repository="example/cfocats" \

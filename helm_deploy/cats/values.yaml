@@ -207,8 +207,8 @@ seeder:
 
 # ---------------------------------------------------------------------------
 # RDS port-forward — an ad-hoc helper Deployment that bridges to the cloud RDS
-# SQL Server so it can be reached via `kubectl port-forward`. Off by default;
-# enable on demand with --set rdsPortForward.enabled=true.
+# SQL Server so it can be reached via `kubectl port-forward`. Off in 
+# non-development environments.
 # ---------------------------------------------------------------------------
 rdsPortForward:
   enabled: false

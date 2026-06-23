@@ -13,6 +13,10 @@ worker:
     Sentry__Environment: "Staging-CloudPlatform"
     Features__PresenceHub__RelayUserPresenceNotifications: "false"
 
+# RDS bridge - disabled in non-development environments
+rdsPortForward:
+  enabled: false
+
 # todo: enable prometheus alerts
 # generic-prometheus-alerts:
 #   alertSeverity: cfo-alerts-nonprod
