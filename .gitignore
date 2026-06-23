@@ -481,3 +481,7 @@ aspire-output/
 
 # ls cache files for C# develop extension
 *csproj.lscache
+
+# Helm
+helm_deploy/*/charts/
+helm_deploy/*/Chart.lock

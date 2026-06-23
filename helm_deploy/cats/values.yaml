@@ -1,0 +1,223 @@
+serviceAccountName: ""
+
+# ---------------------------------------------------------------------------
+# Component toggles — every workload is off by default and each release opts in
+# via --set (see README). The shared values-<env>.yaml files are used by all
+# three releases, so enabling happens per release in CI, not in those files:
+#   app deploy : --set app.enabled=true worker.enabled=true rabbitmq.enabled=true redis.enabled=true
+#   migrate    : --set migrator.enabled=true
+#   seed       : --set seeder.enabled=true
+# ---------------------------------------------------------------------------
+
+connectionStrings:
+  catsDb: &catsDb "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
+  rabbit: &rabbit "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
+  redis: &redis "redis-service:6379"
+
+app:
+  enabled: false
+  nameOverride: cats
+  fullnameOverride: cats
+
+  replicaCount: 3
+
+  image:
+    repository: ""  # set by CI via --set
+    tag: ""         # set by CI via --set
+    pullPolicy: IfNotPresent
+    port: 8080
+
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    enabled: true
+    path: /
+    healthPath: /health
+    tlsSecretName: ""
+    # ModSecurity WAF. Default class is the non-prod controller; production overrides to "modsec".
+    className: modsec-non-prod
+    modsecurity_enabled: true
+    # WAF engine: "DetectionOnly" (log only) or "On" (block). Flip per-env in overlays once tuned.
+    modsecurity_mode: DetectionOnly
+    modsecurity_snippet: |
+      SecAuditEngine On
+      SecRuleEngine {{ .Values.ingress.modsecurity_mode }}
+      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-creating-future-opportunities-devs,tag:namespace={{ .Release.Namespace }}"
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: "cookie"
+      nginx.ingress.kubernetes.io/session-cookie-name: "http-cookie"
+      nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+      nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+
+  startupProbe:
+    httpGet:
+      path: /alive
+      port: http
+    failureThreshold: 30
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    periodSeconds: 10
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /alive
+      port: http
+    periodSeconds: 20
+    failureThreshold: 3
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+  poddisruptionbudget:
+    enabled: true
+    minAvailable: 1
+
+  namespace_secrets:
+    rds-mssql-instance-output:
+      DATABASE_ADDRESS: "rds_instance_address"
+      DATABASE_USERNAME: "database_username"
+      DATABASE_PASSWORD: "database_password"
+    s3-bucket-output:
+      AWS__Bucket: "bucket_name"
+    config:
+      RABBIT_USER: "RABBIT_USER"
+      RABBIT_PASS: "RABBIT_PASS"
+      Sentry__Dsn: "SentryDsn"
+
+  env:
+    ConnectionStrings__CatsDb: *catsDb
+    ConnectionStrings__rabbit: *rabbit
+    ConnectionStrings__redis: *redis
+    AWS__RootFolder: "Files"
+    Features__UseWorkerForJobs: "true"
+    Features__PresenceHub__Enabled: "true"
+    Features__PresenceHub__RelayUserPresenceNotifications: "true"
+    Features__UseSignalRBackplane: "true"
+    WorkerOptions__BaseUrl: "http://cats-worker:8080"
+    Sentry__Release: "0.0.0"                    # overridden by CI
+    AppConfigurationSettings__Version: "0.0.0"  # overridden by CI
+
+# ---------------------------------------------------------------------------
+# Background worker
+# ---------------------------------------------------------------------------
+worker:
+  enabled: false
+  nameOverride: cats-worker
+  fullnameOverride: cats-worker
+
+  replicaCount: 1
+
+  autoscaling:
+    enabled: false
+
+  strategy:
+    type: Recreate
+    rollingUpdate: null
+
+  image:
+    repository: ""  # set by CI via --set
+    tag: ""         # set by CI via --set
+    pullPolicy: IfNotPresent
+    port: 8080
+
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    enabled: false
+
+  poddisruptionbudget:
+    enabled: false
+
+  startupProbe:
+    httpGet:
+      path: /alive
+      port: http
+    failureThreshold: 30
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    periodSeconds: 10
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /alive
+      port: http
+    periodSeconds: 20
+    failureThreshold: 3
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  namespace_secrets:
+    rds-mssql-instance-output:
+      DATABASE_ADDRESS: "rds_instance_address"
+      DATABASE_USERNAME: "database_username"
+      DATABASE_PASSWORD: "database_password"
+    config:
+      RABBIT_USER: "RABBIT_USER"
+      RABBIT_PASS: "RABBIT_PASS"
+      Sentry__Dsn: "SentryDsn"
+
+  env:
+    ConnectionStrings__CatsDb: *catsDb
+    ConnectionStrings__rabbit: *rabbit
+    Sentry__Release: "0.0.0"
+    AppConfigurationSettings__Version: "0.0.0"
+
+rabbitmq:
+  enabled: false
+  image: "rabbitmq:4.3-management-alpine@sha256:1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3"
+
+redis:
+  enabled: false
+  image: "redis:7.4-alpine@sha256:b1addbe72465a718643cff9e60a58e6df1841e29d6d7d60c9a85d8d72f08d1a7"
+
+migrator:
+  enabled: false
+  image:
+    repository: ""  # set by CI via --set
+    tag: ""         # set by CI via --set (migrator-<sha>)
+
+seeder:
+  enabled: false
+  image:
+    repository: ""  # set by CI via --set
+    tag: ""         # set by CI via --set (seeder-<sha>)
+
+# ---------------------------------------------------------------------------
+# RDS port-forward — an ad-hoc helper Deployment that bridges to the cloud RDS
+# SQL Server so it can be reached via `kubectl port-forward`. Off in 
+# non-development environments.
+# ---------------------------------------------------------------------------
+rdsPortForward:
+  enabled: false
+  image: "ministryofjustice/port-forward@sha256:eaed873978acf6ccf23f08315f56ef71f0a7ffcd6a0bea821459bfb363b65e76"
+  localPort: 11433   # port the pod listens on (your LOCAL_PORT)
+  remotePort: 1433   # SQL Server port in the cloud
+
+# todo: enable prometheus alerts
+# generic-prometheus-alerts:
+#   targetApplication: cats
+#   businessUnit: hmpps
+#   alertSeverity: cfo-alerts
