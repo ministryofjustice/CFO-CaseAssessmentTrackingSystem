@@ -2,7 +2,6 @@
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.MessageBus
-@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Outbox
 
@@ -144,18 +143,17 @@
          
         if (justificationRequired)
         {
-            var previousJustification = await GetPreviousJustificationIfRequired();
-            parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+            parameters = new DialogParameters<ConfirmationWithNotesDialog>
             {
                 { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
                 { x => x.NoteLabel, "If fewer than two reds have been achieved, a justification is required" },
                 { x => x.MandatoryNote, true},
-                { x => x.PreviousJustification, previousJustification}
+                { x => x.PreviousJustification, Participant.AssessmentJustification}
             };
         }
         else
         {
-            parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+            parameters = new DialogParameters<ConfirmationWithNotesDialog>
             {
                 { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
                 { x => x.NoteLabel, "If two or more reds have been achieved, no justification is required" },
@@ -163,7 +161,7 @@
             };
         }
 
-        DialogOptions options = new DialogOptions()
+        DialogOptions options = new DialogOptions
         {
             BackdropClick = false,
             CloseOnEscapeKey = true,
@@ -343,25 +341,6 @@
         }
 
         return justificationRequired;
-    }
-
-    private async Task<string> GetPreviousJustificationIfRequired()
-    {
-        var justification = string.Empty;
-
-        var query = new GetPreviousJustification.Query()
-        {
-            ParticipantId = Participant.Id
-        };
-
-        var result = await GetNewMediator().Send(query);
-
-        if (result is { Succeeded: true, Data: not null })
-        {
-            justification = result.Data;
-        }
-
-        return justification;
     }
     
     private async Task Unarchive()
