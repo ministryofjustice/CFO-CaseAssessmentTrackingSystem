@@ -92,6 +92,10 @@
                        StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
                 @ConstantString.Refresh
             </MudButton>
+            <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="OnExport"
+                              StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
+                @ConstantString.Export
+            </MudLoadingButton>
         </MudStack>
 
         <!-- Additional filters row -->

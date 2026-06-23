@@ -2,10 +2,12 @@ using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
+using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Activities;
@@ -52,6 +54,8 @@ public partial class Activities
     private ActivitiesQuickFilter _currentFilter = ActivitiesQuickFilter.All;
 
     private bool Tabular { get; set; }
+
+    private bool _downloading;
 
     private readonly HashSet<Guid> _expandedRows = [];
 
@@ -136,6 +140,36 @@ public partial class Activities
     {
         Tabular = tabular.GetValueOrDefault();
         await OnRefresh();
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            Query.UserProfile = UserProfile;
+
+            var result = await Service.Send(new ExportActivities.Command()
+            {
+                Query = Query
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 
     private bool IsExpanded(Guid activityId) => _expandedRows.Contains(activityId);

@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Specifications;
@@ -13,6 +13,7 @@ public static class AllActivitiesWithPagination
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : AllActivitiesAdvancedFilter, IQuery<Result<PaginatedData<QAActivitiesResultsSummaryDto>>>
     {
+        [JsonIgnore]
         public AllActivitiesAdvancedSpecification Specification => new(this);
     }
 
