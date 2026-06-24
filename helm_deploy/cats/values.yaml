@@ -187,7 +187,7 @@ worker:
 
 rabbitmq:
   enabled: false
-  image: "rabbitmq:4.3-management-alpine@sha256:1a43764bdcf116542e7c8c794adc67c79461727da16d474e9e21483fe7f716d3"
+  image: "rabbitmq:4.3-management-alpine@sha256:63d4902023629198e692b29b37c1447327cf2c275666b918031cded01bde7e54"
 
 redis:
   enabled: false
