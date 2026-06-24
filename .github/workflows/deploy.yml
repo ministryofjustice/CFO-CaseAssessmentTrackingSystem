@@ -116,6 +116,7 @@ jobs:
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set migrator.image.tag="migrator-${{ github.sha }}" \
+            --set rdsPortForward.enabled=false \
             --timeout 5m
           kubectl -n "${KUBE_NAMESPACE}" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=migrator
         env:
@@ -133,6 +134,7 @@ jobs:
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
             --set seeder.image.tag="seeder-${{ github.sha }}" \
+            --set rdsPortForward.enabled=false \
             --timeout 5m
           kubectl -n "${KUBE_NAMESPACE}" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=seeder
         env:
