@@ -116,7 +116,17 @@ public static class AllActivitiesWithPagination
                                                n.Created!.Value
                                           )).ToArray(),
                             ActivityId = a.Id,
-                            SubmittedBy = $"{a.Owner.DisplayName!} ({a.Owner.TenantName})"
+                            SubmittedBy = $"{a.Owner.DisplayName!} ({a.Owner.TenantName})",
+                            DocumentId = db.EducationTrainingActivities
+                                .Where(e => e.Id == a.Id && e.DocumentId != Guid.Empty)
+                                .Select(e => (Guid?)e.DocumentId)
+                                .Concat(db.EmploymentActivities
+                                    .Where(e => e.Id == a.Id && e.DocumentId != Guid.Empty)
+                                    .Select(e => (Guid?)e.DocumentId))
+                                .Concat(db.ISWActivities
+                                    .Where(e => e.Id == a.Id && e.DocumentId != Guid.Empty)
+                                    .Select(e => (Guid?)e.DocumentId))
+                                .FirstOrDefault()
                         };
 #pragma warning restore CS8602
 

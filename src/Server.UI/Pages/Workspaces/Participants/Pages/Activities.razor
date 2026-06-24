@@ -54,6 +54,13 @@
                 @ConstantString.EditActivity
             </MudButton>
         }
+        @if (activity.DocumentId.HasValue)
+        {
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ViewTemplate(activity))">
+                View Template
+            </MudButton>
+        }
         <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => ViewParticipant(activity.ParticipantId))">
             @ConstantString.ViewParticipant
@@ -211,6 +218,10 @@
                             @if (context.Status.AllowsChanges)
                             {
                                 <MudMenuItem OnClick="@(() => EditActivity(context))">@ConstantString.EditActivity</MudMenuItem>
+                            }
+                            @if (context.DocumentId.HasValue)
+                            {
+                                <MudMenuItem OnClick="@(() => ViewTemplate(context))">View Template</MudMenuItem>
                             }
                             <MudMenuItem OnClick="@(() => ViewParticipant(context.ParticipantId))">@ConstantString.EditParticipant</MudMenuItem>
                         </MudMenu>

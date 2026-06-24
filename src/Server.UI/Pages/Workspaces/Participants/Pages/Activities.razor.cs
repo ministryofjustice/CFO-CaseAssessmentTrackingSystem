@@ -11,6 +11,7 @@ using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Activities;
+using Cfo.Cats.Server.UI.Pages.Activities.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -349,6 +350,27 @@ public partial class Activities
             ActivitiesQuickFilter.ReturnedLast30Days => "Returns (Last 30 Days)",
             _ => "All"
         };
+
+    private async Task ViewTemplate(ActivityPaginationDto activity)
+    {
+        if(activity.DocumentId is null)
+        {
+            Snackbar.Add("No template available for this activity.", Severity.Warning);
+            return;
+        }
+
+        var parameters = new DialogParameters<ViewActivityTemplateDialog>
+        {
+            { x => x.DocumentId, activity.DocumentId.Value }
+        };
+
+        await DialogService.ShowAsync<ViewActivityTemplateDialog>($"{activity.Participant} {activity.ParticipantId}: View Template", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseButton = true
+        });
+    }
 
     private async Task EditActivity(ActivityPaginationDto activity)
     {
