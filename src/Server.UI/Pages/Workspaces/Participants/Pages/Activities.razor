@@ -15,12 +15,9 @@
     RenderFragment<ActivityPaginationDto> ActivityDetails = activity =>
     @<MudStack Class="pa-2">
         <MudText Typo="Typo.subtitle2">Notes</MudText>
-        @{
-            var notes = activity.GetNotes();
-        }
-        @if (notes is { Length: > 0 })
+        @if (activity.Notes is { Length: > 0 })
         {
-            @foreach (var note in notes)
+            @foreach (var note in activity.Notes)
             {
                 <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
                     <MudCard Outlined="true" Elevation="0" Class="mb-1">
@@ -203,7 +200,7 @@
                     <MudTd>
                         <MudIconButton Size="Size.Small"
                                        Icon="@(IsExpanded(context.ActivityId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
-                                       OnClick="@(() => ToggleExpanded(context.ActivityId))" />
+                                       OnClick="@(async () => await ToggleExpanded(context.ActivityId))" />
                     </MudTd>
                     <MudTd DataLabel="Participant">@context.Participant @context.ParticipantId</MudTd>
                     <MudTd DataLabel="Type">@context.Definition.Type.Name</MudTd>
@@ -285,7 +282,8 @@
                         </MudStack>
 
                         <MudExpansionPanels Elevation="0" Class="mt-2">
-                            <MudExpansionPanel Text="Notes &amp; additional information">
+                            <MudExpansionPanel Text="Notes &amp; additional information"
+                                               ExpandedChanged="@(async (expanded) => await OnNotesPanelExpanded(item.ActivityId, expanded))">
                                 @ActivityDetails(item)
                             </MudExpansionPanel>
                         </MudExpansionPanels>

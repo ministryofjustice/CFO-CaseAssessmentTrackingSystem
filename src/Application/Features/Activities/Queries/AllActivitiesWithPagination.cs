@@ -5,8 +5,6 @@ using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Newtonsoft.Json;
 
-using static Cfo.Cats.Application.Features.Activities.DTOs.ActivityPaginationDto;
-
 namespace Cfo.Cats.Application.Features.Activities.Queries;
 
 public static class AllActivitiesWithPagination
@@ -24,9 +22,6 @@ public static class AllActivitiesWithPagination
         public async Task<Result<PaginatedData<ActivityPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
-
-            var hideUser = ShouldHideUser(request.UserProfile);
-            var CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
 
             var activities = db.Activities.ApplySpecification(request.Specification);
 
@@ -64,57 +59,6 @@ public static class AllActivitiesWithPagination
                             CommencedOn = a.CommencedOn,
                             TookPlaceAtLocationName = a.TookPlaceAtLocation.Name,
                             AdditionalInformation = a.AdditionalInformation!,
-                            PQA = (from pqa in db.ActivityPqaQueue
-                                   from n in pqa.Notes
-                                   where pqa.ActivityId == a.Id
-                                   select new ActSummaryNote(
-                                       n.Message,
-                                       CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
-                                            ? "Hidden"
-                                            : n.CreatedByUser!.DisplayName!,
-                                       n.CreatedByUser.TenantId!,
-                                       n.CreatedByUser.TenantName!,
-                                       n.Created!.Value
-                                   )).ToArray(),
-
-                            QA1 = (from qa1 in db.ActivityQa1Queue
-                                   from n in qa1.Notes
-                                   where qa1.ActivityId == a.Id && (n.IsExternal || request.IncludeInternalNotes)
-                                   select new ActSummaryNote(
-                                        n.Message,
-                                        CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
-                                             ? "Hidden"
-                                             : n.CreatedByUser!.DisplayName!,
-                                        n.CreatedByUser.TenantId!,
-                                        n.CreatedByUser.TenantName!,
-                                        n.Created!.Value
-                                    )).ToArray(),
-
-                            QA2 = (from qa2 in db.ActivityQa2Queue
-                                   from n in qa2.Notes
-                                   where qa2.ActivityId == a.Id && (n.IsExternal || request.IncludeInternalNotes)
-                                   select new ActSummaryNote(
-                                         n.Message,
-                                         CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
-                                              ? "Hidden"
-                                              : n.CreatedByUser!.DisplayName!,
-                                        n.CreatedByUser.TenantId!,
-                                        n.CreatedByUser.TenantName!,
-                                         n.Created!.Value
-                                    )).ToArray(),
-
-                            Escalations = (from esc in db.ActivityEscalationQueue
-                                           from n in esc.Notes
-                                           where esc.ActivityId == a.Id && (n.IsExternal || request.IncludeInternalNotes)
-                                           select new ActSummaryNote(
-                                               n.Message,
-                                               CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
-                                                    ? "Hidden"
-                                                    : n.CreatedByUser!.DisplayName!,
-                                               n.CreatedByUser.TenantId!,
-                                               n.CreatedByUser.TenantName!,
-                                               n.Created!.Value
-                                          )).ToArray(),
                             ActivityId = a.Id,
                             SubmittedBy = $"{a.Owner.DisplayName!} ({a.Owner.TenantName})",
                             DocumentId = db.EducationTrainingActivities
@@ -153,20 +97,6 @@ public static class AllActivitiesWithPagination
                 .ToListAsync(cancellationToken);
 
             return new PaginatedData<ActivityPaginationDto>(results, count, request.PageNumber, request.PageSize);
-        }
-
-        private bool ShouldHideUser(UserProfile user)
-        {
-            string[] allowed =
-            [
-                RoleNames.QAOfficer,
-                RoleNames.QASupportManager,
-                RoleNames.QAManager,
-                RoleNames.SMT,
-                RoleNames.SystemSupport
-            ];
-
-            return !user.AssignedRoles.Any(r => allowed.Contains(r));
         }
 
         public class Validator : AbstractValidator<Query>

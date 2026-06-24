@@ -7,10 +7,10 @@ public class ActivityPaginationDto
     public required string Participant { get; set; }
     public required ActivityStatus Status { get; set; }
     public required ActivityDefinition Definition { get; set; }
-    public required ActSummaryNote[] PQA { get; set; }
-    public required ActSummaryNote[] QA1 { get; set; }
-    public required ActSummaryNote[] QA2 { get; set; }
-    public required ActSummaryNote[] Escalations { get; set; }
+    public ActSummaryNote[] PQA { get; set; } = [];
+    public ActSummaryNote[] QA1 { get; set; } = [];
+    public ActSummaryNote[] QA2 { get; set; } = [];
+    public ActSummaryNote[] Escalations { get; set; } = [];
     public required DateTime? Created { get; set; }
     public required DateTime? CommencedOn { get; set; }
     public required DateTime? ApprovedOn { get; set; }

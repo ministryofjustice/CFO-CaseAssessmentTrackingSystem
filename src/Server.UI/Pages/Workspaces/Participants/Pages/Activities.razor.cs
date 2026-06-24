@@ -143,6 +143,8 @@ public partial class Activities
             _totalItems = 0;
         }
 
+        _expandedRows.Clear();
+
         await SessionStorage.SetAsync(ActivitiesSessionData.FromQuery(Query, Tabular));
     }
 
@@ -184,12 +186,43 @@ public partial class Activities
 
     private bool IsExpanded(Guid activityId) => _expandedRows.Contains(activityId);
 
-    private void ToggleExpanded(Guid activityId)
+    private async Task ToggleExpanded(Guid activityId)
     {
         if (!_expandedRows.Add(activityId))
         {
             _expandedRows.Remove(activityId);
+            return;
         }
+
+        await LoadNotesForActivity(activityId);
+    }
+
+    private async Task OnNotesPanelExpanded(Guid activityId, bool expanded)
+    {
+        if (expanded)
+        {
+            await LoadNotesForActivity(activityId);
+        }
+    }
+
+    private async Task LoadNotesForActivity(Guid activityId)
+    {
+        var item = _data.FirstOrDefault(x => x.ActivityId == activityId);
+        if (item is null)
+        {
+            return;
+        }
+
+        var result = await Service.Send(new GetActivityQaNotes.Query
+        {
+            ActivityId = activityId,
+            IncludeInternalNotes = Query.IncludeInternalNotes,
+            CurrentUser = UserProfile
+        });
+
+        item.Notes = result is { Succeeded: true, Data: not null }
+            ? result.Data.OrderBy(n => n.Created).ToArray()
+            : [];
     }
 
     private async Task PageChanged(int page)
