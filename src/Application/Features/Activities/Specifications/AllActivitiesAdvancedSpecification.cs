@@ -7,16 +7,9 @@ public class AllActivitiesAdvancedSpecification : Specification<Activity>
 {
     public AllActivitiesAdvancedSpecification(AllActivitiesAdvancedFilter filter)
     {
-        var requiresQa = ActivityDefinition.List
-            .Where(def => def.RequiresQa)
-            .Select(def => def.Type)
-            .Distinct()
-            .ToList();
-
         var includeTypes = filter.IncludeTypes?.Select(ActivityType.FromValue).ToList();
 
         Query.Where(a => a.Participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
-            .Where(a => requiresQa.Contains(a.Type))
             .Where(a => a.TenantId.StartsWith(filter.UserProfile.TenantId!))
             .Where(a => a.TenantId.StartsWith(filter.TenantId!), string.IsNullOrEmpty(filter.TenantId) == false)
             .Where(a => a.OwnerId == filter.OwnerId, string.IsNullOrEmpty(filter.OwnerId) == false)
