@@ -1,0 +1,64 @@
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
+using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components;
+
+public partial class EscalationList
+{
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+
+    private bool _loading;
+    private int _defaultPageSize = 30;
+    private MudDataGrid<EnrolmentQueueEntryDto> _table = null!;
+
+    private QaEscalationWithPagination.Query Query { get; } = new();
+      
+    private void ViewEnrolment(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/qa/enrolments/escalation/{dto.Id}");
+
+    private void ViewParticipant(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}");
+
+    private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _loading = true;
+            Query.CurrentUser = UserProfile;
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : nameof(SortDirection.Ascending);
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+
+            var result = await GetNewMediator().Send(Query);
+            
+            if (!result.Succeeded)
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+                return new GridData<EnrolmentQueueEntryDto> { TotalItems = 0, Items = [] };
+            }
+            
+            return new GridData<EnrolmentQueueEntryDto> { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnSearch(string text)
+    {
+        if (_loading)
+        {
+            return;
+        }
+        
+        Query.Keyword = text;
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnRefresh()
+    {        
+        Query.Keyword = string.Empty;
+        await _table.ReloadServerData();
+    }
+}

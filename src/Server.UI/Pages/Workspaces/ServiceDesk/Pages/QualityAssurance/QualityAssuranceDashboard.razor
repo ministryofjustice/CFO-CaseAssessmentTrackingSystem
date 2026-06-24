@@ -1,0 +1,158 @@
+@using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.QualityAssurance.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components
+@inherits CatsComponentBase
+
+@page "/pages/workspace/servicedesk/legacy"
+
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h3">
+        Service Desk
+    </MudText>
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+
+        <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@DateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+            <PickerActions>
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+		@if (CurrentUser.AssignedRoles is not [])
+		{
+			<MudLink OnClick="@DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
+				@SelectedDisplayName
+			</MudLink>
+		}        
+        <MudSwitch @bind-Value="_visualMode"
+                   T="bool"
+                   ThumbIcon="@Icons.Material.Filled.StackedBarChart"
+                   Color="Color.Primary">
+            Visual Mode
+        </MudSwitch>
+        <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
+            <MudLoadingButton Loading="@_downloading"
+                            Variant="Variant.Filled"
+                            Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.CloudDownload"
+                            Size="Size.Small"
+                            OnClick="@OnExport">
+                @ConstantString.Export
+            </MudLoadingButton>
+        </AuthorizeView>
+    </MudStack>
+</MudStack>
+
+<MudStack>
+    <MudTabs @ref="_mainTabs" Class="pa-6" ApplyEffectsToContainer="true" Outlined="true" KeepPanelsAlive="true">
+        <MudTabPanel Text="Home" Class="pa-0">
+            <QaStageCountsCards CurrentUser="CurrentUser" TenantId="@SelectedTenantId" OnViewQueueNavigate="OnViewQueueNavigate" />
+        </MudTabPanel>            
+
+        <MudTabPanel Text="Activities" Class="pa-0">
+            <MudTabs @ref="_activitiesTabs" Outlined="true" Class="pa-0 ma-0">
+                <MudTabPanel Text="First Pass">
+                    <Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components.QA1List/>
+                </MudTabPanel>
+
+                <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
+                    <MudTabPanel Text="Second Pass">
+                        <Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components.QA2List/>
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Escalation">
+                        <Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components.EscalationList />
+                    </MudTabPanel>                    
+
+                    <MudTabPanel Text="Returns" Class="pa-2">
+                        <ActivitiesToProviderDashboardComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Advisories" Class="pa-2">
+                        <ActivitiesAdvisoriesToProviderDashboardComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Team Feedback" Class="pa-2">
+                        <ActivitiesFeedbackSeniorComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                </AuthorizeView>
+              
+                <MudTabPanel Text="My Feedback" Class="pa-2">
+                    <ActivitiesFeedbackComponent 
+                        TenantId="@SelectedTenantId" 
+                        DateRange="@DateRange" 
+                        @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                        VisualMode="@_visualMode" 
+                        UserId="@CurrentUser.UserId" />
+                </MudTabPanel>
+             
+            </MudTabs>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Enrolments" Class="pa-0">
+            <MudTabs @ref="_enrolmentsTabs" Outlined="true" Class="pa-0 ma-0">
+                <MudTabPanel Text="First Pass">
+                    <Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components.QA1List/>
+                </MudTabPanel>
+
+                <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
+                    <MudTabPanel Text="Second Pass">
+                        <Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components.QA2List/>
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Escalation">
+                        <Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components.EscalationList />
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Returns">
+                        <EnrolmentsToProviderDashboardComponent
+                            TenantId="@SelectedTenantId"
+                            DateRange="@DateRange"
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)"
+                            VisualMode="@_visualMode"/>
+                    </MudTabPanel>
+                        
+                    <MudTabPanel Text="Advisories">
+                        <EnrolmentAdvisoriesToProviderDashboardComponent
+                            TenantId="@SelectedTenantId"
+                            DateRange="@DateRange"
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)"
+                            VisualMode="@_visualMode"/>
+                    </MudTabPanel>
+                    
+                    <MudTabPanel Text="Team Feedback" Class="pa-2">
+                        <EnrolmentsFeedbackSeniorComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@DateRange" 
+                            @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    
+                </AuthorizeView>
+                    
+                <MudTabPanel Text="My Feedback" Class="pa-2">
+                    <EnrolmentsFeedbackComponent 
+                        TenantId="@SelectedTenantId" 
+                        DateRange="@DateRange" 
+                        @key="SelectedTenantId + (DateRange.Start?.Ticks ?? 0) + (DateRange.End?.Ticks ?? 0)" 
+                        VisualMode="@_visualMode" 
+                        UserId="@CurrentUser.UserId" />
+                </MudTabPanel>
+            </MudTabs>
+        </MudTabPanel>
+    </MudTabs>
+</MudStack>
