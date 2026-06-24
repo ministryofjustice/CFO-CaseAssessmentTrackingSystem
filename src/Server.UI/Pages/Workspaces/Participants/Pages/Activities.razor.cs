@@ -397,7 +397,7 @@ public partial class Activities
             { x => x.DocumentId, activity.DocumentId.Value }
         };
 
-        await DialogService.ShowAsync<ViewActivityTemplateDialog>($"{activity.Participant} {activity.ParticipantId}: View Template", parameters, new DialogOptions
+        await DialogService.ShowAsync<ViewActivityTemplateDialog>($"{activity.Participant} {activity.ParticipantId}: {activity.Definition.Type.Name}", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Large,
             FullWidth = true,
@@ -412,7 +412,7 @@ public partial class Activities
             { x => x.ActivityId, activity.ActivityId }
         };
 
-        var dialog = await DialogService.ShowAsync<EditActivityDialog>($"{activity.Participant} {activity.ParticipantId}: Edit Activity/ETE", parameters, new DialogOptions
+        var dialog = await DialogService.ShowAsync<EditActivityDialog>($"{activity.Participant} {activity.ParticipantId}: {activity.Definition.Type.Name}", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,
