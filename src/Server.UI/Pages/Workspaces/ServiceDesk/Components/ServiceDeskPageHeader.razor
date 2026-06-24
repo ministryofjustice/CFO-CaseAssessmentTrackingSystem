@@ -1,0 +1,73 @@
+@using Microsoft.AspNetCore.WebUtilities
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
+
+<PageHeader Title="Service Desk"
+            Items="@_breadcrumbs" />
+
+@code
+{
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = ServiceDeskLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = ServiceDeskLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        return segment switch
+        {
+            "" => [home],
+            "activities/queue" => [home, ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb()],
+            "activities/feedback" => [home, ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb()],
+            "enrolments/queue" => [home, ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb()],
+            "enrolments/feedback" => [home, ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb()],
+            _ => BuildServiceDeskBreadcrumbs(home, segment, uri)
+        };
+    }
+
+    private static IReadOnlyList<BreadcrumbItem> BuildServiceDeskBreadcrumbs(BreadcrumbItem home, string segment, Uri uri)
+    {
+        // For deeper pages, keep Service Desk as the root crumb and infer a middle
+        // crumb so users can easily navigate back to the nearest main area.
+        var middle = home;
+
+        var normalizedSegment = segment.ToLowerInvariant();
+
+        if (normalizedSegment.StartsWith("activities/", StringComparison.Ordinal))
+        {
+            middle = ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb();
+        }
+        else if (normalizedSegment.StartsWith("enrolments/", StringComparison.Ordinal))
+        {
+            middle = ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb();
+        }
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("from", out var from))
+        {
+            middle = from.ToString().ToLowerInvariant() switch
+            {
+                "activities-feedback" => ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(),
+                "enrolments-feedback" => ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(),
+                "activities-queue" => ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(),
+                "enrolments-queue" => ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(),
+                _ => middle
+            };
+        }
+
+        var currentTitle = string.Join(' ', segment
+            .Split('/', StringSplitOptions.RemoveEmptyEntries)
+            .Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
+
+        return [home, middle, new BreadcrumbItem(currentTitle, href: null, disabled: true)];
+    }
+}
