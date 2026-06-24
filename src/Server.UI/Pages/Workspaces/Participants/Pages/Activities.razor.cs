@@ -99,7 +99,7 @@ public partial class Activities
             Query.LocationId = sd.LocationId;
             Query.LocationName = sd.LocationName;
             Query.Status = sd.Status;
-            Query.IncludeTypes = sd.IncludeTypes?.ToList();
+            Query.TypeFilter = sd.TypeFilter;
             Query.ReturnedWithinDays = sd.ReturnedWithinDays;
             Query.Keyword = sd.Keyword;
             Query.OrderBy = sd.OrderBy ?? "Created";
@@ -225,9 +225,9 @@ public partial class Activities
         await OnRefresh();
     }
 
-    private async Task ActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
+    private async Task ActivityTypeChanged(ActivityType? type)
     {
-        Query.IncludeTypes = types is { Count: > 0 } ? types.Select(t => t.Value).ToList() : null;
+        Query.TypeFilter = type?.Value;
         Query.PageNumber = 1;
         await OnRefresh();
     }
@@ -330,7 +330,7 @@ public partial class Activities
         Query.LocationId = null;
         Query.LocationName = null;
         Query.Status = null;
-        Query.IncludeTypes = null;
+        Query.TypeFilter = null;
         Query.ReturnedWithinDays = null;
         Query.Keyword = null;
         Query.OrderBy = "Created";

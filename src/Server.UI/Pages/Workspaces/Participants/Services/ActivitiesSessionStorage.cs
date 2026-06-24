@@ -23,7 +23,7 @@ public record ActivitiesSessionData
             LocationId = query.LocationId,
             LocationName = query.LocationName,
             Status = query.Status,
-            IncludeTypes = query.IncludeTypes?.ToArray(),
+            TypeFilter = query.TypeFilter,
             ReturnedWithinDays = query.ReturnedWithinDays,
             Keyword = query.Keyword,
             OrderBy = query.OrderBy,
@@ -37,7 +37,7 @@ public record ActivitiesSessionData
     public int? LocationId { get; init; }
     public string? LocationName { get; init; }
     public int? Status { get; init; }
-    public int[]? IncludeTypes { get; init; }
+    public int? TypeFilter { get; init; }
     public int? ReturnedWithinDays { get; init; }
     public string? Keyword { get; init; }
     public string? OrderBy { get; init; }

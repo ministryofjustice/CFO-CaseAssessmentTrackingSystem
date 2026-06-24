@@ -115,6 +115,15 @@
 
             <MudSpacer />
 
+            <!-- Activity Type -->
+            <MudMenu Size="Size.Small" Label="@(Query.TypeFilter is null ? "All Types" : ActivityType.FromValue(Query.TypeFilter.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All" OnClick="@(() => ActivityTypeChanged(null))" />
+                @foreach (var type in ActivityType.List)
+                {
+                    <MudMenuItem Label="@type.Name" OnClick="@(() => ActivityTypeChanged(type))" />
+                }
+            </MudMenu>
+
             <!-- Status -->
             <MudMenu Size="Size.Small" Label="@(Query.Status is null ? "All Statuses" : ActivityStatus.FromValue(Query.Status.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudMenuItem Label="All" OnClick="@(() => StatusChanged(null))" />
@@ -166,16 +175,6 @@
             </MudTooltip>
         </MudStack>
 
-        <!-- Activity type quick chips -->
-        <MudChipSet T="ActivityType"
-                    SelectedValues="@(Query.IncludeTypes is null ? null : new HashSet<ActivityType>(Query.IncludeTypes.Select(ActivityType.FromValue)))"
-                    SelectedValuesChanged="ActivityTypesChanged"
-                    SelectionMode="SelectionMode.MultiSelection">
-            @foreach (var type in ActivityType.List.Where(x => x.Value is 1 or 2 or 4))
-            {
-                <MudChip Value="type" SelectedColor="Color.Info" Text="@type.Name" />
-            }
-        </MudChipSet>
     </MudStack>
 
     @if (_data is { Length: > 0 })

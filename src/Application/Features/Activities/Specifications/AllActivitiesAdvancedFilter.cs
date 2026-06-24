@@ -26,7 +26,7 @@ public class AllActivitiesAdvancedFilter : PaginationFilter
 
     public int? Status { get; set; }
 
-    public List<int>? IncludeTypes { get; set; }
+    public int? TypeFilter { get; set; }
 
     /// <summary>
     /// When set, restrict to activities that were returned to the provider within the
