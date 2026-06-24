@@ -7,10 +7,6 @@ public class ActivityPaginationDto
     public required string Participant { get; set; }
     public required ActivityStatus Status { get; set; }
     public required ActivityDefinition Definition { get; set; }
-    public ActSummaryNote[] PQA { get; set; } = [];
-    public ActSummaryNote[] QA1 { get; set; } = [];
-    public ActSummaryNote[] QA2 { get; set; } = [];
-    public ActSummaryNote[] Escalations { get; set; } = [];
     public required DateTime? Created { get; set; }
     public required DateTime? CommencedOn { get; set; }
     public required DateTime? ApprovedOn { get; set; }
@@ -26,8 +22,6 @@ public class ActivityPaginationDto
     public required string TookPlaceAtLocationName { get; set; }
 
     public Guid? DocumentId { get; set; }
-
-    public ActSummaryNote[] GetNotes() => (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
 
     public record ActSummaryNote(string Message, string CreatedBy, string TenantId, string TenantName, DateTime Created)
     {

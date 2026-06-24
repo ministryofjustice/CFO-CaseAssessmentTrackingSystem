@@ -29,16 +29,15 @@ public static class AllActivitiesWithPagination
             {
                 var cutoff = DateTime.UtcNow.AddDays(-days);
 
-                var returnedActivityIds = db.ActivityPqaQueue
-                    .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
-                    .Select(e => e.ActivityId)
-                    .Union(db.ActivityQa1Queue
+                // Note: we ignore QA1 returns, because these are not returned to the provider
+                var returnedActivityIds = 
+                    db.ActivityPqaQueue // PQA returns
+                        .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
+                        .Select(e => e.ActivityId)
+                    .Union(db.ActivityQa2Queue // QA2 returns
                         .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
                         .Select(e => e.ActivityId))
-                    .Union(db.ActivityQa2Queue
-                        .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
-                        .Select(e => e.ActivityId))
-                    .Union(db.ActivityEscalationQueue
+                    .Union(db.ActivityEscalationQueue // Escalation returns
                         .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
                         .Select(e => e.ActivityId));
 
