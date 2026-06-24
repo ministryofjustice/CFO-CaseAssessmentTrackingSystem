@@ -3,6 +3,7 @@
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Activities.Components
 @using Humanizer
 
 @inject IStringLocalizer<Activities> L
@@ -12,36 +13,6 @@
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @{
-    RenderFragment<ActivityPaginationDto> ActivityDetails = activity =>
-    @<MudStack Class="pa-2">
-        <MudText Typo="Typo.subtitle2">Notes</MudText>
-        @if (activity.Notes is { Length: > 0 })
-        {
-            @foreach (var note in activity.Notes)
-            {
-                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
-                    <MudCard Outlined="true" Elevation="0" Class="mb-1">
-                        <MudCardContent Class="py-2">
-                            <MudText Typo="Typo.body2">@note.Message</MudText>
-                            <MudText Typo="Typo.caption">
-                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
-                            </MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudTooltip>
-            }
-        }
-        else
-        {
-            <MudText Typo="Typo.body2" Class="mud-text-secondary">No notes.</MudText>
-        }
-        <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
-                      Value="@activity.AdditionalInformation"
-                      Lines="5"
-                      Class="mt-2"
-                      ReadOnly />
-    </MudStack>;
-
     RenderFragment<ActivityPaginationDto> ActivityActions = activity =>
     @<MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
         @if (activity.Status.AllowsChanges)
@@ -200,7 +171,7 @@
                     <MudTd>
                         <MudIconButton Size="Size.Small"
                                        Icon="@(IsExpanded(context.ActivityId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
-                                       OnClick="@(async () => await ToggleExpanded(context.ActivityId))" />
+                                       OnClick="@(() => ToggleExpanded(context.ActivityId))" />
                     </MudTd>
                     <MudTd DataLabel="Participant">@context.Participant @context.ParticipantId</MudTd>
                     <MudTd DataLabel="Type">@context.Definition.Type.Name</MudTd>
@@ -230,7 +201,9 @@
                         <MudTr>
                             <td colspan="8" class="pa-0">
                                 <MudPaper Elevation="0" Class="pa-2">
-                                    @ActivityDetails(context)
+                                    <ActivityExpandedDetails Activity="context"
+                                                             IncludeInternalNotes="Query.IncludeInternalNotes"
+                                                             CurrentUser="UserProfile" />
                                 </MudPaper>
                             </td>
                         </MudTr>
@@ -281,12 +254,9 @@
                             </MudStack>
                         </MudStack>
 
-                        <MudExpansionPanels Elevation="0" Class="mt-2">
-                            <MudExpansionPanel Text="Notes &amp; additional information"
-                                               ExpandedChanged="@(async (expanded) => await OnNotesPanelExpanded(item.ActivityId, expanded))">
-                                @ActivityDetails(item)
-                            </MudExpansionPanel>
-                        </MudExpansionPanels>
+                        <ActivityExpansionPanel Activity="item"
+                                               IncludeInternalNotes="Query.IncludeInternalNotes"
+                                               CurrentUser="UserProfile" />
 
                         <MudDivider Class="mt-4 mb-2" />
                         @ActivityActions(item)
