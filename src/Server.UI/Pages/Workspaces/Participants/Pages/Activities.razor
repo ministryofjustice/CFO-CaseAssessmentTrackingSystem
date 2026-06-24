@@ -13,28 +13,6 @@
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @{
-    RenderFragment<ActivityPaginationDto> ActivityActions = activity =>
-    @<MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
-        @if (activity.Status.AllowsChanges)
-        {
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
-                       StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditActivity(activity))">
-                @ConstantString.EditActivity
-            </MudButton>
-        }
-        @if (activity.DocumentId.HasValue)
-        {
-            <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
-                       StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ViewTemplate(activity))">
-                View Template
-            </MudButton>
-        }
-        <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => ViewParticipant(activity.ParticipantId))">
-            @ConstantString.ViewParticipant
-        </MudButton>
-    </MudStack>;
-
     Color StatusColour(ActivityStatus status) => status switch
     {
         _ when status == ActivityStatus.PendingStatus => Color.Warning,
@@ -191,7 +169,7 @@
                             {
                                 <MudMenuItem OnClick="@(() => ViewTemplate(context))">View Template</MudMenuItem>
                             }
-                            <MudMenuItem OnClick="@(() => ViewParticipant(context.ParticipantId))">@ConstantString.EditParticipant</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => ViewParticipant(context.ParticipantId))">@ConstantString.ViewParticipant</MudMenuItem>
                         </MudMenu>
                     </MudTd>
                 </RowTemplate>
@@ -259,7 +237,26 @@
                                                CurrentUser="UserProfile" />
 
                         <MudDivider Class="mt-4 mb-2" />
-                        @ActivityActions(item)
+                        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                            @if (item.Status.AllowsChanges)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                        StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditActivity(item))">
+                                    @ConstantString.EditActivity
+                                </MudButton>
+                            }
+                            @if (item.DocumentId.HasValue)
+                            {
+                                <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
+                                        StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ViewTemplate(item))">
+                                    View Template
+                                </MudButton>
+                            }
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
+                                    StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => ViewParticipant(item.ParticipantId))">
+                                @ConstantString.ViewParticipant
+                            </MudButton>
+                        </MudStack>
                     </MudPaper>
                 }
             </MudStack>
