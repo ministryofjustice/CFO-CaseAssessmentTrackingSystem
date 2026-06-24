@@ -10,6 +10,8 @@ public static class SecurityPolicies
 
     public const string Internal = nameof(Internal);
 
+    public const string ServiceDesk = nameof(ServiceDesk);
+
     public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
