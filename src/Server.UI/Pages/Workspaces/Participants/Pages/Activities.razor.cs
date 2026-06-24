@@ -357,7 +357,7 @@ public partial class Activities
             { x => x.ActivityId, activity.ActivityId }
         };
 
-        var dialog = await DialogService.ShowAsync<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
+        var dialog = await DialogService.ShowAsync<EditActivityDialog>($"{activity.Participant} {activity.ParticipantId}: Edit Activity/ETE", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,
