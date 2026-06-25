@@ -19,7 +19,6 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
     {
         _activator = new BuiltinHandlerActivator();
 
-       _activator.Handle<DocumentExportCaseWorkloadIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportKeyValuesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportRiskDueAggregateIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportRiskDueIntegrationEventConsumer>(provider);

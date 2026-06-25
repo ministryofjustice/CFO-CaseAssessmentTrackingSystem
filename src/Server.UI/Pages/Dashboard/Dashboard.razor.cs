@@ -10,7 +10,6 @@ public partial class Dashboard
     private bool _showQaPots;
     private bool _showMyTeamsParticipants;
     private bool _showJobManagement;
-    private bool _showCaseWorkload;
     private bool _showRiskDueAggregate;
     private bool _showSyncComponent;
     private bool _showSearchParticipant;
@@ -31,7 +30,6 @@ public partial class Dashboard
 
         // Feature flags derived from permissions
         _showMyTeamsParticipants = hasAdditionalRoles;
-        _showCaseWorkload = hasAdditionalRoles;
         _showRiskDueAggregate = hasAdditionalRoles;
         _showMyTeamsActivitiesInQAPots = hasAdditionalRoles;
         
