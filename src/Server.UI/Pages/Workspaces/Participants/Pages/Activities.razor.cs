@@ -69,14 +69,6 @@ public partial class Activities
         SortDirection = "Descending"
     };
 
-    private void OnRowClick(TableRowClickEventArgs<ActivityPaginationDto> args)
-    {
-        if(args?.Item is not null)
-        {
-            ViewParticipant(args.Item.ParticipantId);
-        }
-    }
-
     protected override async Task OnInitializedAsync()
     {
         Query.UserProfile = UserProfile;
