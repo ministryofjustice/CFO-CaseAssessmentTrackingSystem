@@ -78,4 +78,5 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate Initiatives = new(nameof(Initiatives), 900);
     public static readonly DocumentTemplate InitiativeObjectivesDashboard = new(nameof(InitiativeObjectivesDashboard), 1300);
     public static readonly DocumentTemplate Users = new(nameof(Users), 1400);
+    public static readonly DocumentTemplate Activities = new(nameof(Activities), 18);
 }
