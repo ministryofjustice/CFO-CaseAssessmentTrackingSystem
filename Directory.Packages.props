@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ActualLab.Fusion" Version="12.5.2" />
-    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="12.5.2" />
+    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="13.0.12" />
     <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="12.5.2" />
     <PackageVersion Include="ActualLab.Generators" Version="12.5.2" />
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
