@@ -1,0 +1,86 @@
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Models.NavigationMenu
+@inherits CatsComponentBase
+@inject IStringLocalizer<HeaderMenu> L
+
+@if (Open)
+{
+    <MudPaper Elevation="4" Square="true" Class="pa-0">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+            <MudText Typo="Typo.h2">
+                Search
+            </MudText>
+
+            <MudTextField @ref="_searchField"
+                          @bind-Value="_search"
+                          Class="mt-2 mb-4"
+                          Immediate="true"
+                          DebounceInterval="250"
+                          OnDebounceIntervalElapsed="OnSearchChanged"
+                          Clearable="true"
+                          Variant="Variant.Outlined"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Placeholder="@L["Search for pages or participants by name or identifier..."]" />
+
+            @if (_searching)
+            {
+                <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+            }
+
+            <MudGrid Spacing="6">
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@L["Pages"]</MudText>
+                    <MudDivider Class="mb-3" />
+                    @if (_filteredPages.Count == 0)
+                    {
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            @(string.IsNullOrWhiteSpace(_search) ? L["Start typing to search pages."] : L["No matching pages."])
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudStack Spacing="2" AlignItems="AlignItems.Start">
+                            @foreach (var entry in _filteredPages)
+                            {
+                                <MudLink Href="@entry.Href"
+                                         Class="pa-1"
+                                         Underline="Underline.Always"
+                                         @onclick="CloseAsync">
+                                    <MudHighlighter HighlightedText="@_search" Text="@entry.DisplayText" />
+                                </MudLink>
+                            }
+                        </MudStack>
+                    }
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@L["Participants"]</MudText>
+                    <MudDivider Class="mb-3" />
+                    @if (_participants.Count == 0)
+                    {
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            @(string.IsNullOrWhiteSpace(_search) ? L["Search by name or identifier to find participants."] : L["No matching participants."])
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudList T="string" ReadOnly="false">
+                            @foreach (var participant in _participants)
+                            {
+                                <MudListItem T="string"
+                                             Icon="@Icons.Material.Filled.Person"
+                                             OnClick="@(() => NavigateToParticipant(participant.Id))">
+                                    <MudHighlighter HighlightedText="@_search" Text="@participant.FullName" />
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary d-block">
+                                        @participant.Id@(string.IsNullOrWhiteSpace(participant.CurrentLocation) ? "" : $" · {participant.CurrentLocation}")
+                                    </MudText>
+                                </MudListItem>
+                            }
+                        </MudList>
+                    }
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudPaper>
+}
