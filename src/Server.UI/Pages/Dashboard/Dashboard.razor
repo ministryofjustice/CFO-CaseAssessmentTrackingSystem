@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
 
@@ -74,9 +74,6 @@
         <JobManagement/>
     }
 
-    
-    <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>
-    
     <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false"/>
 
     @if (_showMyTeamsParticipants)
