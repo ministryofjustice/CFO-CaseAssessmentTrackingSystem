@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Domain.Entities.Documents;
 using Newtonsoft.Json;
 using Rebus.Handlers;
@@ -52,6 +53,30 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
                 { "Risk Due", item => item.RiskDue },
                 { "Risk Due Reason", item => item.RiskDueReason.Name },
             };
+
+            // When the list is grouped, surface the group key as the leading column so the
+            // export reflects the same grouping the user sees on screen.
+            if (request.GroupBy != ParticipantGroupBy.None)
+            {
+                Func<ParticipantPaginationDto, object?> groupSelector = request.GroupBy switch
+                {
+                    ParticipantGroupBy.Assignee => item => item.Owner,
+                    ParticipantGroupBy.Tenant => item => item.Tenant,
+                    _ => item => string.Empty
+                };
+
+                var grouped = new Dictionary<string, Func<ParticipantPaginationDto, object?>>
+                {
+                    { $"Group ({request.GroupBy.GetDescription()})", groupSelector }
+                };
+
+                foreach (var entry in dataToColumnMapper)
+                {
+                    grouped[entry.Key] = entry.Value;
+                }
+
+                dataToColumnMapper = grouped;
+            }
             
             if(!data.Succeeded || data?.Data is null)
             {

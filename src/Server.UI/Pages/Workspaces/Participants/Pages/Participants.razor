@@ -9,6 +9,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Analytics
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Specifications
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Labels
@@ -81,7 +82,7 @@
             </MudPagination>
 
             <MudText>
-                @_totalItems records
+                @_totalItems @(Query.GroupBy == ParticipantGroupBy.None ? "records" : $"{Query.GroupBy.GetDescription().ToLower()} groups")
             </MudText>
 
             @if (_canReassign)
@@ -169,162 +170,52 @@
                 <MudMenuItem Label="Enrolment Location" OnClick="@(() => SortBy("EnrolmentLocation"))"/>
                 <MudMenuItem Label="Enrolment Status" OnClick="@(() => SortBy("EnrolmentStatus"))"/>
             </MudMenu>
+            <MudMenu Size="Size.Small" Label="@($"Group by: {Query.GroupBy.GetDescription()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="None" OnClick="@(() => GroupByChanged(ParticipantGroupBy.None))" />
+                <MudMenuItem Label="Assignee" OnClick="@(() => GroupByChanged(ParticipantGroupBy.Assignee))" />
+                <MudMenuItem Label="Tenant" OnClick="@(() => GroupByChanged(ParticipantGroupBy.Tenant))" />
+            </MudMenu>
             <MudTooltip Text="Clear search parameters">
                 <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
             </MudTooltip>
         </MudStack>
     </MudStack>
 
-   
-    @if (_data is { Length: > 0 })
+    @if(_groups is { Length: > 0 })
     {
-
-        @if(Tabular)
-        {
-            <MudTable T="ParticipantPaginationDto" Items="@_data" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
-                <HeaderContent>
-                    @if (_canReassign)
-                    {
-                        <MudTh>Select</MudTh>
-                    }
-                    <MudTh>Id</MudTh>
-                    <MudTh>Participant</MudTh>
-                    <MudTh>Status</MudTh>
-                    <MudTh>Location</MudTh>
-                    <MudTh>Enrolled At</MudTh>
-                    <MudTh>Assignee</MudTh>
-                    @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
-                    {
-                        <MudTh>Assigned On</MudTh>
-                    }
-                    @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
-                    {
-                        <MudTh>Accessed On</MudTh>
-                    }
-                    <MudTh>Risk Due</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    @if (_canReassign)
-                    {
-                        <MudTd>
-                            <MudCheckBox T="bool"
-                                         Value="@IsParticipantSelected(context.Id)"
-                                         ValueChanged="@(value => SetParticipantSelection(context.Id, value))"
-                                         @onclick:stopPropagation="true" />
-                        </MudTd>
-                    }
-                    <MudTd>@context.Id</MudTd>
-                    <MudTd>@context.ParticipantName</MudTd>
-                    <MudTd>@context.EnrolmentStatus.Name</MudTd>
-                    <MudTd>@context.CurrentLocation.Name</MudTd>
-                    <MudTd>@context.EnrolmentLocation?.Name</MudTd>
-                    <MudTd>@context.Owner</MudTd>
-                    @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
-                    {
-                        <MudTd>@context.AssignedOn?.ToShortDateString()</MudTd>
-                    }
-                    @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
-                    {
-                        <MudTd>@context.AccessedOn?.ToShortDateString()</MudTd>
-                    }
-                    <MudTd>
-                        @context.RiskDue.ToShortDateOrEmptyString()
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        }
-        else
-        {
-            <MudStack class="mt-4">
-                @foreach (var item in _data)
-                {
-                    <MudPaper Outlined="true" Class="pa-4">
-                        <MudStack>
-                            <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-                                @if (_canReassign)
-                                {
-                                    <MudCheckBox T="bool"
-                                                 Value="@IsParticipantSelected(item.Id)"
-                                                 ValueChanged="@(value => SetParticipantSelection(item.Id, value))"
-                                                 @onclick:stopPropagation="true" />
-                                }
-                                <MudText Typo="Typo.h5">@item.Id @item.ParticipantName</MudText>
-                                <MudSpacer />
-                                <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
-                            </MudStack>
-                            <MudStack Row="true">
-                                    @if(item.EnrolmentLocation is not null)
-                                    {
-                                        <MudText Typo="Typo.body2">
-                                            Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
-                                            @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
-                                            {
-                                                @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
-                                            }
-                                        </MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText Typo="Typo.body2">
-                                            Not Enrolled
-                                        </MudText>
-                                    }
-                                <MudSpacer />
-                                <MudText Typo="Typo.body2">
-                                    Assigned to @item.Owner 
-                                    (@item.Tenant)@if ((Query.RecentAction == RecentParticipantFilter.AssignedLast10Days 
-                                    || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days) 
-                                    && item.AssignedOn.HasValue)
-                                    {
-                                        @($" on {item.AssignedOn.Value.ToShortDateString()}")
-                                    }
-                                    @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days 
-                                    && item.AccessedOn.HasValue)
-                                    {
-                                        @($" last accessed on {item.AccessedOn.Value.ToShortDateString()}")
-                                    }
-                                </MudText>
-                            </MudStack>
-                            <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-                                @if (item.RiskDue.HasValue)
-                                {
-                                    <MudChip Size="Size.Small"
-                                                T="string"
-                                                Color="@( item.RiskDue < DateTime.Today ? Color.Error : Color.Info )"
-                                                Variant="Variant.Outlined">
-                                        Risk Due @item.RiskDue.Value.ToShortDateString() @item.RiskDueReason
-                                    </MudChip>
-                                }
-                                <MudSpacer />
-                                @if (item.Labels.Length > 0)
-                                {
-                                    @foreach (var l in item.Labels)
-                                    {                
-                                        <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
-                                                    Label="@l.Name" ShowDelete="false" />
-                                    }
-
-                                }
-                            </MudStack>
-                        </MudStack>
-                        <MudDivider Class="mt-4 mb-2" />
-                        <MudStack Row="true" Justify="Justify.FlexEnd" >
-                            <MudButton 
-                                Variant="Variant.Filled" 
-                                Color="Color.Primary" 
-                                StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
-                                OnClick="@(() => ViewParticipant(item))">
-                                @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
-                            </MudButton>
-                        </MudStack>
-                    </MudPaper>
-                }
-            </MudStack>
-        }
-
-        
+        <MudExpansionPanels MultiExpansion="true" Class="mt-4">
+            @foreach (var group in _groups)
+            {
+                <MudExpansionPanel Expanded="true">
+                    <TitleContent>
+                        <MudText Typo="Typo.subtitle1">
+                            <strong>@(string.IsNullOrWhiteSpace(group.Label) ? "Unassigned" : group.Label)</strong>
+                            &nbsp;(@group.TotalCount)
+                        </MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <ParticipantResultsView Items="group.Items"
+                                                Tabular="Tabular"
+                                                CanReassign="_canReassign"
+                                                RecentAction="Query.RecentAction"
+                                                @bind-SelectedIds="_selectedParticipantIds" />
+                    </ChildContent>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
     }
     else
     {
-        <MudAlert Severity="Severity.Info" Class="mt-4">No participants match the current filters.</MudAlert>
+        if (_data is { Length: > 0 })
+        {
+            <ParticipantResultsView Items="_data"
+                                    Tabular="Tabular"
+                                    CanReassign="_canReassign"
+                                    RecentAction="Query.RecentAction"
+                                    @bind-SelectedIds="_selectedParticipantIds" />
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Class="mt-4">No participants match the current filters.</MudAlert>
+        }
     }

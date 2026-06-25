@@ -1,0 +1,122 @@
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Specifications
+
+@if (Tabular)
+{
+    <MudTable T="ParticipantPaginationDto" Items="@Items" Hover="true" Striped="true"
+              SelectOnRowClick="true" OnRowClick="@OnRowClicked">
+        <HeaderContent>
+            @if (CanReassign)
+            {
+                <MudTh>Select</MudTh>
+            }
+            <MudTh>Id</MudTh>
+            <MudTh>Participant</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Location</MudTh>
+            <MudTh>Enrolled At</MudTh>
+            <MudTh>Assignee</MudTh>
+            @if (ShowAssignedOn)
+            {
+                <MudTh>Assigned On</MudTh>
+            }
+            @if (ShowAccessedOn)
+            {
+                <MudTh>Accessed On</MudTh>
+            }
+            <MudTh>Risk Due</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            @if (CanReassign)
+            {
+                <MudTd>
+                    <MudCheckBox T="bool"
+                                 Value="@SelectedIds.Contains(context.Id)"
+                                 ValueChanged="@(value => ToggleAsync(context.Id, value))"
+                                 @onclick:stopPropagation="true" />
+                </MudTd>
+            }
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.ParticipantName</MudTd>
+            <MudTd>@context.EnrolmentStatus.Name</MudTd>
+            <MudTd>@context.CurrentLocation.Name</MudTd>
+            <MudTd>@context.EnrolmentLocation?.Name</MudTd>
+            <MudTd>@context.Owner</MudTd>
+            @if (ShowAssignedOn)
+            {
+                <MudTd>@context.AssignedOn?.ToShortDateString()</MudTd>
+            }
+            @if (ShowAccessedOn)
+            {
+                <MudTd>@context.AccessedOn?.ToShortDateString()</MudTd>
+            }
+            <MudTd>@context.RiskDue.ToShortDateOrEmptyString()</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudStack Class="mt-4">
+        @foreach (var item in Items)
+        {
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                @if (CanReassign)
+                {
+                    <MudCheckBox T="bool"
+                                 Value="@SelectedIds.Contains(item.Id)"
+                                 ValueChanged="@(value => ToggleAsync(item.Id, value))" />
+                }
+                <div class="flex-grow-1">
+                    <ParticipantCard Item="item" RecentAction="RecentAction" />
+                </div>
+            </MudStack>
+        }
+    </MudStack>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<ParticipantPaginationDto> Items { get; set; } = [];
+
+    [Parameter]
+    public bool Tabular { get; set; }
+
+    [Parameter]
+    public bool CanReassign { get; set; }
+
+    [Parameter]
+    public RecentParticipantFilter RecentAction { get; set; }
+
+    [Parameter]
+    public HashSet<string> SelectedIds { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<HashSet<string>> SelectedIdsChanged { get; set; }
+
+    private bool ShowAssignedOn => RecentAction is RecentParticipantFilter.AssignedLast10Days
+        or RecentParticipantFilter.AssignedLast30Days;
+
+    private bool ShowAccessedOn => RecentAction is RecentParticipantFilter.VisitedLast7Days;
+
+    private void OnRowClicked(TableRowClickEventArgs<ParticipantPaginationDto> args)
+    {
+        if (args.Item is not null)
+        {
+            Navigation.NavigateTo(args.Item.GetWorkspaceUri());
+        }
+    }
+
+    private async Task ToggleAsync(string id, bool selected)
+    {
+        if (selected)
+        {
+            SelectedIds.Add(id);
+        }
+        else
+        {
+            SelectedIds.Remove(id);
+        }
+
+        await SelectedIdsChanged.InvokeAsync(SelectedIds);
+    }
+}

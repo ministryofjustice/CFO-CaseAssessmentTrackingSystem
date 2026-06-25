@@ -38,15 +38,22 @@ public static class ParticipantsWithPagination
         public string? OwnerId { get; set; }
         public string? TenantId { get; set; }
         public DateTime? RiskDue { get; set; }        
-        public RecentParticipantFilter RecentAction { get; set; } = RecentParticipantFilter.All;    
+        public RecentParticipantFilter RecentAction { get; set; } = RecentParticipantFilter.All;
+
+        /// <summary>
+        /// How the list should be grouped (e.g. by assignee). Defaults to no grouping.
+        /// </summary>
+        public ParticipantGroupBy GroupBy { get; set; } = ParticipantGroupBy.None;
         }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
     {
-        public async Task<Result<PaginatedData<ParticipantPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
+        /// <summary>
+        /// Builds the filtered participant query shared by both the paginated list and the
+        /// group-count summary, ensuring identical filtering semantics between the two.
+        /// </summary>
+        internal static IQueryable<Domain.Entities.Participants.Participant> ApplyFilter(IApplicationDbContext context, Query request)
         {
-            var context = unitOfWork.DbContext;
-
             var query = from p in context.Participants
                         where p.Owner!.TenantId!.StartsWith(request.CurrentUser!.TenantId!)
                         select p;
@@ -170,10 +177,57 @@ public static class ParticipantsWithPagination
                 query = query.Where(p => participantIdsWithAccessAuditTrail.Contains(p.Id));
             }
 
+            return query;
+        }
+
+        public async Task<Result<PaginatedData<ParticipantPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var context = unitOfWork.DbContext;
+
+            var query = ApplyFilter(context, request);
+
             var count = await query.AsNoTracking().CountAsync(cancellationToken);
 
-                        // Only join to the extra history tables when the selected filter needs those dates.
-                        var transformedSource = recentlyAssignedCutoff.HasValue
+            var transformedQuery = ProjectToDto(context, query, request);
+
+            var orderExpression = BuildOrderExpression(request, includeGroup: true);
+
+            var data = await transformedQuery
+                .AsNoTracking()
+                .OrderBy(orderExpression)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return new PaginatedData<ParticipantPaginationDto>(data, count, request.PageNumber, request.PageSize);
+
+        }
+
+        /// <summary>
+        /// Projects a filtered participant query into <see cref="ParticipantPaginationDto"/>, including
+        /// the optional "assigned on" / "accessed on" history joins required by the recent-action filters.
+        /// Shared by the flat paginated list and the grouped view so projection stays identical.
+        /// </summary>
+        internal static IQueryable<ParticipantPaginationDto> ProjectToDto(
+            IApplicationDbContext context,
+            IQueryable<Domain.Entities.Participants.Participant> query,
+            Query request)
+        {
+            DateTime? recentlyAssignedCutoff = request.RecentAction switch
+            {
+                RecentParticipantFilter.AssignedLast10Days => DateTime.UtcNow.Date.AddDays(-10),
+                RecentParticipantFilter.AssignedLast30Days => DateTime.UtcNow.Date.AddDays(-30),
+                _ => null
+            };
+
+            DateTime? recentlyVisitedCutoff = request.RecentAction switch
+            {
+                RecentParticipantFilter.VisitedLast7Days => DateTime.UtcNow.Date.AddDays(-7),
+                _ => null
+            };
+
+            // Only join to the extra history tables when the selected filter needs those dates.
+            var transformedSource = recentlyAssignedCutoff.HasValue
                 ? from p in query
                   join oh in (
                       from h in context.ParticipantOwnershipHistories
@@ -220,8 +274,7 @@ public static class ParticipantsWithPagination
                       Participant = p
                   };
 
-            var transformedQuery =
-                from item in transformedSource
+            return from item in transformedSource
                 select new ParticipantPaginationDto()
                 {
                     AssignedOn = item.AssignedOn,
@@ -271,8 +324,10 @@ public static class ParticipantsWithPagination
                             }).ToArray(),
                     ConsentGranted = item.Participant.DateOfFirstConsent
                 };
+        }
 
-            var sortColumn = request.OrderBy.Trim().ToLowerInvariant() switch
+        internal static string GetSortColumn(string orderBy)
+            => orderBy.Trim().ToLowerInvariant() switch
             {
                 "id" => "Id",
                 "firstname" => "FirstName",
@@ -289,19 +344,41 @@ public static class ParticipantsWithPagination
                 _ => "Id"
             };
 
+        /// <summary>
+        /// Builds the dynamic LINQ order expression. When <paramref name="includeGroup"/> is true and a
+        /// grouping is active, the group key leads the ordering so grouped rows stay contiguous (used by
+        /// the flat/grouped export). The grouped UI fetches a single group at a time and does not need it.
+        /// </summary>
+        internal static string BuildOrderExpression(Query request, bool includeGroup)
+        {
+            var sortColumn = GetSortColumn(request.OrderBy);
+
             var sortDirection = request.SortDirection.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
                 ? "ascending"
                 : "descending";
 
-            var data = await transformedQuery
-                .AsNoTracking()
-                .OrderBy($"{sortColumn} {sortDirection}")
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync(cancellationToken);
+            var orderExpression = $"{sortColumn} {sortDirection}";
 
-            return new PaginatedData<ParticipantPaginationDto>(data, count, request.PageNumber, request.PageSize);
+            if (!includeGroup)
+            {
+                return orderExpression;
+            }
 
+            var groupColumn = request.GroupBy switch
+            {
+                ParticipantGroupBy.Assignee => "Owner",
+                ParticipantGroupBy.Tenant => "Tenant",
+                _ => null
+            };
+
+            if (groupColumn is not null)
+            {
+                orderExpression = string.Equals(groupColumn, sortColumn, StringComparison.OrdinalIgnoreCase)
+                    ? $"{groupColumn} {sortDirection}"
+                    : $"{groupColumn} ascending, {orderExpression}";
+            }
+
+            return orderExpression;
         }
     }
     public class Validator : AbstractValidator<Query>

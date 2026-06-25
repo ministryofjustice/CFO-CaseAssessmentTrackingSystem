@@ -30,6 +30,7 @@ public record ParticipantsSessionData
             OwnerId = query.OwnerId,
             RiskDue = query.RiskDue,
             RecentlyAssigned = query.RecentAction,
+            GroupBy = query.GroupBy,
             Tabular = tabular
         };
 
@@ -44,6 +45,8 @@ public record ParticipantsSessionData
     public required string? OwnerId { get; init; } 
     public required DateTime? RiskDue { get; init; } 
     public RecentParticipantFilter RecentlyAssigned { get; init; } = RecentParticipantFilter.All;
+
+    public ParticipantGroupBy GroupBy { get; init; } = ParticipantGroupBy.None;
 
     public bool Tabular {get; init; }
     

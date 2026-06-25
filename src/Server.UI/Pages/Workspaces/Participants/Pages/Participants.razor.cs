@@ -70,9 +70,14 @@ public partial class Participants
 
     private bool Tabular { get; set; } = false;
 
+    private const int DefaultPageSize = 50;
+    private const int GroupPageSize = 10;
+
+    private ParticipantGroupDto[] _groups = [];
+
     private bool _downloading = false;
     private bool _canReassign;
-    private readonly HashSet<string> _selectedParticipantIds = [];
+    private HashSet<string> _selectedParticipantIds = [];
     private QuickFilter _currentFilter = QuickFilter.All;
 
     private ParticipantPaginationDto[] _data = [];
@@ -86,14 +91,6 @@ public partial class Participants
         Keyword = null
 
     };
-
-    private void OnRowClick(TableRowClickEventArgs<ParticipantPaginationDto> args)
-    {
-        if(args?.Item is not null)
-        {
-            ViewParticipant(args.Item);
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -142,6 +139,7 @@ public partial class Participants
             Query.TenantId = sd.TenantId;
             Query.RiskDue = sd.RiskDue;
             Query.RecentAction = sd.RecentlyAssigned;
+            Query.GroupBy = sd.GroupBy;
             Tabular = sd.Tabular;
             
             // Sync _currentFilter based on restored state
@@ -240,33 +238,62 @@ public partial class Participants
     private async Task OnRefresh()
     {
         Query.CurrentUser = UserProfile;
-        var results = await Service.Send(Query);
-        if (results is { Succeeded: true, Data: not null })
+
+        if (Query.GroupBy == ParticipantGroupBy.None)
         {
-            _data = results.Data.Items.ToArray();
-            _totalPages = results.Data.TotalPages;
-            _totalItems = results.Data.TotalItems;
+            Query.PageSize = DefaultPageSize;
+
+            var results = await Service.Send(Query);
+            if (results is { Succeeded: true, Data: not null })
+            {
+                _data = results.Data.Items.ToArray();
+                _totalPages = results.Data.TotalPages;
+                _totalItems = results.Data.TotalItems;
+            }
+            else
+            {
+                _data = [];
+                _totalPages = 0;
+                _totalItems = 0;
+            }
+
+            _groups = [];
         }
         else
         {
+            // Grouped mode: the pager pages through the groups (e.g. assignees); each group
+            // carries all of its participant rows.
+            var grouped = await Service.Send(new GetGroupedParticipants.Query
+            {
+                Filter = Query,
+                GroupPageNumber = Query.PageNumber,
+                GroupPageSize = GroupPageSize
+            });
+
+            if (grouped is { Succeeded: true, Data: not null })
+            {
+                _groups = grouped.Data.Groups;
+                _totalItems = grouped.Data.TotalGroups;
+                _totalPages = (int)Math.Ceiling(grouped.Data.TotalGroups / (double)GroupPageSize);
+            }
+            else
+            {
+                _groups = [];
+                _totalItems = 0;
+                _totalPages = 0;
+            }
+
             _data = [];
-            _totalPages = 0;
-            _totalItems = 0;
         }
+
         await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
     }
 
-    private bool IsParticipantSelected(string participantId) => _selectedParticipantIds.Contains(participantId);
-
-    private void SetParticipantSelection(string participantId, bool isSelected)
+    private async Task GroupByChanged(ParticipantGroupBy groupBy)
     {
-        if (isSelected)
-        {
-            _selectedParticipantIds.Add(participantId);
-            return;
-        }
-
-        _selectedParticipantIds.Remove(participantId);
+        Query.GroupBy = groupBy;
+        Query.PageNumber = 1;
+        await OnRefresh();
     }
 
     private void ClearSelectedParticipants() => _selectedParticipantIds.Clear();
@@ -412,6 +439,7 @@ public partial class Participants
         Query.RiskDue = null;
         Query.RecentAction = RecentParticipantFilter.All;
         Query.JustMyCases = false;
+        Query.GroupBy = ParticipantGroupBy.None;
         Tabular = false;
     }
 
@@ -455,14 +483,5 @@ public partial class Participants
         {
             _downloading = false;
         }
-    }
-
-    private void ViewParticipant(ParticipantPaginationDto item)
-    {
-        var targetUrl = item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus
-            ? $"/pages/enrolments/{item.Id}"
-            : $"/pages/workspace/participants/{item.Id}";
-        
-        Navigation.NavigateTo(targetUrl);
     }
 }
