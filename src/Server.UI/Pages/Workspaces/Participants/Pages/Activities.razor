@@ -201,7 +201,7 @@
                     <MudPaper Outlined="true" Class="pa-4">
                         <MudStack>
                             <MudStack Row="true" AlignItems="AlignItems.Center">
-                                <MudText Typo="Typo.h5">@item.Participant @item.ParticipantId</MudText>
+                                <MudText Typo="Typo.h5">@item.ParticipantId @item.Participant</MudText>
                                 <MudChip T="string" Size="Size.Small" Text="@item.Definition.Type.Name" Color="Color.Secondary" />
                                 <MudSpacer />
                                 <MudChip T="string" Color="StatusColour(item.Status)" Size="Size.Small">@item.Status.Name</MudChip>
@@ -209,7 +209,7 @@
                             <MudStack Row="true">
                                 <MudText Typo="Typo.body2">
                                     Submitted by @item.SubmittedBy.
-                                    Category: @item.Definition.Category.Name.
+                                    Category: @item.Definition.Category.Name
                                 </MudText>
                                 <MudSpacer />
                                 <MudText Typo="Typo.body2">
@@ -222,7 +222,7 @@
                             </MudStack>
                             <MudStack Row="true">
                                 <MudText Typo="Typo.body2">
-                                    Added on @created.ToShortDateOrEmptyString() (@created.Humanize()).
+                                    Added on @created.ToShortDateOrEmptyString() (@created.Humanize())
                                 </MudText>
                                 <MudSpacer />
                                 <MudText Typo="Typo.body2">
