@@ -14,7 +14,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
 {
     public async Task<NavigationMenuModel> GetFeaturesAsync(ClaimsPrincipal principal)
     {
-        if(ClaimsPrincipal.Current?.Identity?.IsAuthenticated is false)
+        if(principal.Identity?.IsAuthenticated is false)
         {
             return new NavigationMenuModel([]);
         }
