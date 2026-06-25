@@ -40,7 +40,7 @@ public sealed record NavigationMenuItemButtonModel(string DisplayText, string? H
 /// <param name="Href">The URL of the link</param>
 /// <param name="AccessbilityText">Accessibility description</param>
 /// <param name="Target">HTML standard for target</param>
-public sealed record NavigationMenuItemLinkModel(string DisplayText, string? Href, string AccessbilityText, string Target="self")
+public sealed record NavigationMenuItemLinkModel(string DisplayText, string? Href, string AccessbilityText, string? Target = null)
     : NavigationMenuItemModel();
 
 /// <summary>
