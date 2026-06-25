@@ -63,6 +63,12 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.QA2);
         });
 
+        options.AddPolicy(SecurityPolicies.ServiceDesk, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireRole(RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport);
+        });
+
         options.AddPolicy(SecurityPolicies.UserHasAdditionalRoles, policy =>
         {
             policy.RequireAuthenticatedUser();
