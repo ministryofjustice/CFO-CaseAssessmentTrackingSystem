@@ -11,12 +11,12 @@
         </NotAuthorized>
         <Authorized>
             <PresenceConnector />
-            <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
-                        OpenSearchDialog="OpenSearchDialog"
-                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"/>
-            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@_userProfile?.AssignedRoles"
-            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
+            <HeaderMenu OpenSearch="ToggleSearchMenu"
+                        MenuOpen="_megaMenuOpen"
+                        OnMenuClick="ToggleMegaMenu" />
             <MudMainContent>
+                <MegaMenu Open="_megaMenuOpen" OpenChanged="OnMegaMenuOpenChanged" />
+                <SearchMenu Open="_searchMenuOpen" OpenChanged="OnSearchMenuOpenChanged" />
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
                         <ChildContent>
@@ -39,11 +39,33 @@
 
 @code
 {
-    private bool _commandPaletteOpen;
-    private bool _navigationMenuDrawerOpen = false;
+    private bool _megaMenuOpen;
+    private bool _searchMenuOpen;
     private UserProfile? _userProfile;
     private ErrorBoundary? ErrorBoundary { set; get; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    private void ToggleMegaMenu()
+    {
+        _megaMenuOpen = !_megaMenuOpen;
+        if (_megaMenuOpen)
+        {
+            _searchMenuOpen = false;
+        }
+    }
+
+    private void OnMegaMenuOpenChanged(bool open) => _megaMenuOpen = open;
+
+    private void ToggleSearchMenu()
+    {
+        _searchMenuOpen = !_searchMenuOpen;
+        if (_searchMenuOpen)
+        {
+            _megaMenuOpen = false;
+        }
+    }
+
+    private void OnSearchMenuOpenChanged(bool open) => _searchMenuOpen = open;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,39 +82,5 @@
     {
         // On each page navigation, reset any error state
         ErrorBoundary?.Recover();
-    }
-
-    protected void NavigationMenuDrawerOpenChangedHandler(bool state)
-    {
-        _navigationMenuDrawerOpen = state;
-    }
-
-    protected void ToggleNavigationMenuDrawer()
-    {
-        _navigationMenuDrawerOpen = !_navigationMenuDrawerOpen;
-    }
-
-    private async Task OpenSearchDialog()
-    {
-        if (!_commandPaletteOpen)
-        {
-            var options = new DialogOptions
-            {
-                NoHeader = true,
-                MaxWidth = MaxWidth.Medium,
-                FullWidth = true
-            };
-            
-            var parameters = new DialogParameters<SearchDialog>
-            {
-                { x => x.UserProfile, this._userProfile }
-            };
-
-            var commandPalette = await DialogService.ShowAsync<SearchDialog>("", parameters ,options);
-            _commandPaletteOpen = true;
-
-            await commandPalette.Result;
-            _commandPaletteOpen = false;
-        }
     }
 }
