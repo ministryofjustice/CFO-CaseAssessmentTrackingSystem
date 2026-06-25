@@ -48,7 +48,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
 
         if(await PassesPolicy(principal, SecurityPolicies.SystemFunctionsRead))
         {
-            items.Add(new NavigationMenuItemLinkModel("Administration", "/pages/workspace/performance/", "Navigates to the root workspace for CATS administrative function"));
+            items.Add(new NavigationMenuItemLinkModel("Administration", "/pages/workspace/administration/", "Navigates to the root workspace for CATS administrative function"));
         }
         
         return new("Workspaces", items.ToArray() );
