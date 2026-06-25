@@ -56,28 +56,32 @@ public static class Theme
                 Black = "#000000",
 
                 PrimaryContrastText = "#FFFFFF",
-            }
-,
+            },
             Typography = new Typography
             {
                 Default = new DefaultTypography
                 {
                     FontFamily = myFont,
-                    FontSize = ".875rem"
+                    FontSize = "1rem" // 16px
                 },
-                H1 = { FontFamily = myFont, FontSize = "2.5rem", FontWeight = "300" },
-                H2 = { FontFamily = myFont, FontSize = "2rem", FontWeight = "300" },
-                H3 = { FontFamily = myFont, FontSize = "1.75rem", FontWeight = "400" },
-                H4 = { FontFamily = myFont, FontSize = "1.5rem", FontWeight = "400" },
-                H5 = { FontFamily = myFont, FontSize = "1.25rem", FontWeight = "400" },
-                H6 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "500" },
-                Subtitle1 = { FontFamily = myFont, FontSize = ".875rem", FontWeight = "400" },
-                Subtitle2 = { FontFamily = myFont, FontSize = ".8125rem", FontWeight = "500" },
-                Body1 = { FontFamily = myFont, FontSize = ".875rem", FontWeight = "400" },
-                Body2 = { FontFamily = myFont, FontSize = ".75rem", FontWeight = "400" },
-                Button = { FontFamily = myFont, FontSize = ".75rem", FontWeight = "500" },
-                Caption = { FontFamily = myFont, FontSize = ".6875rem", FontWeight = "400" },
-                Overline = { FontFamily = myFont, FontSize = ".625rem", FontWeight = "400" }
+
+                H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700" }, // 26px
+                H2 = { FontFamily = myFont, FontSize = "1.25rem",  FontWeight = "700" }, // 20px
+                H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600" }, // 18px
+                H4 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "600" }, // 16px
+                H5 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "500" }, // 16px
+                H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500" }, // 14px
+
+                Subtitle1 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "400" }, // 16px
+                Subtitle2 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500" }, // 14px
+
+                Body1 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "400" }, // 16px
+                Body2 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "400" }, // 14px
+
+                Button = { FontFamily = myFont, FontSize = "1rem", FontWeight = "600" }, // 16px
+
+                Caption = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "400" }, // 14px
+                Overline = { FontFamily = myFont, FontSize = "0.75rem", FontWeight = "500" }  // 12px
             }
         };
 
