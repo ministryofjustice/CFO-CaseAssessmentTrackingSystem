@@ -10,58 +10,49 @@
     </svg>
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <MudLink Href="/">
-            <MudText Style="color: white;" Typo="Typo.h5">
+            <MudText Style="color: white;" Typo="Typo.h1">
                 HMPPS Case Assessment and Tracking System (CATS)
             </MudText>
         </MudLink>
     </MudHidden>
     <MudSpacer/>
     
-    <SessionTimeoutDisplay />
-    
-    <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
-    <MudHidden Breakpoint="Breakpoint.SmAndDown">
-        <!-- These icons are hidden if the screen is size SM or smaller -->
-        <MudTooltip Arrow="true"
-                    Text="@L["Search (CTL + K)"]">
-            <MudIconButton Style="color: white;"
-                           Edge="Edge.Start"
-                           Icon="@Icons.Material.Filled.Search"
-                           OnClick="OpenSearchDialog"/>
-        </MudTooltip>
-        
-        <ExternalLinksMenu />
-       
-        @*<LanguageSelector/>*@
-    </MudHidden>
-    <UserMenu OnSettingClick="OnSettingClick"/>
    
-    <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
-    <MudTooltip Arrow="true" Text="@L["Toggle menu"]">
-        <MudToggleIconButton Class="mr-3"
-                             Style="color: white;"
-                             Icon="@Icons.Material.Filled.MenuOpen"
-                             Size="Size.Medium"
-                             Toggled="NavigationMenuDrawerOpen"
-                             ToggledChanged="ToggleNavigationMenuDrawer"
-                             ToggledIcon="@Icons.Material.Filled.Menu"/>
+    <SessionTimeoutDisplay />
+    <MudStack Row="true" Spacing="1">
+        <MudButton StartIcon="@(MenuOpen ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown)"
+               Style="color:white;"
+               OnClick="OnMenuClick"
+               aria-haspopup="true"
+               aria-expanded="@MenuOpen.ToString().ToLowerInvariant()">
+                <MudText Style="color:white;font-weight:600" >
+                    @L["Menu"]
+                </MudText>
+        </MudButton>
 
-    </MudTooltip>
+        <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
+        <MudTooltip Arrow="true" Text="@L["Search (CTL + K)"]">
+            <MudIconButton Style="color: white;"
+                            Icon="@Icons.Material.Filled.Search"
+                            OnClick="OpenSearch"/>
+        </MudTooltip>
+    </MudStack>
+
 </MudAppBar>
 
 @code
 {
-    [EditorRequired] [Parameter] public bool NavigationMenuDrawerOpen { get; set; }
-    [EditorRequired] [Parameter] public EventCallback ToggleNavigationMenuDrawer { get; set; }
-    [EditorRequired] [Parameter] public EventCallback OpenSearchDialog { get; set; }
+    [EditorRequired] [Parameter] public EventCallback OpenSearch { get; set; }
     [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
+    [Parameter] public bool MenuOpen { get; set; }
+    [Parameter] public EventCallback OnMenuClick { get; set; }
     
     private HotKeysContext? hotKeysContext;
 
     protected override void OnInitialized()
     {
         hotKeysContext = HotKeys.CreateContext()
-            .Add(ModCode.Ctrl, Code.K, () => OpenSearchDialog.InvokeAsync());
+            .Add(ModCode.Ctrl, Code.K, () => OpenSearch.InvokeAsync());
     }
 
     public void Dispose()
