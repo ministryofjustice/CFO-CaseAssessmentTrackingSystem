@@ -228,8 +228,6 @@ public static class ConstantString
 
     public static string EditParticipant => Localize("Edit Participant");
 
-    public static string EditAchievement => Localize("Edit Achievement");
-
     public static string AbandonActivity => Localize("Abandon Activity");
     public static string AbandonSuccess => Localize("Abandoned successfully");
 

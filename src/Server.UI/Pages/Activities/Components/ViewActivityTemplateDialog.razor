@@ -1,0 +1,19 @@
+@using Cfo.Cats.Server.UI.Components.Documents
+@inherits CatsComponentBase
+
+<MudDialog Style="height: 100%">
+    <DialogContent>
+        <DocumentDisplayComponent DocumentId="DocumentId" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Close" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@Dialog.Cancel">@ConstantString.Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required Guid DocumentId { get; set; }
+}
