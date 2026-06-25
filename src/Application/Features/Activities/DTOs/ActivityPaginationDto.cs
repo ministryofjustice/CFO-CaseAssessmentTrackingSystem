@@ -1,16 +1,12 @@
 ﻿namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
-public class QAActivitiesResultsSummaryDto
+public class ActivityPaginationDto
 {
     public required Guid ActivityId { get; set; }
     public required string ParticipantId { get; set; }
     public required string Participant { get; set; }
     public required ActivityStatus Status { get; set; }
     public required ActivityDefinition Definition { get; set; }
-    public required ActSummaryNote[] PQA { get; set; }
-    public required ActSummaryNote[] QA1 { get; set; }
-    public required ActSummaryNote[] QA2 { get; set; }
-    public required ActSummaryNote[] Escalations { get; set; }
     public required DateTime? Created { get; set; }
     public required DateTime? CommencedOn { get; set; }
     public required DateTime? ApprovedOn { get; set; }
@@ -25,7 +21,7 @@ public class QAActivitiesResultsSummaryDto
 
     public required string TookPlaceAtLocationName { get; set; }
 
-    public ActSummaryNote[] GetNotes() => (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
+    public Guid? DocumentId { get; set; }
 
     public record ActSummaryNote(string Message, string CreatedBy, string TenantId, string TenantName, DateTime Created)
     {
