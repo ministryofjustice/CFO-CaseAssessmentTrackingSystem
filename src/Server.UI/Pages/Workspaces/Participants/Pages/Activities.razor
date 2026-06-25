@@ -1,0 +1,269 @@
+@page "/pages/workspace/participants/activities"
+
+@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Activities.Components
+@using Humanizer
+
+@inject IStringLocalizer<Activities> L
+
+@inherits OwningComponentBase<IMediator>
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@{
+    Color StatusColour(ActivityStatus status) => status switch
+    {
+        _ when status == ActivityStatus.PendingStatus => Color.Warning,
+        _ when status == ActivityStatus.ApprovedStatus => Color.Success,
+        _ when status == ActivityStatus.AbandonedStatus => Color.Info,
+        _ => Color.Default
+    };
+}
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+    <MudStack>
+        <!-- Header/Quick filter row -->
+        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+            <MudMenu Label="@($"Filters: {GetCurrentFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => ClearQuickFilter())">All</MudMenuItem>
+                <MudMenuItem OnClick="@(() => ApplyMyActivitiesFilter())">My Activities</MudMenuItem>
+                <MudMenuItem OnClick="@(() => ApplyReturnedToMeFilter())">Returned to me</MudMenuItem>
+                <MudMenuItem OnClick="@(() => ApplyReturnedWithinFilter(7))">Returns (Last 7 Days)</MudMenuItem>
+                <MudMenuItem OnClick="@(() => ApplyReturnedWithinFilter(14))">Returns (Last 14 Days)</MudMenuItem>
+                <MudMenuItem OnClick="@(() => ApplyReturnedWithinFilter(30))">Returns (Last 30 Days)</MudMenuItem>
+            </MudMenu>
+            <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
+                          ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                          AdornmentColor="Color.Secondary">
+            </MudTextField>
+            <MudSpacer />
+            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
+                @ConstantString.Refresh
+            </MudButton>
+            <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="OnExport"
+                              StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
+                @ConstantString.Export
+            </MudLoadingButton>
+        </MudStack>
+
+        <!-- Additional filters row -->
+        <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+
+            <MudPagination Selected="Query.PageNumber"
+                           Count="@_totalPages"
+                           MiddleCount="2"
+                           BoundaryCount="1"
+                           SelectedChanged="PageChanged"
+                           Size="Size.Small" />
+
+            <MudText>@_totalItems records</MudText>
+
+            <!-- Tabular Switch -->
+            <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@TabularChanged" T="bool?" />
+
+            <MudSpacer />
+
+            <!-- Activity Type -->
+            <MudMenu Size="Size.Small" Label="@(Query.TypeFilter is null ? "All Types" : ActivityType.FromValue(Query.TypeFilter.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All" OnClick="@(() => ActivityTypeChanged(null))" />
+                @foreach (var type in ActivityType.List)
+                {
+                    <MudMenuItem Label="@type.Name" OnClick="@(() => ActivityTypeChanged(type))" />
+                }
+            </MudMenu>
+
+            <!-- Status -->
+            <MudMenu Size="Size.Small" Label="@(Query.Status is null ? "All Statuses" : ActivityStatus.FromValue(Query.Status.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All" OnClick="@(() => StatusChanged(null))" />
+                @foreach (var status in ActivityStatus.List)
+                {
+                    <MudMenuItem Label="@status.Name" OnClick="@(() => StatusChanged(status))" />
+                }
+            </MudMenu>
+
+            <!-- Submitted by -->
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSubmittedByDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if (string.IsNullOrEmpty(Query.OwnerId))
+                {
+                    @("All Submitters")
+                }
+                else
+                {
+                    @(_users.TryGetValue(Query.OwnerId, out var name) ? name : "Selected user")
+                }
+            </MudButton>
+
+            <!-- Tenant -->
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if (string.IsNullOrEmpty(Query.TenantId))
+                {
+                    @("All Tenants")
+                }
+                else
+                {
+                    @(_tenants.TryGetValue(Query.TenantId, out var name) ? name : "Selected tenant")
+                }
+            </MudButton>
+
+            <!-- Location (Took place at) -->
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @(Query.LocationId is null ? "All Locations" : Query.LocationName)
+            </MudButton>
+
+            <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="Added On" OnClick="@(() => SortBy("Created"))" />
+                <MudMenuItem Label="Took Place On" OnClick="@(() => SortBy("CommencedOn"))" />
+                <MudMenuItem Label="Last Updated" OnClick="@(() => SortBy("LastModified"))" />
+                <MudMenuItem Label="Status" OnClick="@(() => SortBy("Status"))" />
+                <MudMenuItem Label="Location" OnClick="@(() => SortBy("Location"))" />
+            </MudMenu>
+
+            <MudTooltip Text="Clear search parameters">
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
+            </MudTooltip>
+        </MudStack>
+
+    </MudStack>
+
+    @if (_data is { Length: > 0 })
+    {
+        @if (Tabular)
+        {
+            <MudTable T="ActivityPaginationDto" Items="@_data" Hover="true" Striped="true">
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh>Participant</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Submitted By</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Took Place At</MudTh>
+                    <MudTh>Last Updated</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudIconButton Size="Size.Small"
+                                       Icon="@(IsExpanded(context.ActivityId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                       OnClick="@(() => ToggleExpanded(context.ActivityId))" />
+                    </MudTd>
+                    <MudTd DataLabel="Participant">@context.Participant @context.ParticipantId</MudTd>
+                    <MudTd DataLabel="Type">@context.Definition.Type.Name</MudTd>
+                    <MudTd DataLabel="Submitted By">@context.SubmittedBy</MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Color="StatusColour(context.Status)" Size="Size.Small">@context.Status.Name</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Took Place At">@context.TookPlaceAtLocationName</MudTd>
+                    <MudTd DataLabel="Last Updated">@context.LastModified?.ToString("g")</MudTd>
+                    <MudTd>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AnchorOrigin="Origin.BottomLeft">
+                            @if (context.Status.AllowsChanges)
+                            {
+                                <MudMenuItem OnClick="@(() => EditActivity(context))">@ConstantString.EditActivity</MudMenuItem>
+                            }
+                            @if (context.DocumentId.HasValue)
+                            {
+                                <MudMenuItem OnClick="@(() => ViewTemplate(context))">View Template</MudMenuItem>
+                            }
+                            <MudMenuItem OnClick="@(() => ViewParticipant(context.ParticipantId))">@ConstantString.ViewParticipant</MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
+                </RowTemplate>
+                <ChildRowContent>
+                    @if (IsExpanded(context.ActivityId))
+                    {
+                        <MudTr>
+                            <td colspan="8" class="pa-0">
+                                <MudPaper Elevation="0" Class="pa-2">
+                                    <ActivityExpandedDetails Activity="context"
+                                                             IncludeInternalNotes="Query.IncludeInternalNotes"
+                                                             CurrentUser="UserProfile" />
+                                </MudPaper>
+                            </td>
+                        </MudTr>
+                    }
+                </ChildRowContent>
+            </MudTable>
+        }
+        else
+        {
+            <MudStack Class="mt-4">
+                @foreach (var item in _data)
+                {
+                    var created = item.Created;
+                    var commencedOn = item.CommencedOn;
+                    var today = DateTime.Today.ToLocalTime();
+
+                    <MudPaper Outlined="true" Class="pa-4">
+                        <MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.h5">@item.Participant @item.ParticipantId</MudText>
+                                <MudChip T="string" Size="Size.Small" Text="@item.Definition.Type.Name" Color="Color.Secondary" />
+                                <MudSpacer />
+                                <MudChip T="string" Color="StatusColour(item.Status)" Size="Size.Small">@item.Status.Name</MudChip>
+                            </MudStack>
+                            <MudStack Row="true">
+                                <MudText Typo="Typo.body2">
+                                    Submitted by @item.SubmittedBy.
+                                    Category: @item.Definition.Category.Name.
+                                </MudText>
+                                <MudSpacer />
+                                <MudText Typo="Typo.body2">
+                                    @(item.Status == ActivityStatus.ApprovedStatus
+                                        ? $"Approved On: {item.ApprovedOn?.ToString("g")}"
+                                        : item.Status == ActivityStatus.AbandonedStatus
+                                            ? $"Abandoned On: {item.ApprovedOn?.ToString("g")}"
+                                            : $"Last updated on: {item.LastModified?.ToString("g")}")
+                                </MudText>
+                            </MudStack>
+                            <MudStack Row="true">
+                                <MudText Typo="Typo.body2">
+                                    Added on @created.ToShortDateOrEmptyString() (@created.Humanize()).
+                                </MudText>
+                                <MudSpacer />
+                                <MudText Typo="Typo.body2">
+                                    Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
+                                    at @item.TookPlaceAtLocationName
+                                </MudText>
+                            </MudStack>
+                        </MudStack>
+
+                        <ActivityExpansionPanel Activity="item"
+                                               IncludeInternalNotes="Query.IncludeInternalNotes"
+                                               CurrentUser="UserProfile" />
+
+                        <MudDivider Class="mt-4 mb-2" />
+                        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                            @if (item.Status.AllowsChanges)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                        StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditActivity(item))">
+                                    @ConstantString.EditActivity
+                                </MudButton>
+                            }
+                            @if (item.DocumentId.HasValue)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
+                                        StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ViewTemplate(item))">
+                                    View Template
+                                </MudButton>
+                            }
+                            <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
+                                    StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => ViewParticipant(item.ParticipantId))">
+                                @ConstantString.ViewParticipant
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                }
+            </MudStack>
+        }
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info">No activities match the current filters.</MudAlert>
+    }
+</MudContainer>

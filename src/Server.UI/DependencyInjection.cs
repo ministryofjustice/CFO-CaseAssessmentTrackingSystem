@@ -161,6 +161,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ParticipantsSessionStorage>();
+        services.AddScoped<ActivitiesSessionStorage>();
         services.AddScoped<PQASessionStorage>();
         services.AddScoped<ActivityPQASessionStorage>();
         
