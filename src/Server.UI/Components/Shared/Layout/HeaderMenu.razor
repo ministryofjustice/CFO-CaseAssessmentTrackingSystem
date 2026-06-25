@@ -1,6 +1,7 @@
 ﻿@using Toolbelt.Blazor.HotKeys2
 
 @inject IStringLocalizer<HeaderMenu> L
+@inject IWebHostEnvironment Environment
 @inject HotKeys HotKeys
 
 <MudAppBar Class=""
@@ -10,12 +11,18 @@
     </svg>
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <MudLink Href="/">
-            <MudText Style="color: white;" Typo="Typo.h1">
+            <MudText Style="color: white;" Typo="Typo.h1" Class="mr-2">
                 HMPPS Case Assessment and Tracking System (CATS)
             </MudText>
         </MudLink>
     </MudHidden>
-    <MudSpacer/>
+
+    @if(Environment.IsProduction() is false)
+    {
+        <MudChip T="string" Label="true" Color="Color.Warning" Style="font-weight: bold">@Environment.EnvironmentName</MudChip>
+    }
+
+    <MudSpacer/> 
     
    
     <SessionTimeoutDisplay />
