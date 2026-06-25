@@ -7,13 +7,13 @@ namespace Cfo.Cats.Application.Features.Notifications.Command;
 public static class MarkAsUnread
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<bool>>
+    public class Command : ICommand<Result<bool>>
     {
         public Guid[] NotificationsToMarkAsUnread { get; set; } = [];
         public UserProfile? CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<bool>>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result<bool>>
     {
         public async Task<Result<bool>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -61,7 +61,7 @@ public static class MarkAsUnread
                     .NotEmpty()
                     .WithMessage(string.Format(ValidationConstants.GuidMessage, "Notification"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleForEach(p => p.NotificationsToMarkAsUnread)
                     .MustAsync(Exist)

@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.Initiatives.Queries;
 public static class GetInitiatives
 {
     [RequestAuthorize(Policy = SecurityPolicies.Initiatives)]
-    public class Query : IRequest<Result<InitiativeDto[]>>
+    public class Query : IQuery<Result<InitiativeDto[]>>
     {
         public bool IncludeExpired { get; init; }
     }
 
-    public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IRequestHandler<Query, Result<InitiativeDto[]>>
+    public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IQueryHandler<Query, Result<InitiativeDto[]>>
     {
         public async Task<Result<InitiativeDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 public static class GetOutcomeQualityDipSamples
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-    public class Query : IRequest<Result<DipSampleDto[]>>
+    public class Query : IQuery<Result<DipSampleDto[]>>
     {
         public int Month { get; set; } = DateTime.Now.AddMonths(-4).Month;
         public int Year { get; set; } = DateTime.Now.AddMonths(-4).Year;
@@ -18,7 +18,7 @@ public static class GetOutcomeQualityDipSamples
         public DateTime Period => new(Year, Month, 1);
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<DipSampleDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<DipSampleDto[]>>
     {
         public async Task<Result<DipSampleDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -85,7 +85,7 @@ public static class GetOutcomeQualityDipSamples
     private class Validator : AbstractValidator<Query>
     {
         public Validator() =>
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(q => q.Month)
                     .ExclusiveBetween(1, 12)

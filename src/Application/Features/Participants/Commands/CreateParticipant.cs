@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class CreateParticipant
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command: IRequest<Result<string>>
+    public class Command: ICommand<Result<string>>
     {
         /// <summary>
         /// The CATS identifier
@@ -39,7 +39,7 @@ public static class CreateParticipant
     }
 
     public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) 
-        : IRequestHandler<Command, Result<string>>
+        : ICommandHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -149,7 +149,7 @@ public static class CreateParticipant
                 .MaximumLength(1000)
                 .WithMessage("Referral Comments must be less than 1000 characters");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.Identifier)
                     .MustAsync(NotAlreadyExist)

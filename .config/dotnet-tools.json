@@ -10,14 +10,14 @@
       "rollForward": false
     },
     "aspire.cli": {
-      "version": "13.3.5",
+      "version": "13.4.2",
       "commands": [
         "aspire"
       ],
       "rollForward": false
     },
     "microsoft.sqlpackage": {
-      "version": "170.3.93",
+      "version": "170.4.83",
       "commands": [
         "sqlpackage"
       ],

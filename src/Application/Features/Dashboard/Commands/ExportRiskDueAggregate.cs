@@ -11,14 +11,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Export;
 public static class ExportRiskDueAggregate
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required GetRiskDueAggregate.Query Query { get; set; }
     }
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ public static class ExportRiskDueAggregate
             this.currentUserService = currentUserService;
             this.unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)

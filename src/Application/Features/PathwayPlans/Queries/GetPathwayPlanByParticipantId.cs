@@ -9,12 +9,12 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Queries;
 public static class GetPathwayPlanByParticipantId
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<PathwayPlanDto?>
+    public class Query : IQuery<PathwayPlanDto?>
     {
         public required string ParticipantId {  get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PathwayPlanDto?>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, PathwayPlanDto?>
     {
         public async Task<PathwayPlanDto?> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -78,7 +78,7 @@ public static class GetPathwayPlanByParticipantId
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

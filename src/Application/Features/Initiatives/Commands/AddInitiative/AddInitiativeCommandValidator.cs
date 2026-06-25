@@ -36,7 +36,7 @@ public class AddInitiativeCommandValidator : AbstractValidator<AddInitiativeComm
             .GreaterThanOrEqualTo(x => x.StartDate)
             .WithMessage("End date must be on or after start date.");
 
-        RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+        RuleSet(ValidationConstants.RuleSet.Mediator, () =>
         {
             RuleFor(x => x.Code)
                 .MustAsync(BeUniqueCode)

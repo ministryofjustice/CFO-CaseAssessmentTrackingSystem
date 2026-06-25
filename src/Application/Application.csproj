@@ -11,6 +11,7 @@
         <PackageReference Include="Ardalis.Specification" />
         <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
         <PackageReference Include="AutoMapper" />
+        <PackageReference Include="Cortex.Mediator" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="LazyCache" />

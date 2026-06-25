@@ -5,7 +5,7 @@ namespace Cfo.Cats.Server.UI.Pages.Risk.RiskComponents;
 public partial class RiskHistory
 {
 
-    protected override IRequest<Result<RiskHistoryDto[]>> CreateQuery()
+    protected override IQuery<Result<RiskHistoryDto[]>> CreateQuery()
         => new GetParticipantRiskHistory.Query()
         {
             CurrentUser = CurrentUser,

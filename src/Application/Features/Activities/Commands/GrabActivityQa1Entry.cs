@@ -10,12 +10,12 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 public static class GrabActivityQa1Entry
 {
     [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
-    public class Command : IRequest<Result<ActivityQueueEntryDto>>
+    public class Command : ICommand<Result<ActivityQueueEntryDto>>
     {
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ActivityQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<Command, Result<ActivityQueueEntryDto>>
     {
         private static readonly SemaphoreSlim Semaphore = new(1, 1);
 

@@ -20,7 +20,7 @@ public partial class InductionDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetInductions.InductionsDto>> CreateQuery()
+    protected override IQuery<Result<GetInductions.InductionsDto>> CreateQuery()
      => new GetInductions.Query()
      {
          CurrentUser = CurrentUser,

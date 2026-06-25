@@ -10,12 +10,12 @@ public static class IdentityAuditTrailsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsRead)]
     public class Query : IdentityAuditTrailAdvancedFilter,
-        IRequest<Result<PaginatedData<IdentityAuditTrailDto>>>
+        IQuery<Result<PaginatedData<IdentityAuditTrailDto>>>
     {
         public IdentityAuditTrailAdvancedSpecification Specification => new (this);
     }
 
-    public class Handler : IRequestHandler<Query, Result<PaginatedData<IdentityAuditTrailDto>>>
+    public class Handler : IQueryHandler<Query, Result<PaginatedData<IdentityAuditTrailDto>>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;

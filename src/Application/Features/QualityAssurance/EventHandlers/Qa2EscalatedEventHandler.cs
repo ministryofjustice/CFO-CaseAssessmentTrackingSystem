@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events.QA.Enrolments;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.EventHandlers;
 
-internal class Qa2EscalatedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<EnrolmentQa2EntryEscalatedDomainEvent>
+public class Qa2EscalatedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<EnrolmentQa2EntryEscalatedDomainEvent>
 {
     public async Task Handle(EnrolmentQa2EntryEscalatedDomainEvent notification, CancellationToken cancellationToken)
     {

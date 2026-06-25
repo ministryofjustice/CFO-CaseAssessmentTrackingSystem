@@ -6,14 +6,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetPathwayPlans
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<PathwayPlanDto>>
+    public class Query : IQuery<Result<PathwayPlanDto>>
     {
         public string? UserId { get; set; }
         public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PathwayPlanDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PathwayPlanDto>>
     {
         public async Task<Result<PathwayPlanDto>> Handle(Query request, CancellationToken cancellationToken)
         {

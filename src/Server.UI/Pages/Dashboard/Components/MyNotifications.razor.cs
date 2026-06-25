@@ -7,9 +7,9 @@ namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
 public partial class MyNotifications
 {
-    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
-    private NotificationsWithPaginationQuery.Query Query { get; set; } = new()
+    private NotificationsWithPaginationQuery.Query Query { get; } = new()
     {
         PageSize = 5
     };
@@ -18,7 +18,7 @@ public partial class MyNotifications
 
     private async Task DismissNotification(Guid id)
     {
-        var result = await GetNewMediator().Send(new MarkAsRead.Command
+        await GetNewMediator().Send(new MarkAsRead.Command
         {
             CurrentUser = UserProfile,
             NotificationsToMarkAsRead = [id]
@@ -28,7 +28,7 @@ public partial class MyNotifications
 
     private async Task UnreadNotification(Guid id)
     {
-        var result = await GetNewMediator().Send(new MarkAsUnread.Command
+        await GetNewMediator().Send(new MarkAsUnread.Command
         {
             CurrentUser = UserProfile,
             NotificationsToMarkAsUnread = [id]
@@ -36,18 +36,22 @@ public partial class MyNotifications
         await OnRefresh();
     }
 
-    private async Task OnShowClosedChanged(bool value)
-    {
-        Query!.ShowReadNotifications = value;
-        await OnRefresh();
-    }
-
     private async Task OnRefresh()
     {
         Query.CurrentUser = UserProfile;
         Query.OrderBy = "NotificationDate";
-        Query.SortDirection = SortDirection.Descending.ToString();
-        Results = await GetNewMediator().Send(Query);
+        Query.SortDirection = nameof(SortDirection.Descending);
+        var result = await GetNewMediator().Send(Query);
+        
+        if (result.Succeeded)
+        {
+            Results = result.Data;
+        }
+        else
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            Results = null;
+        }
     }
 
     private PaginatedData<NotificationDto>? Results { get; set; }
@@ -60,7 +64,7 @@ public partial class MyNotifications
 
     private async Task OnShowUnreadChanged(bool value)
     {
-        Query!.ShowReadNotifications = value;
+        Query.ShowReadNotifications = value;
         await OnRefresh();
     }
 

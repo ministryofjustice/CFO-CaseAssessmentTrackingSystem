@@ -9,12 +9,12 @@ namespace Cfo.Cats.Application.Features.Labels.Queries;
 public static class GetLabelById
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query(Guid id) : IRequest<Result<LabelDto>>
+    public class Query(Guid id) : IQuery<Result<LabelDto>>
     {
         public Guid LabelId { get; } = id;
     }
 
-    public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IRequestHandler<Query, Result<LabelDto>>
+    public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IQueryHandler<Query, Result<LabelDto>>
     {
         public async Task<Result<LabelDto>> Handle(Query request, CancellationToken cancellationToken)
         {

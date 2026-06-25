@@ -39,13 +39,25 @@ public partial class CaseNotes
 
     private int TotalPages => _paginatedNotes?.TotalPages ?? 0;
 
-    private async Task OnRefresh() =>
-        _paginatedNotes = await GetNewMediator().Send(new GetParticipantNotes.Query()
+    private async Task OnRefresh()
+    {
+        var result = await GetNewMediator().Send(new GetParticipantNotes.Query()
         {
             ParticipantId = ParticipantId,
             PageNumber = _pageNumber,
             PageSize = PageSize
         });
+        
+        if (result.Succeeded)
+        {
+            _paginatedNotes = result.Data;
+        }
+        else
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            _paginatedNotes = null;
+        }
+    }
 
     private async Task OnPaginationChanged(int page)
     {

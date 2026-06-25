@@ -21,7 +21,7 @@ public partial class ActivitiesAdvisoriesToProviderDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesToProviderDto>> CreateQuery()
+    protected override IQuery<Result<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesToProviderDto>> CreateQuery()
      => new GetActivitiesAdvisoriesToProvider.Query()
      {
          CurrentUser = CurrentUser,

@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events.QA.Payables;
 
 namespace Cfo.Cats.Application.Features.Activities.EventHandlers.QualityAssurance;
 
-internal class ActivityQa2EscalatedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ActivityQa2EntryEscalatedDomainEvent>
+public class ActivityQa2EscalatedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ActivityQa2EntryEscalatedDomainEvent>
 {
     public async Task Handle(ActivityQa2EntryEscalatedDomainEvent notification, CancellationToken cancellationToken)
     {

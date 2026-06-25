@@ -20,7 +20,7 @@ public partial class ReassessmentDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetReassessments.ReassessmentsDto>> CreateQuery()
+    protected override IQuery<Result<GetReassessments.ReassessmentsDto>> CreateQuery()
      => new GetReassessments.Query()
      {
          CurrentUser = CurrentUser,

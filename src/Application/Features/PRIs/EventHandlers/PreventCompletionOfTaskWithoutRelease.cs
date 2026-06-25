@@ -2,7 +2,7 @@
 using Cfo.Cats.Domain.Common.Exceptions;
 namespace Cfo.Cats.Application.Features.PRIs.EventHandlers;
 
-internal class PreventCompletionOfTaskWithoutRelease(IUnitOfWork unitOfWork) : INotificationHandler<ObjectiveTaskCompletedDomainEvent>
+public class PreventCompletionOfTaskWithoutRelease(IUnitOfWork unitOfWork) : INotificationHandler<ObjectiveTaskCompletedDomainEvent>
 {
     
     // TODO: Replace this with a business rule?

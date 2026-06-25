@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.ParticipantLabels;
 
 namespace Cfo.Cats.Application.Features.ParticipantLabels.AddParticipantLabel;
 
-public class AddParticipantLabelCommandHandler(ILabelRepository labelRepository, IParticipantLabelRepository participantLabelRepository, IParticipantLabelsCounter counter) : IRequestHandler<AddParticipantLabelCommand, Result>
+public class AddParticipantLabelCommandHandler(ILabelRepository labelRepository, IParticipantLabelRepository participantLabelRepository, IParticipantLabelsCounter counter) : ICommandHandler<AddParticipantLabelCommand, Result>
 {
     public async Task<Result> Handle(AddParticipantLabelCommand request, CancellationToken cancellationToken)
     {

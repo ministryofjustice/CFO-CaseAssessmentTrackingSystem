@@ -15,7 +15,7 @@ public partial class MyParticipantsWithNoRiskComponent
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    protected override IRequest<Result<PaginatedData<ParticipantsWithNoRiskDto>>> CreateQuery()
+    protected override IQuery<Result<PaginatedData<ParticipantsWithNoRiskDto>>> CreateQuery()
         => new ParticipantsWithNoRiskResultsWithPagination.Query()
         {
             PageSize = 5,

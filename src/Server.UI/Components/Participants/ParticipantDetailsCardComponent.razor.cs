@@ -8,7 +8,7 @@ namespace Cfo.Cats.Server.UI.Components.Participants;
 /// </summary>
 public partial class ParticipantDetailsCardComponent
 {
-    protected override IRequest<Result<ParticipantHeaderDetailsDto>> CreateQuery()
+    protected override IQuery<Result<ParticipantHeaderDetailsDto>> CreateQuery()
         => new GetParticipantDetails.Query()
         {
             CurrentUser = CurrentUser,

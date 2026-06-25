@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 public static class SubmitCsoResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipReview)]
-    public record Command : IRequest<Result>
+    public record Command : ICommand<Result>
     {
         public required UserProfile CurrentUser { get; set; }
 
@@ -64,7 +64,7 @@ public static class SubmitCsoResponse
 
     }
 
-    internal class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -169,7 +169,7 @@ public static class SubmitCsoResponse
                 .Must(x => x.IsAnswer)
                 .WithMessage("Compliance must be answered");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 const string message = "Cannot submit CPM review: {0}";
 

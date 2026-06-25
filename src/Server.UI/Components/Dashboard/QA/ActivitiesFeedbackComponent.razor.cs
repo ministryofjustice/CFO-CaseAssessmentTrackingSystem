@@ -30,7 +30,7 @@ public partial class ActivitiesFeedbackComponent
 
     private bool HasReadItems => Data?.TabularData?.Any(x => x.IsRead) ?? false;
     
-    protected override IRequest<Result<GetActivitiesFeedback.ActivitiesFeedbackDto>> CreateQuery()
+    protected override IQuery<Result<GetActivitiesFeedback.ActivitiesFeedbackDto>> CreateQuery()
         => new GetActivitiesFeedback.Query
         {
             CurrentUser = CurrentUser,

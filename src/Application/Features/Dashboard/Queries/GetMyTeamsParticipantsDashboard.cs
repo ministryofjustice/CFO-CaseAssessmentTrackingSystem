@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetMyTeamsParticipantsDashboard 
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ParticipantCountSummaryDto>>
+    public class Query : IQuery<Result<ParticipantCountSummaryDto>>
     {
         public UserProfile? CurrentUser { get; set; } 
         public string? TenantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantCountSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ParticipantCountSummaryDto>>
     {
         public async Task<Result<ParticipantCountSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {

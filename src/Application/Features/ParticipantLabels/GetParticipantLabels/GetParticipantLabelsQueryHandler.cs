@@ -4,7 +4,7 @@ using Dapper;
 
 namespace Cfo.Cats.Application.Features.ParticipantLabels.GetParticipantLabels;
 
-public class GetParticipantLabelsQueryHandler(ISqlConnectionFactory sqlConnectionFactory) : IRequestHandler<GetParticipantLabelsQuery, Result<GetParticipantLabelsDto>>
+public class GetParticipantLabelsQueryHandler(ISqlConnectionFactory sqlConnectionFactory) : IQueryHandler<GetParticipantLabelsQuery, Result<GetParticipantLabelsDto>>
 {
     public async Task<Result<GetParticipantLabelsDto>> Handle(GetParticipantLabelsQuery request, CancellationToken cancellationToken)
     {

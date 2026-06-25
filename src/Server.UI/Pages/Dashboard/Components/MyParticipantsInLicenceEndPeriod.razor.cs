@@ -15,7 +15,7 @@ public partial class MyParticipantsInLicenceEndPeriod
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    protected override IRequest<Result<PaginatedData<ParticipantsInLicenceEndPeriodResultsSummaryDto>>> CreateQuery()
+    protected override IQuery<Result<PaginatedData<ParticipantsInLicenceEndPeriodResultsSummaryDto>>> CreateQuery()
         => new ParticipantsInLicenceEndPeriodResultsWithPagination.Query()
         {
             PageSize = 5,

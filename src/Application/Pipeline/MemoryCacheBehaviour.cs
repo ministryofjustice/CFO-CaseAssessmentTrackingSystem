@@ -2,31 +2,26 @@ using Cfo.Cats.Application.Common.Interfaces.Caching;
 
 namespace Cfo.Cats.Application.Pipeline;
 
-public class MemoryCacheBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : ICacheableRequest<TResponse>
+public sealed class MemoryCacheBehaviour<TQuery, TResponse>(
+    IAppCache cache,
+    ILogger<MemoryCacheBehaviour<TQuery, TResponse>> logger)
+    : IQueryPipelineBehavior<TQuery, TResponse>
+    where TQuery : IQuery<TResponse>
 {
-    private readonly IAppCache cache;
-    private readonly ILogger<MemoryCacheBehaviour<TRequest, TResponse>> logger;
-
-    public MemoryCacheBehaviour(
-        IAppCache cache,
-        ILogger<MemoryCacheBehaviour<TRequest, TResponse>> logger
-    )
-    {
-        this.cache = cache;
-        this.logger = logger;
-    }
-
     public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken
-    )
+        TQuery query,
+        QueryHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
-        logger.LogTrace("{Name} is caching with {@Request}", nameof(request), request);
+        if (query is not ICacheableRequest<TResponse> cacheableRequest)
+        {
+            return await next();
+        }
+
+        logger.LogTrace("{Name} is caching with {@Request}", nameof(query), query);
         var response = await cache
-            .GetOrAddAsync(request.CacheKey, async () => await next(cancellationToken), request.Options);
-            
+            .GetOrAddAsync(cacheableRequest.CacheKey, async () => await next(), cacheableRequest.Options);
+
         return response;
     }
 }

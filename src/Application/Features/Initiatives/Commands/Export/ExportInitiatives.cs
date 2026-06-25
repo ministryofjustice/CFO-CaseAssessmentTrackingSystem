@@ -11,14 +11,14 @@ namespace Cfo.Cats.Application.Features.Initiatives.Commands.Export;
 public static class ExportInitiatives
 {
     [RequestAuthorize(Policy = SecurityPolicies.Initiatives)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required GetInitiatives.Query Query { get; init; }
     }
 
-    private class Handler(
+    public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -50,7 +50,7 @@ public static class ExportInitiatives
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)

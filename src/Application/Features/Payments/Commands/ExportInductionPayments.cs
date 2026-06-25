@@ -11,14 +11,14 @@ namespace Cfo.Cats.Application.Features.Payments.Commands;
 public static class ExportInductionPayments
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required GetInductionPayments.Query Query { get; set; }
     }
 
-    private class Handler(
+    public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ public static class ExportInductionPayments
             this.currentUserService = currentUserService;
             this.unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)

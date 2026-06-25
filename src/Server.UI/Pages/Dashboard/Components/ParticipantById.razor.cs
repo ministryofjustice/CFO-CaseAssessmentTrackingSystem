@@ -14,7 +14,7 @@ public partial class ParticipantById
         return Task.CompletedTask;
     }
     
-    protected override IRequest<Result<ParticipantDto>> CreateQuery()
+    protected override IQuery<Result<ParticipantDto>> CreateQuery()
         => new GetParticipantByIdResult.Query
         {
             ParticipantId = _participantId!

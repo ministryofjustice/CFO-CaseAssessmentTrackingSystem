@@ -9,12 +9,12 @@ namespace Cfo.Cats.Application.Features.Inductions.Queries;
 public static class GetInductionsByParticipantId
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<InductionsDto>>
+    public class Query : IQuery<Result<InductionsDto>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<InductionsDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<InductionsDto>>
     {
         public async Task<Result<InductionsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

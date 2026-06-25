@@ -5,7 +5,7 @@ using Cfo.Cats.Domain.Participants;
 namespace Cfo.Cats.Application.Features.ParticipantLabels.GetParticipantLabels;
 
 [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-public class GetParticipantLabelsQuery(ParticipantId participantId) : IRequest<Result<GetParticipantLabelsDto>>
+public class GetParticipantLabelsQuery(ParticipantId participantId) : IQuery<Result<GetParticipantLabelsDto>>
 {
     public ParticipantId ParticipantId { get; } = participantId;
 }

@@ -6,7 +6,7 @@ using Cfo.Cats.Domain.Labels;
 namespace Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 
 [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
-public class EditLabelCommand : IRequest<Result>
+public class EditLabelCommand : ICommand<Result>
 {
     public required LabelId LabelId { get; set; }
 

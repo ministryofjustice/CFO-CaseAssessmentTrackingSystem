@@ -1,10 +1,10 @@
-﻿namespace Cfo.Cats.Application.Pipeline;
+namespace Cfo.Cats.Application.Pipeline;
 
-public class TransactionBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork, IDomainEventDispatcher eventDispatcher) : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+public abstract class TransactionBehaviour<TRequest, TResponse>(
+    IUnitOfWork unitOfWork,
+    IDomainEventDispatcher eventDispatcher)
 {
-   
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    protected async Task<TResponse> HandleCore(Func<Task<TResponse>> next, CancellationToken cancellationToken)
     {
         var span = SentrySdk.GetSpan()?
             .StartChild("transaction", "Database transaction pipeline");
@@ -12,9 +12,8 @@ public class TransactionBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork, I
         try
         {
             await unitOfWork.BeginTransactionAsync();
-            var response = await next(cancellationToken);
+            var response = await next();
 
-            //await unitOfWork.SaveChangesAsync(cancellationToken);
             await eventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, cancellationToken);
 
             await unitOfWork.CommitTransactionAsync();
@@ -30,5 +29,32 @@ public class TransactionBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork, I
             span?.Finish();
         }
     }
-    
+}
+
+public sealed class CommandTransactionBehaviour<TCommand, TResponse>(
+    IUnitOfWork unitOfWork,
+    IDomainEventDispatcher eventDispatcher)
+    : TransactionBehaviour<TCommand, TResponse>(unitOfWork, eventDispatcher),
+        ICommandPipelineBehavior<TCommand, TResponse>
+    where TCommand : ICommand<TResponse>
+{
+    public Task<TResponse> Handle(
+        TCommand command,
+        CommandHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+        => HandleCore(() => next(), cancellationToken);
+}
+
+public sealed class QueryTransactionBehaviour<TQuery, TResponse>(
+    IUnitOfWork unitOfWork,
+    IDomainEventDispatcher eventDispatcher)
+    : TransactionBehaviour<TQuery, TResponse>(unitOfWork, eventDispatcher),
+        IQueryPipelineBehavior<TQuery, TResponse>
+    where TQuery : IQuery<TResponse>
+{
+    public Task<TResponse> Handle(
+        TQuery query,
+        QueryHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+        => HandleCore(() => next(), cancellationToken);
 }

@@ -44,7 +44,7 @@ public class IswDto
                 .NotNull()
                 .WithMessage("You must enter Wraparound support start date");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.WraparoundSupportStartedOn)
                     .Must((command, wraparoundSupportStartedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, wraparoundSupportStartedOn))

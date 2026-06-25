@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetRiskDueDashboard
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<RiskDueDto[]>
+    public class Query : IQuery<RiskDueDto[]>
     {
         public required string UserId { get; set; }
 
@@ -18,7 +18,7 @@ public static class GetRiskDueDashboard
 
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, RiskDueDto[]>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, RiskDueDto[]>
     {
         public async Task<RiskDueDto[]> Handle(Query request, CancellationToken cancellationToken)
         {

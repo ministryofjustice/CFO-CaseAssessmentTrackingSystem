@@ -19,7 +19,7 @@ public partial class SupportAndReferralDashboardComponent
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
-    protected override IRequest<Result<GetSupportReferrals.SupportAndReferralDto>> CreateQuery()
+    protected override IQuery<Result<GetSupportReferrals.SupportAndReferralDto>> CreateQuery()
      => new GetSupportReferrals.Query()
      {
          CurrentUser = CurrentUser,

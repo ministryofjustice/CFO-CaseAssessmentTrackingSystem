@@ -15,7 +15,7 @@ public static class GetParticipantById
         public string Identifier() => Id;
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, ParticipantDto>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, ParticipantDto>
     {
         public async Task<ParticipantDto> Handle(Query request, CancellationToken cancellationToken)
         {

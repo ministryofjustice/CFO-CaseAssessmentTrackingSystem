@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class MyTeamsParicipantsWithNoRiskResultsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : MyTeamsParticipantsWithNoRiskResultsAdvancedFilter, IRequest<Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>>
+    public class Query : MyTeamsParticipantsWithNoRiskResultsAdvancedFilter, IQuery<Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>>
     {
         public MyTeamsParticipantsWithNoRiskResultsAdvancedSpecification Specification => new(this);
         public required MyTeamsParticipantsWithNoRiskGroupingType GroupingType { get; set; }
@@ -22,7 +22,7 @@ public static class MyTeamsParicipantsWithNoRiskResultsWithPagination
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>>
+        : IQueryHandler<Query, Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>>
     {
         public async Task<Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.Labels.Queries;
 public static class GetVisibleLabels
 {
     [RequestAuthorize]
-    public class Query(UserProfile currentUser) : IRequest<Result<LabelDto[]>>
+    public class Query(UserProfile currentUser) : IQuery<Result<LabelDto[]>>
     {
         public UserProfile CurrentUser { get; } = currentUser;
     }
 
-    public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IRequestHandler<Query, Result<LabelDto[]>>
+    public class Handler(ISqlConnectionFactory sqlConnectionFactory) : IQueryHandler<Query, Result<LabelDto[]>>
     {
         public async Task<Result<LabelDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public class GetParticipantSupervisor
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<ParticipantSupervisorDto?>>
+    public class Query : IQuery<Result<ParticipantSupervisorDto?>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ParticipantSupervisorDto?>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<ParticipantSupervisorDto?>>
     {
         public async Task<Result<ParticipantSupervisorDto?>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -45,7 +45,7 @@ public class GetParticipantSupervisor
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));            
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="Ardalis.SmartEnum" />
-        <PackageReference Include="MediatR" />
+        <PackageReference Include="Cortex.Mediator" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     </ItemGroup>

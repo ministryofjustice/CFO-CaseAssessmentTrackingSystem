@@ -2,10 +2,8 @@
 @using Cfo.Cats.Application.Features.AuditTrails.Caching
 @using Cfo.Cats.Application.Features.AuditTrails.DTOs
 @using Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination
-@using Cfo.Cats.Application.Features.AuditTrails.Specifications
 @using Cfo.Cats.Application.Features.AuditTrails.Specifications.SystemAuditTrail
 @using Cfo.Cats.Application.Features.PathwayPlans.Queries
-@using Cfo.Cats.Server.UI.Pages.SystemManagement
 @using Humanizer
 @inherits CatsComponentBase
 
@@ -16,10 +14,10 @@
              FixedHeader="true"
              FixedFooter="true"
              Virtualize="true"
-             @bind-RowsPerPage="defaultPageSize"
+             @bind-RowsPerPage="_defaultPageSize"
              Height="calc(100vh - 350px)"
-             Loading="@loading"
-             Hover="true" @ref="table"
+             Loading="@_loading"
+             Hover="true" @ref="_table"
              BreakPoint="Breakpoint.Sm">
     <ToolBarContent>
         <MudGrid Class="w-100">
@@ -31,7 +29,7 @@
                     <MudSelect T="ListEntry"
                                Label="View Audit for"
                                MultiSelection="false"
-                               ValueChanged="OnValueChanged">
+                               ValueChanged="@(OnValueChanged!)">
                         @foreach (var item in _entries)
                         {
                             <MudSelectItem T="ListEntry" Value="item">
@@ -41,14 +39,14 @@
                     </MudSelect>
             </MudItem>
             <MudItem xs="12" sm="6" md="3">
-                <MudEnumSelect TEnum="AuditType?" Label="Edit Type" Placeholder="@L["Search for audit type"]" Value="@Query.AuditType" Clearable="true" ValueChanged="@(s => OnSearch(s))" FullWidth="true">
+                <MudEnumSelect TEnum="AuditType?" Label="Edit Type" Placeholder="@L["Search for audit type"]" Value="@Query.AuditType" Clearable="true" ValueChanged="@(s => OnSearch(s!))" FullWidth="true">
     
                 </MudEnumSelect>
             </MudItem>
             <MudItem xs="12" sm="6" md="3">
                 <MudButton Variant="Variant.Filled"
                            Size="Size.Small"
-                           OnClick="@(() => OnRefresh())"
+                           OnClick="@OnRefresh"
                            StartIcon="@Icons.Material.Filled.Refresh" 
                            Color="Color.Secondary">
                     @ConstantString.Refresh
@@ -59,7 +57,7 @@
     </ToolBarContent>
     <Columns>
         <HierarchyColumn T="AuditTrailDto" ButtonDisabledFunc="@(x => x.AuditType == AuditType.None)" />
-        <PropertyColumn Property="x => x.UserId" Title="@L[currentDto.GetMemberDescription(x => x.UserId)]">
+        <PropertyColumn Property="x => x.UserId" Title="@L[_currentDto.GetMemberDescription(x => x.UserId)]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.Owner?.UserName</MudText>
@@ -67,10 +65,10 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.AuditType" Title="@L[currentDto.GetMemberDescription(x => x.AuditType)]" />
-        <PropertyColumn Property="x => x.TableName" Title="@L[currentDto.GetMemberDescription(x => x.TableName)]" />
-        <PropertyColumn Property="x => x.PrimaryKey" Title="@L[currentDto.GetMemberDescription(x => x.PrimaryKey)]" />
-        <PropertyColumn Property="x => x.DateTime" Title="@L[currentDto.GetMemberDescription(x => x.DateTime)]">
+        <PropertyColumn Property="x => x.AuditType" Title="@L[_currentDto.GetMemberDescription(x => x.AuditType)]" />
+        <PropertyColumn Property="x => x.TableName" Title="@L[_currentDto.GetMemberDescription(x => x.TableName)]" />
+        <PropertyColumn Property="x => x.PrimaryKey" Title="@L[_currentDto.GetMemberDescription(x => x.PrimaryKey)]" />
+        <PropertyColumn Property="x => x.DateTime" Title="@L[_currentDto.GetMemberDescription(x => x.DateTime)]">
             <CellTemplate>
                 <ToLocal DateTime="@context.Item.DateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
             </CellTemplate>
@@ -90,8 +88,8 @@
                     <thead>
                         <tr>
                             <th>@L["Field Name"]</th>
-                            <th>@L[currentDto.GetMemberDescription(x => x.OldValues)]</th>
-                            <th>@L[currentDto.GetMemberDescription(x => x.NewValues)]</th>
+                            <th>@L[_currentDto.GetMemberDescription(x => x.OldValues)]</th>
+                            <th>@L[_currentDto.GetMemberDescription(x => x.NewValues)]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,152 +116,3 @@
         <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
     </PagerContent>
 </MudDataGrid>
-
-@code {
-    [Parameter, EditorRequired] 
-    public string Id { get; set; } = default!;
-
-    private List<ListEntry> _entries = [];
-
-    private AuditTrailsWithPaginationQuery Query { get; } = new();
-
-    private MudDataGrid<AuditTrailDto> table = null!;
-    private bool loading;
-    private int defaultPageSize = 15;
-    private readonly AuditTrailDto currentDto = new();
-
-    [CascadingParameter] 
-    private UserProfile? UserProfile { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        _entries.Add(new ListEntry()
-        {
-            Title = "Participant", PrimaryKey = new()
-            {
-                { "Id", Id }
-            }
-        });
-
-        var pathwayQuery = new GetPathwayPlanByParticipantId.Query()
-        {
-            ParticipantId = Id
-        };
-
-        var pathwayResult = await GetNewMediator().Send(pathwayQuery);
-
-        var activitiesQuery = new ActivitiesWithPagination.Query()
-        {
-            ParticipantId = Id,
-            PageSize = 200
-        };
-
-        var activitiesResults = await GetNewMediator().Send(activitiesQuery);
-
-        _entries.Add(new ListEntry()
-        {
-            Title = "Pathway Plan", PrimaryKey = new()
-            {
-                { "Id", pathwayResult!.Id }
-            }
-        });
-
-        foreach (var objective in pathwayResult.Objectives)
-        {
-            _entries.Add(new ListEntry()
-            {
-                Title = $"Objective: {objective.DisplayName}",
-                PrimaryKey = new()
-                {
-                    {"Id", objective.Id}
-                }
-            });
-
-            foreach (var t in objective.Tasks)
-            {
-                _entries.Add(new ListEntry()
-                {
-                    Title = $"Task: {t.DisplayName}",
-                    PrimaryKey = new()
-                    {
-                        {"Id", t.Id}
-                    }
-                });
-            }
-        }
-
-        foreach (var entry in activitiesResults.Items)
-        {
-            _entries.Add(new ListEntry()
-                {
-                    Title = $"Activity: {entry.Definition} ({entry.CommencedOn})",
-                    PrimaryKey = new()
-                {
-                    {"Id", entry.Id}
-                }
-                });
-        }
-
-        Query.PrimaryKey = _entries.First().PrimaryKey;
-
-    }
-
-    private class ListEntry
-    {
-        public required string Title { get; set; }
-        public required Dictionary<string, object> PrimaryKey { get; set; } = new();
-    }
-
-    private async Task OnValueChanged(ListEntry selected)
-    {
-        Query.PrimaryKey = selected.PrimaryKey;
-        await table.ReloadServerData();
-    }
-
-    private async Task OnChangedListView(SystemAuditTrailListView listview)
-    {
-        Query.ListView = listview;
-        await table.ReloadServerData();
-    }
-
-    private async Task<GridData<AuditTrailDto>> ServerReload(GridState<AuditTrailDto> state, CancellationToken cancellationToken)
-    {
-        try
-        {
-            loading = true;
-            Query.CurrentUser = UserProfile;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-            Query.PrimaryKey ??= _entries.First().PrimaryKey;
-
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<AuditTrailDto> { TotalItems = result.TotalItems, Items = result.Items };
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-
-    private async Task OnSearch(string text)
-    {
-        Query.Keyword = text;
-        await table.ReloadServerData();
-    }
-
-    private async Task OnSearch(AuditType? val)
-    {
-        Query.AuditType = val;
-        await table.ReloadServerData();
-    }
-
-    private async Task OnRefresh()
-    {
-        SystemAuditTrailsCacheKey.Refresh();
-        Query.Keyword = string.Empty;
-        await table.ReloadServerData();
-    }
-
-}

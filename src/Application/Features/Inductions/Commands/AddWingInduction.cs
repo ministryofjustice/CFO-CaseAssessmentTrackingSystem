@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Inductions.Commands;
 public static class AddWingInduction
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         [Description("The current user")]
         public UserProfile? CurrentUser { get; set; } = default!;
@@ -24,7 +24,7 @@ public static class AddWingInduction
         public LocationDto? Location { get; set; } 
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -62,7 +62,7 @@ public static class AddWingInduction
             RuleFor(x => x.CurrentUser)
                 .NotNull();
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ParticipantId)
                    .MustAsync(MustExist)

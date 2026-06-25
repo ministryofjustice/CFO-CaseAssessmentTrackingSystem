@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.Common.Validators
-@inject IStringLocalizer<SharedResource> L
 
 <MudDialog>
     <DialogContent>
@@ -17,22 +16,20 @@
         
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="Submit">@ConstantString.Confirm</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@Submit">@ConstantString.Confirm</MudButton>
     </DialogActions>
 </MudDialog>
 
-
 @code
 {
-
     private MudForm? _form;
 
     private NotesModel Model { get; } = new();
 
     NotesModelValidator _modelValidator = new(true);
 
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter] public string? ContentText { get; set; }
 
@@ -40,9 +37,12 @@
 
     [Parameter] public string? NoteLabel { get; set; } = "Note";
 
+    [Parameter] public string PreviousJustification { get; set; } = string.Empty;
+    
     protected override void OnParametersSet()
     {
         _modelValidator = new(MandatoryNote);
+        Model.Note = PreviousJustification;
     }
 
     public async Task Submit()
@@ -88,7 +88,5 @@
                 return Array.Empty<string>();
             return result.Errors.Select(e => e.ErrorMessage);
         };
-
     }
-
 }

@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantsWithAccessEndingSoon
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<IEnumerable<ParticipantWithAccessEndingSoonDto>>
+    public class Query : IQuery<IEnumerable<ParticipantWithAccessEndingSoonDto>>
     {
         /// <summary>
         ///     Participant Owner. Current user will be used if not provided.
@@ -23,10 +23,10 @@ public static class GetParticipantsWithAccessEndingSoon
         public DateTime HasAccessTo => LostAccessOn.AddDays(90);
     }
 
-    private class Handler(
+    public class Handler(
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUser
-    ) : IRequestHandler<Query, IEnumerable<ParticipantWithAccessEndingSoonDto>>
+    ) : IQueryHandler<Query, IEnumerable<ParticipantWithAccessEndingSoonDto>>
     {
         public async Task<IEnumerable<ParticipantWithAccessEndingSoonDto>> Handle(Query request, CancellationToken cancellationToken)
         {

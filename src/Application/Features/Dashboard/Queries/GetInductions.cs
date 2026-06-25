@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetInductions
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<InductionsDto>>
+    public class Query : IQuery<Result<InductionsDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -15,7 +15,7 @@ public static class GetInductions
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<InductionsDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<InductionsDto>>
     {
         public async Task<Result<InductionsDto>> Handle(Query request, CancellationToken cancellationToken)
         {

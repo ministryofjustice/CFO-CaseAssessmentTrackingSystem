@@ -9,13 +9,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public class GetParticipantRisk
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<RiskDto>>
+    public class Query : IQuery<Result<RiskDto>>
     {
         public required string ParticipantId { get; set; }
         public Guid? RiskId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<RiskDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<RiskDto>>
     {
         public async Task<Result<RiskDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -71,7 +71,7 @@ public class GetParticipantRisk
                     .NotEmpty();
             });
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

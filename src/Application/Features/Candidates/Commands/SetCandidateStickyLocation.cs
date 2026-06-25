@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Candidates.Commands;
 public static class SetCandidateStickyLocation
 {
     [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public string? ParticipantId { get; set; }
         public string? Region { get; set; }
@@ -20,7 +20,7 @@ public static class SetCandidateStickyLocation
         public string? CallReference { get; set; }
     }
 
-    public class Handler(ICandidateService candidateService, IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(ICandidateService candidateService, IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -76,7 +76,7 @@ public static class SetCandidateStickyLocation
                 .Matches(ValidationConstants.Numbers)
                 .WithMessage(string.Format(ValidationConstants.NumbersMessage, "Call Reference"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.ParticipantId)
                     .MustAsync(Exist)

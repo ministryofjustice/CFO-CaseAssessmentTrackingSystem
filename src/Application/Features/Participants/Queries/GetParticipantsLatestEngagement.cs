@@ -7,14 +7,14 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantsLatestEngagement
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : PaginationFilter, IRequest<Result<PaginatedData<ParticipantEngagementDto>>>
+    public class Query : PaginationFilter, IQuery<Result<PaginatedData<ParticipantEngagementDto>>>
     {
         public required UserProfile CurrentUser { get; init; }
         public bool JustMyCases { get; init; }
         public bool HideRecentEngagements { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantEngagementDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantEngagementDto>>>
     {
         public async Task<Result<PaginatedData<ParticipantEngagementDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

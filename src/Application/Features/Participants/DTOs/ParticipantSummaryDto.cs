@@ -9,80 +9,85 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 /// </summary>
 public class ParticipantSummaryDto
 {
-    public required string Id { get; set; }
+    public required string Id { get; init; }
 
     /// <summary>
     /// The full name of the participant
     /// </summary>
-    public required string ParticipantName { get; set; }
+    public required string ParticipantName { get; init; }
 
     /// <summary>
     /// The current location of the participant
     /// </summary>
-    public required string Location { get; set; }
+    public required string Location { get; init; }
 
-    public required LocationType LocationType { get; set; }
+    public required LocationType LocationType { get; init; }
 
-    public string? EnrolmentLocation { get; set; }
+    public string? EnrolmentLocation { get; init; }
 
     /// <summary>
     /// The participant's date of birth
     /// </summary>
-    public required DateOnly DateOfBirth { get; set; }
-    public DateTime? RiskDue { get; set; }
+    public required DateOnly DateOfBirth { get; init; }
+    public DateTime? RiskDue { get; init; }
     public int? RiskDueInDays => (RiskDue - DateTime.UtcNow.Date)?.Days;
-    public string? Nationality { get; set; }
+    public string? Nationality { get; init; }
 
-    public string? EnrolmentLocationJustification { get; set; }
+    public string? EnrolmentLocationJustification { get; init; }
+
+    /// <summary>
+    /// The assessment justification provided by the participant owner
+    /// </summary>
+    public string? AssessmentJustification { get; init; }
 
     /// <summary>
     ///  The current enrolment status of the participant
     /// </summary>
-    public EnrolmentStatus EnrolmentStatus { get; set; } = EnrolmentStatus.IdentifiedStatus;
+    public EnrolmentStatus EnrolmentStatus { get; init; } = EnrolmentStatus.IdentifiedStatus;
 
     /// <summary>
     ///  The current enrolment status of the participant
     /// </summary>
-    public ConsentStatus ConsentStatus { get; set; } = ConsentStatus.PendingStatus;
+    public ConsentStatus ConsentStatus { get; init; } = ConsentStatus.PendingStatus;
 
-    public DateOnly? DateOfFirstConsent { get; set; }
+    public DateOnly? DateOfFirstConsent { get; init; }
 
     /// <summary>
     /// The person who "owns" this participant's case. Usually the support worker.
     /// </summary>
-    public string? OwnerName { get; set; }
+    public string? OwnerName { get; init; }
 
     /// <summary>
     /// The Tenant who "owns" this participant's case. 
     /// </summary>
-    public string? TenantName { get; set; }
+    public string? TenantName { get; init; }
 
-    public AssessmentSummaryDto[] Assessments { get; set; } = [];
+    public AssessmentSummaryDto[] Assessments { get; init; } = [];
 
-    public RiskSummaryDto? LatestRisk { get; set; }
+    public RiskSummaryDto? LatestRisk { get; init; }
 
-    public BioSummaryDto? BioSummary { get; set; }
+    public BioSummaryDto? BioSummary { get; init; }
 
-    public PathwayPlanSummaryDto? PathwayPlan { get; set; }
+    public PathwayPlanSummaryDto? PathwayPlan { get; init; }
 
-    public PriSummaryDto? LatestPri { get; set; }
+    public PriSummaryDto? LatestPri { get; init; }
 
-    public bool HasActiveRightToWork { get; set; }
+    public bool HasActiveRightToWork { get; init; }
     public bool IsRightToWorkRequired { get; set; }
 
-    public DateTime LastSync { get; set; }
+    public DateTime LastSync { get; init; }
 
-    public DateTime? BioDue { get; set; }
+    public DateTime? BioDue { get; init; }
     public int? BioDueInDays => (BioDue - DateTime.UtcNow.Date)?.Days;
 
-    public bool IsActive { get; set; }
-    public DateOnly? DeactivatedInFeed { get; set; }
+    public bool IsActive { get; init; }
+    public DateOnly? DeactivatedInFeed { get; init; }
     public DateOnly? PostLicenceCaseClosureEnd => DeactivatedInFeed?.AddDays(30);
 
     /// <summary>
     ///  The risk due reason of the participant
     /// </summary>
-    public RiskDueReason RiskDueReason { get; set; } = RiskDueReason.NewEntry;
+    public RiskDueReason RiskDueReason { get; init; } = RiskDueReason.NewEntry;
 
     private class Mapping : Profile
     {
@@ -104,6 +109,7 @@ public class ParticipantSummaryDto
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
                 .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))
                 .ForMember(dest => dest.EnrolmentLocationJustification, opt => opt.MapFrom(src => src.EnrolmentLocationJustification))
+                .ForMember(dest => dest.AssessmentJustification, opt => opt.MapFrom(src => src.AssessmentJustification))
                 .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created))
                 .ForMember(dest => dest.BioDue, opt => opt.MapFrom(src => src.BioDue))
                 .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()))
@@ -131,49 +137,49 @@ public class AssessmentSummaryDto
     /// <summary>
     /// The id of the latest assessment
     /// </summary>
-    public Guid? AssessmentId { get; set; }
+    public Guid? AssessmentId { get; init; }
 
     /// <summary>
-    /// If there are any assessments these are the dates they latest one was created.
+    /// If there are any assessments, these are the dates the latest one was created.
     /// </summary>
-    public DateTime? AssessmentDate { get; set; }
+    public DateTime? AssessmentDate { get; init; }
 
     /// <summary>
     /// Who created the most recent assessment (if available)
     /// </summary>
-    public string? AssessmentCreator { get; set; }
+    public string? AssessmentCreator { get; init; }
 
     /// <summary>
     /// Has the latest assessment been scored? This can be a surrogate for
     /// submitted and should make the assessment read-only
     /// </summary>
-    public bool? AssessmentScored { get; set; }
+    public bool? AssessmentScored { get; init; }
 
     /// <summary>
-    /// Date the latest assessment has been complted
+    /// Date the latest assessment has been completed
     /// </summary>
-    public DateTime? Completed { get; set; }
+    public DateTime? Completed { get; init; }
 }
 
 public class BioSummaryDto
 {
     /// <summary>
-    /// The id of the one and only Bio, atleast for now
+    /// The id of the one and only Bio, at least for now
     /// </summary>
-    public Guid? BioId { get; set; }
+    public Guid? BioId { get; init; }
 
     /// <summary>
     /// The date when Bio was created.
     /// </summary>
-    public DateTime? BioDate { get; set; }
+    public DateTime? BioDate { get; init; }
 
     /// <summary>
     /// Who created the Bio (if available)
     /// </summary>
-    public string? BioCreator { get; set; }
+    public string? BioCreator { get; init; }
 
     /// <summary>
     /// Status of the Bio
     /// </summary>
-    public BioStatus BioStatus { get; set; } = BioStatus.NotStarted;
+    public BioStatus BioStatus { get; init; } = BioStatus.NotStarted;
 }

@@ -8,14 +8,14 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 public static class GetCumulativeFigures
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
-    public class Query : IRequest<Result<CumulativeFiguresDto>>
+    public class Query : IQuery<Result<CumulativeFiguresDto>>
     {
         public required DateOnly EndDate { get; init; }
         public required string? ContractId { get; init; }
         public required UserProfile CurrentUser { get; init; }
     }
 
-    private class Handler(ICumulativeProvider cumulativeProvider) : IRequestHandler<Query, Result<CumulativeFiguresDto>>
+    public class Handler(ICumulativeProvider cumulativeProvider) : IQueryHandler<Query, Result<CumulativeFiguresDto>>
     {
         public async Task<Result<CumulativeFiguresDto>> Handle(Query request, CancellationToken cancellationToken)
         {

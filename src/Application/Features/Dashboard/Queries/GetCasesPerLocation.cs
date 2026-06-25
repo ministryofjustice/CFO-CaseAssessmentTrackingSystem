@@ -9,14 +9,14 @@ public static class GetCasesPerLocation
     private const string OutsideOfContractRegion = "Outside of contract region";
 
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<CasesPerLocationDto>>
+    public class Query : IQuery<Result<CasesPerLocationDto>>
     {
         public string? UserId { get; init; }
         public string? TenantId { get; init; }
         public required UserProfile CurrentUser { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ILocationService locationService) : IRequestHandler<Query, Result<CasesPerLocationDto>>
+    public class Handler(IUnitOfWork unitOfWork, ILocationService locationService) : IQueryHandler<Query, Result<CasesPerLocationDto>>
     {
         public async Task<Result<CasesPerLocationDto>> Handle(Query request, CancellationToken cancellationToken)
         {

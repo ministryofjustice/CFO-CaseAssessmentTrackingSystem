@@ -11,7 +11,7 @@ public static class GetPathwayPlanReviewHistory
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : ParticipantDetailsQuery<PathwayPlanReviewHistoryDto[]>;
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PathwayPlanReviewHistoryDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PathwayPlanReviewHistoryDto[]>>
     {
         public async Task<Result<PathwayPlanReviewHistoryDto[]>> Handle(Query request,
             CancellationToken cancellationToken)
@@ -107,7 +107,7 @@ public static class GetPathwayPlanReviewHistory
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

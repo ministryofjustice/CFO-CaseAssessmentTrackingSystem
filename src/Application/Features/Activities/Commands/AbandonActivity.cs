@@ -8,7 +8,7 @@ public static class AbandonActivity
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid? ActivityId { get; set; }
 
@@ -22,7 +22,7 @@ public static class AbandonActivity
         public required string AbandonedBy { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ public static class AbandonActivity
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(a => a.ActivityId)
                     .Must(MustExist)
@@ -64,7 +64,7 @@ public static class AbandonActivity
         {
             this.unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 When(c => c.ActivityId is not null, () =>
                 {
@@ -90,7 +90,7 @@ public static class AbandonActivity
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ActivityId)
                     .Must(MustNotBeArchived)
@@ -113,7 +113,7 @@ public static class AbandonActivity
     public class D_AbandonedActvitiyRequiresJustification : AbstractValidator<Command>
     {
         public D_AbandonedActvitiyRequiresJustification() =>
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.AbandonJustification)
                     .NotEmpty()

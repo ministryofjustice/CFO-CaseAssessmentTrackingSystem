@@ -31,7 +31,7 @@
                         <MudGrid>
                             <MudItem xs="12">
                                 <MudDateRangePicker Label="Commenced from/to range"
-                                                DateRangeChanged="OnDateRangeChanged"
+                                                DateRangeChanged="@(OnDateRangeChanged!)"
                                                 Clearable
                                                 MaxDate="DateTime.Today" />
                            </MudItem>

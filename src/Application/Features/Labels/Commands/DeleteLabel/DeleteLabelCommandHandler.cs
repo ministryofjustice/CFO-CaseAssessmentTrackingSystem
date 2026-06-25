@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public class DeleteLabelCommandHandler(
         ILabelRepository repository,
-        ILabelCounter labelCounter) : IRequestHandler<DeleteLabelCommand, Result>
+        ILabelCounter labelCounter) : ICommandHandler<DeleteLabelCommand, Result>
 {
     public async Task<Result> Handle(
         DeleteLabelCommand request,

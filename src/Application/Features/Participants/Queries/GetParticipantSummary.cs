@@ -11,13 +11,13 @@ public static class GetParticipantSummary
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IAuditableRequest<Result<ParticipantSummaryDto>>
     {
-        public required string ParticipantId { get; set; } 
+        public required string ParticipantId { get; init; } 
         public required UserProfile CurrentUser { get; set; }
 
         public string Identifier() => ParticipantId;
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IRightToWorkSettings rtwSettings) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IRightToWorkSettings rtwSettings) : IQueryHandler<Query, Result<ParticipantSummaryDto>>
     {
         public async Task<Result<ParticipantSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -36,7 +36,8 @@ public static class GetParticipantSummary
                             LocationType = p.CurrentLocation.LocationType,
                             Location = p.CurrentLocation.Name,
                             EnrolmentLocation = p.EnrolmentLocation.Name,
-                            EnrolmentLocationJustification = p.EnrolmentLocationJustification,
+                            EnrolmentLocationJustification = p.EnrolmentLocationJustification, 
+                            AssessmentJustification = p.AssessmentJustification,
                             DateOfBirth = p.DateOfBirth,
                             RiskDue = p.RiskDue,
                             Nationality = p.Nationality,
@@ -174,7 +175,7 @@ public static class GetParticipantSummary
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));        
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

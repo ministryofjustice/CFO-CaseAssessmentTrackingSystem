@@ -20,7 +20,7 @@ public partial class PathwayPlanReviewDashboardComponent
 
     private GetPathwayPlans.Query Query { get; set; } = default!;
 
-    protected override IRequest<Result<GetPathwayPlans.PathwayPlanDto>> CreateQuery()
+    protected override IQuery<Result<GetPathwayPlans.PathwayPlanDto>> CreateQuery()
      => new GetPathwayPlans.Query()
      {
          CurrentUser = CurrentUser,

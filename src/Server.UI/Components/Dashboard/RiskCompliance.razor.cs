@@ -44,7 +44,7 @@ public partial class RiskCompliance
         Colors = new List<string> { "#FFA500", "#FF6B6B", "#FF4444", "#5cb85c" }
     };
 
-    protected override IRequest<Result<RiskComplianceSummaryDto[]>> CreateQuery()
+    protected override IQuery<Result<RiskComplianceSummaryDto[]>> CreateQuery()
         => new GetRiskComplianceQuery()
         {
             Date = DateTime.Now.Date

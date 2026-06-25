@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Entities.Administration;
 namespace Cfo.Cats.Application.Features.Initiatives.Commands.EditInitiative;
 
 public class EditInitiativeCommandHandler(IInitiativeRepository repository)
-    : IRequestHandler<EditInitiativeCommand, Result>
+    : ICommandHandler<EditInitiativeCommand, Result>
 {
     public async Task<Result> Handle(EditInitiativeCommand request, CancellationToken cancellationToken)
     {

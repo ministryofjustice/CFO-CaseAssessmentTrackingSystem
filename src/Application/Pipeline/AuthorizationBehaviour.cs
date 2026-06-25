@@ -1,43 +1,31 @@
-using Cfo.Cats.Application.Common.Exceptions;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
 
 namespace Cfo.Cats.Application.Pipeline;
 
-public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+public abstract class AuthorizationBehaviour<TRequest, TResponse>(
+    ICurrentUserService currentUserService,
+    IIdentityService identityService)
 {
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
-
-    public AuthorizationBehaviour(
-        ICurrentUserService currentUserService,
-        IIdentityService identityService)
-    {
-        _currentUserService = currentUserService;
-        _identityService = identityService;
-    }
-
-    public async Task<TResponse> Handle(
+    protected async Task<TResponse> HandleCore(
         TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken
-    )
+        Func<Task<TResponse>> next,
+        CancellationToken cancellationToken)
     {
         var span = SentrySdk.GetSpan()?
             .StartChild("authorization", "Authorization checks");
 
         try
         {
-            var authorizeAttributes = request
-           .GetType()
-           .GetCustomAttributes<RequestAuthorizeAttribute>()
-           .ToArray();
+            var authorizeAttributes = request!
+                .GetType()
+                .GetCustomAttributes<RequestAuthorizeAttribute>()
+                .ToArray();
 
             if (authorizeAttributes.Any() == false)
             {
-                // if we have no authorization attribute, then we must explicitly allow all or error
-                var anyUserAttributes = request.GetType()
+                var anyUserAttributes = request
+                    .GetType()
                     .GetCustomAttributes<AllowAnonymousAttribute>()
                     .SingleOrDefault();
 
@@ -47,14 +35,12 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                 }
             }
 
-            // Must be authenticated user
-            var userId = _currentUserService.UserId;
+            var userId = currentUserService.UserId;
             if (string.IsNullOrEmpty(userId))
             {
                 throw new UnauthorizedAccessException();
             }
 
-            // DefaultRole-based authorization
             var authorizeAttributesWithRoles = authorizeAttributes
                 .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
                 .ToArray();
@@ -67,11 +53,11 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                 {
                     foreach (var role in roles)
                     {
-                        var isInRole = await _identityService.IsInRoleAsync(
+                        var isInRole = await identityService.IsInRoleAsync(
                             userId,
                             role.Trim(),
-                            cancellationToken
-                        );
+                            cancellationToken);
+
                         if (isInRole)
                         {
                             authorized = true;
@@ -80,44 +66,65 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                     }
                 }
 
-                // Must be a member of at least one role in roles
                 if (!authorized)
                 {
                     throw new ForbiddenException("You are not authorized to access this resource.");
                 }
             }
 
-            // Policy-based authorization
             var authorizeAttributesWithPolicies = authorizeAttributes
                 .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
                 .ToArray();
+
             if (authorizeAttributesWithPolicies.Any())
             {
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
-                    var authorized = await _identityService.AuthorizeAsync(
+                    var authorized = await identityService.AuthorizeAsync(
                         userId,
                         policy,
-                        cancellationToken
-                    );
+                        cancellationToken);
 
                     if (!authorized)
                     {
-                        throw new ForbiddenException(
-                            "You are not authorized to access this resource."
-                        );
+                        throw new ForbiddenException("You are not authorized to access this resource.");
                     }
                 }
             }
 
-            // User is authorized / authorization not required
-            return await next(cancellationToken);
+            return await next();
         }
         finally
         {
             span?.Finish();
         }
-
-       
     }
+}
+
+public sealed class CommandAuthorizationBehaviour<TCommand, TResponse>(
+    ICurrentUserService currentUserService,
+    IIdentityService identityService)
+    : AuthorizationBehaviour<TCommand, TResponse>(currentUserService, identityService),
+        ICommandPipelineBehavior<TCommand, TResponse>
+    where TCommand : ICommand<TResponse>
+{
+    public Task<TResponse> Handle(
+        TCommand command,
+        CommandHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+        => HandleCore(command, () => next(), cancellationToken);
+}
+
+public sealed class QueryAuthorizationBehaviour<TQuery, TResponse>(
+    ICurrentUserService currentUserService,
+    IIdentityService identityService)
+    : AuthorizationBehaviour<TQuery, TResponse>(currentUserService, identityService),
+        IQueryPipelineBehavior<TQuery, TResponse>
+    where TQuery : IQuery<TResponse>
+{
+    public Task<TResponse> Handle(
+        TQuery query,
+        QueryHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+        => HandleCore(query, () => next(), cancellationToken);
 }

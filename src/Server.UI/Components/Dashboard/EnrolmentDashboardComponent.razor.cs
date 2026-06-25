@@ -21,7 +21,7 @@ public partial class EnrolmentDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetEnrolments.EnrolmentDto>> CreateQuery()
+    protected override IQuery<Result<GetEnrolments.EnrolmentDto>> CreateQuery()
      => new GetEnrolments.Query()
      {
          CurrentUser = CurrentUser,

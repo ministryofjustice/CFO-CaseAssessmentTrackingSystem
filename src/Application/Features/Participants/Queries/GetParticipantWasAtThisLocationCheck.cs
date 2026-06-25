@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantWasAtThisLocationCheck
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<bool>>
+    public class Query : IQuery<Result<bool>>
     {
         public required string ParticipantId { get; set; }
         public required int LocationId { get; set; }
@@ -16,7 +16,7 @@ public static class GetParticipantWasAtThisLocationCheck
         public required DateTime? DateAtLocation { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<bool>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<bool>>
     {
         public async Task<Result<bool>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -89,7 +89,7 @@ public static class GetParticipantWasAtThisLocationCheck
             RuleFor(x => x.DateAtLocation)
                 .NotNull();
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c.ParticipantId)
                     .MustAsync(Exist)

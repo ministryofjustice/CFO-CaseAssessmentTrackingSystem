@@ -9,9 +9,9 @@ public class GetMyDocumentsQuery
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Query : IRequest<Result<GeneratedDocumentDto[]>> { }
+    public class Query : IQuery<Result<GeneratedDocumentDto[]>> { }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : IRequestHandler<Query, Result<GeneratedDocumentDto[]>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : IQueryHandler<Query, Result<GeneratedDocumentDto[]>>
     {
         public async Task<Result<GeneratedDocumentDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {

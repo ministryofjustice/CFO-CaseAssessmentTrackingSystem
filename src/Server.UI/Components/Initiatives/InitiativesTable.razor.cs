@@ -17,7 +17,7 @@ public partial class InitiativesTable
 
     private bool _showExpired;
 
-    protected override IRequest<Result<InitiativeDto[]>> CreateQuery()
+    protected override IQuery<Result<InitiativeDto[]>> CreateQuery()
         => new GetInitiatives.Query { IncludeExpired = _showExpired };
 
     private async Task OnExport()

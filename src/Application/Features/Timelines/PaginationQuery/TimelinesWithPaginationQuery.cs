@@ -10,12 +10,12 @@ namespace Cfo.Cats.Application.Features.Timelines.PaginationQuery;
 public static class TimelinesWithPaginationQuery
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : TimelineAdvancedFilter, IRequest<Result<PaginatedData<TimelineDto>>>
+    public class Query : TimelineAdvancedFilter, IQuery<Result<PaginatedData<TimelineDto>>>
     {
         public TimelineAdvancedSpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<TimelineDto>>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PaginatedData<TimelineDto>>>
     {
         public async Task<Result<PaginatedData<TimelineDto>>> Handle(Query request, CancellationToken cancellationToken) 
             => await unitOfWork.DbContext.Timelines

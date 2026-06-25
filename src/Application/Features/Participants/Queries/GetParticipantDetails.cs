@@ -13,7 +13,7 @@ public static class GetParticipantDetails
 
     }
     
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantHeaderDetailsDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ParticipantHeaderDetailsDto>>
     {
 
         public async Task<Result<ParticipantHeaderDetailsDto>> Handle(Query request, CancellationToken cancellationToken)

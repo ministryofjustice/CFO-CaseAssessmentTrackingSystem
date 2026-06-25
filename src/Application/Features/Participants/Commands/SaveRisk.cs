@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class SaveRisk
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Command : IRequest<Result<Guid>>
+    public class Command : ICommand<Result<Guid>>
     {
         public required Guid RiskId { get; init; }
         public required RiskDto Risk { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : IRequestHandler<Command, Result<Guid>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : ICommandHandler<Command, Result<Guid>>
     {
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -54,7 +54,7 @@ public static class SaveRisk
                 .NotNull()
                 .SetValidator(new RiskDto.Validator());
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(r => r.RiskId)
                    .MustAsync(NotBeCompleted)

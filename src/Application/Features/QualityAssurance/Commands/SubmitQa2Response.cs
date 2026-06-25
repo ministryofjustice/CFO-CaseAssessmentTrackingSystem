@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 public static class SubmitQa2Response
 {
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public required Guid QueueEntryId { get; init; }
         
@@ -40,7 +40,7 @@ public static class SubmitQa2Response
         Escalate = 2
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -197,7 +197,7 @@ public static class SubmitQa2Response
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c.QueueEntryId)
                     .MustAsync(MustExist)
                     .WithMessage("Queue item does not exist");
@@ -216,7 +216,7 @@ public static class SubmitQa2Response
         {
             _unitOfWork = unitOfWork;
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c.QueueEntryId)
                     .MustAsync(MustBeOpen)
                     .WithMessage("Queue item is already completed.");                
@@ -241,7 +241,7 @@ public static class SubmitQa2Response
         {
             _unitOfWork = unitOfWork;
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c.QueueEntryId)
                     .MustAsync(MustBeAtQa)
                     .WithMessage("Queue item is not a PQA stage");                
@@ -264,7 +264,7 @@ public static class SubmitQa2Response
         {
             _unitOfWork = unitOfWork;
             
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.Mediator, () => {
                 RuleFor(c => c)
                     .MustAsync(OwnerMustNotBeApprover)
                     .WithMessage("This enrolment was assigned to you hence must not be processed at QA2 stage by you");

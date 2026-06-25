@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 public static class SubmitFinalResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipFinalise)]
-    public record Command : IRequest<Result>
+    public record Command : ICommand<Result>
     {
         [Description("Comments")]
         public string? Comments { get; set; }
@@ -18,7 +18,7 @@ public static class SubmitFinalResponse
         public ComplianceAnswer ComplianceAnswer { get; set; } = ComplianceAnswer.NotAnswered;
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IDateTime dateTime, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IDateTime dateTime, ICurrentUserService currentUserService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -61,7 +61,7 @@ public static class SubmitFinalResponse
                 .Must(x => x.IsAnswer)
                 .WithMessage("Compliance must be answered");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .MustAsync(async (_, command, context, canc) =>

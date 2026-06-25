@@ -8,13 +8,13 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 public static class GetActivityPqaEntryById
 {
     [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
-    public class Query : IRequest<Result<ActivityQueueEntryDto>>
+    public class Query : IQuery<Result<ActivityQueueEntryDto>>
     {
         public Guid Id { get; set; }
         public UserProfile? CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ActivityQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<ActivityQueueEntryDto>>
     {
         public async Task<Result<ActivityQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
         {

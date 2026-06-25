@@ -13,7 +13,7 @@ public class DeactivateInitiativeCommandValidator : AbstractValidator<Deactivate
         RuleFor(x => x.Id)
             .NotEmpty();
 
-        RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+        RuleSet(ValidationConstants.RuleSet.Mediator, () =>
         {
             RuleFor(x => x.Id)
                 .MustAsync(NotBeAlreadyEnded)

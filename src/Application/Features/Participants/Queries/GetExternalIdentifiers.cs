@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetExternalIdentifiers
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<ExternalIdentifierDto[]>
+    public class Query : IQuery<ExternalIdentifierDto[]>
     {
         public string? ParticipantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, ExternalIdentifierDto[]>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, ExternalIdentifierDto[]>
     {
         public async Task<ExternalIdentifierDto[]> Handle(Query request, CancellationToken cancellationToken)
         {

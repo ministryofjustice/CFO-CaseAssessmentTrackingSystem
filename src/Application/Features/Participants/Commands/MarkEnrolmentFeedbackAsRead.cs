@@ -7,12 +7,12 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class MarkEnrolmentFeedbackAsRead
 {
     [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
-    public class Command : IRequest<Result>
+    public class Command : ICommand<Result>
     {
         public Guid EnrolmentFeedbackId { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -38,7 +38,7 @@ public static class MarkEnrolmentFeedbackAsRead
         {
             _unitOfWork = unitOfWork;
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.EnrolmentFeedbackId)
                     .Must(id => _unitOfWork.DbContext.EnrolmentFeedbacks.Any(f => f.Id == id))

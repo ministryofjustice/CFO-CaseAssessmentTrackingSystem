@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.PRIs.Queries;
 public static class GetParticipantPRI
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<PRIDto>>
+    public class Query : IQuery<Result<PRIDto>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PRIDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PRIDto>>
     {
         public async Task<Result<PRIDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -50,7 +50,7 @@ public static class GetParticipantPRI
                     .Matches(ValidationConstants.AlphaNumeric)
                     .WithMessage(ValidationConstants.AlphaNumericMessage);
 
-                RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+                RuleSet(ValidationConstants.RuleSet.Mediator, () =>
                 {
                     RuleFor(f => f.ParticipantId)
                         .Must(Exist)

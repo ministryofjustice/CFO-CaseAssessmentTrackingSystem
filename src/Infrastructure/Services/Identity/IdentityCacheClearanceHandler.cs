@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
-using MediatR;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;

@@ -10,13 +10,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetCommunitySupportWorker
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<PriCodeDto>>
+    public class Query : IQuery<Result<PriCodeDto>>
     {
         public required string ParticipantId { get; set; }
         public required int Code { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PriCodeDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PriCodeDto>>
     {
         public async Task<Result<PriCodeDto>> Handle(Query request, CancellationToken cancellationToken)
         {
