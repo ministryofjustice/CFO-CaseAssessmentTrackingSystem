@@ -12,7 +12,7 @@ COPY src/Database/CatsDb/ src/Database/CatsDb/
 RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --configuration Release
 
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0.9@sha256:58318ab0733b63d3ac0d7609c46f2718244e623a176f45991ee01fad46fbf880 AS final
+FROM mcr.microsoft.com/dotnet/runtime:10.0.9@sha256:6a40d375e9c8432fcf4adebae05d7e0a276e9a90dd01174df6709a090771bebc AS final
 WORKDIR /app
 
 # Copy sqlpackage and make it accessible to non-root users
