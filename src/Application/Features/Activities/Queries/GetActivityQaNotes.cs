@@ -20,35 +20,41 @@ public static class GetActivityQaNotes
     public class Handler(
         IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ActivityQaNoteDto[]>>
     {
-            public async Task<Result<ActivityQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var pqa = await GetPqaNotes(request.ActivityId!);
-                var qa1 = await GetQa1Notes(request.ActivityId!, request.IncludeInternalNotes);
-                var qa2 = await GetQa2Notes(request.ActivityId!, request.IncludeInternalNotes);
-                var es = await GetEscalationNotes(request.ActivityId!, request.IncludeInternalNotes);
+        private static readonly HashSet<string> CfoTenantNames = ["CFO", "CFO Evolution"];
 
-                var allNotes = pqa
-                    .Union(qa1)
-                    .Union(qa2)
-                    .Union(es)
-                    .ToArray();
+        public async Task<Result<ActivityQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var hideUser = ShouldHideUser(request.CurrentUser!);
 
-                return Result<ActivityQaNoteDto[]>.Success(allNotes);     
+            var pqa = await GetPqaNotes(request.ActivityId!, hideUser);
+            var qa1 = await GetQa1Notes(request.ActivityId!, request.IncludeInternalNotes, hideUser);
+            var qa2 = await GetQa2Notes(request.ActivityId!, request.IncludeInternalNotes, hideUser);
+            var es = await GetEscalationNotes(request.ActivityId!, request.IncludeInternalNotes, hideUser);
+
+            var allNotes = pqa
+                .Union(qa1)
+                .Union(qa2)
+                .Union(es)
+                .ToArray();
+
+            return Result<ActivityQaNoteDto[]>.Success(allNotes);
         }
-        
-        private static ActivityQaNoteDto Map(ActivityQueueEntryNote x) =>
+
+        private static ActivityQaNoteDto Map(ActivityQueueEntryNote x, bool hideUser) =>
             new()
             {
                 Created = x.Created ?? DateTime.MinValue,
                 Message = x.Message,
-                CreatedBy = x.CreatedByUser?.DisplayName,
+                CreatedBy = CfoTenantNames.Contains(x.CreatedByUser?.TenantName ?? string.Empty) && hideUser
+                    ? "Hidden"
+                    : x.CreatedByUser?.DisplayName,
                 TenantName = x.CreatedByUser?.TenantName,
                 IsExternal = x.IsExternal,
                 ReturnReason = x.ReturnReason,
                 IsExpanded = false
             };
 
-        private async Task<ActivityQaNoteDto[]> GetPqaNotes(Guid? activityId)
+        private async Task<ActivityQaNoteDto[]> GetPqaNotes(Guid? activityId, bool hideUser)
         {
             var entities = await unitOfWork.DbContext.ActivityPqaQueue
                 .AsNoTracking()
@@ -57,10 +63,10 @@ public static class GetActivityQaNotes
                 .Include(n => n.CreatedByUser)
                 .ToListAsync();
 
-            return entities.Select(Map).ToArray();
+            return entities.Select(x => Map(x, hideUser)).ToArray();
         }
-        
-        private async Task<ActivityQaNoteDto[]> GetQa1Notes(Guid? activityId, bool includeInternalNotes)
+
+        private async Task<ActivityQaNoteDto[]> GetQa1Notes(Guid? activityId, bool includeInternalNotes, bool hideUser)
         {
             var entities = await unitOfWork.DbContext.ActivityQa1Queue
                 .AsNoTracking()
@@ -69,10 +75,10 @@ public static class GetActivityQaNotes
                 .Include(n => n.CreatedByUser)
                 .ToListAsync();
 
-            return entities.Select(Map).ToArray();
+            return entities.Select(x => Map(x, hideUser)).ToArray();
         }
 
-        private async Task<ActivityQaNoteDto[]> GetQa2Notes(Guid? activityId, bool includeInternalNotes)
+        private async Task<ActivityQaNoteDto[]> GetQa2Notes(Guid? activityId, bool includeInternalNotes, bool hideUser)
         {
             var entities = await unitOfWork.DbContext.ActivityQa2Queue
                 .AsNoTracking()
@@ -81,10 +87,10 @@ public static class GetActivityQaNotes
                 .Include(n => n.CreatedByUser)
                 .ToListAsync();
 
-            return entities.Select(Map).ToArray();
+            return entities.Select(x => Map(x, hideUser)).ToArray();
         }
 
-        private async Task<ActivityQaNoteDto[]> GetEscalationNotes(Guid? activityId, bool includeInternalNotes)
+        private async Task<ActivityQaNoteDto[]> GetEscalationNotes(Guid? activityId, bool includeInternalNotes, bool hideUser)
         {
             var entities = await unitOfWork.DbContext.ActivityEscalationQueue
                 .AsNoTracking()
@@ -93,7 +99,21 @@ public static class GetActivityQaNotes
                 .Include(n => n.CreatedByUser)
                 .ToListAsync();
 
-            return entities.Select(Map).ToArray();
+            return entities.Select(x => Map(x, hideUser)).ToArray();
+        }
+
+        private static bool ShouldHideUser(UserProfile user)
+        {
+            string[] allowed =
+            [
+                RoleNames.QAOfficer,
+                RoleNames.QASupportManager,
+                RoleNames.QAManager,
+                RoleNames.SMT,
+                RoleNames.SystemSupport
+            ];
+
+            return !user.AssignedRoles.Any(r => allowed.Contains(r));
         }
     }
 
