@@ -14,7 +14,6 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Labels
 @using Cfo.Cats.Server.UI.Components.Locations
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 
 @inject IStringLocalizer<Participants> L
 
@@ -190,7 +189,7 @@
                     <TitleContent>
                         <MudText Typo="Typo.subtitle1">
                             <strong>@(string.IsNullOrWhiteSpace(group.Label) ? "Unassigned" : group.Label)</strong>
-                            &nbsp;(@group.TotalCount)
+                            &nbsp;(@group.Items.Length)
                         </MudText>
                     </TitleContent>
                     <ChildContent>

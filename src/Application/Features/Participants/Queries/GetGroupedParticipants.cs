@@ -32,11 +32,10 @@ public static class GetGroupedParticipants
         public int GroupPageSize { get; set; } = 10;
     }
 
-    private class GroupAggregate
+    private class GroupHeader
     {
         public required string Key { get; set; }
         public required string Label { get; set; }
-        public required int Count { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<GroupedParticipantsDto>>
@@ -53,47 +52,44 @@ public static class GetGroupedParticipants
             var context = unitOfWork.DbContext;
             var baseQuery = ParticipantsWithPagination.Handler.ApplyFilter(context, filter);
 
-            var aggregates = filter.GroupBy switch
+            // The distinct groups (key + label), used to paginate across the groups themselves.
+            var groups = filter.GroupBy switch
             {
                 ParticipantGroupBy.Assignee => baseQuery
-                    .GroupBy(p => new { Key = p.OwnerId!, Label = p.Owner!.DisplayName! })
-                    .Select(g => new GroupAggregate { Key = g.Key.Key, Label = g.Key.Label, Count = g.Count() }),
+                    .Select(p => new GroupHeader { Key = p.OwnerId!, Label = p.Owner!.DisplayName! }),
                 ParticipantGroupBy.Tenant => baseQuery
-                    .GroupBy(p => new { Key = p.Owner!.TenantId!, Label = p.Owner!.TenantName! })
-                    .Select(g => new GroupAggregate { Key = g.Key.Key, Label = g.Key.Label, Count = g.Count() }),
+                    .Select(p => new GroupHeader { Key = p.Owner!.TenantId!, Label = p.Owner!.TenantName! }),
                 _ => throw new ArgumentOutOfRangeException(nameof(filter.GroupBy))
             };
 
-            var totalGroups = await aggregates.AsNoTracking().CountAsync(cancellationToken);
+            groups = groups.Distinct();
 
-            var pageAggregates = await aggregates
-                .AsNoTracking()
-                .OrderBy(a => a.Label)
+            var totalGroups = await groups.CountAsync(cancellationToken);
+
+            var pageGroups = await groups
+                .OrderBy(g => g.Label)
                 .Skip((request.GroupPageNumber - 1) * request.GroupPageSize)
                 .Take(request.GroupPageSize)
                 .ToListAsync(cancellationToken);
 
             var rowOrder = ParticipantsWithPagination.Handler.BuildOrderExpression(filter, includeGroup: false);
 
-            var groups = new List<ParticipantGroupDto>(pageAggregates.Count);
+            var result = new List<ParticipantGroupDto>(pageGroups.Count);
 
-            foreach (var aggregate in pageAggregates)
+            foreach (var group in pageGroups)
             {
                 var groupQuery = filter.GroupBy == ParticipantGroupBy.Assignee
-                    ? baseQuery.Where(p => p.OwnerId == aggregate.Key)
-                    : baseQuery.Where(p => p.Owner!.TenantId == aggregate.Key);
+                    ? baseQuery.Where(p => p.OwnerId == group.Key)
+                    : baseQuery.Where(p => p.Owner!.TenantId == group.Key);
 
                 var items = await ParticipantsWithPagination.Handler
                     .ProjectToDto(context, groupQuery, filter)
-                    .AsNoTracking()
                     .OrderBy(rowOrder)
                     .ToListAsync(cancellationToken);
 
-                groups.Add(new ParticipantGroupDto
+                result.Add(new ParticipantGroupDto
                 {
-                    Key = aggregate.Key,
-                    Label = aggregate.Label,
-                    TotalCount = aggregate.Count,
+                    Label = group.Label,
                     Items = items.ToArray()
                 });
             }
@@ -101,7 +97,7 @@ public static class GetGroupedParticipants
             return Result<GroupedParticipantsDto>.Success(new GroupedParticipantsDto
             {
                 TotalGroups = totalGroups,
-                Groups = groups.ToArray()
+                Groups = result.ToArray()
             });
         }
     }

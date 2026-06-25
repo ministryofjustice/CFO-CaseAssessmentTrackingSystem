@@ -213,21 +213,15 @@ public static class ParticipantsWithPagination
             IQueryable<Domain.Entities.Participants.Participant> query,
             Query request)
         {
-            DateTime? recentlyAssignedCutoff = request.RecentAction switch
-            {
-                RecentParticipantFilter.AssignedLast10Days => DateTime.UtcNow.Date.AddDays(-10),
-                RecentParticipantFilter.AssignedLast30Days => DateTime.UtcNow.Date.AddDays(-30),
-                _ => null
-            };
+            // The recent-action filter decides which history table (if any) we join to surface the
+            // "assigned on" / "accessed on" dates. The cutoff dates themselves are applied in ApplyFilter.
+            var includeAssignedOn = request.RecentAction is RecentParticipantFilter.AssignedLast10Days
+                or RecentParticipantFilter.AssignedLast30Days;
 
-            DateTime? recentlyVisitedCutoff = request.RecentAction switch
-            {
-                RecentParticipantFilter.VisitedLast7Days => DateTime.UtcNow.Date.AddDays(-7),
-                _ => null
-            };
+            var includeAccessedOn = request.RecentAction is RecentParticipantFilter.VisitedLast7Days;
 
             // Only join to the extra history tables when the selected filter needs those dates.
-            var transformedSource = recentlyAssignedCutoff.HasValue
+            var transformedSource = includeAssignedOn
                 ? from p in query
                   join oh in (
                       from h in context.ParticipantOwnershipHistories
@@ -247,7 +241,7 @@ public static class ParticipantsWithPagination
                       AccessedOn = (DateTime?)null,
                       Participant = p
                   }
-                : recentlyVisitedCutoff.HasValue
+                : includeAccessedOn
                 ? from p in query
                   join oh in (
                       from h in context.AccessAuditTrails
