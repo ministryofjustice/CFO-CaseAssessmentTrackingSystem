@@ -11,7 +11,7 @@ public static class GetParticipantSummary
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IAuditableRequest<Result<ParticipantSummaryDto>>
     {
-        public required string ParticipantId { get; set; } 
+        public required string ParticipantId { get; init; } 
         public required UserProfile CurrentUser { get; set; }
 
         public string Identifier() => ParticipantId;
@@ -36,7 +36,8 @@ public static class GetParticipantSummary
                             LocationType = p.CurrentLocation.LocationType,
                             Location = p.CurrentLocation.Name,
                             EnrolmentLocation = p.EnrolmentLocation.Name,
-                            EnrolmentLocationJustification = p.EnrolmentLocationJustification,
+                            EnrolmentLocationJustification = p.EnrolmentLocationJustification, 
+                            AssessmentJustification = p.AssessmentJustification,
                             DateOfBirth = p.DateOfBirth,
                             RiskDue = p.RiskDue,
                             Nationality = p.Nationality,
