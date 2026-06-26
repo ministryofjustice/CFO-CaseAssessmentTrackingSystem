@@ -4,13 +4,19 @@
 @using Cfo.Cats.Application.Features.Transfers.DTOs
 @using Cfo.Cats.Application.Features.Transfers.Queries
 @using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Pages.Transfers.Components
 @using Humanizer
 
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
+<PageHeader Title="Particpants" Items="@_breadCrumbs" />
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4">Incoming Transfers</MudText>
+    <MudSpacer />
+    <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+</MudStack>
 
 <MudTable Items="@incomingTransfers" 
           Hover="true" 
@@ -19,20 +25,6 @@
           LoadingProgressColor="Color.Info" 
           Class="mb-8 pa-4"
           Filter="new Func<IncomingTransferDto, bool>(FilterIncoming1)">
-    <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" />
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Incoming Transfers</MudText>
-                    <MudText Typo="Typo.body1">Entered your contract/region</MudText>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex flex-column justify-end">
-            <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </div>
-    </ToolBarContent>
     <HeaderContent>
             <MudTh>@ConstantString.Actions</MudTh>
             <MudTh>Participant</MudTh>
@@ -99,6 +91,14 @@
     </PagerContent>
 </MudTable>
 
+
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4">Outgoing Transfers</MudText>
+    <MudSpacer />
+    <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+</MudStack>
+
 <MudTable Items="@outgoingTransfers" 
           Hover="true" 
           Breakpoint="Breakpoint.Sm" 
@@ -106,20 +106,6 @@
           LoadingProgressColor="Color.Info" 
           Class="mb-8 pa-4"
           Filter="new Func<OutgoingTransferDto, bool>(FilterOutgoing1)">
-    <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" />
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Outgoing Transfers</MudText>
-                    <MudText Typo="Typo.body1">Left your contract/region</MudText>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex flex-column justify-end">
-            <MudTextField @bind-Value="_searchOutgoingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </div>
-    </ToolBarContent>
     <HeaderContent>
             <MudTh>Actions</MudTh>
             <MudTh>Participant</MudTh>
