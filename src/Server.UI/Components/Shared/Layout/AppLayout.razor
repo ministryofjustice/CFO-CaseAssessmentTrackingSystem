@@ -13,10 +13,11 @@
             <PresenceConnector />
             <HeaderMenu OpenSearch="ToggleSearchMenu"
                         MenuOpen="_megaMenuOpen"
-                        OnMenuClick="ToggleMegaMenu" />
+                        OnMenuClick="ToggleMegaMenu"
+                        OnMenuOpenChanged="OnMegaMenuOpenChanged"
+                        SearchOpen="_searchMenuOpen"
+                        OnSearchOpenChanged="OnSearchMenuOpenChanged" />
             <MudMainContent>
-                <MegaMenu Open="_megaMenuOpen" OpenChanged="OnMegaMenuOpenChanged" />
-                <SearchMenu Open="_searchMenuOpen" OpenChanged="OnSearchMenuOpenChanged" />
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
                         <ChildContent>
