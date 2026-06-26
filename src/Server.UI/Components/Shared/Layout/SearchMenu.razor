@@ -5,6 +5,7 @@
 
 @if (Open)
 {
+    <MudOverlay Visible="true" AutoClose="true" OnClosed="CloseAsync" LockScroll="false" />
     <MudPaper Elevation="4" Square="true" Class="pa-0">
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
             <MudText Typo="Typo.h2">
@@ -21,7 +22,8 @@
                           Variant="Variant.Outlined"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search"
-                          Placeholder="@L["Search for pages or participants by name or identifier..."]" />
+                          Placeholder="@L["Search for pages or participants by name or identifier..."]"
+                          autofocus="true" />
 
             @if (_searching)
             {
