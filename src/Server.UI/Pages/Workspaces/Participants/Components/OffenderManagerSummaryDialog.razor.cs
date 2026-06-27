@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 
-namespace Cfo.Cats.Server.UI.Pages.Transfers.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
 
 public partial class OffenderManagerSummaryDialog
 {
