@@ -59,6 +59,11 @@ public partial class Participants
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
 
+    private IReadOnlyList<BreadcrumbItem> _breadCrumbs =  [
+            new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
+            new BreadcrumbItem(ParticipantLinks.All.Title, ParticipantLinks.All.Url, true),
+        ];
+
     private IDictionary<int, string> _locations = null!;
     private IDictionary<string, string> _users = null!;
 
