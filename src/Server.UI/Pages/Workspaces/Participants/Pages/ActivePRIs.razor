@@ -10,7 +10,12 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<PageTitle>@Title</PageTitle>
+<PageHeader Title="Participants" Items="@_breadCrumbs" />
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4">Active Pre-Release Inventory (PRI)</MudText>
+    <MudSpacer />
+</MudStack>
 
 <MudDataGrid ServerData="@(ServerReload)"
                  FixedHeader="true"
@@ -26,9 +31,6 @@
                  Breakpoint="Breakpoint.Sm">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">                                     
-                <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" />
-            <MudText Typo="Typo.caption">@ConstantString.ActivePreReleaseInventoryPRI</MudText>
-
             <div class="d-flex flex-column">                
                 <MudSwitch Class="mt-10" @bind-Value="@Query!.IncludeOutgoing" @bind-Value:after="OnOutgoingChange" Label="@Query?.GetMemberDescription(q => q.IncludeOutgoing)" Color="Color.Primary"></MudSwitch>
             </div>
