@@ -2,9 +2,10 @@ using Cfo.Cats.Application.Features.Transfers.Commands;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.Features.Transfers.Queries;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Pages.Transfers.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
-namespace Cfo.Cats.Server.UI.Pages.Transfers;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class Transfers
 {
@@ -17,6 +18,11 @@ public partial class Transfers
 
     private string _searchIncomingString = "";
     private string _searchOutgoingString = "";
+
+    private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [
+        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
+        new BreadcrumbItem(ParticipantLinks.Transfers.Title, ParticipantLinks.Transfers.Url, true)
+    ];
 
     protected async override Task OnInitializedAsync()
     {
