@@ -1,0 +1,50 @@
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+
+@inherits CatsComponent<ParticipantSearchResultDto[]>
+
+<MudText Typo="Typo.h4" Class="mb-2" Color="Color.Primary">Recent Participants</MudText>
+<MudDivider Class="mb-3" />
+
+@if(Loading)
+{
+    <MudLoading Text="Fetching recent participants" />
+}
+
+@if(ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if(Data is { Length : >0})
+{
+    <MudList T="string" ReadOnly="false">
+        @foreach (var participant in Data)
+        {
+            <MudListItem T="string"
+                            Icon="@Icons.Material.Filled.Person"
+                            OnClick="@(() => NavigateToParticipant(participant.Id))">
+                <MudText Typo="Typo.body2">@participant.FullName</MudText>
+                <MudText Typo="Typo.caption" Class="mud-text-secondary d-block">
+                    @participant.Id@(string.IsNullOrWhiteSpace(participant.CurrentLocation) ? "" : $" · {participant.CurrentLocation}")
+                </MudText>
+            </MudListItem>
+        }
+    </MudList>
+}
+
+@code {
+
+    protected override IQuery<Result<ParticipantSearchResultDto[]>> CreateQuery() =>
+        new GetRecentParticipants.Query() {
+            CurrentUser = CurrentUser
+        };
+
+    private void NavigateToParticipant(string id)
+    {
+        Navigation.NavigateTo(ParticipantLinks.Participant(id).Url);
+    }
+}

@@ -4,8 +4,10 @@ using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Participants;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Models;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
@@ -26,8 +28,16 @@ public partial class Participant
 
     private readonly string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
 
+     private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [];
+
     protected override async Task OnInitializedAsync()
     {
+        _breadCrumbs =  [
+            new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
+            new BreadcrumbItem(ParticipantLinks.All.Title, ParticipantLinks.All.Url, false),
+            new BreadcrumbItem(ParticipantLinks.Participant(Id).Title, ParticipantLinks.Participant(Id).Url  ,true)     
+        ];
+
         await Refresh(ComponentCancellationToken);
         await SetLatestParticipantAssessment(ComponentCancellationToken);
         ShowRightToWorkWarning();
