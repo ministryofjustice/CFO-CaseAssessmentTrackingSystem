@@ -15,7 +15,8 @@
     .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}
 </style>
 
-<MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
+<PageHeader Title="Particpants" Items="@_breadCrumbs" />
+
   @if (_participantCascading is not null && _participant is not null)
     {
         <CascadingValue Value="_participant" IsFixed="true">
@@ -144,4 +145,3 @@
         </CascadingValue>
         </CascadingValue>
     }
-</MudContainer>

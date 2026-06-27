@@ -1,4 +1,4 @@
-﻿@page "/pages/workspace/participants/movedparticipants"
+﻿@page "/pages/workspace/participants/moved"
 
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
@@ -10,24 +10,10 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
+<PageHeader Title="Particpants" Items="@_breadCrumbs" />
+
 <MudSimpleTable Class="pa-4">
-    <thead>
-        <tr>
-            <div class="d-flex align-start flex-grow-1">
-                <div class="d-flex gap-4">
-                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption">Participants you are losing access to</MudText>
-                    </div>
-                </div>
-            </div>
-        </tr>
-        <tr>
-            <th>Participant</th>
-            <th>Accessible Until</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+
     <tbody>
         @foreach (var access in participantAccess.OrderBy(p => p.HasAccessTo))
         {
