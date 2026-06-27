@@ -1,4 +1,4 @@
-@page "/pages/workspace/participants"
+@page "/pages/workspace/participants/all"
 
 @using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Labels.DTOs
@@ -21,7 +21,7 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+    <PageHeader Title="Particpants" Items="@_breadCrumbs" />
 
     <MudStack>
         <!-- Header/Filter row -->
@@ -328,4 +328,3 @@
     {
         <MudAlert Severity="Severity.Info" Class="mt-4">No participants match the current filters.</MudAlert>
     }
-</MudContainer>
