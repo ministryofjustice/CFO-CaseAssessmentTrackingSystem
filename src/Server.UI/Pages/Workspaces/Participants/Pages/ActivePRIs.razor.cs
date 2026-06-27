@@ -6,8 +6,9 @@ using Cfo.Cats.Application.Features.PRIs.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.PRIs.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
-namespace Cfo.Cats.Server.UI.Pages.PRIs;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class ActivePRIs
 {
@@ -23,6 +24,11 @@ public partial class ActivePRIs
     private bool _loading;
 
     private GetActivePRIsByUserId.Query? Query { get; set; }
+
+    private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [
+        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
+        new BreadcrumbItem(ParticipantLinks.AllPris.Title, ParticipantLinks.AllPris.Url, true)
+    ];
 
     protected override async Task OnInitializedAsync()
     {
