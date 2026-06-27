@@ -1,0 +1,61 @@
+@page "/pages/workspace/participants/"
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+
+<PageHeader Title="Particpants" Items="@_breadCrumbs" />
+
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudText Typo="Typo.h3">
+            Recents
+        </MudText>
+        <MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
+            <RecentParticipants />
+        </MudStack>
+    </MudItem>
+    <MudItem xs="12" md="6" lg="4">
+        <MudText Typo="Typo.h3">
+            Particpant Links
+        </MudText>
+        <MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
+            <MudStack Spacing="0">
+                <MudLink Href="@ParticipantLinks.All.Url" aria-describedby="ParticipantsLink">
+                    All Participants
+                </MudLink>
+                <MudText id="ParticipantsLink" Typo="Typo.caption">
+                    Access all participants.
+                </MudText>
+            </MudStack>
+            <MudStack Spacing="0">
+                <MudLink Href="@ParticipantLinks.MovedParticipants.Url" aria-describedby="MovedLink">
+                    Moved Participants
+                </MudLink>
+                <MudText id="MovedLink" Typo="Typo.caption">
+                    Participants you are loosing access to as they have moved
+                </MudText>
+            </MudStack>
+
+            @if(_allowTransfers)
+            {
+                <MudStack Spacing="0">
+                    <MudLink Href="@ParticipantLinks.Transfers.Url" aria-describedby="TransfersLink">
+                        Transfers
+                    </MudLink>
+                    <MudText id="TransfersLink" Typo="Typo.caption">
+                        Manage incoming and view outgoing transfers
+                    </MudText>
+                </MudStack>
+            }
+
+            <MudStack Spacing="0">
+                <MudLink Href="@ParticipantLinks.AllPris.Url" aria-describedby="PriLink">
+                    Active PRI
+                </MudLink>
+                <MudText id="PriLink" Typo="Typo.caption">
+                    Displays a list of active PRIs
+                </MudText>
+            </MudStack>
+            
+        </MudStack>
+    </MudItem>
+</MudGrid>
