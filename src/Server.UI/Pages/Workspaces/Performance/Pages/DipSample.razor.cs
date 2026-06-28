@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Server.UI.Components.Dialogs;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
 
@@ -12,12 +11,7 @@ public partial class DipSample
     private bool _loading;
     private MudDataGrid<DipSampleParticipantSummaryDto> _table = new();
 
-    private List<BreadcrumbItem> BreadcrumbItems =>
-    [
-        new(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
-        new(PerformanceLinks.OutcomeQualityDipSamples.Title, PerformanceLinks.OutcomeQualityDipSamples.Url),
-        new($"{_sample?.ContractName} ({_sample?.PeriodFromDesc})", href: PerformanceLinks.OutcomeQualityDipSample(SampleId).Url)
-    ];
+    private string? SampleLabel => _sample is null ? null : $"{_sample.ContractName} ({_sample.PeriodFromDesc})";
 
     [Parameter]
     public required Guid SampleId { get; set; }
