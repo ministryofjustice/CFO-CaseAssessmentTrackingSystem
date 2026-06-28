@@ -25,9 +25,9 @@ public partial class ActivePRIs
 
     private GetActivePRIsByUserId.Query? Query { get; set; }
 
-    private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [
-        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
-        new BreadcrumbItem(ParticipantLinks.AllPris.Title, ParticipantLinks.AllPris.Url, true)
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [
+        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url),
+        new BreadcrumbItem(ParticipantLinks.AllPris.Title, ParticipantLinks.AllPris.Url)
     ];
 
     protected override async Task OnInitializedAsync()

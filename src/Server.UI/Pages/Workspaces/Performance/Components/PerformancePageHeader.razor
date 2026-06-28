@@ -1,0 +1,10 @@
+
+<PageHeader Title="Performance Management" 
+            Icon="@Icons.Material.Filled.FactCheck" 
+            Items="BreadcrumbItems" />
+
+@code
+{
+    [Parameter, EditorRequired]
+    public IReadOnlyList<BreadcrumbItem> BreadcrumbItems { get; set; }
+}
