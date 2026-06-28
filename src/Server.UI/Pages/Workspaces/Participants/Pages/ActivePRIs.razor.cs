@@ -25,11 +25,6 @@ public partial class ActivePRIs
 
     private GetActivePRIsByUserId.Query? Query { get; set; }
 
-    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [
-        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url),
-        new BreadcrumbItem(ParticipantLinks.AllPris.Title, ParticipantLinks.AllPris.Url)
-    ];
-
     protected override async Task OnInitializedAsync()
     {
         Title = @ConstantString.ActivePreReleaseInventoryPRI;
