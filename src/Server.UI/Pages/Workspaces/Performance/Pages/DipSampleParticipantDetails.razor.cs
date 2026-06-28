@@ -1,14 +1,14 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
-
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 using Microsoft.JSInterop;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
 
-public partial class ParticipantDetails
+public partial class DipSampleParticipantDetails
 {
     [Parameter]
     public required Guid SampleId { get; set; }
@@ -22,11 +22,12 @@ public partial class ParticipantDetails
     [Inject]
     public IUserService UserService { get; set; } = null!;
 
-    private List<BreadcrumbItem> Items =>
+    private List<BreadcrumbItem> BreadcrumbItems =>
     [
-        new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
-        new($"{_participant?.ContractName} ({_participant?.PeriodFromDesc})", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List),
-        new(ParticipantId, href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{ParticipantId}", icon: Icons.Material.Filled.Person)
+        new(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
+        new(PerformanceLinks.OutcomeQualityDipSamples.Title, PerformanceLinks.OutcomeQualityDipSamples.Url),
+        new($"{_participant?.ContractName} ({_participant?.PeriodFromDesc})", href: PerformanceLinks.OutcomeQualityDipSample(SampleId).Url),
+        new(ParticipantId, href: PerformanceLinks.OutcomeQualityDipSampleParticipant(SampleId, ParticipantId).Url)
     ];
 
     private SubmitCsoResponse.Command? _csoCommand;
@@ -158,7 +159,7 @@ public partial class ParticipantDetails
             if (result is { Succeeded: true })
             {
                 Snackbar.Add("Submission saved", Severity.Info);
-                Navigation.NavigateTo($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/");
+                Navigation.NavigateTo($"/pages/workspace/performance/outcome-quality-dip-sampling/{SampleId}/");
             }
             else
             {
@@ -176,7 +177,7 @@ public partial class ParticipantDetails
             if (result is { Succeeded: true })
             {
                 Snackbar.Add("Submission saved", Severity.Info);
-                Navigation.NavigateTo($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/");
+                Navigation.NavigateTo($"/pages/workspace/performance/outcome-quality-dip-sampling/{SampleId}/");
             }
             else
             {
@@ -194,7 +195,7 @@ public partial class ParticipantDetails
             if (result is { Succeeded: true })
             {
                 Snackbar.Add("Submission saved", Severity.Info);
-                Navigation.NavigateTo($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/");
+                Navigation.NavigateTo($"/pages/workspace/performance/outcome-quality-dip-sampling/{SampleId}/");
             }
             else
             {
