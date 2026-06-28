@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 using Cfo.Cats.Application.Features.AuditTrails.Queries;
 using Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
 using Cfo.Cats.Domain.Entities.Documents;
-using Cfo.Cats.Server.UI.Pages.Analytics.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.SystemManagement.Components;

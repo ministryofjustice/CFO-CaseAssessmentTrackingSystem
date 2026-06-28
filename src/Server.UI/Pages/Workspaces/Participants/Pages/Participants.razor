@@ -13,6 +13,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Labels
 @using Cfo.Cats.Server.UI.Components.Locations
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 
 
 @inject IStringLocalizer<Participants> L
@@ -21,7 +22,7 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    <PageHeader Title="Particpants" Items="@_breadCrumbs" />
+    <ParticipantsPageHeader BreadcrumbItems="@_breadcrumbs" />
 
     <MudStack>
         <!-- Header/Filter row -->
