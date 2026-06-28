@@ -4,7 +4,7 @@ using Cfo.Cats.Domain.Common.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
 public partial class SubmitCsoResponseComponent
 {

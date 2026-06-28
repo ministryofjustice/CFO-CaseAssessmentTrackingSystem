@@ -1,7 +1,8 @@
 @page "/pages/workspace/participants/{id}"
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Analytics.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
@@ -15,7 +16,7 @@
     .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}
 </style>
 
-<PageHeader Title="Particpants" Items="@_breadCrumbs" />
+<ParticipantsPageHeader BreadcrumbItems="@_breadcrumbs" />
 
   @if (_participantCascading is not null && _participant is not null)
     {
