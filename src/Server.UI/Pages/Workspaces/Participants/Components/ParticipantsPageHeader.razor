@@ -1,10 +1,58 @@
+@using Microsoft.AspNetCore.WebUtilities
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
 
 <PageHeader Title="Participants" 
             Icon="@Icons.Material.Filled.People" 
-            Items="@BreadcrumbItems" />
+            Items="@_breadcrumbs" />
 
 @code
 {
-    [Parameter, EditorRequired]
-    public IReadOnlyList<BreadcrumbItem> BreadcrumbItems { get; set; }
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = ToItem(ParticipantLinks.Home);
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = ParticipantLinks.Home.Url;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        return segment switch
+        {
+            "" => [home],
+            "all" => [home, ToItem(ParticipantLinks.All)],
+            "activities" => [home, ToItem(ParticipantLinks.AllActivities)],
+            "transfers" => [home, ToItem(ParticipantLinks.Transfers)],
+            "pre-release-inventory" => [home, ToItem(ParticipantLinks.AllPris)],
+            "moved" => [home, ToItem(ParticipantLinks.MovedParticipants)],
+            _ => BuildParticipantBreadcrumbs(home, segment, uri)
+        };
+    }
+
+    private static IReadOnlyList<BreadcrumbItem> BuildParticipantBreadcrumbs(BreadcrumbItem home, string id, Uri uri)
+    {
+        // The middle crumb links back to wherever the user came from. We default
+        // to "All", but honour a "from=activities" query parameter so a participant
+        // opened from the Activities list links back to Activities.
+        var middle = ParticipantLinks.All;
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("from", out var from)
+            && string.Equals(from, "activities", StringComparison.OrdinalIgnoreCase))
+        {
+            middle = ParticipantLinks.AllActivities;
+        }
+
+        return [home, ToItem(middle), ToItem(ParticipantLinks.Participant(id))];
+    }
+
+    private static BreadcrumbItem ToItem(ParticipantLinks.ParticipantLink link)
+        => new(link.Title, link.Url);
 }
