@@ -1,10 +1,66 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 
-<PageHeader Title="Performance Management" 
-            Icon="@Icons.Material.Filled.FactCheck" 
-            Items="BreadcrumbItems" />
+<PageHeader Title="Performance Management"
+            Icon="@Icons.Material.Filled.FactCheck"
+            Items="@_breadcrumbs" />
 
 @code
 {
-    [Parameter, EditorRequired]
-    public IReadOnlyList<BreadcrumbItem> BreadcrumbItems { get; set; }
+    // Optional friendly label for the dip-sample crumb. The sample's display name
+    // ("{ContractName} ({Period})") is loaded from server data, so pages that have it
+    // supply it here; the rest of the trail is derived from the current URL.
+    [Parameter]
+    public string? SampleLabel { get; set; }
+
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = ToItem(PerformanceLinks.Home);
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = PerformanceLinks.Home.Url;
+
+        var relativePath = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        // Only the outcome-quality-dip-sampling area is currently mapped.
+        if (segments.Length == 0 || segments[0] != "outcome-quality-dip-sampling")
+        {
+            return [home];
+        }
+
+        var crumbs = new List<BreadcrumbItem>
+        {
+            home,
+            ToItem(PerformanceLinks.OutcomeQualityDipSamples)
+        };
+
+        // /outcome-quality-dip-sampling/{sampleId}
+        if (segments.Length >= 2 && Guid.TryParse(segments[1], out var sampleId))
+        {
+            var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
+            var sampleTitle = string.IsNullOrWhiteSpace(SampleLabel) ? sample.Title : SampleLabel;
+            crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Url));
+
+            // /outcome-quality-dip-sampling/{sampleId}/{participantId}
+            if (segments.Length >= 3)
+            {
+                crumbs.Add(ToItem(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, segments[2])));
+            }
+        }
+
+        return crumbs;
+    }
+
+    private static BreadcrumbItem ToItem(PerformanceLinks.PerformanceLink link)
+        => new(link.Title, link.Url);
 }
