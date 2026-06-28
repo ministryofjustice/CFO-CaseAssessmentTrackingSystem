@@ -5,7 +5,6 @@ using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
@@ -30,12 +29,6 @@ public partial class DipSamples
     public ContractDto? SelectedContract { get; set; }
 
     public GetOutcomeQualityDipSamples.Query Query { get; set; } = new();
-
-    private List<BreadcrumbItem> Items =>
-    [
-        new(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
-        new(PerformanceLinks.OutcomeQualityDipSamples.Title, PerformanceLinks.OutcomeQualityDipSamples.Url)
-    ];
 
     protected override async Task OnInitializedAsync()
     {
