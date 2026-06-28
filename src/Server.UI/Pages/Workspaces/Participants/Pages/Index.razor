@@ -2,7 +2,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
 
-<ParticipantsPageHeader BreadcrumbItems="@_breadcrumbs" />
+<ParticipantsPageHeader />
 
 <MudGrid>
     <MudItem xs="12" md="6">
@@ -24,6 +24,14 @@
                 </MudLink>
                 <MudText id="ParticipantsLink" Typo="Typo.caption">
                     Access all participants.
+                </MudText>
+            </MudStack>
+            <MudStack Spacing="0">
+                <MudLink Href="@ParticipantLinks.AllActivities.Url" aria-describedby="AtivitiesLink">
+                    Activities
+                </MudLink>
+                <MudText id="ActivitiesLink" Typo="Typo.caption">
+                    Access all activities.
                 </MudText>
             </MudStack>
             <MudStack Spacing="0">
