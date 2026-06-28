@@ -28,16 +28,8 @@ public partial class Participant
 
     private readonly string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
 
-     private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
-
     protected override async Task OnInitializedAsync()
     {
-        _breadcrumbs =  [
-            new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url),
-            new BreadcrumbItem(ParticipantLinks.All.Title, ParticipantLinks.All.Url),
-            new BreadcrumbItem(ParticipantLinks.Participant(Id).Title, ParticipantLinks.Participant(Id).Url)     
-        ];
-
         await Refresh(ComponentCancellationToken);
         await SetLatestParticipantAssessment(ComponentCancellationToken);
         ShowRightToWorkWarning();
