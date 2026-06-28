@@ -118,6 +118,14 @@ public partial class Participants
                         .ToDictionary(k => k.Id, v => v);
 
         }
+
+        if(UserProfile.AssignedRoles is [])
+        {
+            // support workers default to MY participants
+            // if I have a cached query, this will be overriden below
+            Query.OwnerId = UserProfile.UserId;
+            _currentFilter = QuickFilter.MyParticipants;
+        }
                     
         var cached = await SessionStorage.GetAsync();
 
