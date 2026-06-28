@@ -22,8 +22,8 @@ public partial class Index
         _allowTransfers = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Transfers)).Succeeded;
     }
 
-    private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [
-           new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, true),
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [
+           new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url),
     ];
 
 }
