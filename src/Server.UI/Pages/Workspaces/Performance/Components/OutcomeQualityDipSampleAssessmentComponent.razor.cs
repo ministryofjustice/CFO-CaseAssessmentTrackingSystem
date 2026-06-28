@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.Assessments.Queries;
 using Microsoft.JSInterop;
 using System.Collections.Concurrent;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
 public partial class OutcomeQualityDipSampleAssessmentComponent
 {
