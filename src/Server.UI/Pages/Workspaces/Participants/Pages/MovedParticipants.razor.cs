@@ -7,9 +7,9 @@ public partial class MovedParticipants
 {
     private IEnumerable<GetParticipantsWithAccessEndingSoon.ParticipantWithAccessEndingSoonDto> participantAccess = [];
 
-    private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [
-        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
-        new BreadcrumbItem(ParticipantLinks.MovedParticipants.Title, ParticipantLinks.MovedParticipants.Url, true)
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [
+        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url),
+        new BreadcrumbItem(ParticipantLinks.MovedParticipants.Title, ParticipantLinks.MovedParticipants.Url)
     ];
 
     protected override async Task OnInitializedAsync()

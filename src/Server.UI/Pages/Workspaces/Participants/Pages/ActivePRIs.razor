@@ -1,5 +1,6 @@
 @page "/pages/workspace/participants/pre-release-inventory"
 
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 
@@ -10,7 +11,7 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<PageHeader Title="Participants" Items="@_breadCrumbs" />
+<ParticipantsPageHeader BreadcrumbItems="@_breadcrumbs" />
 
 <MudStack Row="true" Justify="Justify.SpaceBetween">
     <MudText Typo="Typo.h4">Active Pre-Release Inventory (PRI)</MudText>

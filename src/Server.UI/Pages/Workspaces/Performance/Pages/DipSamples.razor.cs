@@ -4,14 +4,15 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Infrastructure.Configurations;
-using Cfo.Cats.Server.UI.Pages.Analytics.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
 
-public partial class Index
+public partial class DipSamples
 {
     
     private bool _isLoading;
@@ -32,7 +33,8 @@ public partial class Index
 
     private List<BreadcrumbItem> Items =>
     [
-        new("Outcome Quality", "pages/analytics/outcome-quality-dip-sampling", icon: Icons.Material.Filled.Home)
+        new(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
+        new(PerformanceLinks.OutcomeQualityDipSamples.Title, PerformanceLinks.OutcomeQualityDipSamples.Url)
     ];
 
     protected override async Task OnInitializedAsync()

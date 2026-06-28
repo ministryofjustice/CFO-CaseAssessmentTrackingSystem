@@ -1,0 +1,10 @@
+
+<PageHeader Title="Participants" 
+            Icon="@Icons.Material.Filled.People" 
+            Items="@BreadcrumbItems" />
+
+@code
+{
+    [Parameter, EditorRequired]
+    public IReadOnlyList<BreadcrumbItem> BreadcrumbItems { get; set; }
+}
