@@ -83,6 +83,13 @@ public partial class Activities
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
             .ToDictionary(k => k.Id, k => k.Name);
 
+        if(UserProfile.AssignedRoles is [])
+        {
+            // follow participant screen logic and default to me if I am a support worker.
+            Query.OwnerId = UserProfile.UserId;
+            _currentFilter = ActivitiesQuickFilter.MyActivities;
+        }
+
         var cached = await SessionStorage.GetAsync();
 
         if (cached is { Succeeded: true, Data: { } sd })
