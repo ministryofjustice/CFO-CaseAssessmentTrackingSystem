@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -20,8 +19,4 @@ public partial class Index
         var authState = await AuthState;
         _allowOutcomeQualityDipChecks = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.OutcomeQualityDipChecks)).Succeeded;
     }
-
-    private IReadOnlyList<BreadcrumbItem> BreadcrumbItems = [
-        new BreadcrumbItem(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
-    ];
 }
