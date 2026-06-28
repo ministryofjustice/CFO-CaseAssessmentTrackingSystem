@@ -19,9 +19,9 @@ public partial class Transfers
     private string _searchIncomingString = "";
     private string _searchOutgoingString = "";
 
-    private IReadOnlyList<BreadcrumbItem> _breadCrumbs = [
-        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url, false),
-        new BreadcrumbItem(ParticipantLinks.Transfers.Title, ParticipantLinks.Transfers.Url, true)
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [
+        new BreadcrumbItem(ParticipantLinks.Home.Title, ParticipantLinks.Home.Url),
+        new BreadcrumbItem(ParticipantLinks.Transfers.Title, ParticipantLinks.Transfers.Url)
     ];
 
     protected async override Task OnInitializedAsync()
