@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Server.UI.Pages.Activities;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
 public partial class OutcomeQualityDipSamplePathwayPlanComponent
 {
