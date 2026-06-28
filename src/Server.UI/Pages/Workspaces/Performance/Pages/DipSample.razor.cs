@@ -2,19 +2,21 @@ using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Server.UI.Components.Dialogs;
-using Cfo.Cats.Server.UI.Pages.Analytics.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
 
 public partial class DipSample
 {
     private bool _loading;
     private MudDataGrid<DipSampleParticipantSummaryDto> _table = new();
 
-    private List<BreadcrumbItem> Items =>
+    private List<BreadcrumbItem> BreadcrumbItems =>
     [
-        new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
-        new($"{_sample?.ContractName} ({_sample?.PeriodFromDesc})", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List)
+        new(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
+        new(PerformanceLinks.OutcomeQualityDipSamples.Title, PerformanceLinks.OutcomeQualityDipSamples.Url),
+        new($"{_sample?.ContractName} ({_sample?.PeriodFromDesc})", href: PerformanceLinks.OutcomeQualityDipSample(SampleId).Url)
     ];
 
     [Parameter]
