@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
+using Cfo.Cats.Domain.Labels.Rules;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.StaticAssets;
 
@@ -19,6 +20,10 @@ public static class ParticipantLinks
     public static ParticipantLink MovedParticipants = new ("Moved", $"{Home.Url}/moved");
 
     public static ParticipantLink Transfers = new ("Transfers", $"{Home.Url}/transfers");
+
+    public static ParticipantLink AllActivities = new ("Activities", $"{Home.Url}/activities");
+
+    public static ParticipantLink ParticipantByActivity(string id) => new(id, $"{AllActivities}/{id}");
 
     public record ParticipantLink(string Title, string Url);
 }
