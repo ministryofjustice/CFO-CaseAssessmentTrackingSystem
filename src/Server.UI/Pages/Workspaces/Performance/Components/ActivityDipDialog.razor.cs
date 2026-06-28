@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
 public partial class ActivityDipDialog
 {
