@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
@@ -22,13 +21,7 @@ public partial class DipSampleParticipantDetails
     [Inject]
     public IUserService UserService { get; set; } = null!;
 
-    private List<BreadcrumbItem> BreadcrumbItems =>
-    [
-        new(PerformanceLinks.Home.Title, PerformanceLinks.Home.Url),
-        new(PerformanceLinks.OutcomeQualityDipSamples.Title, PerformanceLinks.OutcomeQualityDipSamples.Url),
-        new($"{_participant?.ContractName} ({_participant?.PeriodFromDesc})", href: PerformanceLinks.OutcomeQualityDipSample(SampleId).Url),
-        new(ParticipantId, href: PerformanceLinks.OutcomeQualityDipSampleParticipant(SampleId, ParticipantId).Url)
-    ];
+    private string? SampleLabel => _participant is null ? null : $"{_participant.ContractName} ({_participant.PeriodFromDesc})";
 
     private SubmitCsoResponse.Command? _csoCommand;
 
