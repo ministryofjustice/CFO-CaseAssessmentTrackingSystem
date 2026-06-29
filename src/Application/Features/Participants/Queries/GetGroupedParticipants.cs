@@ -7,9 +7,9 @@ using Cfo.Cats.Application.SecurityConstants;
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 /// <summary>
-/// Returns a single page of participant groups (e.g. assignees) for the supplied filter.
-/// The groups themselves are paginated (so the pager reveals more assignees); each group
-/// carries all of its participant rows.
+/// Returns a single page of participant groups (e.g. assignees) for the supplied filter. Only the
+/// group key, label and total count are returned — the participant rows are fetched on demand when a
+/// group is expanded. The groups themselves are paginated, so the pager reveals more assignees.
 /// </summary>
 public static class GetGroupedParticipants
 {
@@ -32,12 +32,6 @@ public static class GetGroupedParticipants
         public int GroupPageSize { get; set; } = 10;
     }
 
-    private class GroupHeader
-    {
-        public required string Key { get; set; }
-        public required string Label { get; set; }
-    }
-
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<GroupedParticipantsDto>>
     {
         public async Task<Result<GroupedParticipantsDto>> Handle(Query request, CancellationToken cancellationToken)
@@ -52,17 +46,17 @@ public static class GetGroupedParticipants
             var context = unitOfWork.DbContext;
             var baseQuery = ParticipantsWithPagination.Handler.ApplyFilter(context, filter);
 
-            // The distinct groups (key + label), used to paginate across the groups themselves.
+            // Aggregate to one row per group (key + label + total count), paginated across the groups.
             var groups = filter.GroupBy switch
             {
                 ParticipantGroupBy.Assignee => baseQuery
-                    .Select(p => new GroupHeader { Key = p.OwnerId!, Label = p.Owner!.DisplayName! }),
+                    .GroupBy(p => new { p.OwnerId, p.Owner!.DisplayName })
+                    .Select(g => new ParticipantGroupDto { Key = g.Key.OwnerId!, Label = g.Key.DisplayName!, Count = g.Count() }),
                 ParticipantGroupBy.Tenant => baseQuery
-                    .Select(p => new GroupHeader { Key = p.Owner!.TenantId!, Label = p.Owner!.TenantName! }),
+                    .GroupBy(p => new { p.Owner!.TenantId, p.Owner!.TenantName })
+                    .Select(g => new ParticipantGroupDto { Key = g.Key.TenantId!, Label = g.Key.TenantName!, Count = g.Count() }),
                 _ => throw new ArgumentOutOfRangeException(nameof(filter.GroupBy))
             };
-
-            groups = groups.Distinct();
 
             var totalGroups = await groups.CountAsync(cancellationToken);
 
@@ -72,32 +66,10 @@ public static class GetGroupedParticipants
                 .Take(request.GroupPageSize)
                 .ToListAsync(cancellationToken);
 
-            var rowOrder = ParticipantsWithPagination.Handler.BuildOrderExpression(filter, includeGroup: false);
-
-            var result = new List<ParticipantGroupDto>(pageGroups.Count);
-
-            foreach (var group in pageGroups)
-            {
-                var groupQuery = filter.GroupBy == ParticipantGroupBy.Assignee
-                    ? baseQuery.Where(p => p.OwnerId == group.Key)
-                    : baseQuery.Where(p => p.Owner!.TenantId == group.Key);
-
-                var items = await ParticipantsWithPagination.Handler
-                    .ProjectToDto(context, groupQuery, filter)
-                    .OrderBy(rowOrder)
-                    .ToListAsync(cancellationToken);
-
-                result.Add(new ParticipantGroupDto
-                {
-                    Label = group.Label,
-                    Items = items.ToArray()
-                });
-            }
-
             return Result<GroupedParticipantsDto>.Success(new GroupedParticipantsDto
             {
                 TotalGroups = totalGroups,
-                Groups = result.ToArray()
+                Groups = pageGroups.ToArray()
             });
         }
     }

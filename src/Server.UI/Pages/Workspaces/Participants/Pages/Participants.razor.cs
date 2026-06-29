@@ -73,7 +73,7 @@ public partial class Participants
     private const int DefaultPageSize = 50;
     private const int GroupPageSize = 10;
 
-    private ParticipantGroupDto[] _groups = [];
+    private ParticipantGroupView[] _groups = [];
 
     private bool _downloading = false;
     private bool _canReassign;
@@ -272,7 +272,7 @@ public partial class Participants
 
             if (grouped is { Succeeded: true, Data: not null })
             {
-                _groups = grouped.Data.Groups;
+                _groups = grouped.Data.Groups.Select(g => new ParticipantGroupView(g)).ToArray();
                 _totalItems = grouped.Data.TotalGroups;
                 _totalPages = (int)Math.Ceiling(grouped.Data.TotalGroups / (double)GroupPageSize);
             }
@@ -295,6 +295,41 @@ public partial class Participants
         Query.PageNumber = 1;
         await OnRefresh();
     }
+
+    private async Task OnGroupExpanded(ParticipantGroupView group, bool expanded)
+    {
+        if (!expanded || group.Loaded || group.Loading)
+        {
+            return;
+        }
+
+        group.Loading = true;
+
+        var result = await Service.Send(BuildGroupQuery(group.Key));
+        group.Items = result is { Succeeded: true, Data: not null } ? result.Data.Items.ToArray() : [];
+        group.Loaded = true;
+        group.Loading = false;
+    }
+
+    // Fetches a single group's participants by reusing the flat query, scoped to the group key.
+    private ParticipantsWithPagination.Query BuildGroupQuery(string key) => new()
+    {
+        CurrentUser = UserProfile,
+        ListView = Query.ListView,
+        JustMyCases = Query.JustMyCases,
+        Locations = Query.Locations,
+        Label = Query.Label,
+        Keyword = Query.Keyword,
+        RiskDue = Query.RiskDue,
+        RecentAction = Query.RecentAction,
+        OrderBy = Query.OrderBy,
+        SortDirection = Query.SortDirection,
+        GroupBy = ParticipantGroupBy.None,
+        OwnerId = Query.GroupBy == ParticipantGroupBy.Assignee ? key : Query.OwnerId,
+        TenantId = Query.GroupBy == ParticipantGroupBy.Tenant ? key : Query.TenantId,
+        PageNumber = 1,
+        PageSize = DefaultPageSize
+    };
 
     private void ClearSelectedParticipants() => _selectedParticipantIds.Clear();
 
@@ -484,4 +519,18 @@ public partial class Participants
             _downloading = false;
         }
     }
+}
+
+/// <summary>
+/// UI wrapper for a participant group header: holds the lazily-fetched rows and load state so each
+/// group fetches its participants only when expanded.
+/// </summary>
+public sealed class ParticipantGroupView(ParticipantGroupDto group)
+{
+    public string Key => group.Key;
+    public string Label => group.Label;
+    public int Count => group.Count;
+    public ParticipantPaginationDto[] Items { get; set; } = [];
+    public bool Loaded { get; set; }
+    public bool Loading { get; set; }
 }

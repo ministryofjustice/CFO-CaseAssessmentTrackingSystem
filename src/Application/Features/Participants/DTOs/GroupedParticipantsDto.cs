@@ -12,23 +12,30 @@ public class GroupedParticipantsDto
     public int TotalGroups { get; set; }
 
     /// <summary>
-    /// The groups on the current group-page, each carrying its participant rows.
+    /// The groups on the current group-page. Each carries its key and total count; the participant
+    /// rows are fetched lazily when the group is expanded.
     /// </summary>
     public ParticipantGroupDto[] Groups { get; set; } = [];
 }
 
 /// <summary>
-/// A single group (e.g. one assignee) with the participant rows that belong to it.
+/// A single group header (e.g. one assignee) — its key, label and total participant count.
+/// Participants are loaded on demand when the group is expanded.
 /// </summary>
 public class ParticipantGroupDto
 {
+    /// <summary>
+    /// The grouping key (assignee owner id, or tenant id) used to fetch this group's participants.
+    /// </summary>
+    public required string Key { get; set; }
+
     /// <summary>
     /// The human friendly label shown in the group header (assignee display name, or tenant name).
     /// </summary>
     public required string Label { get; set; }
 
     /// <summary>
-    /// The participants belonging to this group.
+    /// The total number of participants belonging to this group.
     /// </summary>
-    public ParticipantPaginationDto[] Items { get; set; } = [];
+    public int Count { get; set; }
 }

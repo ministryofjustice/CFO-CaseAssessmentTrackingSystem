@@ -190,7 +190,7 @@ public static class ParticipantsWithPagination
 
             var transformedQuery = ProjectToDto(context, query, request);
 
-            var orderExpression = BuildOrderExpression(request, includeGroup: true);
+            var orderExpression = BuildOrderExpression(request);
 
             var data = await transformedQuery
                 .AsNoTracking()
@@ -339,11 +339,10 @@ public static class ParticipantsWithPagination
             };
 
         /// <summary>
-        /// Builds the dynamic LINQ order expression. When <paramref name="includeGroup"/> is true and a
-        /// grouping is active, the group key leads the ordering so grouped rows stay contiguous (used by
-        /// the flat/grouped export). The grouped UI fetches a single group at a time and does not need it.
+        /// Builds the dynamic LINQ order expression. When a grouping is active the group key leads the
+        /// ordering so grouped rows stay contiguous in the export.
         /// </summary>
-        internal static string BuildOrderExpression(Query request, bool includeGroup)
+        internal static string BuildOrderExpression(Query request)
         {
             var sortColumn = GetSortColumn(request.OrderBy);
 
@@ -352,11 +351,6 @@ public static class ParticipantsWithPagination
                 : "descending";
 
             var orderExpression = $"{sortColumn} {sortDirection}";
-
-            if (!includeGroup)
-            {
-                return orderExpression;
-            }
 
             var groupColumn = request.GroupBy switch
             {

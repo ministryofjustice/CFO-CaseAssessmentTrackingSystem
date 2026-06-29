@@ -185,19 +185,30 @@
         <MudExpansionPanels MultiExpansion="true" Class="mt-4">
             @foreach (var group in _groups)
             {
-                <MudExpansionPanel Expanded="true">
+                <MudExpansionPanel Expanded="false" ExpandedChanged="@(expanded => OnGroupExpanded(group, expanded))">
                     <TitleContent>
                         <MudText Typo="Typo.subtitle1">
                             <strong>@(string.IsNullOrWhiteSpace(group.Label) ? "Unassigned" : group.Label)</strong>
-                            &nbsp;(@group.Items.Length)
+                            &nbsp;(@group.Count)
                         </MudText>
                     </TitleContent>
                     <ChildContent>
-                        <ParticipantResultsView Items="group.Items"
-                                                Tabular="Tabular"
-                                                CanReassign="_canReassign"
-                                                RecentAction="Query.RecentAction"
-                                                @bind-SelectedIds="_selectedParticipantIds" />
+                        @if (group.Loading)
+                        {
+                            <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="my-2" />
+                        }
+                        else if (group.Items is { Length: > 0 })
+                        {
+                            <ParticipantResultsView Items="group.Items"
+                                                    Tabular="Tabular"
+                                                    CanReassign="_canReassign"
+                                                    RecentAction="Query.RecentAction"
+                                                    @bind-SelectedIds="_selectedParticipantIds" />
+                        }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Info" Dense="true">No participants in this group.</MudAlert>
+                        }
                     </ChildContent>
                 </MudExpansionPanel>
             }
