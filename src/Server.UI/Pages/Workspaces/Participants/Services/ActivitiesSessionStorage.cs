@@ -25,6 +25,7 @@ public record ActivitiesSessionData
             Status = query.Status,
             TypeFilter = query.TypeFilter,
             ReturnedWithinDays = query.ReturnedWithinDays,
+            ApprovedWithinDays = query.ApprovedWithinDays,
             Keyword = query.Keyword,
             OrderBy = query.OrderBy,
             SortDirection = query.SortDirection,
@@ -39,6 +40,7 @@ public record ActivitiesSessionData
     public int? Status { get; init; }
     public int? TypeFilter { get; init; }
     public int? ReturnedWithinDays { get; init; }
+    public int? ApprovedWithinDays { get; init; }
     public string? Keyword { get; init; }
     public string? OrderBy { get; init; }
     public string? SortDirection { get; init; }
