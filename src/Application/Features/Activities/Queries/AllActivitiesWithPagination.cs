@@ -46,7 +46,7 @@ public static class AllActivitiesWithPagination
 
             if (request.ApprovedWithinDays is { } approvedDays)
             {
-                var approvedCutoff = DateTime.UtcNow.AddDays(-approvedDays);
+                var approvedCutoff = DateTime.UtcNow.AddDays(-approvedDays).Date;
 
                 activities = activities.Where(a => a.Status == ActivityStatus.ApprovedStatus.Value
                                                    && a.CompletedOn >= approvedCutoff);
