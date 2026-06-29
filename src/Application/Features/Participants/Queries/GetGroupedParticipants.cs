@@ -14,21 +14,14 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetGroupedParticipants
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IQuery<Result<GroupedParticipantsDto>>
+    public class Query : ParticipantFilter, IQuery<Result<GroupedParticipantsDto>>
     {
-        /// <summary>
-        /// The underlying participant filter (carries the active <see cref="ParticipantGroupBy"/>).
-        /// </summary>
-        public required ParticipantsWithPagination.Query Filter { get; set; }
+        public Query() { }
 
-        /// <summary>
-        /// The current page of groups (1-based).
-        /// </summary>
-        public int GroupPageNumber { get; set; } = 1;
+        /// <summary>Builds a grouped query from an existing filter.</summary>
+        public Query(ParticipantFilter source) : base(source) { }
 
-        /// <summary>
-        /// The number of groups (e.g. assignees) per page.
-        /// </summary>
+        /// <summary>The number of groups (e.g. assignees) per page. The pager (PageNumber) walks the groups.</summary>
         public int GroupPageSize { get; set; } = 10;
     }
 
@@ -36,18 +29,16 @@ public static class GetGroupedParticipants
     {
         public async Task<Result<GroupedParticipantsDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var filter = request.Filter;
-
-            if (filter.GroupBy == ParticipantGroupBy.None)
+            if (request.GroupBy == ParticipantGroupBy.None)
             {
                 return Result<GroupedParticipantsDto>.Success(new GroupedParticipantsDto());
             }
 
             var context = unitOfWork.DbContext;
-            var baseQuery = ParticipantsWithPagination.Handler.ApplyFilter(context, filter);
+            var baseQuery = ParticipantsWithPagination.Handler.ApplyFilter(context, request);
 
             // Aggregate to one row per group (key + label + total count), paginated across the groups.
-            var groups = filter.GroupBy switch
+            var groups = request.GroupBy switch
             {
                 ParticipantGroupBy.Assignee => baseQuery
                     .GroupBy(p => new { p.OwnerId, p.Owner!.DisplayName })
@@ -55,14 +46,14 @@ public static class GetGroupedParticipants
                 ParticipantGroupBy.Tenant => baseQuery
                     .GroupBy(p => new { p.Owner!.TenantId, p.Owner!.TenantName })
                     .Select(g => new ParticipantGroupDto { Key = g.Key.TenantId!, Label = g.Key.TenantName!, Count = g.Count() }),
-                _ => throw new ArgumentOutOfRangeException(nameof(filter.GroupBy))
+                _ => throw new ArgumentOutOfRangeException(nameof(request.GroupBy))
             };
 
             var totalGroups = await groups.CountAsync(cancellationToken);
 
             var pageGroups = await groups
                 .OrderBy(g => g.Label)
-                .Skip((request.GroupPageNumber - 1) * request.GroupPageSize)
+                .Skip((request.PageNumber - 1) * request.GroupPageSize)
                 .Take(request.GroupPageSize)
                 .ToListAsync(cancellationToken);
 
@@ -78,10 +69,7 @@ public static class GetGroupedParticipants
     {
         public Validator()
         {
-            RuleFor(q => q.Filter)
-                .NotNull();
-
-            RuleFor(q => q.GroupPageNumber)
+            RuleFor(q => q.PageNumber)
                 .GreaterThan(0);
 
             RuleFor(q => q.GroupPageSize)

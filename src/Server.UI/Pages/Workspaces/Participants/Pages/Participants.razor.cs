@@ -261,14 +261,9 @@ public partial class Participants
         }
         else
         {
-            // Grouped mode: the pager pages through the groups (e.g. assignees); each group
-            // carries all of its participant rows.
-            var grouped = await Service.Send(new GetGroupedParticipants.Query
-            {
-                Filter = Query,
-                GroupPageNumber = Query.PageNumber,
-                GroupPageSize = GroupPageSize
-            });
+            // Grouped mode: the pager pages through the groups (e.g. assignees); each group's rows
+            // are fetched lazily on expand.
+            var grouped = await Service.Send(new GetGroupedParticipants.Query(Query) { GroupPageSize = GroupPageSize });
 
             if (grouped is { Succeeded: true, Data: not null })
             {
@@ -312,18 +307,8 @@ public partial class Participants
     }
 
     // Fetches a single group's participants by reusing the flat query, scoped to the group key.
-    private ParticipantsWithPagination.Query BuildGroupQuery(string key) => new()
+    private ParticipantsWithPagination.Query BuildGroupQuery(string key) => new(Query)
     {
-        CurrentUser = UserProfile,
-        ListView = Query.ListView,
-        JustMyCases = Query.JustMyCases,
-        Locations = Query.Locations,
-        Label = Query.Label,
-        Keyword = Query.Keyword,
-        RiskDue = Query.RiskDue,
-        RecentAction = Query.RecentAction,
-        OrderBy = Query.OrderBy,
-        SortDirection = Query.SortDirection,
         GroupBy = ParticipantGroupBy.None,
         OwnerId = Query.GroupBy == ParticipantGroupBy.Assignee ? key : Query.OwnerId,
         TenantId = Query.GroupBy == ParticipantGroupBy.Tenant ? key : Query.TenantId,

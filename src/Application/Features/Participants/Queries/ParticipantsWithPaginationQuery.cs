@@ -12,39 +12,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class ParticipantsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : PaginationFilter, IQuery<Result<PaginatedData<ParticipantPaginationDto>>>
+    public class Query : ParticipantFilter, IQuery<Result<PaginatedData<ParticipantPaginationDto>>>
     {
-        /// <summary>
-        /// The filter for the list (based on the status)
-        /// </summary>
-        public ParticipantListView ListView { get; set; } = ParticipantListView.Default;
+        public Query() { }
 
-        /// <summary>
-        /// The currently logged in user
-        /// </summary>
-        public UserProfile? CurrentUser { get; set; }
-
-        /// <summary>
-        /// Flag to indicate that you only want to see your own cases.
-        /// </summary>
-        [Description("Just My Cases")]
-        public bool JustMyCases { get; set; } = true;
-
-        /// <summary>
-        /// The current location of the participant
-        /// </summary>
-        public int[] Locations { get; set; } = [];
-        public LabelId? Label { get; set; }
-        public string? OwnerId { get; set; }
-        public string? TenantId { get; set; }
-        public DateTime? RiskDue { get; set; }        
-        public RecentParticipantFilter RecentAction { get; set; } = RecentParticipantFilter.All;
-
-        /// <summary>
-        /// How the list should be grouped (e.g. by assignee). Defaults to no grouping.
-        /// </summary>
-        public ParticipantGroupBy GroupBy { get; set; } = ParticipantGroupBy.None;
-        }
+        /// <summary>Builds a flat-list query from an existing filter (used to fetch one expanded group).</summary>
+        public Query(ParticipantFilter source) : base(source) { }
+    }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
     {
@@ -52,7 +26,7 @@ public static class ParticipantsWithPagination
         /// Builds the filtered participant query shared by both the paginated list and the
         /// group-count summary, ensuring identical filtering semantics between the two.
         /// </summary>
-        internal static IQueryable<Domain.Entities.Participants.Participant> ApplyFilter(IApplicationDbContext context, Query request)
+        internal static IQueryable<Domain.Entities.Participants.Participant> ApplyFilter(IApplicationDbContext context, ParticipantFilter request)
         {
             var query = from p in context.Participants
                         where p.Owner!.TenantId!.StartsWith(request.CurrentUser!.TenantId!)
@@ -211,7 +185,7 @@ public static class ParticipantsWithPagination
         internal static IQueryable<ParticipantPaginationDto> ProjectToDto(
             IApplicationDbContext context,
             IQueryable<Domain.Entities.Participants.Participant> query,
-            Query request)
+            ParticipantFilter request)
         {
             // The recent-action filter decides which history table (if any) we join to surface the
             // "assigned on" / "accessed on" dates. The cutoff dates themselves are applied in ApplyFilter.
@@ -342,7 +316,7 @@ public static class ParticipantsWithPagination
         /// Builds the dynamic LINQ order expression. When a grouping is active the group key leads the
         /// ordering so grouped rows stay contiguous in the export.
         /// </summary>
-        internal static string BuildOrderExpression(Query request)
+        internal static string BuildOrderExpression(ParticipantFilter request)
         {
             var sortColumn = GetSortColumn(request.OrderBy);
 
