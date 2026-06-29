@@ -4,8 +4,6 @@
 
 @inherits CatsComponent<ParticipantSearchResultDto[]>
 
-<MudText Typo="Typo.h4" Class="mb-2" Color="Color.Primary">Recent Participants</MudText>
-<MudDivider Class="mb-3" />
 
 @if(Loading)
 {
@@ -19,7 +17,7 @@
     </MudAlert>
 }
 
-@if(Data is { Length : >0})
+@if(Data is { Length : >0 })
 {
     <MudList T="string" ReadOnly="false">
         @foreach (var participant in Data)
@@ -36,6 +34,13 @@
     </MudList>
 }
 
+@if(Data is { Length: 0 })
+{
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+        @ConstantString.NoRecords
+    </MudAlert>
+}
+
 @code {
 
     protected override IQuery<Result<ParticipantSearchResultDto[]>> CreateQuery() =>
@@ -45,6 +50,6 @@
 
     private void NavigateToParticipant(string id)
     {
-        Navigation.NavigateTo(ParticipantLinks.Participant(id).Url);
+        Navigation.NavigateTo(ParticipantLinks.Participant(id).Href);
     }
 }
