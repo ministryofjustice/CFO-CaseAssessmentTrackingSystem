@@ -16,7 +16,7 @@ public static class Theme
         {
             PaletteLight = new PaletteLight
             {
-                Primary = primaryColour, // the default CFO Purple
+                Primary = "#6E3562", // the default CFO Purple
                 Secondary = "#34586E",
                 Success = "#62ae2f",
                 Info = "#34586E",
@@ -31,31 +31,43 @@ public static class Theme
 
             PaletteDark = new PaletteDark
             {
-                // keep your brand colors...
-                Primary = "#8A437A",
-                Secondary = "#34586E",
-                Success = "#76c043",
-                Info = "#1493A3",
-                Error = "#FF4D4D",
-                Tertiary = "#DFB160",
+                // Dark neutrals
+                Background = "#211B25",
+                Surface = "#2B2430",
+                DrawerBackground = "#1D1720",
 
-                // critical for dialog readability:
-                Background = "#121212",     // page background
-                Surface = "#1E1E1E",        // dialog/paper surfaces (slightly lighter than Background)
-                
-                TextPrimary = "#E6E6E6",
-                TextSecondary = "#B3B3B3",
+                // Text
+                TextPrimary = "#F7F2F6",
+                TextSecondary = "#D7CBD5",
 
-                Divider = "rgba(255,255,255,0.12)",
-                LinesDefault = "rgba(255,255,255,0.12)",
+                // Brand colours - lightened for dark backgrounds
+                Primary = "#D7A3CB",      // accessible tint of CFO Purple
+                Secondary = "#9ECBE2",    // accessible tint of your blue
+                Info = "#9ECBE2",
+                Tertiary = "#F1D08B",     // accessible tint of gold
 
-                OverlayDark = "rgba(0,0,0,0.60)",
+                // Semantic colours
+                Success = "#9BE06B",
+                Error = "#FF6B8A",
 
-                // keep these sane
-                White = "#FFFFFF",
+                AppbarBackground = "#6E3562",
+                AppbarText = "#FFFFFF",
+
+                // Lines / tables / dividers
+                TableLines = "#766370",
+                Divider = "#766370",
+                DividerLight = "#4A3B48",
+
+                // Base colours
                 Black = "#000000",
+                White = "#FFFFFF",
 
-                PrimaryContrastText = "#FFFFFF",
+                PrimaryContrastText = "#1A1118",
+                SecondaryContrastText = "#071820",
+                TertiaryContrastText = "#211600",
+                SuccessContrastText = "#102000",
+                InfoContrastText = "#071820",
+                ErrorContrastText = "#240008"
             },
             Typography = new Typography
             {
@@ -66,16 +78,16 @@ public static class Theme
                 },
 
                 H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700" }, // 26px
-                H2 = { FontFamily = myFont, FontSize = "1.25rem",  FontWeight = "700" }, // 20px
+                H2 = { FontFamily = myFont, FontSize = "1.45rem", FontWeight = "700" }, // 20px
                 H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600" }, // 18px
-                H4 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "600" }, // 16px
-                H5 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "500" }, // 16px
+                H4 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "600" }, // 16px
+                H5 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "500" }, // 16px
                 H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500" }, // 14px
 
-                Subtitle1 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "400" }, // 16px
+                Subtitle1 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "400" }, // 16px
                 Subtitle2 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500" }, // 14px
 
-                Body1 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "400" }, // 16px
+                Body1 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "400" }, // 16px
                 Body2 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "400" }, // 14px
 
                 Button = { FontFamily = myFont, FontSize = "1rem", FontWeight = "600" }, // 16px
