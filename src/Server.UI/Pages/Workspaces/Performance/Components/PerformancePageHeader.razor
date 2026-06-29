@@ -32,30 +32,36 @@
 
         var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-        // Only the outcome-quality-dip-sampling area is currently mapped.
-        if (segments.Length == 0 || segments[0] != "outcome-quality-dip-sampling")
+        if (segments.Length == 0)
         {
             return [home];
         }
 
-        var crumbs = new List<BreadcrumbItem>
-        {
-            home,
-            ToItem(PerformanceLinks.OutcomeQualityDipSamples)
-        };
+        List<BreadcrumbItem> crumbs = [
+            home
+        ];
 
-        // /outcome-quality-dip-sampling/{sampleId}
-        if (segments.Length >= 2 && Guid.TryParse(segments[1], out var sampleId))
+        if(segments[0] == "outcome-quality-dip-sampling")
         {
-            var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
-            var sampleTitle = string.IsNullOrWhiteSpace(SampleLabel) ? sample.Title : SampleLabel;
-            crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Url));
-
-            // /outcome-quality-dip-sampling/{sampleId}/{participantId}
-            if (segments.Length >= 3)
+            crumbs.Add(ToItem(PerformanceLinks.OutcomeQualityDipSamples));
+            
+            // /outcome-quality-dip-sampling/{sampleId}
+            if (segments.Length >= 2 && Guid.TryParse(segments[1], out var sampleId))
             {
-                crumbs.Add(ToItem(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, segments[2])));
+                var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
+                var sampleTitle = string.IsNullOrWhiteSpace(SampleLabel) ? sample.Title : SampleLabel;
+                crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Url));
+
+                // /outcome-quality-dip-sampling/{sampleId}/{participantId}
+                if (segments.Length >= 3)
+                {
+                    crumbs.Add(ToItem(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, segments[2])));
+                }
             }
+        }
+        else if (segments[0] == "archived-case-behaviour")
+        {
+            crumbs.Add(ToItem(PerformanceLinks.ArchivedCaseBehaviour));
         }
 
         return crumbs;
