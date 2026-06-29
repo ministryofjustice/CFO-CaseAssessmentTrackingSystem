@@ -45,7 +45,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
 
         if(await PassesPolicy(principal, SecurityPolicies.OutcomeQualityDipChecks))
         {
-            items.Add(new NavigationMenuItemLinkModel("Performance", "/pages/workspace/performance/", "Navigates to the root workspace for accessing performance function"));    
+            items.Add(new NavigationMenuItemLinkModel("Performance Management", "/pages/workspace/performance/", "Navigates to the root workspace for accessing performance function"));    
         }
 
         if(await PassesPolicy(principal, SecurityPolicies.SystemFunctionsRead))
