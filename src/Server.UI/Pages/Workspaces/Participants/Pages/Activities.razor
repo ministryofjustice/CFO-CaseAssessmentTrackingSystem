@@ -32,9 +32,8 @@
             <MudMenuItem OnClick="@(() => ClearQuickFilter())">All</MudMenuItem>
             <MudMenuItem OnClick="@(() => ApplyMyActivitiesFilter())">My Activities</MudMenuItem>
             <MudMenuItem OnClick="@(() => ApplyReturnedToMeFilter())">Returned to me</MudMenuItem>
-            <MudMenuItem OnClick="@(() => ApplyReturnedWithinFilter(7))">Returns (Last 7 Days)</MudMenuItem>
-            <MudMenuItem OnClick="@(() => ApplyReturnedWithinFilter(14))">Returns (Last 14 Days)</MudMenuItem>
             <MudMenuItem OnClick="@(() => ApplyReturnedWithinFilter(30))">Returns (Last 30 Days)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => ApplyApprovedWithinFilter(30))">Approved (Last 30 Days)</MudMenuItem>
         </MudMenu>
         <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
                         ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
@@ -120,6 +119,7 @@
             <MudMenuItem Label="Added On" OnClick="@(() => SortBy("Created"))" />
             <MudMenuItem Label="Took Place On" OnClick="@(() => SortBy("CommencedOn"))" />
             <MudMenuItem Label="Last Updated" OnClick="@(() => SortBy("LastModified"))" />
+            <MudMenuItem Label="Approved On" OnClick="@(() => SortBy("Approved"))" />
             <MudMenuItem Label="Status" OnClick="@(() => SortBy("Status"))" />
             <MudMenuItem Label="Location" OnClick="@(() => SortBy("Location"))" />
         </MudMenu>
