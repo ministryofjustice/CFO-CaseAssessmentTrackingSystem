@@ -1,4 +1,6 @@
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Server.UI.Models.Breadcrumb;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -12,11 +14,19 @@ public partial class Index
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    private bool _allowOutcomeQualityDipChecks = false;
+    private BreadcrumbLinkModel[] Links { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
-        _allowOutcomeQualityDipChecks = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.OutcomeQualityDipChecks)).Succeeded;
+        var allowOutcomeQualityDipChecks = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.OutcomeQualityDipChecks)).Succeeded;
+
+        List<BreadcrumbLinkModel> links = [];
+
+        links.Add(PerformanceLinks.OutcomeQualityDipSamples);
+        links.Add(PerformanceLinks.ArchivedCaseBehaviour);
+
+        Links = links.ToArray();
+
     }
 }

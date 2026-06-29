@@ -1,13 +1,10 @@
 
 
 <MudStack>
-    <MudStack Row="true">
-        <MudIcon Icon="@Icon" Color="Color.Secondary" Size="Size.Medium" />
-        <MudText Typo="Typo.h2" Color="Color.Secondary">
-            @Title
-        </MudText>
-    </MudStack>
     <CatsBreadcrumbs Items="@Items" />
+    @* <MudText Typo="Typo.h2" Color="Color.Secondary" Class="pb-2">
+        @Title
+    </MudText> *@
 </MudStack>
 
 @code{
@@ -17,8 +14,5 @@
 
     [Parameter, EditorRequired]
     public IReadOnlyList<BreadcrumbItem> Items { get;set; }
-
-    [Parameter, EditorRequired]
-    public string Icon { get; set; }
 
 }
