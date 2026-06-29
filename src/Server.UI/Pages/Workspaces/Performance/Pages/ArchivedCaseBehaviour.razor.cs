@@ -6,9 +6,9 @@ using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
 
-public partial class PerformanceDashboard
+public partial class ArchivedCaseBehaviour
 {
     private MudDateRangePicker _picker = null!;
     private DateRange _dateRange { get; set; } = new DateRange(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today);
