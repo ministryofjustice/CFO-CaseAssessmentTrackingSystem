@@ -7,6 +7,9 @@
 
 <MudGrid>
     <MudItem xs="12" md="6" lg="4">
+
+    </MudItem>
+    <MudItem xs="12" md="6" lg="4">
         <MudText Typo="Typo.h3">
             Performance Links
         </MudText>
@@ -15,13 +18,23 @@
             {
                 <MudStack Spacing="0">
                     <MudLink Href="@PerformanceLinks.OutcomeQualityDipSamples.Url" aria-describedby="OutcomeQualityLink">
-                        Outcome Quality Dip Sampling
+                        @PerformanceLinks.OutcomeQualityDipSamples.Title
                     </MudLink>
                     <MudText id="OutcomeQualityLink" Typo="Typo.caption">
                         Review and assess outcome quality dip samples.
                     </MudText>
                 </MudStack>
-            }
+
+                <MudStack Spacing="0">
+                    <MudLink Href="@PerformanceLinks.ArchivedCaseBehaviour.Url" aria-describedby="ArchivedCaseBehaviourLink">
+                        @PerformanceLinks.ArchivedCaseBehaviour.Title
+                    </MudLink>
+                    <MudText id="ArchivedCaseBehaviourLink" Typo="Typo.caption">
+                        View cases moving into and out of archiving.
+                    </MudText>         
+                </MudStack>
+
+            }            
         </MudStack>
     </MudItem>
 </MudGrid>
