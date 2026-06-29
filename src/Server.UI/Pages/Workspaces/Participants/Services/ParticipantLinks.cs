@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
 using Cfo.Cats.Domain.Labels.Rules;
+using Cfo.Cats.Server.UI.Models.Breadcrumb;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.StaticAssets;
 
@@ -11,20 +12,19 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 public static class ParticipantLinks
 {
-    public static ParticipantLink Home => new ( "Home", "/pages/workspace/participants");
-    public static ParticipantLink All = new(nameof(All), $"{Home.Url}/all");
-    public static ParticipantLink Participant(string id) => new(id, $"{Home.Url}/{id}");
+    public static BreadcrumbLinkModel Home => new ( "Participants", "" ,"/pages/workspace/participants");
+    public static BreadcrumbLinkModel All = new(nameof(All), "Access all participants" , $"{Home.Href}/all");
+    public static BreadcrumbLinkModel Participant(string id) => new(id, "Participant by id" , $"{Home.Href}/{id}");
 
-    public static ParticipantLink AllPris = new ("All Pri", $"{Home.Url}/pre-release-inventory");
+    public static BreadcrumbLinkModel AllPris = new ("Active PRI", "Displays a list of active PRIs" , $"{Home.Href}/pre-release-inventory");
 
-    public static ParticipantLink MovedParticipants = new ("Moved", $"{Home.Url}/moved");
+    public static BreadcrumbLinkModel MovedParticipants = new ("Moved", "Participants you are losing access to as they have moved" , $"{Home.Href}/moved");
 
-    public static ParticipantLink Transfers = new ("Transfers", $"{Home.Url}/transfers");
+    public static BreadcrumbLinkModel Transfers = new ("Transfers", "Manage incoming and view outgoing transfers", $"{Home.Href}/transfers");
 
-    public static ParticipantLink AllActivities = new ("Activities", $"{Home.Url}/activities");
+    public static BreadcrumbLinkModel AllActivities = new ("Activities", "Access all activities" ,$"{Home.Href}/activities");
 
-    public static ParticipantLink ParticipantByActivity(string id) => new(id, $"{AllActivities}/{id}");
+    public static BreadcrumbLinkModel ParticipantByActivity(string id) => new(id, "Participant links" ,$"{AllActivities}/{id}");
 
-    public record ParticipantLink(string Title, string Url);
 }
 
