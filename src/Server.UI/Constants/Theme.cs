@@ -16,7 +16,7 @@ public static class Theme
         {
             PaletteLight = new PaletteLight
             {
-                Primary = "#6E3562", // the default CFO Purple
+                Primary = primaryColour, // the default CFO Purple
                 Secondary = "#34586E",
                 Success = "#62ae2f",
                 Info = "#34586E",
