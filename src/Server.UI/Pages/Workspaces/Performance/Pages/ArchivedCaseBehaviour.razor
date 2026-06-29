@@ -1,14 +1,15 @@
-@page "/pages/dashboard/performance"
+@page "/pages/workspace/performance/archived-case-behaviour"
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
 
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
-<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-    <MudText Typo="Typo.h3">
-        Performance Management Dashboard
-    </MudText>
+
+<PerformancePageHeader />
+
+<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
     <MudStack Row="true" AlignItems="AlignItems.Center">
         <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
             <PickerActions>
@@ -39,11 +40,6 @@
     </MudStack>
 </MudStack>
 
-<MudStack>
-    <MudTabs Class="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-        <MudTabPanel Text="Archived Case Behaviour">
-            <ArchivedCasesByTenantAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
-        </MudTabPanel>
-    </MudTabs>
-</MudStack>
+<ArchivedCasesByTenantAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
+  
 
