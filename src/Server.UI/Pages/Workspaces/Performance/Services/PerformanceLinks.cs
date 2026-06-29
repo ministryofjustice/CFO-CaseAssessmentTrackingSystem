@@ -10,5 +10,7 @@ public static class PerformanceLinks
 
     public static PerformanceLink OutcomeQualityDipSampleParticipant(Guid sampleId, string participantId) => new(participantId, $"{OutcomeQualityDipSamples.Url}/{sampleId}/{participantId}");
 
+    public static PerformanceLink ArchivedCaseBehaviour => new ("Archived Case Behaviour" ,$"{Home.Url}/archived-case-behaviour");
+
     public record PerformanceLink(string Title, string Url);
 }
