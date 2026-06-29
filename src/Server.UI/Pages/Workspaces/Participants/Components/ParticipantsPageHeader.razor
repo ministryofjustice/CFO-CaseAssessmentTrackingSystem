@@ -2,7 +2,6 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
 
 <PageHeader Title="Participants" 
-            Icon="@Icons.Material.Filled.People" 
             Items="@_breadcrumbs" />
 
 @code
@@ -16,10 +15,10 @@
 
     private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
     {
-        var home = ToItem(ParticipantLinks.Home);
+        var home = ParticipantLinks.Home.AsMudBreadcrumb();
 
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var homeUrl = ParticipantLinks.Home.Url;
+        var homeUrl = ParticipantLinks.Home.Href;
 
         var segment = uri.AbsolutePath.Length > homeUrl.Length
             ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
@@ -28,11 +27,11 @@
         return segment switch
         {
             "" => [home],
-            "all" => [home, ToItem(ParticipantLinks.All)],
-            "activities" => [home, ToItem(ParticipantLinks.AllActivities)],
-            "transfers" => [home, ToItem(ParticipantLinks.Transfers)],
-            "pre-release-inventory" => [home, ToItem(ParticipantLinks.AllPris)],
-            "moved" => [home, ToItem(ParticipantLinks.MovedParticipants)],
+            "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],
+            "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb()],
+            "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb()],
+            "pre-release-inventory" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb()],
+            "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb()],
             _ => BuildParticipantBreadcrumbs(home, segment, uri)
         };
     }
@@ -50,9 +49,7 @@
             middle = ParticipantLinks.AllActivities;
         }
 
-        return [home, ToItem(middle), ToItem(ParticipantLinks.Participant(id))];
+        return [home, middle.AsMudBreadcrumb(), ParticipantLinks.Participant(id).AsMudBreadcrumb()];
     }
 
-    private static BreadcrumbItem ToItem(ParticipantLinks.ParticipantLink link)
-        => new(link.Title, link.Url);
 }

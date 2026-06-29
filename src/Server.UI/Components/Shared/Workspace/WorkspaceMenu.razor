@@ -1,0 +1,25 @@
+@using Cfo.Cats.Server.UI.Models.Breadcrumb
+
+<MudText Typo="Typo.h2">
+    Workspace
+</MudText>
+<MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
+    @foreach(var menuItem in Links)
+    {
+        var id = Guid.NewGuid();
+
+        <MudStack Spacing="2" AlignItems="AlignItems.Stretch">
+            <MudLink Href="@menuItem.Href" aria-describedby="@id" Underline="Underline.Always">
+                @menuItem.Title
+            </MudLink>
+            <MudText id="@id" Typo="Typo.subtitle2">
+                @menuItem.Description
+            </MudText>
+        </MudStack>
+    }
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BreadcrumbLinkModel[] Links { get; set; }
+}
