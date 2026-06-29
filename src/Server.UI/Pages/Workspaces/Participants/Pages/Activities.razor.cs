@@ -23,9 +23,8 @@ public enum ActivitiesQuickFilter
     All,
     MyActivities,
     ReturnedToMe,
-    ReturnedLast7Days,
-    ReturnedLast14Days,
-    ReturnedLast30Days
+    ReturnedLast30Days,
+    ApprovedLast30Days
 }
 
 public partial class Activities
@@ -101,6 +100,7 @@ public partial class Activities
             Query.Status = sd.Status;
             Query.TypeFilter = sd.TypeFilter;
             Query.ReturnedWithinDays = sd.ReturnedWithinDays;
+            Query.ApprovedWithinDays = sd.ApprovedWithinDays;
             Query.Keyword = sd.Keyword;
             Query.OrderBy = sd.OrderBy ?? "Created";
             Query.SortDirection = sd.SortDirection ?? "Descending";
@@ -114,11 +114,10 @@ public partial class Activities
     }
 
     private ActivitiesQuickFilter ResolveQuickFilter(ActivitiesSessionData sd)
-        => sd.ReturnedWithinDays switch
+        => sd switch
         {
-            7 => ActivitiesQuickFilter.ReturnedLast7Days,
-            14 => ActivitiesQuickFilter.ReturnedLast14Days,
-            30 => ActivitiesQuickFilter.ReturnedLast30Days,
+            { ApprovedWithinDays: 30 } => ActivitiesQuickFilter.ApprovedLast30Days,
+            { ReturnedWithinDays: 30 } => ActivitiesQuickFilter.ReturnedLast30Days,
             _ when sd.OwnerId == UserProfile.UserId && sd.Status == ActivityStatus.PendingStatus.Value => ActivitiesQuickFilter.ReturnedToMe,
             _ when sd.OwnerId == UserProfile.UserId => ActivitiesQuickFilter.MyActivities,
             _ => ActivitiesQuickFilter.All
@@ -215,7 +214,7 @@ public partial class Activities
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Ascending.ToString();
+            Query.SortDirection = SortDirection.Descending.ToString();
         }
         await OnRefresh();
     }
@@ -300,14 +299,16 @@ public partial class Activities
     private async Task ApplyReturnedWithinFilter(int days)
     {
         ResetQuery();
-        _currentFilter = days switch
-        {
-            7 => ActivitiesQuickFilter.ReturnedLast7Days,
-            14 => ActivitiesQuickFilter.ReturnedLast14Days,
-            30 => ActivitiesQuickFilter.ReturnedLast30Days,
-            _ => ActivitiesQuickFilter.All
-        };
+        _currentFilter = ActivitiesQuickFilter.ReturnedLast30Days;
         Query.ReturnedWithinDays = days;
+        await OnRefresh();
+    }
+
+    private async Task ApplyApprovedWithinFilter(int days)
+    {
+        ResetQuery();
+        _currentFilter = ActivitiesQuickFilter.ApprovedLast30Days;
+        Query.ApprovedWithinDays = days;
         await OnRefresh();
     }
 
@@ -334,6 +335,7 @@ public partial class Activities
         Query.Status = null;
         Query.TypeFilter = null;
         Query.ReturnedWithinDays = null;
+        Query.ApprovedWithinDays = null;
         Query.Keyword = null;
         Query.OrderBy = "Created";
         Query.SortDirection = SortDirection.Descending.ToString();
@@ -346,9 +348,8 @@ public partial class Activities
         {
             ActivitiesQuickFilter.MyActivities => "My Activities",
             ActivitiesQuickFilter.ReturnedToMe => "Returned to me",
-            ActivitiesQuickFilter.ReturnedLast7Days => "Returns (Last 7 Days)",
-            ActivitiesQuickFilter.ReturnedLast14Days => "Returns (Last 14 Days)",
             ActivitiesQuickFilter.ReturnedLast30Days => "Returns (Last 30 Days)",
+            ActivitiesQuickFilter.ApprovedLast30Days => "Approved (Last 30 Days)",
             _ => "All"
         };
 
