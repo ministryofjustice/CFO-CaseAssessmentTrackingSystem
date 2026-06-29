@@ -1,7 +1,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
+@using MudBlazor.Extensions
 
 <PageHeader Title="Performance Management"
-            Icon="@Icons.Material.Filled.FactCheck"
             Items="@_breadcrumbs" />
 
 @code
@@ -21,10 +21,10 @@
 
     private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
     {
-        var home = ToItem(PerformanceLinks.Home);
+        var home = PerformanceLinks.Home.AsMudBreadcrumb();
 
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var homeUrl = PerformanceLinks.Home.Url;
+        var homeUrl = PerformanceLinks.Home.Href;
 
         var relativePath = uri.AbsolutePath.Length > homeUrl.Length
             ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
@@ -43,30 +43,28 @@
 
         if(segments[0] == "outcome-quality-dip-sampling")
         {
-            crumbs.Add(ToItem(PerformanceLinks.OutcomeQualityDipSamples));
+            crumbs.Add(PerformanceLinks.OutcomeQualityDipSamples.AsMudBreadcrumb());
             
             // /outcome-quality-dip-sampling/{sampleId}
             if (segments.Length >= 2 && Guid.TryParse(segments[1], out var sampleId))
             {
                 var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
                 var sampleTitle = string.IsNullOrWhiteSpace(SampleLabel) ? sample.Title : SampleLabel;
-                crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Url));
+                crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Href));
 
                 // /outcome-quality-dip-sampling/{sampleId}/{participantId}
                 if (segments.Length >= 3)
                 {
-                    crumbs.Add(ToItem(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, segments[2])));
+                    crumbs.Add(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, segments[2]).AsMudBreadcrumb());
                 }
             }
         }
         else if (segments[0] == "archived-case-behaviour")
         {
-            crumbs.Add(ToItem(PerformanceLinks.ArchivedCaseBehaviour));
+            crumbs.Add(PerformanceLinks.ArchivedCaseBehaviour.AsMudBreadcrumb());
         }
 
         return crumbs;
     }
 
-    private static BreadcrumbItem ToItem(PerformanceLinks.PerformanceLink link)
-        => new(link.Title, link.Url);
 }
