@@ -140,7 +140,7 @@ public partial class Participants
             Query.RiskDue = sd.RiskDue;
             Query.RecentAction = sd.RecentlyAssigned;
             Query.GroupBy = sd.GroupBy;
-            Tabular = sd.Tabular;
+            Tabular = sd.Tabular && sd.GroupBy == ParticipantGroupBy.None;
             
             // Sync _currentFilter based on restored state
             _currentFilter = sd.RecentlyAssigned switch
@@ -288,6 +288,10 @@ public partial class Participants
     {
         Query.GroupBy = groupBy;
         Query.PageNumber = 1;
+        if (groupBy != ParticipantGroupBy.None)
+        {
+            Tabular = false;
+        }
         await OnRefresh();
     }
 
