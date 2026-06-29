@@ -44,6 +44,14 @@ public static class AllActivitiesWithPagination
                 activities = activities.Where(a => returnedActivityIds.Contains(a.Id));
             }
 
+            if (request.ApprovedWithinDays is { } approvedDays)
+            {
+                var approvedCutoff = DateTime.UtcNow.AddDays(-approvedDays);
+
+                activities = activities.Where(a => a.Status == ActivityStatus.ApprovedStatus.Value
+                                                   && a.CompletedOn >= approvedCutoff);
+            }
+
 #pragma warning disable CS8602
             var query = from a in activities
                         select new ActivityPaginationDto
@@ -81,6 +89,7 @@ public static class AllActivitiesWithPagination
                 "commencedon" => "CommencedOn",
                 "status" => "Status",
                 "lastmodified" => "LastModified",
+                "approved" => "ApprovedOn",
                 "location" => "TookPlaceAtLocationName",
                 _ => "Created"
             };
