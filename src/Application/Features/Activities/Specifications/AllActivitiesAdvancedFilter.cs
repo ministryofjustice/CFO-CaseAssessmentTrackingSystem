@@ -34,5 +34,10 @@ public class AllActivitiesAdvancedFilter : PaginationFilter
     /// </summary>
     public int? ReturnedWithinDays { get; set; }
 
+    /// <summary>
+    /// When set, restrict to activities that were approved within the last N days.
+    /// </summary>
+    public int? ApprovedWithinDays { get; set; }
+
     public bool IncludeInternalNotes { get; set; }
 }
