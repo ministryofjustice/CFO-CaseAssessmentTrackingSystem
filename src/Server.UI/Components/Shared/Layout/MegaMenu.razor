@@ -6,15 +6,12 @@
 {
     <MudOverlay Visible="true" AutoClose="true" OnClosed="CloseAsync" LockScroll="false" />
     <MudPaper Elevation="4" Square="true" Class="pa-0">
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
-            <MudText Typo="Typo.h2">
-                Menu
-            </MudText>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6" Style="background-color: rgb(0,0,0, 0.02)">
             <MudGrid Spacing="6" Class="mt-2">
                 @foreach (var section in _menuModel.Sections)
                 {
                     <MudItem xs="12" sm="6" md="4" lg="3">
-                        <MudText Typo="Typo.h3" Class="mb-2" Color="Color.Primary">@L[section.Title]</MudText>
+                        <MudText Typo="Typo.h2" Class="mb-2">@L[section.Title]</MudText>
                         <MudDivider Class="mb-3" />
                         <MudStack Spacing="2" AlignItems="AlignItems.Start">
 
@@ -28,8 +25,7 @@
                                     Target="@link.Target"
                                     aria-description="@link.AccessbilityText"
                                     Class="pa-1"
-                                    Underline="Underline.Always"
-                                    Color="Color.Default">
+                                    Underline="Underline.Always">
                                     @L[@link.DisplayText]
                                 </MudLink>
                             }
