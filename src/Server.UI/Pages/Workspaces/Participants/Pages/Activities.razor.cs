@@ -214,7 +214,7 @@ public partial class Activities
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Ascending.ToString();
+            Query.SortDirection = SortDirection.Descending.ToString();
         }
         await OnRefresh();
     }
