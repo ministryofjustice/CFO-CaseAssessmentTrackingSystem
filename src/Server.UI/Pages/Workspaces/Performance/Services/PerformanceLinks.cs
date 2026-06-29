@@ -1,16 +1,17 @@
+using Cfo.Cats.Server.UI.Models.Breadcrumb;
+
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services;
 
 public static class PerformanceLinks
 {
-    public static PerformanceLink Home => new("Home", "/pages/workspace/performance");
+    public static BreadcrumbLinkModel Home => new("Performance Management", "Home page for performance" ,"/pages/workspace/performance");
 
-    public static PerformanceLink OutcomeQualityDipSamples = new("Outcome Quality", $"{Home.Url}/outcome-quality-dip-sampling");
+    public static BreadcrumbLinkModel OutcomeQualityDipSamples = new("Outcome Quality", "Review and assess outcome quality dip samples" , $"{Home.Href}/outcome-quality-dip-sampling");
 
-    public static PerformanceLink OutcomeQualityDipSample(Guid sampleId) => new("Outcome Quality", $"{OutcomeQualityDipSamples.Url}/{sampleId}");
+    public static BreadcrumbLinkModel OutcomeQualityDipSample(Guid sampleId) => new("Outcome Quality", "Link for specific sample", $"{OutcomeQualityDipSamples.Href}/{sampleId}");
 
-    public static PerformanceLink OutcomeQualityDipSampleParticipant(Guid sampleId, string participantId) => new(participantId, $"{OutcomeQualityDipSamples.Url}/{sampleId}/{participantId}");
+    public static BreadcrumbLinkModel OutcomeQualityDipSampleParticipant(Guid sampleId, string participantId) => new(participantId, "Link for specific participant" , $"{OutcomeQualityDipSamples.Href}/{sampleId}/{participantId}");
 
-    public static PerformanceLink ArchivedCaseBehaviour => new ("Archived Case Behaviour" ,$"{Home.Url}/archived-case-behaviour");
+    public static BreadcrumbLinkModel ArchivedCaseBehaviour => new ("Archived Case Behaviour", "View participants moving into and out of archiving" , $"{Home.Href}/archived-case-behaviour");
 
-    public record PerformanceLink(string Title, string Url);
 }
