@@ -1,4 +1,5 @@
-﻿@inherits CatsComponentBase
+﻿@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@inherits CatsComponentBase
 
 @if (_isLoading)
 {
@@ -26,14 +27,13 @@ else
                         <MudTd DataLabel="Records">@context.RecordCount</MudTd>
                     </RowTemplate>
                     <PagerContent>
-                        <MudTablePager PageSizeOptions="[5, 10]" />
+                        <MudTablePager PageSizeOptions="[5, 10]"/>
                     </PagerContent>
                 </MudTable>
             </MudCardContent>
             <MudCardActions>
-               
+
             </MudCardActions>
         </MudCard>
     </MudItem>
 }
-

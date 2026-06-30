@@ -1,5 +1,9 @@
-﻿namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components;
+﻿using Cfo.Cats.Application.SecurityConstants;
+using Microsoft.AspNetCore.Authorization;
 
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components;
+
+[Authorize(Policy = SecurityPolicies.SystemSupportFunctions)]
 public partial class JobManagement
 {
     [Inject]
@@ -7,7 +11,7 @@ public partial class JobManagement
 
     private IReadOnlyList<JobSummary> _jobs = [];
     private SchedulerInfo? _schedulerInfo;
-    private bool _isTriggering = false;
+    private bool _isTriggering;
 
     protected override async Task OnInitializedAsync() => await RefreshAsync();
 
