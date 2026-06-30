@@ -1,11 +1,11 @@
 ﻿using ZiggyCreatures.Caching.Fusion;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components;
 
 public partial class CacheControl
 {
     [Inject] 
-    private IFusionCache FusionCache { get; set; } = default!;
+    private IFusionCache FusionCache { get; set; } = null!;
 
     private async Task ClearCache()
     {
