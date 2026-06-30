@@ -6,7 +6,7 @@ public static class AdministrationLinks
 {
     public static BreadcrumbLinkModel Home => new("Administration", "", "/pages/workspace/Administration");
     public static BreadcrumbLinkModel Jobs = new("Jobs", "Job scheduler", $"{Home.Href}/Jobs");
-    public static BreadcrumbLinkModel CacheManagement = new("Cache Management", "Cache Management", $"{Home.Href}/CacheControl");
+    public static BreadcrumbLinkModel CacheManagement = new("Cache Management", "Cache Management", $"{Home.Href}/CacheManagement");
     // public static BreadcrumbLinkModel Participant(string id) => new(id, "Participant by id" , $"{Home.Href}/{id}");
     //
     // public static BreadcrumbLinkModel AllPris = new ("Active PRI", "Displays a list of active PRIs" , $"{Home.Href}/pre-release-inventory");
