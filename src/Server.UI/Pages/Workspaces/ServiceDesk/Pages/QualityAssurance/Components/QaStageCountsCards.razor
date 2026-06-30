@@ -12,54 +12,35 @@ else
         <MudList T="string" ReadOnly="false" Class="pa-2">
             @if (CanViewFirstPass)
             {
-                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@(() => ViewQueue("Activities|First Pass"))">
+                <MudTooltip Text="Click to Get Next">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabActivityQa1">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">First Pass</MudText>
                             <MudText Typo="Typo.h6" Color="@GetCountColor(_activityQa1Count)">@_activityQa1Count</MudText>
                         </MudStack>
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                            <div @onclick:stopPropagation="true">
-                                <MudButton OnClick="@GrabActivityQa1"
-                                           StartIcon="@Icons.Material.Filled.QueuePlayNext"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Disabled="@_grabbing">
-                                    Get Next
-                                </MudButton>
-                            </div>
-                        </MudStack>
                     </MudStack>
                 </MudListItem>
+                </MudTooltip>
             }
 
             @if (CanViewSecondPass)
             {
-                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@(() => ViewQueue("Activities|Second Pass"))">
+                <MudTooltip Text="Click to Get Next">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabActivityQa2">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Second Pass</MudText>
                             <MudText Typo="Typo.h6" Color="@GetCountColor(_activityQa2Count)">@_activityQa2Count</MudText>
                         </MudStack>
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_activityQa2Count)">@_activityQa2Count</MudText>
-                            <div @onclick:stopPropagation="true">
-                                <MudButton OnClick="@GrabActivityQa2"
-                                           StartIcon="@Icons.Material.Filled.QueuePlayNext"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Disabled="@_grabbing">
-                                    Get Next
-                                </MudButton>
-                            </div>
-                        </MudStack>
                     </MudStack>
                 </MudListItem>
+                </MudTooltip>
             }
 
             @if (CanViewEscalation)
             {
-                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@(() => ViewQueue("Activities|Escalation"))">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" Disabled>
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Escalation</MudText>
@@ -77,59 +58,40 @@ else
         <MudList T="string" ReadOnly="false" Class="pa-2">
             @if (CanViewFirstPass)
             {
-                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@(() => ViewQueue("Enrolments|First Pass"))">
+                <MudTooltip Text="Click to Get Next">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabEnrolmentQa1">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">First Pass</MudText>
                             <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentQa1Count)">@_enrolmentQa1Count</MudText>
                         </MudStack>
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                            <div @onclick:stopPropagation="true">
-                                <MudButton OnClick="@GrabEnrolmentQa1"
-                                           StartIcon="@Icons.Material.Filled.QueuePlayNext"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Disabled="@_grabbing">
-                                    Get Next
-                                </MudButton>
-                            </div>
-                        </MudStack>
                     </MudStack>
                 </MudListItem>
+                </MudTooltip>
             }
 
             @if (CanViewSecondPass)
             {
-                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@(() => ViewQueue("Enrolments|Second Pass"))">
+                <MudTooltip Text="Click to Get Next">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabEnrolmentQa2">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Second Pass</MudText>
                             <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentQa2Count)">@_enrolmentQa2Count</MudText>
                         </MudStack>
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                            <div @onclick:stopPropagation="true">
-                                <MudButton OnClick="@GrabEnrolmentQa2"
-                                           StartIcon="@Icons.Material.Filled.QueuePlayNext"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Disabled="@_grabbing">
-                                    Get Next
-                                </MudButton>
-                            </div>
-                        </MudStack>
                     </MudStack>
                 </MudListItem>
+                </MudTooltip>
             }
 
             @if (CanViewEscalation)
             {
-                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@(() => ViewQueue("Enrolments|Escalation"))">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" Disabled>
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Escalation</MudText>
                             <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentEscalationCount)">@_enrolmentEscalationCount</MudText>
                         </MudStack>
-                        <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentEscalationCount)">@_enrolmentEscalationCount</MudText>
                     </MudStack>
                 </MudListItem>
             }
