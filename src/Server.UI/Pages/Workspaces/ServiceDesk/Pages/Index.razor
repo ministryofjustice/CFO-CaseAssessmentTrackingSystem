@@ -1,7 +1,6 @@
 @page "/pages/workspace/servicedesk"
 @using Cfo.Cats.Server.UI.Components.Shared.Workspace
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
-@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.QualityAssurance.Components
 
 <ServiceDeskPageHeader />
 
@@ -14,7 +13,7 @@
             Queues
         </MudText>
         <MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
-            <QaStageCountsCards CurrentUser="CurrentUser" TenantId="@CurrentUser.TenantId" OnViewQueueNavigate="OnViewQueueNavigate" />
+            <QueueSummary CurrentUser="CurrentUser" TenantId="@CurrentUser.TenantId" OnViewQueueNavigate="OnViewQueueNavigate" />
         </MudStack>
     </MudItem>
 </MudGrid>
