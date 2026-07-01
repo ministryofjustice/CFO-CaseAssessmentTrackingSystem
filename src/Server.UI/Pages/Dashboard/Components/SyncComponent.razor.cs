@@ -1,18 +1,17 @@
-﻿using Cfo.Cats.Application.SecurityConstants;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components;
+namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
-[Authorize(Policy = SecurityPolicies.Internal)]
 public partial class SyncComponent
 {
+
     private bool _isLoading = true;
     
     private SyncRecord[] _records = [];
     
     protected override async Task OnInitializedAsync()
     {
+
         try
         {
             var uow = GetNewUnitOfWork();
@@ -35,6 +34,7 @@ public partial class SyncComponent
         {
             _isLoading = false;
         }
+        
     }
 
     private record SyncRecord(DateTime TheDate, int RecordCount);

@@ -1,7 +1,6 @@
 @page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
 
 @inherits CatsComponentBase
 
@@ -63,13 +62,7 @@
     {
         <SyncComponent/>
     }
-
-    @if (_showJobManagement)
-    {
-        <CacheControl/>
-        <JobManagement/>
-    }
-
+    
     <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false"/>
 
     @if (_showMyTeamsParticipants)
