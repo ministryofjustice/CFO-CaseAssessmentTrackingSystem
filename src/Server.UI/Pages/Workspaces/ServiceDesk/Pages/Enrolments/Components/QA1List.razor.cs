@@ -43,7 +43,7 @@ public partial class QA1List
         }
     }
 
-    private void ViewParticipant(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}");
+    private void ViewParticipant(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=enrolments-queue");
 
     private async Task OnSearch(string text)
     {
