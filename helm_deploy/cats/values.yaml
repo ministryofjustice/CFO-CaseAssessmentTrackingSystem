@@ -191,7 +191,7 @@ rabbitmq:
 
 redis:
   enabled: false
-  image: "redis:8.0-alpine@sha256:7b67ff77fb36f5bf3809e3d32af9ca588e1707a9f4d094c7e2d5dad9248df2a6"
+  image: "redis:8.8-alpine@sha256:cd5f3ac681c77791c6a8eaa62de876ad2be043ee5a428afb7c0095aa08246277"
 
 migrator:
   enabled: false
