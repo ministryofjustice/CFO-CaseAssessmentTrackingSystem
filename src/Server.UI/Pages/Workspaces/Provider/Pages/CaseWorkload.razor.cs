@@ -5,7 +5,7 @@ using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages;
 
 public partial class CaseWorkload
 {
