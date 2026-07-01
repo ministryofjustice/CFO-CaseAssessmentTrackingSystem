@@ -20,6 +20,10 @@ COPY --from=build /opt/sqlpackage /opt/sqlpackage
 RUN chmod -R a+rx /opt/sqlpackage
 ENV PATH="$PATH:/opt/sqlpackage"
 
+# Trust the Amazon RDS eu-west-2 root CAs for TLS to the RDS SQL Server (fetched at build).
+ADD https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem /usr/local/share/ca-certificates/rds-eu-west-2-bundle.crt
+RUN update-ca-certificates
+
 # Copy DACPAC and entrypoint
 COPY --from=build /src/src/Database/CatsDb/bin/Release/CatsDb.dacpac ./CatsDb.dacpac
 COPY src/Database/entrypoint.sh ./

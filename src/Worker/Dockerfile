@@ -16,6 +16,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0.9@sha256:7644f992230d35cf230017189d403
 WORKDIR /app
 
 COPY --from=build /app/publish ./
+
+# Trust the Amazon RDS eu-west-2 root CAs for TLS to the RDS SQL Server (fetched at build).
+ADD https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem /usr/local/share/ca-certificates/rds-eu-west-2-bundle.crt
+RUN update-ca-certificates
+
 USER $APP_UID
 
 EXPOSE 8080
