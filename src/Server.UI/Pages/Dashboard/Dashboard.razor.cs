@@ -9,7 +9,6 @@ public partial class Dashboard
 {
     private bool _showQaPots;
     private bool _showMyTeamsParticipants;
-    private bool _showJobManagement;
     private bool _showRiskDueAggregate;
     private bool _showSyncComponent;
     private bool _showSearchParticipant;
@@ -26,8 +25,7 @@ public partial class Dashboard
         // Check user roles/permissions once
         var hasAdditionalRoles = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
         var isInternalUser = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
-        var canAccessSystemSupport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
-
+        
         // Feature flags derived from permissions
         _showMyTeamsParticipants = hasAdditionalRoles;
         _showRiskDueAggregate = hasAdditionalRoles;
@@ -36,7 +34,5 @@ public partial class Dashboard
         _showQaPots = isInternalUser;
         _showSearchParticipant = isInternalUser;
         _showSyncComponent = isInternalUser;
-
-        _showJobManagement = canAccessSystemSupport;
     }  
 }

@@ -62,13 +62,7 @@
     {
         <SyncComponent/>
     }
-
-    @if (_showJobManagement)
-    {
-        <CacheControl/>
-        <JobManagement/>
-    }
-
+    
     <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false"/>
 
     @if (_showMyTeamsParticipants)
