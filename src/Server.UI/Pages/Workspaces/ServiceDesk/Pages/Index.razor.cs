@@ -23,6 +23,7 @@ public partial class Index
 protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
+        var isInternalUser = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Internal)).Succeeded;
 
         List<BreadcrumbLinkModel> links = [];
 
@@ -31,6 +32,10 @@ protected override async Task OnInitializedAsync()
         links.Add(ServiceDeskLinks.ActivitiesFeedback);
         links.Add(ServiceDeskLinks.EnrolmentsQueue);
         links.Add(ServiceDeskLinks.EnrolmentsFeedback);
+        if (isInternalUser)
+        {
+            links.Add(ServiceDeskLinks.SyncInfo);
+        }
 
         Links = links.ToArray();        
 

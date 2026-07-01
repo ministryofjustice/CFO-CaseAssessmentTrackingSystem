@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Sync.Components;
 
-public partial class SyncComponent
+public partial class SyncInformation
 {
 
     private bool _isLoading = true;
