@@ -1,0 +1,34 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Services
+
+<PageHeader Title="Provider" 
+            Items="@_breadcrumbs" />
+
+@code
+{
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = ProviderLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = ProviderLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        return segment switch
+        {
+            "" => [home],
+            "case-workload" => [home, ProviderLinks.CaseWorkload.AsMudBreadcrumb()],
+            _ => throw new Exception()
+        };
+    }
+
+}
