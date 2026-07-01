@@ -5,9 +5,9 @@ using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.QualityAssurance.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components;
 
-public partial class QaStageCountsCards
+public partial class QueueSummary
 {
     [Parameter, EditorRequired]
     public UserProfile CurrentUser { get; set; } = null!;
