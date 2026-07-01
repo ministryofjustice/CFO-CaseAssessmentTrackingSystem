@@ -29,4 +29,8 @@ COPY --from=build /src/src/Database/CatsDb/bin/Release/CatsDb.dacpac ./CatsDb.da
 COPY src/Database/entrypoint.sh ./
 RUN chmod +x ./entrypoint.sh
 
+# Run as the image's non-root user (Cloud Platform requires non-root).
+# APP_UID is a default set by the Microsoft .NET base image (uid 1654).
+USER $APP_UID
+
 ENTRYPOINT ["./entrypoint.sh"]

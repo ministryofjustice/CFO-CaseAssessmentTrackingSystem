@@ -21,6 +21,8 @@ COPY --from=build /app/publish ./
 ADD https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem /usr/local/share/ca-certificates/rds-eu-west-2-bundle.crt
 RUN update-ca-certificates
 
+# Run as the image's non-root user (Cloud Platform requires non-root).
+# APP_UID is a default set by the Microsoft .NET base image (uid 1654).
 USER $APP_UID
 
 EXPOSE 8080
