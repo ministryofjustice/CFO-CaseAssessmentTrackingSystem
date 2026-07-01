@@ -1,6 +1,7 @@
 @page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Sync.Components
 
 @inherits CatsComponentBase
 
@@ -58,9 +59,9 @@
         <MyActivitiesInQaPots/>
     }
 
-    @if (_showSyncComponent)
+    @if (_showSyncInformation)
     {
-        <SyncComponent/>
+        <SyncInformation/>
     }
     
     <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false"/>

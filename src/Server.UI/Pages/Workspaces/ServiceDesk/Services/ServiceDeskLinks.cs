@@ -17,6 +17,7 @@ public static class ServiceDeskLinks
     public static BreadcrumbLinkModel ActivitiesFeedback = new("Activities Feedback", "Access Activities feedback", $"{Home.Href}/activities/feedback");
     public static BreadcrumbLinkModel EnrolmentsQueue = new("Enrolments Queue", "Access relevant Enrolments queue(s)", $"{Home.Href}/enrolments/queue");
     public static BreadcrumbLinkModel EnrolmentsFeedback = new("Enrolments Feedback", "Access Enrolments feedback", $"{Home.Href}/enrolments/feedback");
+    public static BreadcrumbLinkModel SyncInfo = new("Sync Information", "Access Sync information", $"{Home.Href}/sync/syncinfo");
 
 }
 

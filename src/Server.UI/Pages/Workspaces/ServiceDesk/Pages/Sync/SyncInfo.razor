@@ -1,0 +1,15 @@
+@page "/pages/workspace/servicedesk/sync/syncinfo"
+@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
+@using Microsoft.AspNetCore.Authorization
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Sync.Components
+
+@inherits CatsComponentBase
+
+<ServiceDeskPageHeader />
+
+<MudGrid>
+    <SyncInformation />
+</MudGrid>

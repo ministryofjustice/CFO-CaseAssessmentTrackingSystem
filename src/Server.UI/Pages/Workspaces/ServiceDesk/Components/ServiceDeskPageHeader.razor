@@ -31,6 +31,7 @@
             "activities/feedback" => [home, ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb()],
             "enrolments/queue" => [home, ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb()],
             "enrolments/feedback" => [home, ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb()],
+            "sync/syncinfo" => [home, ServiceDeskLinks.SyncInfo.AsMudBreadcrumb()],
             _ => BuildServiceDeskBreadcrumbs(home, segment, uri)
         };
     }
