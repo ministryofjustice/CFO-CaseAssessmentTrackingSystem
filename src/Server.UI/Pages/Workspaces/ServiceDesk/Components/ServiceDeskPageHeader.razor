@@ -20,9 +20,9 @@
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         var homeUrl = ServiceDeskLinks.Home.Href;
 
-        var segment = uri.AbsolutePath.Length > homeUrl.Length
+        var segment = uri.AbsolutePath.StartsWith(homeUrl, StringComparison.OrdinalIgnoreCase)
             ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
-            : string.Empty;
+            : uri.AbsolutePath.Trim('/');
 
         return segment switch
         {
@@ -64,10 +64,30 @@
             };
         }
 
-        var currentTitle = string.Join(' ', segment
-            .Split('/', StringSplitOptions.RemoveEmptyEntries)
-            .Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
+        var currentTitle = normalizedSegment switch
+        {
+            var s when s.Contains("qa/activities/", StringComparison.Ordinal) => "Activity",
+            var s when s.Contains("qa/enrolments/", StringComparison.Ordinal) => "Enrolment",
+            _ => BuildFallbackTitle(segment)
+        };
 
         return [home, middle, new BreadcrumbItem(currentTitle, href: null, disabled: true)];
+    }
+
+    private static string BuildFallbackTitle(string segment)
+    {
+        var parts = segment.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            return "Details";
+        }
+
+        var last = parts[^1];
+        if (Guid.TryParse(last, out _) && parts.Length > 1)
+        {
+            last = parts[^2];
+        }
+
+        return char.ToUpperInvariant(last[0]) + last[1..];
     }
 }

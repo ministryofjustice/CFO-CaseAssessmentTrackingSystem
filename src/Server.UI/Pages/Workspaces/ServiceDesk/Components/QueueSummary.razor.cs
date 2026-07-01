@@ -24,7 +24,7 @@ public partial class QueueSummary
     [Parameter]
     public EventCallback<string> OnViewQueueNavigate { get; set; }
 
-    private bool _loading;
+    private bool _loading = true;
     private bool _grabbing;
     private int _enrolmentQa1Count;
     private int _enrolmentQa2Count;
@@ -32,6 +32,9 @@ public partial class QueueSummary
     private int _activityQa1Count;
     private int _activityQa2Count;
     private int _activityEscalationCount;
+    private string? _errorMessage;
+    private bool _isLoadingCounts;
+    private bool _reloadRequested;
     private string? _lastTenantId;
     private string? _lastUserId;
 
@@ -39,80 +42,71 @@ public partial class QueueSummary
     private bool CanViewSecondPass => HasAnyRole(RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
     private bool CanViewEscalation => HasAnyRole(RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
 
-    protected override async Task OnParametersSetAsync()
+    protected override Task OnParametersSetAsync()
     {
         if (CurrentUser is null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (_lastTenantId == TenantId && _lastUserId == CurrentUser.UserId)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await LoadCounts();
         _lastTenantId = TenantId;
         _lastUserId = CurrentUser.UserId;
+
+        if (_isLoadingCounts)
+        {
+            _reloadRequested = true;
+            return Task.CompletedTask;
+        }
+
+        _ = LoadCounts();
+
+        return Task.CompletedTask;
     }
 
     private async Task LoadCounts()
     {
+        if (_isLoadingCounts)
+        {
+            _reloadRequested = true;
+            return;
+        }
+
+        _isLoadingCounts = true;
+
         try
         {
+            _reloadRequested = false;
             _loading = true;
+            _errorMessage = null;
+            await InvokeAsync(StateHasChanged);
+
+            Task<int>? enrolmentQa1Task = null;
+            Task<int>? enrolmentQa2Task = null;
+            Task<int>? enrolmentEscalationTask = null;
+            Task<int>? activityQa1Task = null;
+            Task<int>? activityQa2Task = null;
+            Task<int>? activityEscalationTask = null;
 
             if (ShowEnrolments)
             {
                 if (CanViewFirstPass)
                 {
-                    var qa1Result = await GetNewMediator().Send(new Qa1WithPagination.Query
-                    {
-                        CurrentUser = CurrentUser,
-                        TenantId = TenantId,
-                        PageNumber = 1,
-                        PageSize = 1,
-                        OrderBy = "Created",
-                        SortDirection = "Descending"
-                    });
-
-                    _enrolmentQa1Count = qa1Result is { Succeeded: true, Data: not null }
-                        ? qa1Result.Data.TotalItems
-                        : 0;
+                    enrolmentQa1Task = GetEnrolmentQa1Count();
                 }
 
                 if (CanViewSecondPass)
                 {
-                    var qa2Result = await GetNewMediator().Send(new Qa2WithPagination.Query
-                    {
-                        CurrentUser = CurrentUser,
-                        TenantId = TenantId,
-                        PageNumber = 1,
-                        PageSize = 1,
-                        OrderBy = "Created",
-                        SortDirection = "Descending"
-                    });
-
-                    _enrolmentQa2Count = qa2Result is { Succeeded: true, Data: not null }
-                        ? qa2Result.Data.TotalItems
-                        : 0;
+                    enrolmentQa2Task = GetEnrolmentQa2Count();
                 }
 
                 if (CanViewEscalation)
                 {
-                    var escalationResult = await GetNewMediator().Send(new QaEscalationWithPagination.Query
-                    {
-                        CurrentUser = CurrentUser,
-                        TenantId = TenantId,
-                        PageNumber = 1,
-                        PageSize = 1,
-                        OrderBy = "Created",
-                        SortDirection = "Descending"
-                    });
-
-                    _enrolmentEscalationCount = escalationResult is { Succeeded: true, Data: not null }
-                        ? escalationResult.Data.TotalItems
-                        : 0;
+                    enrolmentEscalationTask = GetEnrolmentEscalationCount();
                 }
             }
 
@@ -120,60 +114,144 @@ public partial class QueueSummary
             {
                 if (CanViewFirstPass)
                 {
-                    var activityQa1Result = await GetNewMediator().Send(new ActivityQa1WithPagination.Query
-                    {
-                        CurrentUser = CurrentUser,
-                        TenantId = TenantId,
-                        PageNumber = 1,
-                        PageSize = 1,
-                        OrderBy = "Created",
-                        SortDirection = "Descending"
-                    });
-
-                    _activityQa1Count = activityQa1Result is { Succeeded: true, Data: not null }
-                        ? activityQa1Result.Data.TotalItems
-                        : 0;
+                    activityQa1Task = GetActivityQa1Count();
                 }
 
                 if (CanViewSecondPass)
                 {
-                    var activityQa2Result = await GetNewMediator().Send(new ActivityQa2WithPagination.Query
-                    {
-                        CurrentUser = CurrentUser,
-                        TenantId = TenantId,
-                        PageNumber = 1,
-                        PageSize = 1,
-                        OrderBy = "Created",
-                        SortDirection = "Descending"
-                    });
-
-                    _activityQa2Count = activityQa2Result is { Succeeded: true, Data: not null }
-                        ? activityQa2Result.Data.TotalItems
-                        : 0;
+                    activityQa2Task = GetActivityQa2Count();
                 }
 
                 if (CanViewEscalation)
                 {
-                    var activityEscalationResult = await GetNewMediator().Send(new ActivityQaEscalationWithPagination.Query
-                    {
-                        CurrentUser = CurrentUser,
-                        TenantId = TenantId,
-                        PageNumber = 1,
-                        PageSize = 1,
-                        OrderBy = "Created",
-                        SortDirection = "Descending"
-                    });
-
-                    _activityEscalationCount = activityEscalationResult is { Succeeded: true, Data: not null }
-                        ? activityEscalationResult.Data.TotalItems
-                        : 0;
+                    activityEscalationTask = GetActivityEscalationCount();
                 }
             }
+
+            var allTasks = new Task<int>?[]
+            {
+                enrolmentQa1Task,
+                enrolmentQa2Task,
+                enrolmentEscalationTask,
+                activityQa1Task,
+                activityQa2Task,
+                activityEscalationTask
+            };
+
+            await Task.WhenAll(allTasks.OfType<Task<int>>());
+
+            _enrolmentQa1Count = enrolmentQa1Task?.Result ?? 0;
+            _enrolmentQa2Count = enrolmentQa2Task?.Result ?? 0;
+            _enrolmentEscalationCount = enrolmentEscalationTask?.Result ?? 0;
+            _activityQa1Count = activityQa1Task?.Result ?? 0;
+            _activityQa2Count = activityQa2Task?.Result ?? 0;
+            _activityEscalationCount = activityEscalationTask?.Result ?? 0;
+        }
+        catch
+        {
+            _errorMessage = "Unable to fetch queue summary.";
         }
         finally
         {
             _loading = false;
+            _isLoadingCounts = false;
+            await InvokeAsync(StateHasChanged);
+
+            if (_reloadRequested)
+            {
+                _ = LoadCounts();
+            }
         }
+    }
+
+    private async Task<int> GetEnrolmentQa1Count()
+    {
+        var result = await GetNewMediator().Send(new Qa1WithPagination.Query
+        {
+            CurrentUser = CurrentUser,
+            TenantId = TenantId,
+            PageNumber = 1,
+            PageSize = 1,
+            OrderBy = "Created",
+            SortDirection = "Descending"
+        });
+
+        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
+    }
+
+    private async Task<int> GetEnrolmentQa2Count()
+    {
+        var result = await GetNewMediator().Send(new Qa2WithPagination.Query
+        {
+            CurrentUser = CurrentUser,
+            TenantId = TenantId,
+            PageNumber = 1,
+            PageSize = 1,
+            OrderBy = "Created",
+            SortDirection = "Descending"
+        });
+
+        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
+    }
+
+    private async Task<int> GetEnrolmentEscalationCount()
+    {
+        var result = await GetNewMediator().Send(new QaEscalationWithPagination.Query
+        {
+            CurrentUser = CurrentUser,
+            TenantId = TenantId,
+            PageNumber = 1,
+            PageSize = 1,
+            OrderBy = "Created",
+            SortDirection = "Descending"
+        });
+
+        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
+    }
+
+    private async Task<int> GetActivityQa1Count()
+    {
+        var result = await GetNewMediator().Send(new ActivityQa1WithPagination.Query
+        {
+            CurrentUser = CurrentUser,
+            TenantId = TenantId,
+            PageNumber = 1,
+            PageSize = 1,
+            OrderBy = "Created",
+            SortDirection = "Descending"
+        });
+
+        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
+    }
+
+    private async Task<int> GetActivityQa2Count()
+    {
+        var result = await GetNewMediator().Send(new ActivityQa2WithPagination.Query
+        {
+            CurrentUser = CurrentUser,
+            TenantId = TenantId,
+            PageNumber = 1,
+            PageSize = 1,
+            OrderBy = "Created",
+            SortDirection = "Descending"
+        });
+
+        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
+    }
+
+    private async Task<int> GetActivityEscalationCount()
+    {
+        var result = await GetNewMediator().Send(new ActivityQaEscalationWithPagination.Query
+        {
+            CurrentUser = CurrentUser,
+            TenantId = TenantId,
+            PageNumber = 1,
+            PageSize = 1,
+            OrderBy = "Created",
+            SortDirection = "Descending"
+        });
+
+        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
     }
 
     private static Color GetCountColor(int count) => count == 0 ? Color.Success : Color.Warning;

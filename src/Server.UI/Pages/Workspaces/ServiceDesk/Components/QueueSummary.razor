@@ -4,7 +4,15 @@
 {
     <MudLoading Text="Fetching queue summary..." />
 }
-else
+
+@if (_errorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @_errorMessage
+    </MudAlert>
+}
+
+@if (!_loading && _errorMessage is null)
 {
     @if (ShowActivities)
     {
@@ -51,7 +59,7 @@ else
             }
         </MudList>
     }
-        
+
     @if (ShowEnrolments)
     {
         <MudText Typo="Typo.h6" Class="pt-2 px-2">Enrolments</MudText>
