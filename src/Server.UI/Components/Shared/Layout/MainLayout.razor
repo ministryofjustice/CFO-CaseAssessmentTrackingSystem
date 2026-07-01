@@ -5,7 +5,6 @@
 
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
 <MudRTLProvider RightToLeft="false">
-    <MudThemeProvider />
     <MudPopoverProvider />
     <MudDialogProvider />
     <MudSnackbarProvider />
@@ -35,16 +34,24 @@
     [Inject]
     protected IConfiguration Configuration { get; set; } = default!;
 
+    protected override void OnInitialized()
+    => _theme = Theme.ApplicationTheme(Configuration["PrimaryColour"] 
+                                                      ?? Theme.DefaultPrimaryColour);
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            _theme = Theme.ApplicationTheme(Configuration["PrimaryColour"] 
-                                                      ?? Theme.DefaultPrimaryColour);
-            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+            var isDark = await _mudThemeProvider.GetSystemDarkModeAsync();
+
+            if(_isDarkMode != isDark)
+            {
+                _isDarkMode = isDark;
+                StateHasChanged();
+            }
+
             await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
-            StateHasChanged();            
             
             int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
 
@@ -58,6 +65,11 @@
 
     private Task OnSystemDarkModeChanged(bool arg)
     {
+        if (_isDarkMode == arg)
+        {
+            return Task.CompletedTask;
+        }
+
         _isDarkMode = arg;
         StateHasChanged();
         return Task.CompletedTask;
