@@ -1,0 +1,34 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Services
+
+<PageHeader Title="Administration" 
+            Items="@_breadcrumbs" />
+
+@code
+{
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = AdministrationLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = AdministrationLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        return segment switch
+        {
+            "" => [home],
+            "Jobs" => [home, AdministrationLinks.Jobs.AsMudBreadcrumb()],
+            "CacheManagement" => [home, AdministrationLinks.CacheManagement.AsMudBreadcrumb()],
+            _ => [home]
+        };
+    }
+}
