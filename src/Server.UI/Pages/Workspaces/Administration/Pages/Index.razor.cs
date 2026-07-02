@@ -32,6 +32,8 @@ public partial class Index
             links.Add(AdministrationLinks.CacheManagement);
         }
 
+        links.Add(AdministrationLinks.AuditTrails);
+        
         Links = links.ToArray();
     }
 }

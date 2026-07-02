@@ -9,15 +9,15 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components;
 
 public partial class SystemAuditTrails
 {
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
     private AuditTrailsWithPaginationQuery Query { get; } = new();
-    private MudDataGrid<AuditTrailDto> table = null!;
-    private bool loading;
-    private int defaultPageSize = 15;
-    private readonly AuditTrailDto currentDto = new();
+    private MudDataGrid<AuditTrailDto> _table = null!;
+    private bool _loading;
+    private int _defaultPageSize = 15;
+    private readonly AuditTrailDto _currentDto = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,47 +29,47 @@ public partial class SystemAuditTrails
     {
         try
         {
-            loading = true;
+            _loading = true;
             Query.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true
-                ? SortDirection.Descending.ToString()
-                : SortDirection.Ascending.ToString();
+                ? nameof(SortDirection.Descending)
+                : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await Mediator.Send(Query);
+            var result = await Mediator.Send(Query, cancellationToken: cancellationToken);
             return new GridData<AuditTrailDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally
         {
-            loading = false;
+            _loading = false;
         }
     }
 
     private async Task OnChangedListView(SystemAuditTrailListView listview)
     {
         Query.ListView = listview;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private async Task OnSearch(string text)
     {
         Query.Keyword = text;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private async Task OnSearch(AuditType? val)
     {
         Query.AuditType = val;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private async Task OnRefresh()
     {
         SystemAuditTrailsCacheKey.Refresh();
         Query.Keyword = string.Empty;
-        await table.ReloadServerData();
+        await _table.ReloadServerData();
     }
 
     private Task OnShowDetail(AuditTrailDto dto)
