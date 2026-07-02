@@ -6,6 +6,7 @@ using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
@@ -20,35 +21,43 @@ public partial class QA1
     private ParticipantDto? _participantDto = null;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
     private bool _saving = false;
+    private bool _loadingQueueItem;
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
     [SupplyParameterFromQuery]
-    public bool AutoGrab { get; set; }
+    public Guid? QueueEntryId { get; set; }
 
     private SubmitQa1Response.Command Command { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        if (AutoGrab)
+        if (QueueEntryId.HasValue)
         {
-            await GetQueueItem();
+            _loadingQueueItem = true;
+            await LoadQueueItem(QueueEntryId.Value);
         }
     }
 
-    private async Task GetQueueItem()
+    private async Task LoadQueueItem(Guid queueEntryId)
     {
-        GrabQa1Entry.Command command = new GrabQa1Entry.Command()
+        try
         {
-            CurrentUser = UserProfile!
-        };
+            _loadingQueueItem = true;
+            var uow = GetNewUnitOfWork();
 
-        var result = await GetNewMediator().Send(command);
+            var entry = await uow.DbContext.EnrolmentQa1Queue
+                .Include(q => q.SupportWorker)
+                .FirstOrDefaultAsync(x => x.Id == queueEntryId, ComponentCancellationToken);
 
-        if (result.Succeeded)
-        {
-            _queueEntry = result.Data!;
+            if (entry is null)
+            {
+                Snackbar.Add("Queue item not found.", Severity.Info);
+                return;
+            }
+
+            _queueEntry = Mapper.Map<EnrolmentQueueEntryDto>(entry);
 
             _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
             {
@@ -58,14 +67,55 @@ public partial class QA1
             Command = new SubmitQa1Response.Command()
             {
                 QueueEntryId = _queueEntry.Id,
-                CurrentUser = UserProfile
+                CurrentUser = UserProfile!
             };
 
             await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
         }
-        else
+        finally
         {
-            Snackbar.Add(result.ErrorMessage, Severity.Info);
+            _loadingQueueItem = false;
+        }
+    }
+
+    private async Task GetQueueItem()
+    {
+        try
+        {
+            _loadingQueueItem = true;
+
+            GrabQa1Entry.Command command = new GrabQa1Entry.Command()
+            {
+                CurrentUser = UserProfile!
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                _queueEntry = result.Data!;
+
+                _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
+                {
+                    Id = _queueEntry.ParticipantId
+                });
+
+                Command = new SubmitQa1Response.Command()
+                {
+                    QueueEntryId = _queueEntry.Id,
+                    CurrentUser = UserProfile
+                };
+
+                await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Info);
+            }
+        }
+        finally
+        {
+            _loadingQueueItem = false;
         }
     }
 

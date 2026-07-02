@@ -30,13 +30,20 @@
 
     @if (_participantDto is null)
     {
-        <MudButton OnClick="@GetQueueItem"
-                   ButtonType="ButtonType.Button"
-                   StartIcon="@Icons.Material.Filled.QueuePlayNext"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">
-            Get Next
-        </MudButton>
+        @if (_loadingQueueItem)
+        {
+            <MudLoading Text="Getting next item..." />
+        }
+        else
+        {
+            <MudButton OnClick="@GetQueueItem"
+                       ButtonType="ButtonType.Button"
+                       StartIcon="@Icons.Material.Filled.QueuePlayNext"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary">
+                Get Next
+            </MudButton>
+        }
     }
     else if (_participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
     {

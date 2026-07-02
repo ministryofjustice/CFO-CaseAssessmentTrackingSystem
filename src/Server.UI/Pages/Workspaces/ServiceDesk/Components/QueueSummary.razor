@@ -1,18 +1,20 @@
-@inherits CatsComponentBase
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 
-@if (_loading)
+@inherits CatsComponent<ServiceDeskQueueSummaryDto>
+
+@if (Loading)
 {
     <MudLoading Text="Fetching queue summary..." />
 }
 
-@if (_errorMessage is not null)
+@if (ErrorMessage is not null)
 {
     <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
-        @_errorMessage
+        @ErrorMessage
     </MudAlert>
 }
 
-@if (!_loading && _errorMessage is null)
+@if (!Loading && ErrorMessage is null)
 {
     @if (ShowActivities)
     {
@@ -20,7 +22,7 @@
         <MudList T="string" ReadOnly="false" Class="pa-2">
             @if (CanViewFirstPass)
             {
-                <MudTooltip Text="Click to Get Next">
+                <MudTooltip Text="Open next item">
                 <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabActivityQa1">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
@@ -34,7 +36,7 @@
 
             @if (CanViewSecondPass)
             {
-                <MudTooltip Text="Click to Get Next">
+                <MudTooltip Text="Open next item">
                 <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabActivityQa2">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
@@ -66,7 +68,7 @@
         <MudList T="string" ReadOnly="false" Class="pa-2">
             @if (CanViewFirstPass)
             {
-                <MudTooltip Text="Click to Get Next">
+                <MudTooltip Text="Open next item">
                 <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabEnrolmentQa1">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
@@ -80,7 +82,7 @@
 
             @if (CanViewSecondPass)
             {
-                <MudTooltip Text="Click to Get Next">
+                <MudTooltip Text="Open next item">
                 <MudListItem T="string" Icon="@Icons.Material.Filled.ListAlt" OnClick="@GrabEnrolmentQa2">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
