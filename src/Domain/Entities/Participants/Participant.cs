@@ -173,7 +173,11 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Participant SetAssessmentJustification(string? justification)
     {
-        AssessmentJustification = justification;
+        AssessmentJustification = justification switch {
+            null => null,
+            "" => null,
+            _ => justification
+        };
         return this;
     }
 
