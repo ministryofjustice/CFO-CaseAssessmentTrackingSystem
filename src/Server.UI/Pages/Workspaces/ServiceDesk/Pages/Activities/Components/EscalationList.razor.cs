@@ -14,7 +14,7 @@ public partial class EscalationList
 
     private ActivityQaEscalationWithPagination.Query Query { get; } = new();
   
-    private void ViewActivity(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}?from=activities-queue");
+    private void ViewActivity(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/servicedesk/activities/escalation/{dto.Id}?from=activities-queue");
 
     private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=activities-queue");
 

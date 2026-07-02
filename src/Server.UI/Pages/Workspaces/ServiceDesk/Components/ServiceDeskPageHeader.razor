@@ -89,6 +89,16 @@
             last = parts[^2];
         }
 
+        if (last.Equals("qa1", StringComparison.OrdinalIgnoreCase))
+        {
+            return "QA1";
+        }
+
+        if (last.Equals("qa2", StringComparison.OrdinalIgnoreCase))
+        {
+            return "QA2";
+        }
+
         return char.ToUpperInvariant(last[0]) + last[1..];
     }
 }

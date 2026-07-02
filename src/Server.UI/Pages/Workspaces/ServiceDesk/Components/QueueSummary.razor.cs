@@ -102,7 +102,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Enrolment QA1 case.", Severity.Success);
-                Navigation.NavigateTo($"/pages/qa/enrolments/qa1/?queueEntryId={result.Data!.Id}");
+                Navigation.NavigateTo($"/pages/workspace/servicedesk/enrolments/qa1?queueEntryId={result.Data!.Id}");
                 return;
             }
 
@@ -133,7 +133,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Enrolment QA2 case.", Severity.Success);
-                Navigation.NavigateTo($"/pages/qa/enrolments/qa2/?queueEntryId={result.Data!.Id}");
+                Navigation.NavigateTo($"/pages/workspace/servicedesk/enrolments/qa2?queueEntryId={result.Data!.Id}");
                 return;
             }
 
@@ -164,7 +164,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Activity QA1 case.", Severity.Success);
-                Navigation.NavigateTo($"/pages/qa/activities/qa1/?queueEntryId={result.Data!.Id}");
+                Navigation.NavigateTo($"/pages/workspace/servicedesk/activities/qa1?queueEntryId={result.Data!.Id}");
                 return;
             }
 
@@ -195,7 +195,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Activity QA2 case.", Severity.Success);
-                Navigation.NavigateTo($"/pages/qa/activities/qa2/?queueEntryId={result.Data!.Id}");
+                Navigation.NavigateTo($"/pages/workspace/servicedesk/activities/qa2?queueEntryId={result.Data!.Id}");
                 return;
             }
 

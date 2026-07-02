@@ -1,13 +1,17 @@
 @page "/pages/qa/enrolments/qa2/"
+@page "/pages/workspace/servicedesk/enrolments/qa2"
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components
 
 @inherits CatsComponentBase
+
+<ServiceDeskPageHeader />
 
 @inject IRightToWorkSettings RightToWorkSettings;
 
@@ -33,16 +37,6 @@
         @if (_loadingQueueItem)
         {
             <MudLoading Text="Getting next item..." />
-        }
-        else
-        {
-            <MudButton OnClick="@GetQueueItem"
-                       ButtonType="ButtonType.Button"
-                       StartIcon="@Icons.Material.Filled.QueuePlayNext"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary">
-                Get Next
-            </MudButton>
         }
     }
     else if (_participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)

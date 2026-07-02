@@ -155,7 +155,7 @@ public partial class QA1
             if (result.Succeeded)
             {
                 Snackbar.Add("Participant submitted to QA2", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
+                Navigation.NavigateTo("/pages/workspace/servicedesk", true);
             }
             else
             {
