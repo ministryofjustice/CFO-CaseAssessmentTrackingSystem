@@ -28,8 +28,10 @@ spec:
         runAsNonRoot: true
       containers:
         - name: migrator
-          # DACPAC/sqlpackage image (src/Database/Dockerfile) — runs its own entrypoint.
+          # Combined image (Dockerfile) with a command override to run the DatabaseMigrator
+          # console app, which deploys the CatsDb schema from the DACPAC via DacFx.
           image: "{{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag | default .Chart.AppVersion }}"
+          command: ["dotnet", "/app/migrator/DatabaseMigrator.dll"]
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
