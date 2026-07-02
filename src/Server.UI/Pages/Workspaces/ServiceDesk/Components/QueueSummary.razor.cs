@@ -1,17 +1,14 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Features.Activities.Commands;
-using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components;
 
 public partial class QueueSummary
 {
-    [Parameter, EditorRequired]
-    public UserProfile CurrentUser { get; set; } = null!;
-
     [Parameter]
     public string? TenantId { get; set; }
 
@@ -24,7 +21,6 @@ public partial class QueueSummary
     [Parameter]
     public EventCallback<string> OnViewQueueNavigate { get; set; }
 
-    private bool _loading = true;
     private bool _grabbing;
     private int _enrolmentQa1Count;
     private int _enrolmentQa2Count;
@@ -32,229 +28,60 @@ public partial class QueueSummary
     private int _activityQa1Count;
     private int _activityQa2Count;
     private int _activityEscalationCount;
-    private string? _errorMessage;
-    private bool _isLoadingCounts;
-    private bool _reloadRequested;
     private string? _lastTenantId;
     private string? _lastUserId;
+    private bool _lastShowEnrolments = true;
+    private bool _lastShowActivities = true;
+    private bool _hasLoadedOnce;
 
     private bool CanViewFirstPass => HasAnyRole(RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
     private bool CanViewSecondPass => HasAnyRole(RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
     private bool CanViewEscalation => HasAnyRole(RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (CurrentUser is null)
         {
-            return Task.CompletedTask;
-        }
-
-        if (_lastTenantId == TenantId && _lastUserId == CurrentUser.UserId)
-        {
-            return Task.CompletedTask;
-        }
-
-        _lastTenantId = TenantId;
-        _lastUserId = CurrentUser.UserId;
-
-        if (_isLoadingCounts)
-        {
-            _reloadRequested = true;
-            return Task.CompletedTask;
-        }
-
-        _ = LoadCounts();
-
-        return Task.CompletedTask;
-    }
-
-    private async Task LoadCounts()
-    {
-        if (_isLoadingCounts)
-        {
-            _reloadRequested = true;
             return;
         }
 
-        _isLoadingCounts = true;
+        var hasChanged = _lastTenantId != TenantId
+            || _lastUserId != CurrentUser.UserId
+            || _lastShowEnrolments != ShowEnrolments
+            || _lastShowActivities != ShowActivities;
 
-        try
+        _lastTenantId = TenantId;
+        _lastUserId = CurrentUser.UserId;
+        _lastShowEnrolments = ShowEnrolments;
+        _lastShowActivities = ShowActivities;
+
+        if (_hasLoadedOnce && hasChanged)
         {
-            _reloadRequested = false;
-            _loading = true;
-            _errorMessage = null;
-            await InvokeAsync(StateHasChanged);
-
-            Task<int>? enrolmentQa1Task = null;
-            Task<int>? enrolmentQa2Task = null;
-            Task<int>? enrolmentEscalationTask = null;
-            Task<int>? activityQa1Task = null;
-            Task<int>? activityQa2Task = null;
-            Task<int>? activityEscalationTask = null;
-
-            if (ShowEnrolments)
-            {
-                if (CanViewFirstPass)
-                {
-                    enrolmentQa1Task = GetEnrolmentQa1Count();
-                }
-
-                if (CanViewSecondPass)
-                {
-                    enrolmentQa2Task = GetEnrolmentQa2Count();
-                }
-
-                if (CanViewEscalation)
-                {
-                    enrolmentEscalationTask = GetEnrolmentEscalationCount();
-                }
-            }
-
-            if (ShowActivities)
-            {
-                if (CanViewFirstPass)
-                {
-                    activityQa1Task = GetActivityQa1Count();
-                }
-
-                if (CanViewSecondPass)
-                {
-                    activityQa2Task = GetActivityQa2Count();
-                }
-
-                if (CanViewEscalation)
-                {
-                    activityEscalationTask = GetActivityEscalationCount();
-                }
-            }
-
-            var allTasks = new Task<int>?[]
-            {
-                enrolmentQa1Task,
-                enrolmentQa2Task,
-                enrolmentEscalationTask,
-                activityQa1Task,
-                activityQa2Task,
-                activityEscalationTask
-            };
-
-            await Task.WhenAll(allTasks.OfType<Task<int>>());
-
-            _enrolmentQa1Count = enrolmentQa1Task?.Result ?? 0;
-            _enrolmentQa2Count = enrolmentQa2Task?.Result ?? 0;
-            _enrolmentEscalationCount = enrolmentEscalationTask?.Result ?? 0;
-            _activityQa1Count = activityQa1Task?.Result ?? 0;
-            _activityQa2Count = activityQa2Task?.Result ?? 0;
-            _activityEscalationCount = activityEscalationTask?.Result ?? 0;
-        }
-        catch
-        {
-            _errorMessage = "Unable to fetch queue summary.";
-        }
-        finally
-        {
-            _loading = false;
-            _isLoadingCounts = false;
-            await InvokeAsync(StateHasChanged);
-
-            if (_reloadRequested)
-            {
-                _ = LoadCounts();
-            }
+            await RefreshAsync();
         }
     }
 
-    private async Task<int> GetEnrolmentQa1Count()
-    {
-        var result = await GetNewMediator().Send(new Qa1WithPagination.Query
+    protected override IQuery<Result<ServiceDeskQueueSummaryDto>> CreateQuery() =>
+        new GetServiceDeskQueueSummary.Query
         {
             CurrentUser = CurrentUser,
-            TenantId = TenantId,
-            PageNumber = 1,
-            PageSize = 1,
-            OrderBy = "Created",
-            SortDirection = "Descending"
-        });
+            ShowEnrolments = ShowEnrolments,
+            ShowActivities = ShowActivities
+        };
 
-        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
-    }
-
-    private async Task<int> GetEnrolmentQa2Count()
+    protected override void OnDataLoaded(ServiceDeskQueueSummaryDto data)
     {
-        var result = await GetNewMediator().Send(new Qa2WithPagination.Query
-        {
-            CurrentUser = CurrentUser,
-            TenantId = TenantId,
-            PageNumber = 1,
-            PageSize = 1,
-            OrderBy = "Created",
-            SortDirection = "Descending"
-        });
-
-        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
+        _enrolmentQa1Count = data.EnrolmentQa1Count;
+        _enrolmentQa2Count = data.EnrolmentQa2Count;
+        _enrolmentEscalationCount = data.EnrolmentEscalationCount;
+        _activityQa1Count = data.ActivityQa1Count;
+        _activityQa2Count = data.ActivityQa2Count;
+        _activityEscalationCount = data.ActivityEscalationCount;
+        _hasLoadedOnce = true;
+        base.OnDataLoaded(data);
     }
 
-    private async Task<int> GetEnrolmentEscalationCount()
-    {
-        var result = await GetNewMediator().Send(new QaEscalationWithPagination.Query
-        {
-            CurrentUser = CurrentUser,
-            TenantId = TenantId,
-            PageNumber = 1,
-            PageSize = 1,
-            OrderBy = "Created",
-            SortDirection = "Descending"
-        });
-
-        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
-    }
-
-    private async Task<int> GetActivityQa1Count()
-    {
-        var result = await GetNewMediator().Send(new ActivityQa1WithPagination.Query
-        {
-            CurrentUser = CurrentUser,
-            TenantId = TenantId,
-            PageNumber = 1,
-            PageSize = 1,
-            OrderBy = "Created",
-            SortDirection = "Descending"
-        });
-
-        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
-    }
-
-    private async Task<int> GetActivityQa2Count()
-    {
-        var result = await GetNewMediator().Send(new ActivityQa2WithPagination.Query
-        {
-            CurrentUser = CurrentUser,
-            TenantId = TenantId,
-            PageNumber = 1,
-            PageSize = 1,
-            OrderBy = "Created",
-            SortDirection = "Descending"
-        });
-
-        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
-    }
-
-    private async Task<int> GetActivityEscalationCount()
-    {
-        var result = await GetNewMediator().Send(new ActivityQaEscalationWithPagination.Query
-        {
-            CurrentUser = CurrentUser,
-            TenantId = TenantId,
-            PageNumber = 1,
-            PageSize = 1,
-            OrderBy = "Created",
-            SortDirection = "Descending"
-        });
-
-        return result is { Succeeded: true, Data: not null } ? result.Data.TotalItems : 0;
-    }
-
-    private static Color GetCountColor(int count) => count == 0 ? Color.Success : Color.Warning;
+    private static Color GetCountColor(int _) => Color.Default;
 
     private async Task GrabEnrolmentQa1()
     {
@@ -267,7 +94,7 @@ public partial class QueueSummary
         {
             _grabbing = true;
 
-            var result = await GetNewMediator().Send(new GrabQa1Entry.Command
+            var result = await Service.Send(new GrabQa1Entry.Command
             {
                 CurrentUser = CurrentUser
             });
@@ -275,7 +102,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Enrolment QA1 case.", Severity.Success);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa1/?AutoGrab=true");
+                Navigation.NavigateTo($"/pages/qa/enrolments/qa1/?queueEntryId={result.Data!.Id}");
                 return;
             }
 
@@ -298,7 +125,7 @@ public partial class QueueSummary
         {
             _grabbing = true;
 
-            var result = await GetNewMediator().Send(new GrabQa2Entry.Command
+            var result = await Service.Send(new GrabQa2Entry.Command
             {
                 CurrentUser = CurrentUser
             });
@@ -306,7 +133,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Enrolment QA2 case.", Severity.Success);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa2/?AutoGrab=true");
+                Navigation.NavigateTo($"/pages/qa/enrolments/qa2/?queueEntryId={result.Data!.Id}");
                 return;
             }
 
@@ -329,7 +156,7 @@ public partial class QueueSummary
         {
             _grabbing = true;
 
-            var result = await GetNewMediator().Send(new GrabActivityQa1Entry.Command
+            var result = await Service.Send(new GrabActivityQa1Entry.Command
             {
                 CurrentUser = CurrentUser
             });
@@ -337,7 +164,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Activity QA1 case.", Severity.Success);
-                Navigation.NavigateTo("/pages/qa/activities/qa1/?AutoGrab=true");
+                Navigation.NavigateTo($"/pages/qa/activities/qa1/?queueEntryId={result.Data!.Id}");
                 return;
             }
 
@@ -360,7 +187,7 @@ public partial class QueueSummary
         {
             _grabbing = true;
 
-            var result = await GetNewMediator().Send(new GrabActivityQa2Entry.Command
+            var result = await Service.Send(new GrabActivityQa2Entry.Command
             {
                 CurrentUser = CurrentUser
             });
@@ -368,7 +195,7 @@ public partial class QueueSummary
             if (result.Succeeded)
             {
                 Snackbar.Add("Assigned next Activity QA2 case.", Severity.Success);
-                Navigation.NavigateTo("/pages/qa/activities/qa2/?AutoGrab=true");
+                Navigation.NavigateTo($"/pages/qa/activities/qa2/?queueEntryId={result.Data!.Id}");
                 return;
             }
 
