@@ -1,0 +1,34 @@
+{{- if .Values.rdsPortForward.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rds-port-forward-deployment
+  labels:
+    app: rds-port-forward
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rds-port-forward
+  template:
+    metadata:
+      labels:
+        app: rds-port-forward
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      containers:
+        - name: rds-port-forward
+          image: {{ .Values.rdsPortForward.image | quote }}
+          ports:
+            - containerPort: {{ .Values.rdsPortForward.localPort }}   # this is your LOCAL_PORT inside the pod
+          env:
+            - name: REMOTE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: rds_instance_address
+            - name: LOCAL_PORT
+              value: {{ .Values.rdsPortForward.localPort | quote }}    # what the pod listens on
+            - name: REMOTE_PORT
+              value: {{ .Values.rdsPortForward.remotePort | quote }}   # SQL Server in the cloud
+{{- end }}

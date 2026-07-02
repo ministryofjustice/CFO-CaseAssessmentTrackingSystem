@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Common.Validators
 @inherits CatsComponentBase
 
 <MudDialog>
@@ -9,25 +9,50 @@
                 <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                     <MudGrid>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Placeholder="i.e. home address" Label="Description" @bind-Value="Model.Description" For="() => Model.Description" MaxLength="100" Counter="100" Immediate />
+                            <MudTextField Class="mb-2" 
+                                          Placeholder="i.e. home address" 
+                                          Label="Description" 
+                                          @bind-Value="Model.Description" 
+                                          For="() => Model.Description" 
+                                          MaxLength=@ValidationConstants.ContactDetailsDescription
+                                          Counter=@ValidationConstants.ContactDetailsDescription
+                                          Immediate="true" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudAutocomplete Class="mb-2" Label="Address" 
-                                @bind-Value="Model.AddressDetails" 
-                                ToStringFunc="x => x is not null ? x.Address : null" 
-                                SearchFunc="Search" DebounceInterval="500" 
-                                For="() => Model.AddressDetails"
-                                ResetValueOnEmptyText="true" 
-                                CoerceText="true" 
-                                Adornment="Adornment.End" 
-                                AdornmentIcon="@Icons.Material.Filled.Search"
-                                AdornmentColor="Color.Primary" />
+                                             @bind-Value="Model.AddressDetails" 
+                                             ToStringFunc="x => x is not null ? x.Address : null" 
+                                             SearchFunc="@Search" 
+                                             DebounceInterval="500" 
+                                             For="() => Model.AddressDetails"
+                                             ResetValueOnEmptyText="true" 
+                                             CoerceText="true" 
+                                             Adornment="Adornment.End" 
+                                             AdornmentIcon="@Icons.Material.Filled.Search"
+                                             AdornmentColor="Color.Primary">
+                                <NoItemsTemplate>
+                                    <MudText Align="Align.Center" Class="px-4 py-2" Color="Color.Secondary">
+                                        No matching addresses found...
+                                    </MudText>
+                                </NoItemsTemplate>
+                            </MudAutocomplete>
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress" For="() => Model.EmailAddress" Clearable MaxLength="256" Counter="256" Immediate />
+                            <MudTextField Class="mb-2" Label="Email Address" 
+                                          @bind-Value="Model.EmailAddress" 
+                                          For="() => Model.EmailAddress"
+                                          Clearable MaxLength=@ValidationConstants.EmailAddressLength
+                                          Immediate="true"
+                                          Counter="@ValidationConstants.EmailAddressLength"/>
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Phone Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable MaxLength="16" Counter="16" Immediate />
+                            <MudTextField Class="mb-2" 
+                                          Label="Phone Number" 
+                                          @bind-Value="Model.MobileNumber" 
+                                          For="() => Model.MobileNumber" 
+                                          Clearable MaxLength=@ValidationConstants.MobileLength
+                                          Immediate="true"
+                                          Counter="@ValidationConstants.MobileLength"/>
                         </MudItem>
                         <MudItem xs="12">
                             <MudCheckBox @bind-Value="Model.Primary" Label="Set as primary contact information" For="() => Model.Primary" />
@@ -39,7 +64,7 @@
 
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Dialog.Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>

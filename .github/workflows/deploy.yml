@@ -2,20 +2,27 @@ name: deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [dev, staging, production]
+        required: true
 
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  ecr:
+  deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
@@ -24,9 +31,6 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
-
-      - name: Install dotnet sql package
-        run: dotnet tool install --global microsoft.sqlpackage --version 170.3.93
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
@@ -39,30 +43,34 @@ jobs:
         with:
           role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.ECR_REGION }}
-      
+
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@33f92af657bba1882ab79d8621debd2f6769a0c9
         id: login-ecr
 
       - name: Build and Push Server.UI Container
         run: |
-          dotnet publish src/Server.UI/Server.UI.csproj \
-            --configuration Release \
-            --no-build \
-            /t:PublishContainer \
-            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
-            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
-            /p:ContainerImageTag=cats-${{ github.sha }}
-      
+          docker build \
+            -f src/Server.UI/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:cats-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:cats-${{ github.sha }}
+
+      - name: Build and Push Worker Container
+        run: |
+          docker build \
+            -f src/Worker/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:worker-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:worker-${{ github.sha }}
+
       - name: Build and Push DatabaseSeeding Container
         run: |
-          dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj \
-            --configuration Release \
-            --no-build \
-            /t:PublishContainer \
-            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
-            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
-            /p:ContainerImageTag=seeder-${{ github.sha }}
+          docker build \
+            -f src/DatabaseSeeding/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:seeder-${{ github.sha }} \
+            .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:seeder-${{ github.sha }}
 
       - name: Build and Push DatabaseMigrator Container
         run: |
@@ -71,25 +79,16 @@ jobs:
             -t ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:migrator-${{ github.sha }} \
             .
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:migrator-${{ github.sha }}
-      
+
       - name: Generate app version
         id: version
-        run: echo "app_version=$(date +'%Y.%m').${{ github.run_number }}" >> $GITHUB_OUTPUT
+        run: echo "app_version=$(date +'%Y.%m.%d').${{ github.run_number }}" >> $GITHUB_OUTPUT
 
-      - name: Generate Kubernetes Manifests
-        run: |
-          mkdir -p deploy
-          for file in infra/*.yml; do
-            envsubst < "$file" > "deploy/$(basename "$file")"
-          done
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-          APP_VERSION: ${{ steps.version.outputs.app_version }}
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
-          DOTNET_ENVIRONMENT: "Development"
-      
+      - name: Setup Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v4.2.2
+
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
@@ -101,24 +100,74 @@ jobs:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
 
-      - name: Run database migration
+      - name: Build Helm dependencies
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete job migrator-job --ignore-not-found=true
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/migrator-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/migrator-job
-        env:
-          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          set -euo pipefail
+          helm repo add hmpps-helm-charts https://ministryofjustice.github.io/hmpps-helm-charts
+          helm dependency update ./helm_deploy/cats
 
-      - name: Run database seeding
+      - name: Run database migrations
         run: |
-          kubectl -n ${KUBE_NAMESPACE} delete job seeder-job --ignore-not-found=true
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/seeder-job.yml
-          kubectl -n ${KUBE_NAMESPACE} wait --for=condition=complete --timeout=300s job/seeder-job
+          set -euo pipefail
+          helm upgrade --install cats-migrate ./helm_deploy/cats \
+            --namespace "${KUBE_NAMESPACE}" \
+            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set migrator.enabled=true \
+            --set serviceAccountName="${KUBE_NAMESPACE}" \
+            --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
+            --set migrator.image.tag="migrator-${{ github.sha }}" \
+            --set rdsPortForward.enabled=false \
+            --timeout 5m
+          kubectl -n "${KUBE_NAMESPACE}" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=migrator
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
 
-      - name: Deploy to Kubernetes
+      - name: Seed the database
         run: |
-          kubectl -n ${KUBE_NAMESPACE} apply -f deploy/
+          set -euo pipefail
+          helm upgrade --install cats-seed ./helm_deploy/cats \
+            --namespace "${KUBE_NAMESPACE}" \
+            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set seeder.enabled=true \
+            --set serviceAccountName="${KUBE_NAMESPACE}" \
+            --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
+            --set seeder.image.tag="seeder-${{ github.sha }}" \
+            --set rdsPortForward.enabled=false \
+            --timeout 5m
+          kubectl -n "${KUBE_NAMESPACE}" wait --for=jsonpath='{.status.phase}'=Succeeded --timeout=300s pod -l app=seeder
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+
+      - name: Deploy CATS and Worker
+        run: |
+          set -euo pipefail
+          IMAGE_REPOSITORY="${REGISTRY}/${REPOSITORY}"
+
+          helm upgrade --install cats ./helm_deploy/cats \
+            --namespace "${KUBE_NAMESPACE}" \
+            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --set app.enabled=true \
+            --set worker.enabled=true \
+            --set rabbitmq.enabled=true \
+            --set redis.enabled=true \
+            --set serviceAccountName="${KUBE_NAMESPACE}" \
+            --set app.serviceAccountName="${KUBE_NAMESPACE}" \
+            --set app.image.repository="${IMAGE_REPOSITORY}" \
+            --set app.image.tag="cats-${{ github.sha }}" \
+            --set app.env.Sentry__Release="${APP_VERSION}" \
+            --set app.env.AppConfigurationSettings__Version="${APP_VERSION}" \
+            --set worker.serviceAccountName="${KUBE_NAMESPACE}" \
+            --set worker.image.repository="${IMAGE_REPOSITORY}" \
+            --set worker.image.tag="worker-${{ github.sha }}" \
+            --set worker.env.Sentry__Release="${APP_VERSION}" \
+            --set worker.env.AppConfigurationSettings__Version="${APP_VERSION}" \
+            --atomic --wait --timeout 10m
+        env:
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          APP_VERSION: ${{ steps.version.outputs.app_version }}

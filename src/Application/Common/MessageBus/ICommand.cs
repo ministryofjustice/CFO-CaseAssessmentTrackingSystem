@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Common.MessageBus;
 ///
 /// This differs from a mediator command handled in-process.
 /// </summary>
-public interface ICommand
+public interface IExternalCommand
 {
     
 }
