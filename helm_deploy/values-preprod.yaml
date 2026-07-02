@@ -1,16 +1,16 @@
 app:
   replicaCount: 3
   ingress:
-    host: cfocats-staging.live.cloud-platform.service.justice.gov.uk
+    host: cfocats-preprod.live.cloud-platform.service.justice.gov.uk
   env:
-    DOTNET_ENVIRONMENT: "Staging"
-    Sentry__Environment: "Staging-CloudPlatform"
+    DOTNET_ENVIRONMENT: "PreProduction"
+    Sentry__Environment: "PreProduction-CloudPlatform"
 
 worker:
   replicaCount: 1
   env:
-    DOTNET_ENVIRONMENT: "Staging"
-    Sentry__Environment: "Staging-CloudPlatform"
+    DOTNET_ENVIRONMENT: "PreProduction"
+    Sentry__Environment: "PreProduction-CloudPlatform"
     Features__PresenceHub__RelayUserPresenceNotifications: "false"
 
 # RDS bridge - disabled in non-development environments

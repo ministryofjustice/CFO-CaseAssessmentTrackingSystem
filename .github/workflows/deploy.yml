@@ -5,7 +5,7 @@ on:
     inputs:
       environment:
         type: choice
-        options: [dev, staging, production]
+        options: [dev, preprod, prod]
         required: true
 
 concurrency:
@@ -111,7 +111,7 @@ jobs:
           set -euo pipefail
           helm upgrade --install cats-migrate ./helm_deploy/cats \
             --namespace "${KUBE_NAMESPACE}" \
-            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --values ./helm_deploy/values-${{ inputs.environment }}.yaml \
             --set migrator.enabled=true \
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set migrator.image.repository="${REGISTRY}/${REPOSITORY}" \
@@ -129,7 +129,7 @@ jobs:
           set -euo pipefail
           helm upgrade --install cats-seed ./helm_deploy/cats \
             --namespace "${KUBE_NAMESPACE}" \
-            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --values ./helm_deploy/values-${{ inputs.environment }}.yaml \
             --set seeder.enabled=true \
             --set serviceAccountName="${KUBE_NAMESPACE}" \
             --set seeder.image.repository="${REGISTRY}/${REPOSITORY}" \
@@ -149,7 +149,7 @@ jobs:
 
           helm upgrade --install cats ./helm_deploy/cats \
             --namespace "${KUBE_NAMESPACE}" \
-            --values ./helm_deploy/cats/values-${{ inputs.environment }}.yaml \
+            --values ./helm_deploy/values-${{ inputs.environment }}.yaml \
             --set app.enabled=true \
             --set worker.enabled=true \
             --set rabbitmq.enabled=true \
