@@ -149,7 +149,7 @@ public partial class QA2
             if (result.Succeeded)
             {
                 Snackbar.Add("Activity submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/activities/qa2", true);
+                Navigation.NavigateTo("/pages/workspace/servicedesk", true);
             }
             else
             {

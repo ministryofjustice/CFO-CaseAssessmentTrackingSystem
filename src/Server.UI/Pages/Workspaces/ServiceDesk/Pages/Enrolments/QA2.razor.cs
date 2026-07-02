@@ -172,7 +172,7 @@ public partial class QA2
                 if (result.Succeeded)
                 {
                     Snackbar.Add("Participant submitted", Severity.Info);
-                    Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
+                    Navigation.NavigateTo("/pages/workspace/servicedesk", true);
                 }
                 else
                 {
