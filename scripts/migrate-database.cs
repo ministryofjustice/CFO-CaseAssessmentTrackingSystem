@@ -1,10 +1,15 @@
-﻿using System.Data.Common;
+#:package Microsoft.SqlServer.DacFx
+#:property PublishAot=false
+
+using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
 
-// Deploys the CatsDb schema by publishing the compiled DACPAC with DacFx — the same
-// engine sqlpackage wraps. Runs from the shared "cfo-cats" image as a pre-install/
-// pre-upgrade Helm hook Job (see helm_deploy/cats/templates/migrator-hook.yaml), so
-// the schema is migrated ahead of the new application code on every release.
+// Deploys the CatsDb schema from the compiled DACPAC via DacFx (the engine sqlpackage wraps).
+// A .NET 10 file-based app; runs as a pre-install/pre-upgrade Helm hook Job from the shared
+// cfo-cats image (helm_deploy/cats/templates/migrator-hook.yaml). Run locally with:
+//   dotnet build src/Database/CatsDb/CatsDb.sqlproj -c Release
+//   ConnectionStrings__CatsDb="..." DACPAC_PATH=src/Database/CatsDb/bin/Release/CatsDb.dacpac \
+//     dotnet run scripts/migrate-database.cs
 
 const string connectionStringEnv = "ConnectionStrings__CatsDb";
 
@@ -15,14 +20,22 @@ if (string.IsNullOrWhiteSpace(connectionString))
     return 1;
 }
 
-var databaseName = GetTargetDatabaseName(connectionString);
+// SqlConnectionStringBuilder via DacFx's transitive Microsoft.Data.SqlClient — no direct
+// PackageReference (that would force the central 7.0.2 pin and break DacFx's MSAL closure).
+var databaseName = new SqlConnectionStringBuilder(connectionString).InitialCatalog;
 if (string.IsNullOrWhiteSpace(databaseName))
 {
     Console.Error.WriteLine("ERROR: the connection string must specify a target database (Database / Initial Catalog).");
     return 1;
 }
 
-var dacpacPath = Path.Combine(AppContext.BaseDirectory, "CatsDb.dacpac");
+// The image ships CatsDb.dacpac next to the app; DACPAC_PATH overrides it for local runs.
+var dacpacPath = Environment.GetEnvironmentVariable("DACPAC_PATH");
+if (string.IsNullOrWhiteSpace(dacpacPath))
+{
+    dacpacPath = Path.Combine(AppContext.BaseDirectory, "CatsDb.dacpac");
+}
+
 if (!File.Exists(dacpacPath))
 {
     Console.Error.WriteLine($"ERROR: DACPAC not found at '{dacpacPath}'.");
@@ -57,26 +70,4 @@ catch (DacServicesException ex)
     }
 
     return 1;
-}
-
-// Extract the target database name without taking a direct Microsoft.Data.SqlClient
-// dependency — DacFx brings its own version-matched SqlClient/MSAL closure, and forcing
-// a different SqlClient version leaves it unable to load the MSAL assembly it expects.
-static string? GetTargetDatabaseName(string connectionString)
-{
-    var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
-
-    foreach (var key in new[] { "Initial Catalog", "Database" })
-    {
-        if (builder.TryGetValue(key, out var value))
-        {
-            var name = value?.ToString();
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                return name;
-            }
-        }
-    }
-
-    return null;
 }

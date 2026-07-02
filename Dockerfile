@@ -2,7 +2,7 @@
 #   * Server.UI        (Blazor Server) — the container's default entrypoint
 #   * Worker           (Quartz jobs + job-management API)
 #   * DatabaseSeeding  (one-off seeding console app)
-#   * DatabaseMigrator (one-off schema deploy — publishes the CatsDb DACPAC via DacFx)
+#   * migrate-database (one-off schema deploy — a .NET file-based app that deploys the DACPAC via DacFx)
 #
 # Each app is published into its own directory so their appsettings.json files do not
 # collide. The Worker, Seeder and Migrator run this same image with a command override
@@ -13,6 +13,7 @@ WORKDIR /src
 # Copy solution-level config required to restore and build
 COPY Directory.Build.props Directory.Packages.props NuGet.config global.json ./
 COPY src/ src/
+COPY scripts/ scripts/
 
 RUN dotnet restore src/Server.UI/Server.UI.csproj \
  && dotnet publish src/Server.UI/Server.UI.csproj --configuration Release --no-restore --output /app/ui
@@ -23,8 +24,10 @@ RUN dotnet restore src/Worker/Worker.csproj \
 RUN dotnet restore src/DatabaseSeeding/DatabaseSeeding.csproj \
  && dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj --configuration Release --no-restore --output /app/seeder
 
-RUN dotnet restore src/DatabaseMigrator/DatabaseMigrator.csproj \
- && dotnet publish src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --no-restore --output /app/migrator
+# Schema-deploy tool: a .NET 10 file-based app (scripts/migrate-database.cs, no .csproj).
+# publish restores its inline `#:package` (DacFx) on its own; the file sets PublishAot=false so
+# it stays a normal framework-dependent app that runs on the aspnet runtime like the others.
+RUN dotnet publish scripts/migrate-database.cs --configuration Release --output /app/migrator
 
 # Build the SQL project to produce the DACPAC and ship it alongside the migrator, which
 # deploys it to the database at release time (replaces the old standalone sqlpackage image).
