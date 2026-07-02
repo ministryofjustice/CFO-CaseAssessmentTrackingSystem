@@ -14,16 +14,24 @@ public partial class Index
     private BreadcrumbLinkModel[] Links { get; set; } = [];
 
     private bool _showJobManagement;
-
+    private bool _showAccessSystemFunctions;
+    private bool _showServiceDeskManagement;
+    
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
 
         var canAccessSystemSupport =
             (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
-
+        var canAccessSystemFunctions =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        var canAccessServiceDeskManagement =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.ServiceDeskManagement)).Succeeded;
+        
         _showJobManagement = canAccessSystemSupport;
-
+        _showAccessSystemFunctions = canAccessSystemFunctions;
+        _showServiceDeskManagement = canAccessServiceDeskManagement;
+        
         List<BreadcrumbLinkModel> links = [];
 
         if (_showJobManagement)
@@ -31,8 +39,17 @@ public partial class Index
             links.Add(AdministrationLinks.Jobs);
             links.Add(AdministrationLinks.CacheManagement);
         }
-
-        links.Add(AdministrationLinks.AuditTrails);
+        
+        if(_showServiceDeskManagement)
+        {
+            links.Add(AdministrationLinks.AuditTrails);
+            links.Add(AdministrationLinks.Outbox);
+        }
+        
+        if (_showAccessSystemFunctions)
+        {
+            links.Add(AdministrationLinks.PickList);
+        }
         
         Links = links.ToArray();
     }

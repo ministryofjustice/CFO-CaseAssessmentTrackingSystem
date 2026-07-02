@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Cfo.Cats.Application.Common.Extensions;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Outbox.Commands;
 using Cfo.Cats.Application.Features.Outbox.DTOs;
@@ -7,7 +6,7 @@ using Cfo.Cats.Application.Features.Outbox.Queries.PaginationQuery;
 using Cfo.Cats.Application.Features.Outbox.Specifications;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.SystemManagement;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages;
 
 public partial class Outbox
 {
@@ -72,7 +71,7 @@ public partial class Outbox
         }
         catch
         {
-            return new List<JsonRow> { new JsonRow { Key = "Error", Value = "Invalid JSON" } };
+            return [new JsonRow { Key = "Error", Value = "Invalid JSON" }];
         }
     }
 
