@@ -14,8 +14,6 @@ spec:
   securityContext:
     seccompProfile:
       type: RuntimeDefault
-    runAsUser: 1001
-    runAsGroup: 1001
     runAsNonRoot: true
   containers:
     - name: seeder
