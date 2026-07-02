@@ -63,7 +63,7 @@
                 <MudTabPanel Text="Right To Work" Style="min-width: 210px;" BadgeColor="Color.Info" BadgeData="@_participantDto.RightToWorks.Length" Icon="@_rtwIcon" IconColor="@_rtwIconColor" ToolTip="@_rtwInfo">
                     <RightToWorkTabPanel ParticipantDto="_participantDto" ShowRightToWorkWarning="@_showRightToWorkWarning" />
                 </MudTabPanel>
-                <MudTabPanel Text="Assessment" Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
+                <MudTabPanel Text="Assessment" Icon="@(string.IsNullOrEmpty(_participantDto.AssessmentJustification) is false ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
                     <AssessmentTabPanel ParticipantDto="_participantDto" ParticipantAssessmentDto="@_latestParticipantAssessmentDto" />
                 </MudTabPanel>
                 <MudTabPanel Text="Submission">
