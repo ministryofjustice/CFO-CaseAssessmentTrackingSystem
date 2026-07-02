@@ -1,6 +1,10 @@
 # Development overrides. Namespace: cfocats-dev
 
+# The IRSA-annotated service account (name == namespace) used by all workloads and hooks.
+serviceAccountName: cfocats-dev
+
 app:
+  serviceAccountName: cfocats-dev
   replicaCount: 3
   ingress:
     host: cfocats-dev.live.cloud-platform.service.justice.gov.uk
@@ -9,6 +13,7 @@ app:
     Sentry__Environment: "Development-CloudPlatform"
 
 worker:
+  serviceAccountName: cfocats-dev
   replicaCount: 1
   env:
     DOTNET_ENVIRONMENT: "Development"

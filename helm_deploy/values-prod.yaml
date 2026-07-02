@@ -1,4 +1,7 @@
+serviceAccountName: cfocats-prod
+
 app:
+  serviceAccountName: cfocats-prod
   replicaCount: 4
   ingress:
     host: cfocats-prod.live.cloud-platform.service.justice.gov.uk
@@ -17,6 +20,7 @@ app:
     Sentry__Environment: "Production-CloudPlatform"
 
 worker:
+  serviceAccountName: cfocats-prod
   replicaCount: 1
   resources:
     requests:

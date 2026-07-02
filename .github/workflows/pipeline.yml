@@ -1,0 +1,166 @@
+name: Pipeline [test -> build -> deploy]
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  # Only cancel in-progress runs on a branch; use the SHA on main so concurrent
+  # main pipelines get unique groups (a namespace can only hold one helm lock).
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # Lint the chart against every environment's values on every push, so config
+  # drift is caught even before preprod/prod namespaces exist.
+  helm_lint:
+    strategy:
+      matrix:
+        environments: ['dev', 'preprod', 'prod']
+    name: helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: ${{ matrix.environments }}
+      chart_name: cats
+
+  # Build + unit-test the .NET solution. There is no shared HMPPS reusable workflow
+  # for .NET, so this is a bespoke job. It builds from source (the Dockerfiles are
+  # multi-stage), so no build artifacts are uploaded for the docker builds.
+  dotnet_verify:
+    name: Build & test (.NET)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        with:
+          global-json-file: global.json
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+  # Single source of truth for the deploy tag. create_app_version yields
+  # date.run_number.sha7, but the date is evaluated per-job at runtime — computing it
+  # ONCE here and feeding it to BOTH image builds (as additional_docker_tag) and to the
+  # deploy guarantees the combined image and the migrator image share the exact tag the
+  # deploy pulls (no midnight-boundary skew between the two parallel builds).
+  app_version:
+    name: Create app version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.app_version.outputs.version }}
+    steps:
+      - id: app_version
+        name: Application version creator
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/build-test-and-deploy/create_app_version@c241b9febb7a4fc11e88d0e781cbdfcf8abd84a5 # v1.0.17
+
+  # Combined image: Server.UI (default entrypoint) + Worker + DatabaseSeeding.
+  # Pushed to ghcr.io/ministryofjustice/cfo-cats:<app_version> (via additional_docker_tag).
+  build_app:
+    name: Build docker image (UI + Worker + Seeder) from hmpps-github-actions
+    if: github.ref == 'refs/heads/main'
+    needs: [dotnet_verify, app_version]
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
+    with:
+      docker_registry: 'ghcr.io'
+      registry_org: 'ministryofjustice'
+      image_name: 'cfo-cats'
+      file: 'Dockerfile'
+      tag_latest: false # immutable, version-only tags (no rolling :latest)
+      push: true
+      docker_multiplatform: false
+      download_build_artifacts: false
+
+  # Database migrator image (DACPAC / sqlpackage) — its own image because it is not
+  # a `dotnet X.dll` app. Tagged with the shared app_version (additional_docker_tag) so
+  # it always matches the application image the deploy pulls.
+  build_migrator:
+    name: Build database migrator image
+    if: github.ref == 'refs/heads/main'
+    needs: [dotnet_verify, app_version]
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
+    with:
+      docker_registry: 'ghcr.io'
+      registry_org: 'ministryofjustice'
+      image_name: 'cfo-cats-migrator'
+      file: 'src/Database/Dockerfile'
+      tag_latest: false # immutable, version-only tags (no rolling :latest)
+      push: true
+      docker_multiplatform: false
+      download_build_artifacts: false
+
+  deploy_dev:
+    name: Deploy to the development environment
+    needs: [app_version, build_app, build_migrator, helm_lint]
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'dev'
+      app_version: '${{ needs.app_version.outputs.version }}'
+      helm_chart_name: 'cats'
+      k8s_deployment_name: 'cats'
+      slack_notification: 'false' # set 'true' once NONPROD_RELEASES_SLACK_CHANNEL is configured
+      # The shared deploy runs a single `helm upgrade cats` with --reset-values, so
+      # anything not in values.yaml / values-dev.yaml must be set here. The app/worker
+      # generic-service aliases take their image tag from app/worker.image.tag (the
+      # migrator/seeder hooks instead read the chart appVersion, which the deploy sets).
+      helm_additional_args: >-
+        --set app.image.tag=${{ needs.app_version.outputs.version }}
+        --set worker.image.tag=${{ needs.app_version.outputs.version }}
+        --set app.env.Sentry__Release=${{ needs.app_version.outputs.version }}
+        --set app.env.AppConfigurationSettings__Version=${{ needs.app_version.outputs.version }}
+        --set worker.env.Sentry__Release=${{ needs.app_version.outputs.version }}
+        --set worker.env.AppConfigurationSettings__Version=${{ needs.app_version.outputs.version }}
+
+  # Preprod/prod are scaffolded but intentionally left commented until those
+  # namespaces (and their GitHub Environments + KUBE_* secrets) exist. Uncomment to
+  # enable the dev -> preprod -> prod promotion of the same immutable image.
+  # deploy_preprod:
+  #   name: Deploy to the pre-production environment
+  #   needs: [app_version, build_app, build_migrator, deploy_dev]
+  #   uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+  #   secrets: inherit
+  #   with:
+  #     environment: 'preprod'
+  #     app_version: '${{ needs.app_version.outputs.version }}'
+  #     helm_chart_name: 'cats'
+  #     k8s_deployment_name: 'cats'
+  #     slack_notification: 'false'
+  #     helm_additional_args: >-
+  #       --set app.image.tag=${{ needs.app_version.outputs.version }}
+  #       --set worker.image.tag=${{ needs.app_version.outputs.version }}
+  #       --set app.env.Sentry__Release=${{ needs.app_version.outputs.version }}
+  #       --set app.env.AppConfigurationSettings__Version=${{ needs.app_version.outputs.version }}
+  #       --set worker.env.Sentry__Release=${{ needs.app_version.outputs.version }}
+  #       --set worker.env.AppConfigurationSettings__Version=${{ needs.app_version.outputs.version }}
+  # deploy_prod:
+  #   name: Deploy to the production environment
+  #   needs: [app_version, build_app, build_migrator, deploy_preprod]
+  #   uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+  #   secrets: inherit
+  #   with:
+  #     environment: 'prod'
+  #     app_version: '${{ needs.app_version.outputs.version }}'
+  #     helm_chart_name: 'cats'
+  #     k8s_deployment_name: 'cats'
+  #     slack_notification: 'false'
+  #     helm_additional_args: >-
+  #       --set app.image.tag=${{ needs.app_version.outputs.version }}
+  #       --set worker.image.tag=${{ needs.app_version.outputs.version }}
+  #       --set app.env.Sentry__Release=${{ needs.app_version.outputs.version }}
+  #       --set app.env.AppConfigurationSettings__Version=${{ needs.app_version.outputs.version }}
+  #       --set worker.env.Sentry__Release=${{ needs.app_version.outputs.version }}
+  #       --set worker.env.AppConfigurationSettings__Version=${{ needs.app_version.outputs.version }}

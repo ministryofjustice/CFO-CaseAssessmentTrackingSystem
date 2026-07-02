@@ -1,0 +1,62 @@
+name: Deploy to environment
+
+# Manual promotion / rollback. Deploys an ALREADY-BUILT image version (built by
+# pipeline.yml) to a chosen environment — nothing is built here. The chosen `version`
+# must already exist in ghcr for BOTH images:
+#   ghcr.io/ministryofjustice/cfo-cats:<version>
+#   ghcr.io/ministryofjustice/cfo-cats-migrator:<version>
+# This is the recommended way to promote a dev-proven build to preprod/prod, or to
+# roll back to a known-good earlier version.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: choice
+        required: true
+        options:
+          - dev
+          - preprod
+          - prod
+        default: 'dev'
+      version:
+        description: version to be deployed to the environment - must already exist.
+        required: true
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  helm_lint:
+    name: helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      chart_name: cats
+
+  deploy_env:
+    name: Deploy to environment
+    needs:
+      - helm_lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      app_version: ${{ inputs.version }}
+      helm_chart_name: 'cats'
+      k8s_deployment_name: 'cats'
+      slack_notification: 'false' # set 'true' once (NON)PROD_RELEASES_SLACK_CHANNEL is configured
+      # Mirror the version stamping used in pipeline.yml's deploy_dev, but from the
+      # manually-supplied version. The app/worker generic-service aliases take their
+      # image tag from app/worker.image.tag; the migrator/seeder hooks read the chart
+      # appVersion (which the deploy action sets to this version).
+      helm_additional_args: >-
+        --set app.image.tag=${{ inputs.version }}
+        --set worker.image.tag=${{ inputs.version }}
+        --set app.env.Sentry__Release=${{ inputs.version }}
+        --set app.env.AppConfigurationSettings__Version=${{ inputs.version }}
+        --set worker.env.Sentry__Release=${{ inputs.version }}
+        --set worker.env.AppConfigurationSettings__Version=${{ inputs.version }}
