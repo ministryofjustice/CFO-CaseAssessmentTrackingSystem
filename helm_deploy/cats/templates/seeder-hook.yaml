@@ -1,0 +1,40 @@
+{{- if .Values.seeder.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cats-seed
+  labels:
+    app: seeder
+  annotations:
+    # Runs after the migrator (weight 1) but before app/worker roll out, in every
+    # environment. Uses the combined image with a command override to run the
+    # DatabaseSeeding console app.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: seeder
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      restartPolicy: Never
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+      containers:
+        - name: seeder
+          image: "{{ .Values.seeder.image.repository }}:{{ .Values.seeder.image.tag | default .Chart.AppVersion }}"
+          command: ["dotnet", "/app/seeder/DatabaseSeeding.dll", "--contentRoot", "/app/seeder"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            {{- include "cats.databaseEnv" . | nindent 12 }}
+{{- end }}

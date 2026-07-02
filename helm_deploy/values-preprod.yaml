@@ -1,4 +1,7 @@
+serviceAccountName: cfocats-preprod
+
 app:
+  serviceAccountName: cfocats-preprod
   replicaCount: 3
   ingress:
     host: cfocats-preprod.live.cloud-platform.service.justice.gov.uk
@@ -7,6 +10,7 @@ app:
     Sentry__Environment: "PreProduction-CloudPlatform"
 
 worker:
+  serviceAccountName: cfocats-preprod
   replicaCount: 1
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
