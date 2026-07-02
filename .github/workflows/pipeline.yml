@@ -49,10 +49,13 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
+      - name: Verify database migrator (file-based app)
+        # Not part of the solution, so build it explicitly to keep it compile-checked in CI.
+        run: dotnet build scripts/migrate-database.cs --configuration Release
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal
 
-  # Combined image: Server.UI (default entrypoint) + Worker + DatabaseSeeding + DatabaseMigrator,
+  # Combined image: Server.UI (default entrypoint) + Worker + DatabaseSeeding + migrate-database,
   # plus the compiled CatsDb DACPAC. Pushed to ghcr.io/ministryofjustice/cfo-cats:<version>, where
   # <version> is the tag docker_build.yml self-generates (date.run_number.sha7) and reports as its
   # output. One image, one build, one version for the whole release: app, worker, seeder and the

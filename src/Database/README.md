@@ -10,7 +10,7 @@ This repository contains the database definition, deployment tooling, and suppor
 / (root)
 │
 ├── /src/Database/CatsDb      # SQL Project (database schema)
-├── /src/DatabaseMigrator     # Schema deploy tool (publishes the DACPAC via DacFx)
+├── /scripts/migrate-database.cs  # Schema deploy tool — .NET file-based app (deploys the DACPAC via DacFx)
 ├── /src/DatabaseSeeding      # Data seeding project
 ```
 
@@ -59,20 +59,22 @@ dotnet build src/Database/CatsDb/CatsDb.sqlproj
 
 ### Deploy
 
-At release time the **DatabaseMigrator** console app (`src/DatabaseMigrator`) publishes the
-DACPAC to the target database using **DacFx** (`DacServices.Deploy` — the same engine
-`sqlpackage` wraps). It runs automatically as a pre-install/pre-upgrade Helm hook Job from
-the shared `cfo-cats` image (see `helm_deploy/cats/templates/migrator-hook.yaml`), reading
-the connection string from the `ConnectionStrings__CatsDb` environment variable and loading
-`CatsDb.dacpac` from its own directory (the image build copies the compiled DACPAC there).
+At release time the **migrate-database** app (`scripts/migrate-database.cs`, a .NET 10
+file-based app) publishes the DACPAC to the target database using **DacFx**
+(`DacServices.Deploy` — the same engine `sqlpackage` wraps). It runs automatically as a
+pre-install/pre-upgrade Helm hook Job from the shared `cfo-cats` image (see
+`helm_deploy/cats/templates/migrator-hook.yaml`), reading the connection string from the
+`ConnectionStrings__CatsDb` environment variable and loading `CatsDb.dacpac` from its own
+directory (the image build copies the compiled DACPAC there).
 
-To deploy manually, build the DACPAC and run the migrator with the DACPAC alongside it:
+During development you can run it straight from source with `dotnet run`. Point `DACPAC_PATH`
+at a freshly built DACPAC (it otherwise looks next to the app):
 
 ```
 dotnet build src/Database/CatsDb/CatsDb.sqlproj -c Release
-dotnet publish src/DatabaseMigrator -c Release -o ./migrator
-cp src/Database/CatsDb/bin/Release/CatsDb.dacpac ./migrator/
-ConnectionStrings__CatsDb="<connection-string>" dotnet ./migrator/DatabaseMigrator.dll
+ConnectionStrings__CatsDb="<connection-string>" \
+  DACPAC_PATH=src/Database/CatsDb/bin/Release/CatsDb.dacpac \
+  dotnet run scripts/migrate-database.cs
 ```
 
 ### How it Works
@@ -137,7 +139,7 @@ dotnet run --project DatabaseSeeding
 
 1. Update schema in SQL project
 2. Build to `CatsDb.dacpac`
-3. Deploy via the DatabaseMigrator (DacFx) hook
+3. Deploy via the migrate-database (DacFx) hook
 4. Run DatabaseSeeding
 
 ---
@@ -145,7 +147,7 @@ dotnet run --project DatabaseSeeding
 ## ✅ Summary
 
 - SQL Project → Schema definition
-- DatabaseMigrator (DacFx) → Schema deployment
+- migrate-database (DacFx) → Schema deployment
 - DatabaseSeeding → Data setup & migration
 
 ---
