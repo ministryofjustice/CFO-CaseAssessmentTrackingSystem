@@ -37,7 +37,8 @@ public partial class Objective
 
         var parameters = new DialogParameters<CompleteObjectiveDialog>()
         {
-            { x => x.Model, command }
+            { x => x.Model, command },
+            { x => x.HasLinkedInitiative, Model.LinkedInitiative is not null }
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
@@ -118,7 +119,8 @@ public partial class Objective
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
             Description = Model.Description,
-            InitiativeId = Model.LinkedInitiative?.Id
+            InitiativeId = Model.LinkedInitiative?.Id,
+            InitiativeStartDate = Model.LinkedInitiative?.InitiativeStartDate?.ToDateTime(TimeOnly.MinValue)
         };
 
         var parameters = new DialogParameters<EditObjectiveDialog>()

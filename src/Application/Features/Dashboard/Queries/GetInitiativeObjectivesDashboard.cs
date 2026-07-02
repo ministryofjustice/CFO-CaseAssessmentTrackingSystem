@@ -30,7 +30,6 @@ public static class GetInitiativeObjectivesDashboard
                             join i in context.Initiatives on io.InitiativeId equals i.Id
                             join creator in context.Users on io.CreatedBy equals creator.Id into creatorJoin
                             from creator in creatorJoin.DefaultIfEmpty()
-                            where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                             select new { p, u, t, o, io, i, creator };
 
             baseQuery = request switch
@@ -55,6 +54,8 @@ public static class GetInitiativeObjectivesDashboard
                                   ObjectiveId = data.o.Id,
                                   ObjectiveDescription = data.o.Description,
                                   IsObjectiveCompleted = data.o.Completed != null,
+                                   CompletedStatus = data.o.CompletedStatus,
+                                   Justification = data.o.Justification,
                                   InitiativeId = data.i.Id,
                                   InitiativeCode = data.i.Code,
                                   InitiativeDescription = data.i.Description,
@@ -85,6 +86,8 @@ public static class GetInitiativeObjectivesDashboard
         public required Guid ObjectiveId { get; init; }
         public required string ObjectiveDescription { get; init; }
         public bool IsObjectiveCompleted { get; init; }
+        public CompletionStatus? CompletedStatus { get; init; }
+        public string? Justification { get; init; }
         public required Guid InitiativeId { get; init; }
         public required string InitiativeCode { get; init; }
         public required string InitiativeDescription { get; init; }

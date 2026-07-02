@@ -21,6 +21,9 @@ public static class EditObjective
 
         [Description("Initiative")]
         public Guid? InitiativeId { get; set; }
+
+        [Description("Initiative Start Date")]
+        public DateTime? InitiativeStartDate { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
@@ -39,12 +42,12 @@ public static class EditObjective
             {
                 if (objective.LinkedInitiative is null)
                 {
-                    var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId);
+                    var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId, DateOnly.FromDateTime(request.InitiativeStartDate!.Value));
                     await unitOfWork.DbContext.InitiativeObjectives.AddAsync(link, cancellationToken);
                 }
-                else if (objective.LinkedInitiative.InitiativeId != request.InitiativeId.Value)
+                else
                 {
-                    objective.LinkedInitiative.Update(request.InitiativeId.Value);
+                    objective.LinkedInitiative.Update(request.InitiativeId.Value, DateOnly.FromDateTime(request.InitiativeStartDate!.Value));
                 }
             }
             else if (objective.LinkedInitiative is not null)
@@ -78,6 +81,11 @@ public static class EditObjective
                 .WithMessage($"Maximum length of description is 2000")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
+
+            RuleFor(x => x.InitiativeStartDate)
+                .NotNull()
+                .When(x => x.InitiativeId.HasValue)
+                .WithMessage("You must provide a start date when linking an initiative");
              
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
@@ -88,6 +96,16 @@ public static class EditObjective
                 RuleFor(x => x.InitiativeId)
                     .MustAsync((command, initiativeId, token) => NotHaveActivitiesWhenChangingInitiative(command.ObjectiveId, initiativeId, token))
                     .WithMessage("The initiative cannot be changed or removed because activities have already been recorded against this objective's tasks");
+
+                RuleFor(x => x.InitiativeStartDate)
+                    .MustAsync((command, startDate, token) => NotHaveActivitiesWhenChangingStartDate(command.ObjectiveId, command.InitiativeId, startDate, token))
+                    .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
+                    .WithMessage("The start date cannot be changed because activities have already been recorded against this objective's tasks");
+
+                RuleFor(x => x.InitiativeStartDate)
+                    .MustAsync((command, startDate, token) => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token))
+                    .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
+                    .WithMessage("The start date must fall within the initiative's lifetime");
             });
         }
 
@@ -103,6 +121,28 @@ public static class EditObjective
                             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
+        }
+
+        private async Task<bool> NotHaveActivitiesWhenChangingStartDate(Guid objectiveId, Guid? initiativeId, DateTime? newStartDate, CancellationToken cancellationToken)
+        {
+            if (!initiativeId.HasValue || !newStartDate.HasValue)
+            {
+                return true;
+            }
+
+            var currentStartDate = await _unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ObjectiveId == objectiveId && io.InitiativeId == initiativeId.Value)
+                .Select(io => (DateOnly?)io.StartDate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // No existing link, or start date unchanged — nothing to block
+            if (currentStartDate is null || currentStartDate == DateOnly.FromDateTime(newStartDate.Value))
+            {
+                return true;
+            }
+
+            return !await _unitOfWork.DbContext.Activities
+                .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
         }
 
         private async Task<bool> NotHaveActivitiesWhenChangingInitiative(Guid objectiveId, Guid? newInitiativeId, CancellationToken cancellationToken)
@@ -121,6 +161,27 @@ public static class EditObjective
             // Changing or removing — block if any activities exist on this objective's tasks
             return !await _unitOfWork.DbContext.Activities
                 .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
+        }
+
+        private async Task<bool> BeWithinInitiativeLifetime(Guid? initiativeId, DateTime? date, CancellationToken cancellationToken)
+        {
+            if (!initiativeId.HasValue || !date.HasValue)
+            {
+                return true;
+            }
+
+            var lifetime = await _unitOfWork.DbContext.Initiatives
+                .Where(i => i.Id == initiativeId.Value)
+                .Select(i => new { i.Lifetime.StartDate, i.Lifetime.EndDate })
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (lifetime is null)
+            {
+                return true;
+            }
+
+            return date.Value >= lifetime.StartDate && date.Value <= lifetime.EndDate;
         }
     }
 }
