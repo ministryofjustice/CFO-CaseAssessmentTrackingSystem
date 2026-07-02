@@ -28,6 +28,9 @@
             "" => [home],
             "Jobs" => [home, AdministrationLinks.Jobs.AsMudBreadcrumb()],
             "CacheManagement" => [home, AdministrationLinks.CacheManagement.AsMudBreadcrumb()],
+            "AuditTrails" => [home, AdministrationLinks.AuditTrails.AsMudBreadcrumb()],
+            "Outbox" => [home, AdministrationLinks.Outbox.AsMudBreadcrumb()],
+            "picklist" => [home, AdministrationLinks.PickList.AsMudBreadcrumb()],
             _ => [home]
         };
     }

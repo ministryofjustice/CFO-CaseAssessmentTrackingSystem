@@ -1,5 +1,7 @@
-@using Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages
+
 @inherits CatsComponentBase
+
 @inject IStringLocalizer<Dictionaries> L
 
 <MudDialog>
@@ -37,51 +39,7 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-
-@code
-{
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [EditorRequired][Parameter] public AddEditKeyValueCommand Model { get; set; } = default!;
-
-    private MudForm? _form;
-    private bool _saving;
-
-    private async Task Submit()
-    {
-        try
-        {
-            _saving = true;
-            await _form!.ValidateAsync();
-            if (!_form!.IsValid)
-            {
-                return;
-            }
-            var result = await GetNewMediator().Send(Model);
-
-            if (result.Succeeded)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
-            }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
-        }
-        finally
-        {
-            _saving = false;
-        }
-    }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-}
