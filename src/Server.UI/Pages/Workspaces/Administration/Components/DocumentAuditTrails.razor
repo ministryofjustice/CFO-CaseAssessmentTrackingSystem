@@ -1,6 +1,8 @@
 ﻿@using Cfo.Cats.Application.Features.AuditTrails.DTOs
 @using Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
 
+@inject IMediator Mediator
+
 @inherits CatsComponentBase
 
 <MudDataGrid ServerData="@(ServerReload)"

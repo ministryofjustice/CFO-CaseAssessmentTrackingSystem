@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components;
 
-public partial class DocumentAuditTrails(IMediator mediator)
+public partial class DocumentAuditTrails
 {
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = null!;
@@ -38,7 +38,7 @@ public partial class DocumentAuditTrails(IMediator mediator)
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await mediator.Send(Query, cancellationToken);
+            var result = await Mediator.Send(Query, cancellationToken);
 
             if (result.Succeeded)
             {
