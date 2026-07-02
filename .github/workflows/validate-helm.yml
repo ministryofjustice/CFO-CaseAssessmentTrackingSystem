@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           for env in dev staging production; do
             echo "::group::helm lint ($env)"
-            helm lint ./helm_deploy/cats --values ./helm_deploy/cats/values-$env.yaml
+            helm lint ./helm_deploy/cats --values ./helm_deploy/values-$env.yaml
             echo "::endgroup::"
 
             echo "::group::helm template app ($env)"
@@ -41,7 +41,7 @@ jobs:
             # so templating exercises the same paths as a real deploy.
             helm template cats ./helm_deploy/cats \
               --namespace "cfocats-$env" \
-              --values ./helm_deploy/cats/values-$env.yaml \
+              --values ./helm_deploy/values-$env.yaml \
               --set app.enabled=true \
               --set worker.enabled=true \
               --set rabbitmq.enabled=true \
@@ -59,7 +59,7 @@ jobs:
             echo "::group::helm template migrate ($env)"
             helm template cats-migrate ./helm_deploy/cats \
               --namespace "cfocats-$env" \
-              --values ./helm_deploy/cats/values-$env.yaml \
+              --values ./helm_deploy/values-$env.yaml \
               --set migrator.enabled=true \
               --set serviceAccountName="cfocats-$env" \
               --set migrator.image.repository="example/cfocats" \
@@ -70,7 +70,7 @@ jobs:
             echo "::group::helm template seed ($env)"
             helm template cats-seed ./helm_deploy/cats \
               --namespace "cfocats-$env" \
-              --values ./helm_deploy/cats/values-$env.yaml \
+              --values ./helm_deploy/values-$env.yaml \
               --set seeder.enabled=true \
               --set serviceAccountName="cfocats-$env" \
               --set seeder.image.repository="example/cfocats" \
