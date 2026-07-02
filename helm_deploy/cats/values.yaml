@@ -199,7 +199,7 @@ redis:
 migrator:
   enabled: true
   image:
-    repository: ghcr.io/ministryofjustice/cfo-cats-migrator
+    repository: ghcr.io/ministryofjustice/cfo-cats  # combined image; runs the DatabaseMigrator app
     tag: ""  # defaults to the chart appVersion (set by the shared deploy)
 
 seeder:
