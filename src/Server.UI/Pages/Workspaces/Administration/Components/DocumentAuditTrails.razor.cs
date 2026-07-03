@@ -34,7 +34,7 @@ public partial class DocumentAuditTrails
             _loading = true;
             Query.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : SortDirection.Ascending.ToString();
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 

@@ -10,6 +10,6 @@ public static class AdministrationLinks
     public static readonly BreadcrumbLinkModel AuditTrails = new("Audit Trails", "Audit Trails", $"{Home.Href}/AuditTrails");
     public static readonly BreadcrumbLinkModel PickList = new("Picklist", "Picklist", $"{Home.Href}/picklist");
     public static readonly BreadcrumbLinkModel Outbox = new("Outbox Messages", "Outbox Messages", $"{Home.Href}/Outbox");
-
+    public static readonly BreadcrumbLinkModel Labels = new("Labels", "Labels", $"{Home.Href}/Labels");
 }
  

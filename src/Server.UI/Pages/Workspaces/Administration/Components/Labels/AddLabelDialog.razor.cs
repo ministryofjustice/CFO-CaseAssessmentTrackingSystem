@@ -1,15 +1,14 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Cfo.Cats.Application.Features.Labels.Commands;
 using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Components.Labels;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels;
 
 public partial class AddLabelDialog
 {
     private MudForm? _form;
-    private bool _saving = false;
+    private bool _saving;
     private ContractDto? SelectedContract { get; set; }
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 

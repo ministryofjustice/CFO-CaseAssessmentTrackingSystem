@@ -1,14 +1,13 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Labels.Commands;
 using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Components.Labels;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels;
 
 public partial class EditLabelDialog
 {
     private MudForm? _form;
-    private bool _saving = false;
+    private bool _saving;
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
