@@ -27,6 +27,8 @@
         {
             "" => [home],
             "case-workload" => [home, ProviderLinks.CaseWorkload.AsMudBreadcrumb()],
+            "case-management" => [home, ProviderLinks.CaseManagement.AsMudBreadcrumb()],
+            "performance" => [home, ProviderLinks.Performance.AsMudBreadcrumb()],
             _ => throw new Exception()
         };
     }
