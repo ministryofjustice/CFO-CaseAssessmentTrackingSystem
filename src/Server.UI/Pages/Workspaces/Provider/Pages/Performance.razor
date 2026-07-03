@@ -1,0 +1,64 @@
+@page "/pages/workspace/provider/performance"
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@inherits ProviderDashboardBase
+
+<ProviderPageHeader />
+
+<MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mb-4">
+    This page is still under development and may produce inaccurate results.
+</MudAlert>
+
+<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
+    <MudSpacer />
+    @if (CanFilter)
+    {
+        <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 SelectedTenantId="@SelectedTenantId"
+                                 SelectedUserId="@SelectedUserId"
+                                 TenantSelected="OnTenantSelected"
+                                 UserSelected="OnUserSelected"
+                                 ClearRequested="OnClearFilter" />
+    }
+</MudStack>
+
+<div style="max-width: 640px;">
+    <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+        <PickerActions>
+            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
+</div>
+
+<MudTabs TabPanelsClass="pa-4" ApplyEffectsToContainer="true" Outlined="true" Color="Color.Info">
+    <MudTabPanel Text="Enrolments" Class="pa-3">
+        <EnrolmentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Inductions" Class="pa-3">
+        <InductionDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Support &amp; Referral" Class="pa-3">
+        <SupportAndReferralDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Activities" Class="pa-3">
+        <PaidActivityComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Education &amp; Training" Class="pa-3">
+        <EducationAndTrainingDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Employment" Class="pa-3">
+        <EmploymentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Reassessments" Class="pa-3">
+        <ReassessmentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Recent Approved Activities" Class="pa-3">
+        <RecentlyApprovedActivitiesComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+</MudTabs>
