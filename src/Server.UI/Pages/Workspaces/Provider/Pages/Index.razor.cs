@@ -26,7 +26,13 @@ public partial class Index
         
         _showCaseWorkload = hasAdditionalRoles;
 
-        List<BreadcrumbLinkModel> links = [];
+        // Case Management and Performance are available to every authorised user: support
+        // workers see their own data, senior staff can drill down by tenant and user.
+        List<BreadcrumbLinkModel> links =
+        [
+            ProviderLinks.CaseManagement,
+            ProviderLinks.Performance,
+        ];
 
         if (_showCaseWorkload)
         {
