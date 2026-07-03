@@ -127,7 +127,7 @@ public partial class Outbox
         }
         else
         {
-            Snackbar.Add($"Failed to reschedule message {result.ErrorMessage}", Severity.Success);
+            Snackbar.Add($"Failed to reschedule message {result.ErrorMessage}", Severity.Error);
         }
 
         await OnRefresh();
