@@ -17,7 +17,8 @@ public partial class Index
     private bool _showSystemFunctions;
     private bool _showServiceDeskManagement;
     private bool _showSeniorInternal;
-      
+    private bool _showInitiatives;
+
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
@@ -30,12 +31,15 @@ public partial class Index
             (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.ServiceDeskManagement)).Succeeded;
         var canAccessSeniorInternal =
             (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
-
+        var canAccessInitiatives =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Initiatives)).Succeeded;
+        
         _showJobManagement = canAccessSystemSupport;
         _showSystemFunctions = canAccessSystemFunctions;
         _showServiceDeskManagement = canAccessServiceDeskManagement;
         _showSeniorInternal = canAccessSeniorInternal;
-            
+        _showInitiatives = canAccessInitiatives;
+        
         List<BreadcrumbLinkModel> links = [];
 
         if (_showJobManagement)
@@ -58,6 +62,11 @@ public partial class Index
         if (_showSeniorInternal)
         {
             links.Add(AdministrationLinks.Labels);
+        }
+        
+        if (_showInitiatives)
+        {
+            links.Add(AdministrationLinks.Initiatives);
         }
         
         Links = links.ToArray();

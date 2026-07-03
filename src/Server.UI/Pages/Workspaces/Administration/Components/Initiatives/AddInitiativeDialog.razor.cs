@@ -2,12 +2,12 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Initiatives.Commands.AddInitiative;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Components.Initiatives;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Initiatives;
 
 public partial class AddInitiativeDialog
 {
     private MudForm? _form;
-    private bool _saving = false;
+    private bool _saving;
 
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;

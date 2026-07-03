@@ -17,7 +17,6 @@ public partial class Dictionaries
 {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
     private MudDataGrid<KeyValueDto> _table = null!;
-    public string Title { get; set; } = "Picklist";
     private HashSet<KeyValueDto> _selectedItems = [];
     private KeyValueDto SelectedItem { get; set; } = new();
     private string _searchString = string.Empty;
@@ -33,7 +32,6 @@ public partial class Dictionaries
 
     protected override async Task OnInitializedAsync()
     {
-        Title = L[SelectedItem.GetClassDescription()];
         var state = await AuthState;
         _canCreate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
