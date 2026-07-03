@@ -39,21 +39,11 @@ Task("Restore")
 Task("Build")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
-    .Does(() => 
+    .Does(() => DotNetBuild(sln, new DotNetBuildSettings
     {
-        DotNetBuild(sln, new DotNetBuildSettings
-        {
-            Configuration = configuration,
-            NoRestore = true,
-        });
-        
-        // Build SQL project separately (not included in solution build for Any CPU platform)
-        DotNetBuild("./src/Database/CatsDb/CatsDb.sqlproj", new DotNetBuildSettings()
-        {
-            Configuration = configuration,
-            NoRestore = true,
-        });
-    });
+        Configuration = configuration,
+        NoRestore = true,
+    }));
 
 Task("Test")
     .IsDependentOn("Build")
