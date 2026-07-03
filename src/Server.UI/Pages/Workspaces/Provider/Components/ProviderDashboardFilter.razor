@@ -1,0 +1,11 @@
+<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @TenantLabel
+    </MudButton>
+    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowUserDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @UserLabel
+    </MudButton>
+    <MudTooltip Text="Clear filters">
+        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearFilter" />
+    </MudTooltip>
+</MudStack>
