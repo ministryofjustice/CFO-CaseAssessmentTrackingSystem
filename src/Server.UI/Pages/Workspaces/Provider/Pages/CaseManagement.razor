@@ -1,0 +1,46 @@
+@page "/pages/workspace/provider/case-management"
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@inherits ProviderDashboardBase
+
+<ProviderPageHeader />
+
+<MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mb-4">
+    This page is still under development and may produce inaccurate results.
+</MudAlert>
+
+<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
+    <MudSpacer />
+    @if (CanFilter)
+    {
+        <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 SelectedTenantId="@SelectedTenantId"
+                                 SelectedUserId="@SelectedUserId"
+                                 TenantSelected="OnTenantSelected"
+                                 UserSelected="OnUserSelected"
+                                 ClearRequested="OnClearFilter" />
+    }
+</MudStack>
+
+<MudTabs TabPanelsClass="pa-4" ApplyEffectsToContainer="true" Outlined="true" Color="Color.Info">
+    <MudTabPanel Text="Location Breakdown" Class="pa-3">
+        <CasesPerLocationDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Pathway Plan Reviews" Class="pa-3">
+        <PathwayPlanReviewDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    <MudTabPanel Text="Initiatives" Class="pa-3">
+        <InitiativeObjectivesDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+    </MudTabPanel>
+    @if (IsTenantLevel)
+    {
+        <MudTabPanel Text="Unassigned Cases" Class="pa-3">
+            <UnassignedCasesDashboardComponent TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+        </MudTabPanel>
+    }
+</MudTabs>
