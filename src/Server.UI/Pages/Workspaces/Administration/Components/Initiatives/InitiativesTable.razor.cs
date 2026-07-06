@@ -1,15 +1,13 @@
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Features.Initiatives.Commands.AddInitiative;
 using Cfo.Cats.Application.Features.Initiatives.Commands.AmendInitiativeLifetime;
-using Cfo.Cats.Application.Features.Initiatives.Commands.DeactivateInitiative;
 using Cfo.Cats.Application.Features.Initiatives.Commands.EditInitiative;
 using Cfo.Cats.Application.Features.Initiatives.Commands.Export;
 using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.Initiatives.Queries;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Components.Dialogs;
 
-namespace Cfo.Cats.Server.UI.Components.Initiatives;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Initiatives;
 
 public partial class InitiativesTable
 {
@@ -116,35 +114,6 @@ public partial class InitiativesTable
         if (dialogResult!.Canceled == false)
         {
             await RefreshAsync();
-        }
-    }
-
-    private async Task OnDeactivate(InitiativeDto context)
-    {
-        var parameters = new DialogParameters<ConfirmationDialog>
-        {
-            { x => x.ContentText, $"This will immediately end '{context.Code} — {context.Description}'. Are you sure?" }
-        };
-
-        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
-        var result = await DialogService.ShowAsync<ConfirmationDialog>("Deactivate Initiative", parameters, options);
-        var dialogResult = await result.Result;
-
-        if (dialogResult!.Canceled)
-        {
-            return;
-        }
-
-        var deactivateResult = await Service.Send(new DeactivateInitiativeCommand { Id = context.Id });
-
-        if (deactivateResult.Succeeded)
-        {
-            Snackbar.Add("Initiative deactivated.", Severity.Info);
-            await RefreshAsync();
-        }
-        else
-        {
-            Snackbar.Add(deactivateResult.ErrorMessage, Severity.Error);
         }
     }
 }
