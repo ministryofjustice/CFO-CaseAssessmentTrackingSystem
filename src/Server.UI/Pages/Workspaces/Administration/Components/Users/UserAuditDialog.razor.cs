@@ -2,11 +2,11 @@
 using Cfo.Cats.Application.Features.Identity.Queries.PaginationQuery;
 using Cfo.Cats.Application.Features.Identity.Specifications;
 
-namespace Cfo.Cats.Server.UI.Pages.Identity.Users.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Users;
 
 public partial class UserAuditDialog
 {
-    [Parameter, EditorRequired] public string UserName { get; set; } = default!;
+    [Parameter, EditorRequired] public string UserName { get; set; } = null!;
 
     private IdentityAuditTrailsWithPagination.Query Query { get; } = new();
     private MudDataGrid<IdentityAuditTrailDto> _table = null!;
@@ -22,12 +22,12 @@ public partial class UserAuditDialog
             Query.UserName = UserName;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true
-                ? SortDirection.Descending.ToString()
-                : SortDirection.Ascending.ToString();
+                ? nameof(SortDirection.Descending)
+                : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await GetNewMediator().Send(Query);
+            var result = await GetNewMediator().Send(Query, cancellationToken: cancellationToken);
             if (result is { Succeeded: true, Data: not null })
             {
                 return new GridData<IdentityAuditTrailDto> { TotalItems = result.Data.TotalItems, Items = result.Data.Items };    

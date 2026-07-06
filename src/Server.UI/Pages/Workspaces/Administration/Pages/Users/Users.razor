@@ -1,24 +1,24 @@
-﻿@page "/identity/users"
+﻿@page "/pages/workspace/administration/users/users"
 
 @using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+@using ZiggyCreatures.Caching.Fusion
 @using Cfo.Cats.Infrastructure.Services
 @using Cfo.Cats.Server.UI.Services.Fusion
-@using ZiggyCreatures.Caching.Fusion
 
 @attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
 @implements IDisposable
 
 @inject IUsersStateContainer UsersStateContainer
-@inject IOnlineUserTracker OnlineUserTracker
 @inject IUserService UserService
 @inject ITenantService TenantsService
 @inject IFusionCache FusionCache;
-@inject INetworkIpProvider NetworkIpProvider
 @inject IFusionCache Cache;
+@inject IOnlineUserTracker OnlineUserTracker
+@inject INetworkIpProvider NetworkIpProvider
 
 @inject IStringLocalizer<Users> L
 @inject ILogger<Users> Logger

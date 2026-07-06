@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.Features.Identity.Queries.PaginationQuery;
 using Cfo.Cats.Application.Features.Identity.Specifications;
 
-namespace Cfo.Cats.Server.UI.Pages.Identity.Users;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages.Users;
 
 public partial class LoginAudit : CatsComponentBase
 {
@@ -16,11 +16,11 @@ public partial class LoginAudit : CatsComponentBase
 
     private async Task OnChangedListView(IdentityAuditTrailListView listview)
     {
-        Query!.ListView = listview;
+        Query.ListView = listview;
         await _table.ReloadServerData();
     }
 
-    private async Task OnRefresh() => await _table.ReloadServerData();
+    // private async Task OnRefresh() => await _table.ReloadServerData();
 
     private async Task OnSearch(IdentityActionType? identityActionType)
     {
@@ -36,25 +36,23 @@ public partial class LoginAudit : CatsComponentBase
             Query.UserName = null;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true
-                ? SortDirection.Descending.ToString()
-                : SortDirection.Ascending.ToString();
+                ? nameof(SortDirection.Descending)
+                : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await GetNewMediator().Send(Query);
+            var result = await GetNewMediator().Send(Query, cancellationToken: cancellationToken);
             if (result is { Succeeded: true, Data: not null })
             {
                 return new GridData<IdentityAuditTrailDto> { TotalItems = result.Data.TotalItems, Items = result.Data.Items };    
             }
 
             Snackbar.Add(result.ErrorMessage, Severity.Error);
-            return new GridData<IdentityAuditTrailDto>() { TotalItems = 0, Items = [] };
+            return new GridData<IdentityAuditTrailDto> { TotalItems = 0, Items = [] };
         }
         finally
         {
             _loading = false;
         }
     }
-    
 }
-
