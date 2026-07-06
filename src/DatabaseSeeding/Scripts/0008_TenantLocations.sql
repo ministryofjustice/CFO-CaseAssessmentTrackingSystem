@@ -84,7 +84,7 @@ BEGIN
            '1.1.5.1.2.' as [TenantId]
     from [Configuration].[Location]
     where [Name] in ( 'HMP High Down', 'HMP Wandsworth', 'HMP Thameside', 'HMP Pentonville', 'HMP Brixton', 'HMP Feltham',
-                      'HMP Isis', 'HMP Bronzefield', 'HMP Downview', 'London Community'
+                      'HMP Isis', 'HMP Bronzefield', 'HMP Downview', 'London Community', 'HMP Wormwood Scrubs'
         )
     union
     select Id as [LocationId],
