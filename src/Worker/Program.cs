@@ -14,6 +14,21 @@ builder.Services
 
 builder.AddServiceDefaults();
 
+// Use Sentry.AspNetCore instead of Logging.AddSentry.
+// Without this, background job failures (which log via ILogger) never reach Sentry.
+var sentryDsn = builder.Configuration["Sentry:Dsn"];
+var useSentry = !string.IsNullOrEmpty(sentryDsn);
+
+if (useSentry)
+{
+    builder.WebHost.UseSentry(options =>
+    {
+        builder.Configuration.GetSection("Sentry").Bind(options);
+
+        options.AddEntityFramework();
+    });
+}
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
