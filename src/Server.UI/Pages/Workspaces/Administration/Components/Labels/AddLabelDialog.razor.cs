@@ -1,19 +1,20 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Labels.Commands;
-using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
+using Cfo.Cats.Application.Features.Contracts.DTOs;
+using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Components.Labels;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels;
 
-public partial class EditLabelDialog
+public partial class AddLabelDialog
 {
     private MudForm? _form;
-    private bool _saving = false;
+    private bool _saving;
+    private ContractDto? SelectedContract { get; set; }
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
 
-    [Parameter, EditorRequired] public EditLabelCommand Model { get; set; } = null!;
+    [Parameter, EditorRequired] public AddLabelCommand Model { get; set; } = null!;
 
     private void Cancel() => MudDialog.Cancel();
 
@@ -28,6 +29,8 @@ public partial class EditLabelDialog
             {
                 return;
             }
+
+            Model.ContractId = SelectedContract?.Id;
 
             var result = await Service.Send(Model);
 
