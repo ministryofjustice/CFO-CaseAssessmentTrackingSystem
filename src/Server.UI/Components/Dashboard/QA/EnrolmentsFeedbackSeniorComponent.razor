@@ -18,7 +18,7 @@
 
 @if (Data is not null && Data.ChartData.Any())
 {
-    if (VisualMode)
+    @if (VisualMode)
     {
             <ApexCharts.ApexChart  TItem="GetEnrolmentsFeedback.EnrolmentsFeedbackChartData"
                                   Title="Team Feedback by Reason"
