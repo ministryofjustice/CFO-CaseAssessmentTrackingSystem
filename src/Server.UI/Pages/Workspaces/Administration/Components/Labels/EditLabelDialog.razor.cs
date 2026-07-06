@@ -1,21 +1,22 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Initiatives.Commands.AddInitiative;
+using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Components.Initiatives;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels;
 
-public partial class AddInitiativeDialog
+public partial class EditLabelDialog
 {
     private MudForm? _form;
-    private bool _saving = false;
-
+    private bool _saving;
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
-    [Parameter, EditorRequired] public AddInitiativeCommand Model { get; set; } = null!;
+
+    [Parameter, EditorRequired] public EditLabelCommand Model { get; set; } = null!;
 
     private void Cancel() => MudDialog.Cancel();
 
-    private async Task Save()
+    private async Task Add()
     {
         try
         {
@@ -36,7 +37,7 @@ public partial class AddInitiativeDialog
             }
             else
             {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
+                Snackbar.Add(message: result.ErrorMessage, Severity.Error);
             }
         }
         finally
