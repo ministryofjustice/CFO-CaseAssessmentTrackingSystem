@@ -1,0 +1,26 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+@inject IStringLocalizer<Tenants> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Name)]" @bind-Value="Model.Name"
+                                  For="@(() => Model.Name)"
+                                  ReadOnly="false"
+                                  Required="true"
+                                  RequiredError="@L["Tenant Name is required!"]">
+                    </MudTextField>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
