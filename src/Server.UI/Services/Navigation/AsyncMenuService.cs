@@ -39,7 +39,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
 
         if(await PassesPolicy( principal, SecurityPolicies.ServiceDesk))
         {
-            items.Add(new NavigationMenuItemLinkModel("Service Desk", "/pages/workspace/servicedesk/", "Navigates to the root workspace for accessing service desk functions"));
+            items.Add(new NavigationMenuItemLinkModel("Service Desk", "/pages/workspace/servicedesk", "Navigates to the root workspace for accessing service desk functions"));
         }
 
         if(await PassesPolicy(principal, SecurityPolicies.OutcomeQualityDipChecks))

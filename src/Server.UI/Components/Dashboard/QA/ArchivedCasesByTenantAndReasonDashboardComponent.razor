@@ -21,7 +21,7 @@
         It excludes any participants <strong>auto</strong> archived for being > 30 days past Licence End Date
     </MudAlert>
 
-    if (VisualMode)
+    @if (VisualMode)
     {
         <ApexCharts.ApexChart TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
                               Options="@Options"
