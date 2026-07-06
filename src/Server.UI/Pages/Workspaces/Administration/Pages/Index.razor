@@ -2,6 +2,8 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
 @using Cfo.Cats.Server.UI.Components.Shared.Workspace
 
+@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
 <AdministrationPageHeader />
 
 <MudGrid>
