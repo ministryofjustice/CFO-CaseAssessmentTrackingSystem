@@ -1,1 +1,19 @@
 @page "/pages/workspace/servicedesk"
+@using Cfo.Cats.Server.UI.Components.Shared.Workspace
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
+
+<ServiceDeskPageHeader />
+
+<MudGrid>
+    <MudItem xs="12" md="6" lg="4">
+        <WorkspaceMenu Links="@Links" />
+    </MudItem>
+    <MudItem xs="12" md="6">
+        <MudText Typo="Typo.h2">
+            Queues
+        </MudText>
+        <MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
+            <QueueSummary TenantId="@CurrentUser.TenantId" OnViewQueueNavigate="OnViewQueueNavigate" />
+        </MudStack>
+    </MudItem>
+</MudGrid>
