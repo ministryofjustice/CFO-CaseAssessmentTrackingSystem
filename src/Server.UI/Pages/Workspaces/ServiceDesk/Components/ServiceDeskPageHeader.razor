@@ -1,0 +1,104 @@
+@using Microsoft.AspNetCore.WebUtilities
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
+
+<PageHeader Title="Service Desk"
+            Items="@_breadcrumbs" />
+
+@code
+{
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = ServiceDeskLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = ServiceDeskLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.StartsWith(homeUrl, StringComparison.OrdinalIgnoreCase)
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : uri.AbsolutePath.Trim('/');
+
+        return segment switch
+        {
+            "" => [home],
+            "activities/queue" => [home, ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb()],
+            "activities/feedback" => [home, ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb()],
+            "enrolments/queue" => [home, ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb()],
+            "enrolments/feedback" => [home, ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb()],
+            "sync/syncinfo" => [home, ServiceDeskLinks.SyncInfo.AsMudBreadcrumb()],
+            _ => BuildServiceDeskBreadcrumbs(home, segment, uri)
+        };
+    }
+
+    private static IReadOnlyList<BreadcrumbItem> BuildServiceDeskBreadcrumbs(BreadcrumbItem home, string segment, Uri uri)
+    {
+        // For deeper pages, keep Service Desk as the root crumb and infer a middle
+        // crumb so users can easily navigate back to the nearest main area.
+        var middle = home;
+
+        var normalizedSegment = segment.ToLowerInvariant();
+
+        if (normalizedSegment.StartsWith("activities/", StringComparison.Ordinal))
+        {
+            middle = ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb();
+        }
+        else if (normalizedSegment.StartsWith("enrolments/", StringComparison.Ordinal))
+        {
+            middle = ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb();
+        }
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("from", out var from))
+        {
+            middle = from.ToString().ToLowerInvariant() switch
+            {
+                "activities-feedback" => ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(),
+                "enrolments-feedback" => ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(),
+                "activities-queue" => ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(),
+                "enrolments-queue" => ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(),
+                _ => middle
+            };
+        }
+
+        var currentTitle = normalizedSegment switch
+        {
+            var s when s.Contains("qa/activities/", StringComparison.Ordinal) => "Activity",
+            var s when s.Contains("qa/enrolments/", StringComparison.Ordinal) => "Enrolment",
+            _ => BuildFallbackTitle(segment)
+        };
+
+        return [home, middle, new BreadcrumbItem(currentTitle, href: null, disabled: true)];
+    }
+
+    private static string BuildFallbackTitle(string segment)
+    {
+        var parts = segment.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            return "Details";
+        }
+
+        var last = parts[^1];
+        if (Guid.TryParse(last, out _) && parts.Length > 1)
+        {
+            last = parts[^2];
+        }
+
+        if (last.Equals("qa1", StringComparison.OrdinalIgnoreCase))
+        {
+            return "QA1";
+        }
+
+        if (last.Equals("qa2", StringComparison.OrdinalIgnoreCase))
+        {
+            return "QA2";
+        }
+
+        return char.ToUpperInvariant(last[0]) + last[1..];
+    }
+}
