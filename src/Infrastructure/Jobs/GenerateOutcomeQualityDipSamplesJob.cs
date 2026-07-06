@@ -16,33 +16,32 @@ public class GenerateOutcomeQualityDipSamplesJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        using (logger.BeginScope(new Dictionary<string, object>
+        using var scope = logger.BeginScope(new Dictionary<string, object>
         {
-                ["JobName"] = Key.Name,
-                ["JobGroup"] = Key.Group ?? "Default",
-                ["JobInstance"] = Guid.NewGuid().ToString()
-        }))
+            ["JobName"] = Key.Name,
+            ["JobGroup"] = Key.Group ?? "Default",
+            ["JobInstance"] = Guid.NewGuid().ToString()
+        });
 
+        if (context.RefireCount > 3)
         {
-            if (context.RefireCount > 3)
-            {
-                logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
-                return;
-            }
+            logger.LogError("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
+            return;
         }
 
         try
         {
-            logger.LogInformation("Generate dip samples");
-
             var period = DateTime.Today.AddMonths(options.Value.MonthOffset);
 
             DateTime periodFrom = new(period.Year, period.Month, 1); // i.e. 01/01/1999 00:00:00
             DateTime periodTo = periodFrom.AddMonths(1).AddTicks(-1); // i.e. 31/01/1999 23:59:59
 
+            logger.LogInformation("Generating dip samples for period {Period} (offset {Offset} months)",
+                periodFrom.ToString("MMM yyyy"), options.Value.MonthOffset);
+
             if (await unitOfWork.DbContext.OutcomeQualityDipSamples.AnyAsync(ds => ds.PeriodFrom == periodFrom))
             {
-                logger.LogWarning("Dip sample already exists for {Period}, aborting...", periodFrom.ToString("MMM yyyy"));
+                logger.LogInformation("Dip sample already exists for {Period}, nothing to do.", periodFrom.ToString("MMM yyyy"));
                 return;
             }
 
@@ -97,49 +96,66 @@ public class GenerateOutcomeQualityDipSamplesJob(
                 samples.Add(new Sample(contractGroup.Key, samplesByLocationType));
             }
 
+            logger.LogInformation("Fetched {EnrolmentCount} enrolments across {ContractCount} contracts for {Period}.",
+                enrolments.Count, samples.Count, periodFrom.ToString("MMM yyyy"));
+
             if (samples.Count is 0)
             {
-                throw new Exception("No dip samples could be generated.");
+                logger.LogWarning("No dip samples could be generated for {Period}.", periodFrom.ToString("MMM yyyy"));
+                return;
             }
 
-            await using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
+            await PersistSamplesAsync(samples, periodFrom, periodTo);
 
-            try
-            {
-                var dipSamples = samples.Select(sample => new
-                {
-                    Value = sample,
-                    Entity = OutcomeQualityDipSample.Create(
-                        sample.ContractId, 
-                        periodFrom, 
-                        periodTo, 
-                        size: sample.Samples.SelectMany(s => s.ParticipantIds).Count())
-                }).ToList();
-
-                await unitOfWork.DbContext.OutcomeQualityDipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity));
-
-                var dipSampleParticipants = dipSamples.SelectMany(participant =>
-                    participant.Value.Samples.SelectMany(locationSample =>
-                        locationSample.ParticipantIds.Select(pid =>
-                            OutcomeQualityDipSampleParticipant.Create(participant.Entity.Id,
-                                pid, locationSample.LocationType
-                            ))));
-
-                await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.AddRangeAsync(dipSampleParticipants);
-                
-                await unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                logger.LogError(ex, "Failed to save dip samples and participants. Transaction rolled back.");
-                throw;
-            }
+            var participantCount = samples.Sum(s => s.Samples.Sum(l => l.ParticipantIds.Count()));
+            logger.LogInformation("Persisted {SampleCount} dip samples ({ParticipantCount} participants) for {Period}.",
+                samples.Count, participantCount, periodFrom.ToString("MMM yyyy"));
         }
         catch (Exception ex)
         {
-            throw new JobExecutionException(msg: $"An unexpected error occurred executing job", refireImmediately: true, cause: ex);
+            logger.LogError(ex, "Unexpected error generating dip samples on attempt {RefireCount}.", context.RefireCount);
+            throw new JobExecutionException(
+                msg: "An unexpected error occurred executing job",
+                cause: ex,
+                refireImmediately: context.RefireCount < 3);
+        }
+    }
+
+    private async Task PersistSamplesAsync(List<Sample> samples, DateTime periodFrom, DateTime periodTo)
+    {
+        await using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            var dipSamples = samples.Select(sample => new
+            {
+                Value = sample,
+                Entity = OutcomeQualityDipSample.Create(
+                    sample.ContractId,
+                    periodFrom,
+                    periodTo,
+                    size: sample.Samples.SelectMany(s => s.ParticipantIds).Count())
+            }).ToList();
+
+            await unitOfWork.DbContext.OutcomeQualityDipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity));
+
+            var dipSampleParticipants = dipSamples.SelectMany(participant =>
+                participant.Value.Samples.SelectMany(locationSample =>
+                    locationSample.ParticipantIds.Select(pid =>
+                        OutcomeQualityDipSampleParticipant.Create(participant.Entity.Id,
+                            pid, locationSample.LocationType
+                        ))));
+
+            await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.AddRangeAsync(dipSampleParticipants);
+
+            await unitOfWork.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Failed to save dip samples and participants. Transaction rolled back.");
+            throw;
         }
     }
 
