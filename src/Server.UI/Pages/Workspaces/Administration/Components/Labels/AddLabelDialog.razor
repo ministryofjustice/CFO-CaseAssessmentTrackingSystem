@@ -47,20 +47,20 @@
                             @bind-Value="Model.Scope" 
                             For="@(() => Model.Scope)"
                             Class="mr-2">
-                                <MudSelectItem T="LabelScope" Value="@LabelScope.User">
-                                    @LabelScope.User.Name
-                                </MudSelectItem>
-                                <MudSelectItem T="LabelScope" Value="@LabelScope.System">
-                                    @LabelScope.System.Name
-                                </MudSelectItem>
+                            <MudSelectItem T="LabelScope" Value="@LabelScope.User">
+                                @LabelScope.User.Name
+                            </MudSelectItem>
+                            <MudSelectItem T="LabelScope" Value="@LabelScope.System">
+                                @LabelScope.System.Name
+                            </MudSelectItem>
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
-                      <ContractAutoComplete 
-                        TenantId="@(CurrentUser?.TenantId ?? "xxx")" 
-                        @bind-Value="SelectedContract"
-                        Label="@Model.LabelFor(x => x.ContractId)"
-                        HelperText="@Model.HelperTextFor(x => x.ContractId)" />
+                        <ContractAutoComplete 
+                            TenantId="@(CurrentUser.TenantId ?? "xxx")" 
+                            @bind-Value="SelectedContract"
+                            Label="@Model.LabelFor(x => x.ContractId)"
+                            HelperText="@Model.HelperTextFor(x => x.ContractId)" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudEnumSelect 
@@ -100,7 +100,7 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="Add">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Add">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>

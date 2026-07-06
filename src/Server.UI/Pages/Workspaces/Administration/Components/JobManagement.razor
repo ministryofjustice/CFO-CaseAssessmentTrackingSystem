@@ -14,9 +14,6 @@
     <MudCard style="height:100%">
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Typo="Typo.h5">
-                    Jobs
-                </MudText>
                 @if (_schedulerInfo is not null)
                 {
                     <MudAlert Severity="@(_schedulerInfo.IsInStandby || _schedulerInfo.IsShutdown ? Severity.Warning : Severity.Info)">
