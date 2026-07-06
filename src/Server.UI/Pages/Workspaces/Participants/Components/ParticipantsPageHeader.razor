@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
 
 <PageHeader Title="Participants" 
             Items="@_breadcrumbs" />
@@ -38,18 +39,22 @@
 
     private static IReadOnlyList<BreadcrumbItem> BuildParticipantBreadcrumbs(BreadcrumbItem home, string id, Uri uri)
     {
-        // The middle crumb links back to wherever the user came from. We default
-        // to "All", but honour a "from=activities" query parameter so a participant
-        // opened from the Activities list links back to Activities.
-        var middle = ParticipantLinks.All;
+        var participant = ParticipantLinks.Participant(id).AsMudBreadcrumb();
+        var parsedQuery = QueryHelpers.ParseQuery(uri.Query);
 
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("from", out var from)
-            && string.Equals(from, "activities", StringComparison.OrdinalIgnoreCase))
+        if (parsedQuery.TryGetValue("from", out var from))
         {
-            middle = ParticipantLinks.AllActivities;
+            return from.ToString().ToLowerInvariant() switch
+            {
+                "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
+                "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
+                "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
+                "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
+                _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
+            };
         }
 
-        return [home, middle.AsMudBreadcrumb(), ParticipantLinks.Participant(id).AsMudBreadcrumb()];
+        return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
     }
 
 }
