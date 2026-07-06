@@ -11,7 +11,7 @@ public static class AdministrationLinks
     public static readonly BreadcrumbLinkModel PickList = new("Picklist", "Manage the simple lookup lists.", $"{Home.Href}/picklist");
     public static readonly BreadcrumbLinkModel Outbox = new("Outbox Messages", "View and reschedule outbox messages.", $"{Home.Href}/Outbox");
     public static readonly BreadcrumbLinkModel Labels = new("Labels", "Manage labels that can be added to participants", $"{Home.Href}/Labels");
-    public static readonly BreadcrumbLinkModel Initiatives = new("Initiatives", "Manage initiatives (inovation funds etc)", $"{Home.Href}/Initiatives");
-    
+    public static readonly BreadcrumbLinkModel Initiatives = new("Initiatives", "Manage initiatives (innovation funds etc)", $"{Home.Href}/Initiatives");
+    public static readonly BreadcrumbLinkModel Tenants = new("Tenants", "Manage Tenants", $"{Home.Href}/Tenants");
 }
  
