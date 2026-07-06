@@ -57,6 +57,7 @@ public partial class Index
         if (_showSystemFunctions)
         {
             links.Add(AdministrationLinks.PickList);
+            links.Add(AdministrationLinks.Tenants);
         }
         
         if (_showSeniorInternal)
