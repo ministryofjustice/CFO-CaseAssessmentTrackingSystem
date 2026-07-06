@@ -1,6 +1,7 @@
-﻿@page "/system/outbox"
+﻿@page "/pages/workspace/administration/Outbox"
 @using Cfo.Cats.Application.Features.Outbox.DTOs
 @using Cfo.Cats.Application.Features.Outbox.Specifications
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
 @using Humanizer
 
 @attribute [Authorize(SecurityPolicies.ServiceDeskManagement)]
@@ -9,9 +10,7 @@
 @inject IMediator Mediator
 @inherits CatsComponentBase
 
-<PageTitle>
-    @Title
-</PageTitle>
+<AdministrationPageHeader />
 
 <MudDataGrid ServerData="@(ServerReload)"
              T="OutboxMessageDto"
@@ -26,9 +25,7 @@
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Large" />
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption" Class="mb-2">@Title</MudText>
                     <MudEnumSelect Style="min-width:120px" TEnum="OutboxMessageListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
                     </MudEnumSelect>
                 </div>
@@ -129,6 +126,6 @@
         <MudText>@ConstantString.Loading</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+        <MudDataGridPager PageSizeOptions="@([10, 15, 30, 50])" />
     </PagerContent>
 </MudDataGrid>
