@@ -1,25 +1,28 @@
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Cfo.Cats.Application.Features.Labels.Commands;
-using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
+using Cfo.Cats.Application.Features.Initiatives.Commands.EditInitiative;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Components.Labels;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Initiatives;
 
-public partial class AddLabelDialog
+public partial class EditInitiativeDialog
 {
     private MudForm? _form;
-    private bool _saving = false;
-    private ContractDto? SelectedContract { get; set; }
+    private bool _saving;
+
+    [Inject] private IContractService ContractService { get; set; } = null!;
+
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
-
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
+    [Parameter, EditorRequired] public EditInitiativeCommand Model { get; set; } = null!;
 
-    [Parameter, EditorRequired] public AddLabelCommand Model { get; set; } = null!;
+    protected override void OnParametersSet() =>
+        Model.Contract = ContractService.DataSource
+            .FirstOrDefault(c => c.Id == Model.Contract?.Id);
 
     private void Cancel() => MudDialog.Cancel();
 
-    private async Task Add()
+    private async Task Save()
     {
         try
         {
@@ -31,8 +34,6 @@ public partial class AddLabelDialog
                 return;
             }
 
-            Model.ContractId = SelectedContract?.Id;
-
             var result = await Service.Send(Model);
 
             if (result.Succeeded)
@@ -42,7 +43,7 @@ public partial class AddLabelDialog
             }
             else
             {
-                Snackbar.Add(message: result.ErrorMessage, Severity.Error);
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
         finally

@@ -14,6 +14,10 @@ public partial class Index
     private BreadcrumbLinkModel[] Links { get; set; } = [];
 
     private bool _showJobManagement;
+    private bool _showSystemFunctions;
+    private bool _showServiceDeskManagement;
+    private bool _showSeniorInternal;
+    private bool _showInitiatives;
 
     protected override async Task OnInitializedAsync()
     {
@@ -21,9 +25,21 @@ public partial class Index
 
         var canAccessSystemSupport =
             (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
-
+        var canAccessSystemFunctions =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        var canAccessServiceDeskManagement =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.ServiceDeskManagement)).Succeeded;
+        var canAccessSeniorInternal =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
+        var canAccessInitiatives =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Initiatives)).Succeeded;
+        
         _showJobManagement = canAccessSystemSupport;
-
+        _showSystemFunctions = canAccessSystemFunctions;
+        _showServiceDeskManagement = canAccessServiceDeskManagement;
+        _showSeniorInternal = canAccessSeniorInternal;
+        _showInitiatives = canAccessInitiatives;
+        
         List<BreadcrumbLinkModel> links = [];
 
         if (_showJobManagement)
@@ -31,7 +47,28 @@ public partial class Index
             links.Add(AdministrationLinks.Jobs);
             links.Add(AdministrationLinks.CacheManagement);
         }
-
+        
+        if(_showServiceDeskManagement)
+        {
+            links.Add(AdministrationLinks.AuditTrails);
+            links.Add(AdministrationLinks.Outbox);
+        }
+        
+        if (_showSystemFunctions)
+        {
+            links.Add(AdministrationLinks.PickList);
+        }
+        
+        if (_showSeniorInternal)
+        {
+            links.Add(AdministrationLinks.Labels);
+        }
+        
+        if (_showInitiatives)
+        {
+            links.Add(AdministrationLinks.Initiatives);
+        }
+        
         Links = links.ToArray();
     }
 }
