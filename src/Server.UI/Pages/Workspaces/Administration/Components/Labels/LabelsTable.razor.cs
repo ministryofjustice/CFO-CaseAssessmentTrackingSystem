@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Features.Labels.Commands;
 using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
 using Cfo.Cats.Application.Features.Labels.Commands.DeleteLabel;
 using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
@@ -9,7 +8,7 @@ using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Dialogs;
 
-namespace Cfo.Cats.Server.UI.Components.Labels;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels;
 
 public partial class LabelsTable
 {

@@ -1,6 +1,8 @@
 ﻿@using Cfo.Cats.Application.Features.AuditTrails.DTOs
 @using Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
 
+@inject IMediator Mediator
+
 @inherits CatsComponentBase
 
 <MudDataGrid ServerData="@(ServerReload)"
@@ -17,9 +19,7 @@
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Large" />
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption" Class="mb-2">Document Audit Trails</MudText>
                     <MudEnumSelect Style="min-width:120px" TEnum="DocumentAuditTrailListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
                     </MudEnumSelect>
                 </div>
@@ -45,8 +45,6 @@
                         </MudTextField>
                     </MudHidden>
                 </MudStack>
-
-
             </div>
         </div>
     </ToolBarContent>
@@ -89,6 +87,6 @@
         <MudText>@ConstantString.Loading</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
+        <MudDataGridPager PageSizeOptions="@([10, 15, 30, 50, 100, 500, 1000])" />
     </PagerContent>
 </MudDataGrid>

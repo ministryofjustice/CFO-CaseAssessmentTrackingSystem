@@ -1,6 +1,8 @@
 @page "/pages/workspace/administration/CacheManagement"
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
 
+@attribute [Authorize(Policy = SecurityPolicies.SystemSupportFunctions)]
+
 <AdministrationPageHeader />
 
 <MudGrid>
