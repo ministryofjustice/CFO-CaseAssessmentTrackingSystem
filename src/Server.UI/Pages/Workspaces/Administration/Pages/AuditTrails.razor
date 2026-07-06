@@ -1,13 +1,12 @@
-@page "/system/audittrails"
-
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Pages.SystemManagement.Components
+@page "/pages/workspace/administration/AuditTrails"
 
 @attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
 
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
 @inherits CatsComponentBase
 
-<PageTitle>Audit Trails</PageTitle>
+<AdministrationPageHeader />
 
 <MudTabs Outlined="true" Border="true" Class="mt-2">
     <MudTabPanel Text="System">
