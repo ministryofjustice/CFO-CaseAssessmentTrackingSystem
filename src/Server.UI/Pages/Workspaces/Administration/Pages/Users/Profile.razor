@@ -1,19 +1,10 @@
-﻿@page "/user/profile"
-@using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
-@using Cfo.Cats.Server.UI.Services.JsInterop
-@using Cfo.Cats.Application.Common.Interfaces.Identity
-@using Cfo.Cats.Domain.Identity
-@using Cfo.Cats.Infrastructure.Services
-@using Cfo.Cats.Domain.Common.Enums
-@inherits CatsComponentBase
+﻿@page "/pages/workspace/administration/users/profile"
 
+@using Cfo.Cats.Infrastructure.Services
+@inherits CatsComponentBase
 @inject IValidationService Validator
 @inject IStringLocalizer<Profile> L
-@inject IJSRuntime Js
-@inject IUploadService UploadService
-@inject IIdentityService IdentityService
 @inject INetworkIpProvider NetworkIpProvider
-
 
 <PageTitle>@Title</PageTitle>
 
@@ -27,7 +18,7 @@
         {
             <MudTabs Outlined="true" Position="Position.Top" Rounded="true" Border="true" Elevation="6" ApplyEffectsToContainer="true" Class="mt-8" TabPanelsClass="pa-6">
                 <MudTabPanel Text="@L["Profile"]">
-                    <MudForm Model="@Model" @ref="@form" Validation="@(Validator.ValidateValue(Model))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
+                    <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
                         <MudGrid Justify="Justify.Center" Style="max-width:600px;display:flex;">
                             <MudItem sm="12" xs="12">
                                 <div class="d-flex justify-center">
@@ -41,7 +32,7 @@
                                                 {
                                                     @foreach (var role in Model.AssignedRoles)
                                                     {
-                                                        <MudChip T="string" Size="MudBlazor.Size.Small">@role</MudChip>
+                                                        <MudChip T="string" Size="Size.Small">@role</MudChip>
                                                     }
                                                 }
                                             </div>
@@ -59,7 +50,7 @@
                                                 {
                                                     @foreach (var role in Model.AssignedRoles)
                                                     {
-                                                        <MudChip T="string" Size="MudBlazor.Size.Small">@role</MudChip>
+                                                        <MudChip T="string" Size="Size.Small">@role</MudChip>
                                                     }
                                                 }
                                             </div>
@@ -86,10 +77,10 @@
                                 <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" Variant="Variant.Text"></MudTextField>
                             </MudItem>
                             <MudItem sm="12" xs="12" Class="d-flex justify-end">
-                                <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" Loading="@submitting" StartIcon="@Icons.Material.Filled.Save" Class="ml-auto" OnClick="@(async () => await Submit())">
-                                    @if (submitting)
+                                <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" Loading="@_submitting" StartIcon="@Icons.Material.Filled.Save" Class="ml-auto" OnClick="@(async () => await Submit())">
+                                    @if (_submitting)
                                     {
-                                        <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true"/>
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
                                         <MudText Class="ms-2">@ConstantString.Waiting </MudText>
                                     }
                                     else
@@ -102,7 +93,7 @@
                     </MudForm>
                 </MudTabPanel>
                 <MudTabPanel Text="@L["Change Password"]">
-                    <MudForm Model="@changePassword" @ref="@passwordForm" Validation="@(Validator.ValidateValue(changePassword))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
+                    <MudForm Model="@changePassword" @ref="@_passwordForm" Validation="@(Validator.ValidateValue(changePassword))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
                         <MudGrid Justify="Justify.Center" Style="max-width:300px">
                             <AntiforgeryToken />
                             <MudItem sm="12" xs="12">
@@ -134,7 +125,7 @@
                             </MudItem>
                             <input type="hidden" id="ReturnUrl" name="ReturnUrl" /> 
                             <MudItem sm="12" xs="12" Class="d-flex justify-end">
-                                <MudLoadingButton Loading="submitting" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await ChangePassword())">
+                                <MudLoadingButton Loading="_submitting" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await ChangePassword())">
                                     @L["Change Password"]
                                 </MudLoadingButton>
                             </MudItem>
@@ -148,83 +139,3 @@
         <CustomError Exception="context"></CustomError>
     </ErrorContent>
 </ErrorBoundary>
-@code{
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    private UserManager<ApplicationUser> userManager = default!;
-    private SignInManager<ApplicationUser> signinManager = default!;
-
-    public string Title { get; set; } = "Profile";
-
-    private MudForm? form;
-    private MudForm? passwordForm;
-    private bool submitting;
-
-    private ChangePasswordModel changePassword { get; } = new();
-
-    private UserProfile? Model { get; set; }
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-        signinManager = ScopedServices.GetRequiredService<SignInManager<ApplicationUser>>();
-        var state = await AuthState;
-
-        var user = state.User!;
-        Model = user.GetUserProfileFromClaim();
-
-        await base.OnInitializedAsync();
-    }
-
-    private async Task Submit()
-    {
-        submitting = true;
-        try
-        {
-            await form!.ValidateAsync();
-            if (form.IsValid)
-            {
-                var state = await AuthState;
-                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model!.UserId!);
-                user!.PhoneNumber = Model!.PhoneNumber;
-                user.DisplayName = Model.DisplayName;
-                user.ProfilePictureDataUrl = Model.ProfilePictureDataUrl;
-                await userManager.UpdateAsync(user);
-                Snackbar.Add($"{ConstantString.UpdateSuccess}", Severity.Info);
-            }
-        }
-        finally
-        {
-            submitting = false;
-        }
-    }
-
-    private async Task ChangePassword()
-    {
-        submitting = true;
-        try
-        {
-            await passwordForm!.ValidateAsync();
-            if (passwordForm!.IsValid)
-            {
-                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model!.UserId!);
-                var result = await userManager.ChangePasswordAsync(user!, changePassword.CurrentPassword, changePassword.NewPassword);
-                if (result.Succeeded)
-                {
-                    await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(user!.UserName!, NetworkIpProvider.IpAddress));
-                    Snackbar.Add($"{L["Password changed successfully... Logging out"]}", Severity.Info);
-                    Navigation.NavigateTo(@IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);
-                }
-                else
-                {
-                    Snackbar.Add($"{string.Join(",", result.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-                }
-            }
-        }
-        finally
-        {
-            submitting = false;
-        }
-    }
-}    
