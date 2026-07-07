@@ -22,7 +22,7 @@ app:
   replicaCount: 3
 
   image:
-    repository: ghcr.io/ministryofjustice/cfo-cats
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""  # set at deploy time via helm_additional_args (app.image.tag)
     pullPolicy: IfNotPresent
     port: 8080
@@ -126,7 +126,7 @@ worker:
     rollingUpdate: null
 
   image:
-    repository: ghcr.io/ministryofjustice/cfo-cats
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""  # set at deploy time via helm_additional_args (worker.image.tag)
     pullPolicy: IfNotPresent
     port: 8080
@@ -199,13 +199,13 @@ redis:
 migrator:
   enabled: true
   image:
-    repository: ghcr.io/ministryofjustice/cfo-cats  # combined image; runs the migrate-database file-based app
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats  # combined image; runs the migrate-database file-based app
     tag: ""  # defaults to the chart appVersion (set by the shared deploy)
 
 seeder:
   enabled: true  # runs in all environments (like the migrator)
   image:
-    repository: ghcr.io/ministryofjustice/cfo-cats
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""  # defaults to the chart appVersion (set by the shared deploy)
 
 # ---------------------------------------------------------------------------

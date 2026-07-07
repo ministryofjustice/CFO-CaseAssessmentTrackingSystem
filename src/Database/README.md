@@ -62,7 +62,7 @@ dotnet build src/Database/CatsDb/CatsDb.sqlproj
 At release time the **migrate-database** app (`scripts/migrate-database.cs`, a .NET 10
 file-based app) publishes the DACPAC to the target database using **DacFx**
 (`DacServices.Deploy` — the same engine `sqlpackage` wraps). It runs automatically as a
-pre-install/pre-upgrade Helm hook Job from the shared `cfo-cats` image (see
+pre-install/pre-upgrade Helm hook Job from the shared `hmpps-cfo-cats` image (see
 `helm_deploy/cats/templates/migrator-hook.yaml`), reading the connection string from the
 `ConnectionStrings__CatsDb` environment variable and loading `CatsDb.dacpac` from its own
 directory (the image build copies the compiled DACPAC there).

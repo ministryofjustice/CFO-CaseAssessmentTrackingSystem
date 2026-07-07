@@ -3,7 +3,7 @@ name: Deploy to environment
 # Manual promotion / rollback. Deploys an ALREADY-BUILT image version (built by
 # pipeline.yml) to a chosen environment — nothing is built here. The chosen `version`
 # must already exist in ghcr:
-#   ghcr.io/ministryofjustice/cfo-cats:<version>
+#   ghcr.io/ministryofjustice/hmpps-cfo-cats:<version>
 # This is the recommended way to promote a dev-proven build to preprod/prod, or to
 # roll back to a known-good earlier version.
 on:
@@ -49,7 +49,7 @@ jobs:
       k8s_deployment_name: 'cats'
       slack_notification: 'false' # set 'true' once (NON)PROD_RELEASES_SLACK_CHANNEL is configured
       # Mirror the version stamping used in pipeline.yml's deploy_dev, but from the
-      # manually-supplied version. All four image tags are the one cfo-cats image: the
+      # manually-supplied version. All four image tags are the one hmpps-cfo-cats image: the
       # app/worker generic-service aliases and the migrator/seeder hook Jobs.
       helm_additional_args: >-
         --set app.image.tag=${{ inputs.version }}

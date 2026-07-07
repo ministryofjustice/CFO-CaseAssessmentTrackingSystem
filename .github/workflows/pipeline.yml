@@ -56,7 +56,7 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal
 
   # Combined image: Server.UI (default entrypoint) + Worker + DatabaseSeeding + migrate-database,
-  # plus the compiled CatsDb DACPAC. Pushed to ghcr.io/ministryofjustice/cfo-cats:<version>, where
+  # plus the compiled CatsDb DACPAC. Pushed to ghcr.io/ministryofjustice/hmpps-cfo-cats:<version>, where
   # <version> is the tag docker_build.yml self-generates (date.run_number.sha7) and reports as its
   # output. One image, one build, one version for the whole release: app, worker, seeder and the
   # migrator all run this same image (the last two as pre-deploy hook Jobs with a command override).
@@ -68,7 +68,7 @@ jobs:
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
-      image_name: 'cfo-cats'
+      image_name: 'hmpps-cfo-cats'
       file: 'Dockerfile'
       tag_latest: false # immutable, version-only tags (no rolling :latest)
       push: true
@@ -89,7 +89,7 @@ jobs:
       # The shared deploy runs a single `helm upgrade cats` with --reset-values, so anything
       # not in values.yaml / values-dev.yaml must be set here. All four image tags are the one
       # build's version: app/worker (generic-service aliases) and the migrator/seeder hook Jobs,
-      # which all run the same cfo-cats image.
+      # which all run the same hmpps-cfo-cats image.
       helm_additional_args: >-
         --set app.image.tag=${{ needs.build_app.outputs.app_version }}
         --set worker.image.tag=${{ needs.build_app.outputs.app_version }}
