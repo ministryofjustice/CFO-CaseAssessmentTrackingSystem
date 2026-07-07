@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.Features.Identity.DTOs
-@using Cfo.Cats.Application.Features.Identity.Queries.PaginationQuery
 @using Cfo.Cats.Application.Features.Identity.Specifications
 @using Humanizer
 @inherits CatsComponentBase
@@ -25,13 +24,13 @@
                     </MudEnumSelect>
                 </div>
             </div>
-            <div class="flex-grow-1"/>
+            <div class="flex-grow-1"></div>
 
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
-                               OnClick="@(() => OnRefresh())"
+                               OnClick="@OnRefresh"
                                StartIcon="@Icons.Material.Filled.Refresh"
                                Color="Color.Secondary">
                         @ConstantString.Refresh
@@ -66,6 +65,6 @@
         <MudText>@ConstantString.Loading</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
+        <MudDataGridPager PageSizeOptions="@([10, 15, 30, 50])"/>
     </PagerContent>
 </MudDataGrid>

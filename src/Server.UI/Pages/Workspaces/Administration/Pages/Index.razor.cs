@@ -42,10 +42,14 @@ public partial class Index
         
         List<BreadcrumbLinkModel> links = [];
 
-        if (_showJobManagement)
+        if (_showSeniorInternal)
         {
-            links.Add(AdministrationLinks.Jobs);
-            links.Add(AdministrationLinks.CacheManagement);
+            links.Add(AdministrationLinks.Labels);
+        }
+        
+        if (_showInitiatives)
+        {
+            links.Add(AdministrationLinks.Initiatives);
         }
         
         if(_showServiceDeskManagement)
@@ -58,16 +62,13 @@ public partial class Index
         {
             links.Add(AdministrationLinks.PickList);
             links.Add(AdministrationLinks.Tenants);
+            links.Add(AdministrationLinks.Users);
         }
         
-        if (_showSeniorInternal)
+        if (_showJobManagement)
         {
-            links.Add(AdministrationLinks.Labels);
-        }
-        
-        if (_showInitiatives)
-        {
-            links.Add(AdministrationLinks.Initiatives);
+            links.Add(AdministrationLinks.Jobs);
+            links.Add(AdministrationLinks.CacheManagement);
         }
         
         Links = links.ToArray();
