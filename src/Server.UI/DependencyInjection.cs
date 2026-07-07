@@ -208,14 +208,14 @@ public static class DependencyInjection
         //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
-        if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"Files")))
+        if (!Directory.Exists(Path.Combine(app.Environment.ContentRootPath, @"Files")))
         {
-            Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), @"Files"));
+            Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, @"Files"));
         }
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Files")),
+            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, @"Files")),
             RequestPath = new PathString("/Files")
         });
 

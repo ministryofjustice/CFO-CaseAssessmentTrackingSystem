@@ -1,7 +1,7 @@
 {{/*
 Environment variables that expose the MSSQL connection details from the
 rds-mssql-instance-output namespace secret, plus the composed connection string.
-Used by the migrator and seeder Pods.
+Used by the migrator and seeder hook Jobs.
 */}}
 {{- define "cats.databaseEnv" -}}
 - name: DATABASE_ADDRESS

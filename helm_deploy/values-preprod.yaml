@@ -1,0 +1,26 @@
+serviceAccountName: cfocats-preprod
+
+app:
+  serviceAccountName: cfocats-preprod
+  replicaCount: 3
+  ingress:
+    host: cfocats-preprod.live.cloud-platform.service.justice.gov.uk
+  env:
+    DOTNET_ENVIRONMENT: "PreProduction"
+    Sentry__Environment: "PreProduction-CloudPlatform"
+
+worker:
+  serviceAccountName: cfocats-preprod
+  replicaCount: 1
+  env:
+    DOTNET_ENVIRONMENT: "PreProduction"
+    Sentry__Environment: "PreProduction-CloudPlatform"
+    Features__PresenceHub__RelayUserPresenceNotifications: "false"
+
+# RDS bridge - disabled in non-development environments
+rdsPortForward:
+  enabled: false
+
+# todo: enable prometheus alerts
+# generic-prometheus-alerts:
+#   alertSeverity: cfo-alerts-nonprod

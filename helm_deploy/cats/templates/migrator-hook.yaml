@@ -1,0 +1,43 @@
+{{- if .Values.migrator.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cats-migrate
+  labels:
+    app: migrator
+  annotations:
+    # Runs BEFORE app/worker roll out, on every install and upgrade, so the database
+    # schema is migrated ahead of the new code. Weight 0 => runs before the seeder
+    # (weight 1). The previous hook Job is deleted just before the next run, so its
+    # logs remain available for debugging in between deploys.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: migrator
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      restartPolicy: Never
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+      containers:
+        - name: migrator
+          # Combined image (Dockerfile) with a command override to run the migrate-database
+          # file-based app, which deploys the CatsDb schema from the DACPAC via DacFx.
+          image: "{{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag | default .Chart.AppVersion }}"
+          command: ["dotnet", "/app/migrator/migrate-database.dll"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            {{- include "cats.databaseEnv" . | nindent 12 }}
+{{- end }}

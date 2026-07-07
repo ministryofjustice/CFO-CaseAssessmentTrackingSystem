@@ -15,15 +15,15 @@ connectionStrings:
   redis: &redis "redis-service:6379"
 
 app:
-  enabled: false
+  enabled: true
   nameOverride: cats
   fullnameOverride: cats
 
   replicaCount: 3
 
   image:
-    repository: ""  # set by CI via --set
-    tag: ""         # set by CI via --set
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
+    tag: ""  # set at deploy time via helm_additional_args (app.image.tag)
     pullPolicy: IfNotPresent
     port: 8080
 
@@ -112,7 +112,7 @@ app:
 # Background worker
 # ---------------------------------------------------------------------------
 worker:
-  enabled: false
+  enabled: true
   nameOverride: cats-worker
   fullnameOverride: cats-worker
 
@@ -126,10 +126,13 @@ worker:
     rollingUpdate: null
 
   image:
-    repository: ""  # set by CI via --set
-    tag: ""         # set by CI via --set
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
+    tag: ""  # set at deploy time via helm_additional_args (worker.image.tag)
     pullPolicy: IfNotPresent
     port: 8080
+
+  # The combined image defaults to the UI; override the entrypoint to run the Worker.
+  containerCommand: ["dotnet", "/app/worker/Cfo.Cats.Worker.dll", "--contentRoot", "/app/worker"]
 
   service:
     enabled: true
@@ -186,24 +189,24 @@ worker:
     AppConfigurationSettings__Version: "0.0.0"
 
 rabbitmq:
-  enabled: false
+  enabled: true
   image: "rabbitmq:4.3-management-alpine@sha256:e6862a7d804c80fc72d2265aed3b725fd9a6afd330b735363eeecc4b6ec4dd3d"
 
 redis:
-  enabled: false
+  enabled: true
   image: "redis:8.8-alpine@sha256:cd5f3ac681c77791c6a8eaa62de876ad2be043ee5a428afb7c0095aa08246277"
 
 migrator:
-  enabled: false
+  enabled: true
   image:
-    repository: ""  # set by CI via --set
-    tag: ""         # set by CI via --set (migrator-<sha>)
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats  # combined image; runs the migrate-database file-based app
+    tag: ""  # defaults to the chart appVersion (set by the shared deploy)
 
 seeder:
-  enabled: false
+  enabled: true  # runs in all environments (like the migrator)
   image:
-    repository: ""  # set by CI via --set
-    tag: ""         # set by CI via --set (seeder-<sha>)
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
+    tag: ""  # defaults to the chart appVersion (set by the shared deploy)
 
 # ---------------------------------------------------------------------------
 # RDS port-forward — an ad-hoc helper Deployment that bridges to the cloud RDS

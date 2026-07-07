@@ -10,7 +10,8 @@ This repository contains the database definition, deployment tooling, and suppor
 / (root)
 │
 ├── /src/Database/CatsDb      # SQL Project (database schema)
-├── /src/DatabaseSeeding      # Data seeding & migration project
+├── /scripts/migrate-database.cs  # Schema deploy tool — .NET file-based app (deploys the DACPAC via DacFx)
+├── /src/DatabaseSeeding      # Data seeding project
 ```
 
 ---
@@ -40,7 +41,7 @@ This includes:
 
 ---
 
-## 🚀 Deployment Process (sqlpackage)
+## 🚀 Deployment Process (DacFx)
 
 The SQL project builds into a `.dacpac` file:
 
@@ -51,22 +52,36 @@ CatsDb.dacpac
 ### Build
 
 ```
-dotnet build
+dotnet build src/Database/CatsDb/CatsDb.sqlproj
 ```
 
 ---
 
 ### Deploy
 
+At release time the **migrate-database** app (`scripts/migrate-database.cs`, a .NET 10
+file-based app) publishes the DACPAC to the target database using **DacFx**
+(`DacServices.Deploy` — the same engine `sqlpackage` wraps). It runs automatically as a
+pre-install/pre-upgrade Helm hook Job from the shared `hmpps-cfo-cats` image (see
+`helm_deploy/cats/templates/migrator-hook.yaml`), reading the connection string from the
+`ConnectionStrings__CatsDb` environment variable and loading `CatsDb.dacpac` from its own
+directory (the image build copies the compiled DACPAC there).
+
+During development you can run it straight from source with `dotnet run`. Point `DACPAC_PATH`
+at a freshly built DACPAC (it otherwise looks next to the app):
+
 ```
-sqlpackage /Action:Publish   /SourceFile:CatsDb.dacpac /TargetConnectionString:"<connection-string>" /p:BlockOnPossibleDataLoss=false
+dotnet build src/Database/CatsDb/CatsDb.sqlproj -c Release
+ConnectionStrings__CatsDb="<connection-string>" \
+  DACPAC_PATH=src/Database/CatsDb/bin/Release/CatsDb.dacpac \
+  dotnet run scripts/migrate-database.cs
 ```
 
 ### How it Works
 
 - Compares `.dacpac` with target database
 - Generates deployment plan
-- Applies only schema differences
+- Applies only schema differences (`BlockOnPossibleDataLoss` disabled, matching the previous sqlpackage settings)
 
 ---
 
@@ -124,7 +139,7 @@ dotnet run --project DatabaseSeeding
 
 1. Update schema in SQL project
 2. Build to `CatsDb.dacpac`
-3. Deploy via `sqlpackage`
+3. Deploy via the migrate-database (DacFx) hook
 4. Run DatabaseSeeding
 
 ---
@@ -132,7 +147,7 @@ dotnet run --project DatabaseSeeding
 ## ✅ Summary
 
 - SQL Project → Schema definition
-- sqlpackage → Deployment
+- migrate-database (DacFx) → Schema deployment
 - DatabaseSeeding → Data setup & migration
 
 ---
@@ -140,6 +155,5 @@ dotnet run --project DatabaseSeeding
 ## 🛠️ Requirements
 
 - .NET 10 SDK
-- sqlpackage CLI
 - SQL Server access
 
