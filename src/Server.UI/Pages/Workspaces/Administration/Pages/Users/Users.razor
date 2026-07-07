@@ -1,28 +1,30 @@
-﻿@page "/identity/users"
+﻿@page "/pages/workspace/administration/users/Users"
 
 @using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
-@using Cfo.Cats.Infrastructure.Services
-@using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
+@using Cfo.Cats.Infrastructure.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Cfo.Cats.Server.UI.Services.Fusion
 
 @attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
 @implements IDisposable
 
 @inject IUsersStateContainer UsersStateContainer
-@inject IOnlineUserTracker OnlineUserTracker
 @inject IUserService UserService
 @inject ITenantService TenantsService
 @inject IFusionCache FusionCache;
-@inject INetworkIpProvider NetworkIpProvider
 @inject IFusionCache Cache;
+@inject IOnlineUserTracker OnlineUserTracker
+@inject INetworkIpProvider NetworkIpProvider
 
 @inject IStringLocalizer<Users> L
 @inject ILogger<Users> Logger
 
+<AdministrationPageHeader />
 <PageTitle>@Title</PageTitle>
 
 @if(_initialised)
@@ -37,11 +39,8 @@
     Loading="@_loading"
     ServerData="@(ServerReload)"
     BreakPoint="Breakpoint.Sm">
-        <ToolBarContent>|
-            <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large" Class="mr-2"/>
-            <MudText Typo="Typo.caption" Class="mr-2">@L[_currentDto.GetClassDescription()]</MudText>
+        <ToolBarContent>
             <MudSpacer />
-            
             <MudStack Row="true">
                 @if (_canSearch)
                 {
@@ -66,7 +65,7 @@
                 }
                 
                 <MudStack Row="true">
-                     <MudButton Variant="Variant.Filled"
+                    <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
                                Disabled="@_loading"
                                OnClick="@OnRefresh"
@@ -89,7 +88,7 @@
                     @if (_canCreate)
                     {
                         <MudButton Variant="Variant.Filled" 
-                                Color="Color.Primary"
+                                   Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Add"
                                    Size="Size.Small"
                                    OnClick="@OnCreate">
@@ -97,12 +96,9 @@
                         </MudButton>
                     }
                 </MudStack>
-                
-
             </MudStack>
-            
-          
         </ToolBarContent>
+        
         <Columns>
             <HierarchyColumn T="ApplicationUserDto" ButtonDisabledFunc="@(x => x.Notes.Count() is 0)" />
             <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
@@ -217,7 +213,6 @@
                         else
                         {
                             <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
-
                         }
                     </div>
 
