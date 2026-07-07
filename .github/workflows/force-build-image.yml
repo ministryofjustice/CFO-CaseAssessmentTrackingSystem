@@ -1,0 +1,80 @@
+name: Force build image
+
+run-name: Force build image from ${{ github.ref_name }}
+
+# Build + push an image on demand from whatever branch/ref you run this against.
+# No auto-trigger, build-only (never deploys). Primary use is HOTFIXES, but it is
+# generic - any branch works.
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: >-
+          Tag for the image (e.g. hotfix/critical-bug-fix). Must be a valid Docker
+          tag (letters, digits, . _ - ; no / or :).
+        required: true
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  attestations: write
+
+# Manual, rare action; guard against a double-dispatch racing itself on the same ref.
+# Safe to cancel: this workflow only builds/pushes (no helm, no deploy).
+concurrency:
+  group: build-hotfix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Same verification as pipeline.yml's dotnet_verify, so a build can't ship untested.
+  # Also validates the image_tag up front so a bad tag fails before the build.
+  dotnet_verify:
+    name: Build & test (.NET)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate image tag
+        shell: bash
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          if [[ ! "$IMAGE_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}$ ]]; then
+            echo "::error::'$IMAGE_TAG' is not a valid Docker tag. Use letters, digits, '.', '_' or '-' (no '/' or ':'), max 128 chars, not starting with '.' or '-'."
+            exit 1
+          fi
+          echo "OK: image tag '$IMAGE_TAG'."
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        with:
+          global-json-file: global.json
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Verify database migrator (file-based app)
+        run: dotnet build scripts/migrate-database.cs --configuration Release
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+  # Same combined image + inputs as build_app in pipeline.yml. Self-generates the same
+  # immutable date.run_number.sha7 tag, traceable to the built commit.
+  force_build_image:
+    name: Force build docker image (UI + Worker + Seeder + Migrator)
+    needs: [dotnet_verify]
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
+    with:
+      docker_registry: 'ghcr.io'
+      registry_org: 'ministryofjustice'
+      image_name: 'hmpps-cfo-cats'
+      file: 'Dockerfile'
+      tag_latest: false # immutable, version-only tags (no rolling :latest)
+      push: true
+      docker_multiplatform: false
+      download_build_artifacts: false
+      # Optional human-friendly tag alongside the generated date.run_number.sha7 tag.
+      additional_docker_tag: ${{ inputs.image_tag }}
