@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
 using Cfo.Cats.Application.Common.Exceptions;
-using Cfo.Cats.Application.Common.Extensions;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
@@ -10,14 +9,14 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services;
 using Cfo.Cats.Server.UI.Extensions;
-using Cfo.Cats.Server.UI.Pages.Identity.Users.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Users;
 using Cfo.Cats.Server.UI.Services.Fusion;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cfo.Cats.Server.UI.Pages.Identity.Users;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages.Users;
 
 public partial class Users
 {
@@ -517,7 +516,7 @@ public partial class Users
     private async Task ClearClaimsCache(string userId)
     {
         var key = $"get-claims-by-{userId}";
-        FusionCache.Remove(key);
+        await FusionCache.RemoveAsync(key);
         await Task.Delay(300);
     }
 
