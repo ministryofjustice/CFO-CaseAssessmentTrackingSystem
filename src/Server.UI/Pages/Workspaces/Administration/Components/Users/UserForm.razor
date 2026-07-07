@@ -1,0 +1,82 @@
+﻿@using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages.Users
+
+@inherits MudComponentBase
+
+@inject IValidationService Validator
+@inject ITenantService TenantsService
+@inject RoleManager<ApplicationRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IStringLocalizer<Users> L
+
+<MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
+    <MudGrid>
+        <MudItem sm="12">
+            <MudSelect T="string" ShrinkLabel Label="@L["Select Tenant"]" For="@(() => Model.TenantId!)" Value="Model.TenantId" ValueChanged="OnTenantValueChange" Text="@Model.TenantName" Required="true">
+                @{
+                    for(int i = 0; i < Tenants.Count(); i++)
+                    {
+                        var tenant = Tenants.ElementAt(i);
+
+                        <MudSelectItem Class="@($"pl-{(tenant.Id.Length + 2)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
+                            @tenant.Name (@tenant.Id)
+                        </MudSelectItem>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Personal Information"]</MudText>
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Full Name"]" Variant="Variant.Text" Required="true"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" InputType="InputType.Email" Variant="Variant.Text" Required="true" Disabled="@string.IsNullOrEmpty(Model.TenantId)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Mobile Number"]" InputType="InputType.Telephone" Variant="Variant.Text"></MudTextField>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Account Recovery"]</MudText>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudPasswordField For="@(() => Model.MemorablePlace)" @bind-Value="Model.MemorablePlace" Label="@L["Memorable Place"]" Variant="Variant.Text" PasswordMode="true" Required="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudPasswordField For="@(() => Model.MemorableDate)" @bind-Value="Model.MemorableDate" Label="@L["Memorable Date"]" Variant="Variant.Text" PasswordMode="true"  Required="true" />
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+ 
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Additional Roles"]</MudText>
+            <MudPaper Class="mt-1" Style="max-height: 250px; overflow-y: auto;" Elevation="0">
+                <MudGrid Class="mt-1">
+                    @for (var i = 0; i < Roles.Count; i++)
+                    {
+                        var x = i;
+                        <MudItem xs="6" sm="6" Class="py-0 my=0">
+                            <MudCheckBox T="bool" Value="@Roles[x].Value" Label="@Roles[x].Key" ValueChanged="@(s => Roles[x].Value = s)" Disabled="@(Roles[x].Enabled == false)"></MudCheckBox>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Additional Information"]</MudText>
+            <MudGrid Class="mt-1">
+                <MudItem xs="12" sm="12" Class="py-0 my=0">
+                    <MudTextField T="string" @bind-Value="CallReference" Label="@L["Call Reference No."]" Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateCallReferenceNo))"></MudTextField>
+                    <MudTextField T="string" @bind-Value="Message" Label="@L["Notes"]" Lines="4" Sizing="InputSizing.Auto" Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateNotes))"></MudTextField>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</MudForm>
