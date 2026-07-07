@@ -13,5 +13,6 @@ public static class AdministrationLinks
     public static readonly BreadcrumbLinkModel Labels = new("Labels", "Manage labels that can be added to participants", $"{Home.Href}/Labels");
     public static readonly BreadcrumbLinkModel Initiatives = new("Initiatives", "Manage initiatives (innovation funds etc)", $"{Home.Href}/Initiatives");
     public static readonly BreadcrumbLinkModel Tenants = new("Tenants", "Manage Tenants", $"{Home.Href}/Tenants");
+    public static readonly BreadcrumbLinkModel Users = new("Users", "Manage Users", $"{Home.Href}/users/Users");
 }
  
