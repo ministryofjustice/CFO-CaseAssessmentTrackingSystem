@@ -1,11 +1,5 @@
-using System.Configuration;
 using System.Security.Claims;
-using ActualLab.Fusion.Authentication;
-using ApexCharts;
-using Ardalis.Specification;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 using Microsoft.AspNetCore.Authorization;
 
@@ -56,7 +50,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
     }
 
     private async Task<NavigationMenuSectionModel> CreateProfileMenu() => new("Profile", [
-        new NavigationMenuItemLinkModel("Edit Profile", "/user/profile", "Edit user profile"),
+        new NavigationMenuItemLinkModel("Edit Profile", "/pages/workspace/administration/users/profile", "Edit user profile"),
         new NavigationMenuItemLinkModel("My Documents", "/pages/analytics/my-documents", "Get a list generated documents"),
         new NavigationMenuItemDividerModel(),
         new NavigationMenuItemLinkModel("Logout", "/pages/authentication/logout", "Logs out of the system"),
