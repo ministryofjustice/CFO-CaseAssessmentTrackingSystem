@@ -8,7 +8,6 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Users;
 
 public partial class UserForm
 {
-    //private IEnumerable<string> allowedDomains = [];
     public IEnumerable<TenantDto> Tenants { get; set; } = [];
 
     public class CheckItem
@@ -61,14 +60,7 @@ public partial class UserForm
         }
     }
 
-    // private void OnProviderValueChanged(string value)
-    // {
-    //     Model.ProviderId = value;
-    //     Model.TenantId = null;
-    //     Model.TenantName = null;
-    // }
-
-    private void OnTenantValueChange(string value)
+    private void OnTenantValueChange(string? value)
     {
         Model.TenantId = value ?? throw new ArgumentNullException(nameof(value));
         Model.TenantName = Tenants.First(t => t.Id == Model.TenantId).Name;
@@ -132,15 +124,4 @@ public partial class UserForm
             }
         }
     }
-
-    // private IEnumerable<TenantDto> GetDescendants(string tenantId)
-    // {
-    //     int len = tenantId.Length / 2;
-    //
-    //     var maxDepth = len > 1 ? 1 : 2;
-    //
-    //     var depth = tenantId.Length + (maxDepth * 2);
-    //
-    //     return Tenants.Where(x => x.Id.StartsWith(tenantId) && x.Id.Length <= depth);
-    // }
 }

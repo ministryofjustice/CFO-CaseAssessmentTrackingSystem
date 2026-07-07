@@ -12,8 +12,7 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages.Users;
 public partial class Profile
 {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
-    private UserManager<ApplicationUser> _userManager = null!;
-    //private SignInManager<ApplicationUser> _signinManager = null!;
+    private UserManager<ApplicationUser> _userManager = null!; 
     public string Title { get; set; } = "Profile";
     private MudForm? _form;
     private MudForm? _passwordForm;
@@ -24,7 +23,6 @@ public partial class Profile
     protected override async Task OnInitializedAsync()
     {
         _userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-        //_signinManager = ScopedServices.GetRequiredService<SignInManager<ApplicationUser>>();
         var state = await AuthState;
 
         var user = state.User;

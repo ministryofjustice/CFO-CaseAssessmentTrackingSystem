@@ -20,8 +20,6 @@ public partial class LoginAudit : CatsComponentBase
         await _table.ReloadServerData();
     }
 
-    // private async Task OnRefresh() => await _table.ReloadServerData();
-
     private async Task OnSearch(IdentityActionType? identityActionType)
     {
         Query.IdentityActionType = identityActionType;

@@ -2,12 +2,8 @@
 
 @using Cfo.Cats.Infrastructure.Services
 @inherits CatsComponentBase
-
 @inject IValidationService Validator
 @inject IStringLocalizer<Profile> L
-@* @inject IJSRuntime Js *@
-@* @inject IUploadService UploadService *@
-@* @inject IIdentityService IdentityService *@
 @inject INetworkIpProvider NetworkIpProvider
 
 <PageTitle>@Title</PageTitle>
@@ -36,7 +32,7 @@
                                                 {
                                                     @foreach (var role in Model.AssignedRoles)
                                                     {
-                                                        <MudChip T="string" Size="MudBlazor.Size.Small">@role</MudChip>
+                                                        <MudChip T="string" Size="Size.Small">@role</MudChip>
                                                     }
                                                 }
                                             </div>
@@ -54,7 +50,7 @@
                                                 {
                                                     @foreach (var role in Model.AssignedRoles)
                                                     {
-                                                        <MudChip T="string" Size="MudBlazor.Size.Small">@role</MudChip>
+                                                        <MudChip T="string" Size="Size.Small">@role</MudChip>
                                                     }
                                                 }
                                             </div>
@@ -84,7 +80,7 @@
                                 <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" Loading="@_submitting" StartIcon="@Icons.Material.Filled.Save" Class="ml-auto" OnClick="@(async () => await Submit())">
                                     @if (_submitting)
                                     {
-                                        <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true"/>
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
                                         <MudText Class="ms-2">@ConstantString.Waiting </MudText>
                                     }
                                     else
