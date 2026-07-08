@@ -32,7 +32,7 @@ public class NotifyPqaEnrolmentRejectedEventHandler(IUnitOfWork unitOfWork) : IN
             if (previous == null)
             {
                 var n = Notification.Create(heading, details, qaUser!);
-                n.SetLink($"pages/qa/enrolments/pqa/");
+                n.SetLink($"pages/workspace/provider/enrolments/pqa/");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
