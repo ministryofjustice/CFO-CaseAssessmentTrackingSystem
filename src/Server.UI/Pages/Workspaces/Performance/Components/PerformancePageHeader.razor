@@ -1,6 +1,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 
 <PageHeader Title="Performance Management"
+            
             Items="@_breadcrumbs" />
 
 @code
@@ -17,7 +18,6 @@
     {
         public const string OutcomeQualityDipSampling = "outcome-quality-dip-sampling";
         public const string ArchivedCaseBehaviour = "archived-case-behaviour";
-        public const string QaPots = "qapots";
     }
     
     protected override void OnParametersSet()
@@ -68,10 +68,6 @@
         else if (segments[0] == RouteSegments.ArchivedCaseBehaviour)
         {
             crumbs.Add(PerformanceLinks.ArchivedCaseBehaviour.AsMudBreadcrumb());
-        }
-        else if (segments[0] == RouteSegments.QaPots)
-        {
-            crumbs.Add(PerformanceLinks.QaPots.AsMudBreadcrumb());
         }
 
         return crumbs;

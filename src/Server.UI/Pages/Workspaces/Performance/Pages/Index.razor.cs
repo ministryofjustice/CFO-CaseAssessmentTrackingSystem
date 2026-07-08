@@ -16,18 +16,17 @@ public partial class Index
 
     private BreadcrumbLinkModel[] Links { get; set; } = [];
     
-    private bool _showQaPots;
     private bool _showOutcomeQualityDipChecks;
-    
+    private bool _showArchivedCaseBehaviour;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
         
         var isOutcomeQualityDipChecks = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.OutcomeQualityDipChecks)).Succeeded;
-        var isInternalUser = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Internal)).Succeeded;
-
-        _showQaPots = isInternalUser;  
+      
         _showOutcomeQualityDipChecks = isOutcomeQualityDipChecks;
+        _showArchivedCaseBehaviour = isOutcomeQualityDipChecks;
         
         List<BreadcrumbLinkModel> links = [];
 
@@ -35,12 +34,10 @@ public partial class Index
         {
             links.Add(PerformanceLinks.OutcomeQualityDipSamples);
         }
-
-        links.Add(PerformanceLinks.ArchivedCaseBehaviour);
         
-        if (_showQaPots)
+        if (_showArchivedCaseBehaviour)
         {
-            links.Add(PerformanceLinks.QaPots);
+            links.Add(PerformanceLinks.ArchivedCaseBehaviour);
         }
         
         Links = links.ToArray();

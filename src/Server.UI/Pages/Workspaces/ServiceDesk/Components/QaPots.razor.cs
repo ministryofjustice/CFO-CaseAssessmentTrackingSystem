@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Common.Security;
 using Microsoft.EntityFrameworkCore;
 using Align = ApexCharts.Align;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components;
 
 public partial class QaPots
 {
