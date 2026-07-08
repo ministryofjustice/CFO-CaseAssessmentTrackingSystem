@@ -24,6 +24,8 @@ public partial class Index
 
         var hasAdditionalRoles = (await AuthService.AuthorizeAsync(authState.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
         var canViewCumulatives = authState.User.IsInRole(RoleNames.SystemSupport) || authState.User.IsInRole(RoleNames.Finance);
+
+        var canViewPqa = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Pqa)).Succeeded;
         var canViewPayments = authState.User.IsInRole(RoleNames.SystemSupport) || authState.User.IsInRole(RoleNames.Finance);
 
         _showCaseWorkload = hasAdditionalRoles;
@@ -44,6 +46,12 @@ public partial class Index
         if (canViewCumulatives)
         {
             links.Add(ProviderLinks.Cumulatives);
+        }
+
+        if (canViewPqa)
+        {
+            links.Add(ProviderLinks.EnrolmentsPqa);
+            links.Add(ProviderLinks.ActivitiesPqa);
         }
 
         if (canViewPayments)
