@@ -10,7 +10,7 @@ using System.Text;
 using Color = MudBlazor.Color;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
-namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Enrolments;
 
 public partial class PQA
 {
@@ -110,7 +110,7 @@ public partial class PQA
                     };
 
                     Snackbar.Add(message, Severity.Info);
-                    Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+                    Navigation.NavigateTo("/pages/workspace/provider/enrolments/pqa");
                 }
                 else
                 {
