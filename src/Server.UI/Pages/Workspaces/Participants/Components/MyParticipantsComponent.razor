@@ -1,0 +1,33 @@
+﻿@using ApexCharts
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+
+@inherits CatsComponent<ParticipantCountSummaryDto>
+
+
+@if(ErrorMessage is not null)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if(Loading)
+{
+    <LoadingCard Title="Participants" />
+}
+
+@if(Data is not null)
+{
+    <ApexChart Title="@(CurrentUser.AssignedRoles.Length > 0 ? "All Participants" : "My Participants" )" TItem="DataItem" Options="_chartOptions" >
+        <ApexPointSeries TItem="DataItem"
+                         Items="_dataItems"
+                         XValue="e => e.Key"
+                         YValue="e => e.Count"
+                         ShowDataLabels="true"
+                         SeriesType="SeriesType.Bar"
+                         OrderByDescending="x => (x.X as DataItem)?.Order"
+                         PointColor="PointColour" />
+                         
+    </ApexChart>
+}
