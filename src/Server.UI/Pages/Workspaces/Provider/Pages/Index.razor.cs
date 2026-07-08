@@ -23,7 +23,8 @@ public partial class Index
         var authState = await AuthState;
 
         var hasAdditionalRoles = (await AuthService.AuthorizeAsync(authState.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
-        
+        var canViewCumulatives = authState.User.IsInRole(RoleNames.SystemSupport) || authState.User.IsInRole(RoleNames.Finance);
+
         _showCaseWorkload = hasAdditionalRoles;
 
         // Case Management and Performance are available to every authorised user: support
@@ -37,6 +38,11 @@ public partial class Index
         if (_showCaseWorkload)
         {
             links.Add(ProviderLinks.CaseWorkload);
+        }
+
+        if (canViewCumulatives)
+        {
+            links.Add(ProviderLinks.Cumulatives);
         }
 
         Links = links.ToArray();        
