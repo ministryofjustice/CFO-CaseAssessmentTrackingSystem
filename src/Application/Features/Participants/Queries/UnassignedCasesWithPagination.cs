@@ -17,6 +17,11 @@ public static class UnassignedCasesWithPagination
         public UserProfile? CurrentUser { get; set; }
 
         /// <summary>
+        /// Tenant used to scope visible records
+        /// </summary>
+        public string? TenantId { get; set; }
+
+        /// <summary>
         /// Filter by enrolment status
         /// </summary>
         public int? EnrolmentStatus { get; set; }
@@ -37,17 +42,18 @@ public static class UnassignedCasesWithPagination
         public async Task<Result<PaginatedData<UnassignedCaseDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
+            var tenantId = request.TenantId ?? request.CurrentUser!.TenantId!;
 
             // Get participants without owners at locations that have a tenant matching the selected tenant
             var query = from p in context.Participants
                         where p.OwnerId == null
-                              && p.CurrentLocation.Tenants.Any(t => t.Id.StartsWith(request.CurrentUser!.TenantId!))
+                              && p.CurrentLocation.Tenants.Any(t => t.Id.StartsWith(tenantId))
                               // Only include participants if they don't have an incoming transfer, or if they do,
                               // the transfer's ToLocation must be accessible to the user
                               && (!context.ParticipantIncomingTransferQueue.Any(t => 
                                   t.ParticipantId == p.Id 
                                   && !t.Completed 
-                                  && !t.ToLocation.Tenants.Any(lt => lt.Id.StartsWith(request.CurrentUser!.TenantId!))))
+                                  && !t.ToLocation.Tenants.Any(lt => lt.Id.StartsWith(tenantId))))
                               // Optionally exclude participants with incoming transfers (unless IncludeTransferIn is true)
                               && (request.IncludeTransferIn || !context.ParticipantIncomingTransferQueue.Any(t =>
                                   t.ParticipantId == p.Id
@@ -137,7 +143,7 @@ public static class UnassignedCasesWithPagination
             var locationTenants = await (from l in context.Locations
                                         where locationIds.Contains(l.Id)
                                         from t in l.Tenants
-                                        where t.Id.StartsWith(request.CurrentUser!.TenantId!)
+                                        where t.Id.StartsWith(tenantId)
                                         select new LocationTenantDto
                                         {
                                             LocationId = l.Id,

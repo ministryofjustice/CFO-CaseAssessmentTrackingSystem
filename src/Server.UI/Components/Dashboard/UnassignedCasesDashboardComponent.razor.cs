@@ -5,7 +5,6 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Microsoft.AspNetCore.Components;
@@ -42,38 +41,6 @@ public partial class UnassignedCasesDashboardComponent
     private bool _includeTransferIn = true;
 
     private UnassignedCasesWithPagination.Query Query { get; set; } = new();
-
-    /// <summary>
-    /// Creates a UserProfile with the selected TenantId for querying data
-    /// </summary>
-    private UserProfile GetEffectiveUserProfile()
-    {
-        // If TenantId parameter matches CurrentUser's TenantId, use it as-is
-        if (TenantId == CurrentUser.TenantId)
-        {
-            return CurrentUser;
-        }
-
-        // Create a copy with the selected TenantId
-        return new UserProfile
-        {
-            UserId = CurrentUser.UserId,
-            UserName = CurrentUser.UserName,
-            Email = CurrentUser.Email,
-            DisplayName = CurrentUser.DisplayName,
-            PhoneNumber = CurrentUser.PhoneNumber,
-            TenantId = TenantId,
-            TenantName = CurrentUser.TenantName,
-            AssignedRoles = CurrentUser.AssignedRoles,
-            DefaultRole = CurrentUser.DefaultRole,
-            Contracts = CurrentUser.Contracts,
-            IsActive = CurrentUser.IsActive,
-            Provider = CurrentUser.Provider,
-            SuperiorName = CurrentUser.SuperiorName,
-            SuperiorId = CurrentUser.SuperiorId,
-            ProfilePictureDataUrl = CurrentUser.ProfilePictureDataUrl
-        };
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,7 +86,8 @@ public partial class UnassignedCasesDashboardComponent
     protected override IQuery<Result<GetUnassignedCasesSummary.UnassignedCasesSummaryDto>> CreateQuery()
         => new GetUnassignedCasesSummary.Query
         {
-            CurrentUser = GetEffectiveUserProfile()
+            CurrentUser = CurrentUser,
+            TenantId = TenantId
         };
 
     private List<ChartDataPoint> ChartData()
@@ -195,7 +163,8 @@ public partial class UnassignedCasesDashboardComponent
         try
         {
             Loading = true;
-            Query.CurrentUser = GetEffectiveUserProfile();
+            Query.CurrentUser = CurrentUser;
+            Query.TenantId = TenantId;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "LastModified";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true 
                 ? SortDirection.Descending.ToString() 
@@ -234,7 +203,8 @@ public partial class UnassignedCasesDashboardComponent
     {
         var parameters = new DialogParameters<SelectLocationDialog>
         {
-            { "CurrentUser", GetEffectiveUserProfile() }
+            { "CurrentUser", CurrentUser },
+            { "TenantId", TenantId }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
