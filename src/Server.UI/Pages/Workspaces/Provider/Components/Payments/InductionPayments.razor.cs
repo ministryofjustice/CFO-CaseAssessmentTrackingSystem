@@ -6,9 +6,9 @@ using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components.Payments;
 
-public partial class EmploymentPayments
+public partial class InductionPayments
 {
     private bool _loading = true;
     private bool _downloading;
@@ -21,17 +21,18 @@ public partial class EmploymentPayments
 
     [Parameter] public ContractDto? Contract { get; set; }
 
-    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = default!;
 
-    private EmploymentPaymentDto[] Payments { get; set; } = [];
-    private List<EmploymentPaymentSummaryDto> SummaryData = [];
+    private InductionPaymentDto[] Payments { get; set; } = [];
+    private List<InductionPaymentSummaryDto> SummaryData = [];
 
-    private GetEmploymentPayments.Query? Query;
+    private GetInductionPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    public ApexChartOptions<EmploymentPaymentSummaryDto> Options => new()
+    public ApexChartOptions<InductionPaymentSummaryDto> Options => new()
     {
         Theme = new Theme
         {
@@ -91,7 +92,7 @@ public partial class EmploymentPayments
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportEmploymentPayments.Command()
+            var result = await GetNewMediator().Send(new ExportInductionPayments.Command()
             {
                 Query = Query!
             });
