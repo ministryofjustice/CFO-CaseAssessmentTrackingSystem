@@ -1,7 +1,6 @@
-using System.Security.Claims;
+using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 using Cfo.Cats.Server.UI.Services.Navigation;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 
@@ -11,6 +10,8 @@ public partial class MegaMenu : IDisposable
 {
     [Inject] private IAsyncMenuService MenuService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject] private AppConfigurationSettings Configuration { get; set; } = default!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
