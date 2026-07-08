@@ -1,4 +1,3 @@
-@using Cfo.Cats.Application.Features.Delius.DTOs
 @using Cfo.Cats.Server.UI.Models.NavigationMenu
 @inject IStringLocalizer<HeaderMenu> L
 
@@ -51,6 +50,13 @@
                         </MudStack>
                     </MudItem>
                 }
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudSpacer />
+                        <MudLink Href="#" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L[ApplicationSettings.Copyright]</MudLink>
+                        <MudText Class="" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L["version"] @ApplicationSettings.Version</MudText>
+                    </MudStack>
+                </MudItem>
             </MudGrid>
         </MudContainer>
     </MudPaper>
