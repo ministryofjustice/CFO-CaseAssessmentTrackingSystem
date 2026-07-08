@@ -1,18 +1,19 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.QualityAssurance.Commands;
-using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
-using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+using Cfo.Cats.Application.Features.Activities.Commands;
+using Cfo.Cats.Application.Features.Activities.DTOs;
+using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 
-namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Activities;
 
 public partial class PqaList
 {
     [CascadingParameter] private UserProfile UserProfile { get; set; } = null!;
-    
+
     [Inject]
     public IUserService UserService { get; set; } = null!;
 
@@ -20,23 +21,32 @@ public partial class PqaList
     public ITenantService TenantService { get; set; } = null!;
 
     [Inject]
-    public PQASessionStorage SessionStorage { get; set; } = null!;
+    public ActivityPQASessionStorage SessionStorage { get; set; } = null!;
 
     private IDictionary<string, string> _users = null!;
-
     private IDictionary<string, string> _tenants = null!;
 
-    private int _totalPages = 0;
-    private int _totalItems = 0;
+    private int _totalPages;
+    private int _totalItems;
 
-    private bool _loading = false;
+    private bool _loading;
     private bool _downloading;
-    
-    private EnrolmentQueueEntryDto[] _data = [];
 
-    private PqaQueueWithPagination.Query Query { get; set; } = new();
-    private EnrolmentQueueEntryDto _currentDto = new();
-    
+    private ActivityQueueEntryDto[] _data = [];
+
+    private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
+
+    private readonly List<ActivityType> _availableActivityTypes = ActivityDefinition.List
+        .Where(x => x.RequiresQa)
+        .GroupBy(x => x.Type)
+        .Select(x => x.Key)
+        .ToList();
+
+    private string SelectedActivityTypeName
+        => Query.ActivityTypeId is null
+            ? "All Activity Types"
+            : _availableActivityTypes.FirstOrDefault(a => a.Value == Query.ActivityTypeId.Value)?.Name ?? "Unknown Activity Type";
+
     protected override async Task OnInitializedAsync()
     {
         _users = UserService.DataSource
@@ -44,11 +54,11 @@ public partial class PqaList
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
-                    .ToDictionary(k => k.Id, k => k.Name);
+            .ToDictionary(k => k.Id, k => k.Name);
 
         var cached = await SessionStorage.GetAsync();
 
-        if(cached is { Succeeded: true, Data: { } sd })
+        if (cached is { Succeeded: true, Data: { } sd })
         {
             Query.Keyword = sd.Keyword;
             Query.OrderBy = sd.OrderBy;
@@ -57,16 +67,17 @@ public partial class PqaList
             Query.SortDirection = sd.SortDirection;
             Query.SupportWorkerId = sd.SupportWorkerId;
             Query.TenantId = sd.TenantId;
+            Query.ActivityTypeId = sd.ActivityTypeId;
         }
 
         await OnRefresh();
     }
 
-    private void OnRowClick(TableRowClickEventArgs<EnrolmentQueueEntryDto> args)
+    private void OnRowClick(TableRowClickEventArgs<ActivityQueueEntryDto> args)
     {
-        if(args?.Item is not null)
+        if (args?.Item is not null)
         {
-            Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{args.Item.Id}");
+            Navigation.NavigateTo($"/pages/workspace/provider/activities/pqa/{args.Item.Id}");
         }
     }
 
@@ -86,9 +97,11 @@ public partial class PqaList
     {
         Query.SupportWorkerId = null;
         Query.TenantId = null;
-        Query.OrderBy = "ParticipantId";
+        Query.ActivityTypeId = null;
+        Query.OrderBy = "CommencedOn";
         Query.SortDirection = SortDirection.Ascending.ToString();
         Query.PageNumber = 1;
+        Query.PageSize = 50;
         Query.Keyword = null;
     }
 
@@ -108,10 +121,10 @@ public partial class PqaList
             _loading = true;
             Query.CurrentUser = UserProfile;
             var results = await Service.Send(Query);
-            if(results is { Succeeded: true, Data: not null})
+            if (results is { Succeeded: true, Data: not null })
             {
                 _data = results.Data.Items.ToArray();
-                _totalPages = results.Data.TotalPages;    
+                _totalPages = results.Data.TotalPages;
                 _totalItems = results.Data.TotalItems;
             }
             else
@@ -120,7 +133,7 @@ public partial class PqaList
                 _totalPages = 0;
                 _totalItems = 0;
             }
-            await SessionStorage.SetAsync(PQASessionData.FromQuery(Query));
+            await SessionStorage.SetAsync(ActivityPQASessionData.FromQuery(Query));
         }
         finally
         {
@@ -128,12 +141,18 @@ public partial class PqaList
         }
     }
 
+    private async Task ActivityTypeChanged(int? activityTypeId)
+    {
+        Query.ActivityTypeId = activityTypeId;
+        await OnRefresh();
+    }
+
     private async Task OnExport()
     {
         try
         {
             _downloading = true;
-            var result = await Service.Send(new ExportPqaEnrolments.Command()
+            var result = await Service.Send(new ExportPqaActivities.Command()
             {
                 Query = Query
             });
@@ -146,8 +165,9 @@ public partial class PqaList
 
             Snackbar.Add(result.ErrorMessage, Severity.Error);
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "An error has occurred while generating the PQA Export");
             Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
         }
         finally
@@ -160,7 +180,7 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", UserProfile! }
+            { "CurrentUser", UserProfile }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -170,15 +190,16 @@ public partial class PqaList
         if (result is { Canceled: false, Data: SelectedTenant tenant })
         {
             Query.TenantId = tenant.TenantId;
+            Query.SupportWorkerId = null;
             await OnRefresh();
         }
     }
-    
+
     private async Task ShowSupportWorkerDialog()
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", UserProfile! }
+            { "CurrentUser", UserProfile }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
