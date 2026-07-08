@@ -74,6 +74,10 @@ public static class AssignUnassignedCase
                     .WithMessage("Participant is archived");
 
                 RuleFor(c => c)
+                    .MustAsync(ParticipantAccessibleInTenantScope)
+                    .WithMessage("Participant is not accessible within your tenant scope");
+
+                RuleFor(c => c)
                     .MustAsync(ValidAssignee)
                     .WithMessage("Selected assignee is not valid or not within your tenant");
 
@@ -94,6 +98,19 @@ public static class AssignUnassignedCase
                 e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, 
                 cancellationToken);
 
+        private async Task<bool> ParticipantAccessibleInTenantScope(Command c, CancellationToken cancellationToken)
+        {
+            var tenantId = c.CurrentUser?.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                return false;
+            }
+
+            return await _unitOfWork.DbContext.Participants
+                .Where(p => p.Id == c.ParticipantId)
+                .AnyAsync(p => p.CurrentLocation.Tenants.Any(t => t.Id.StartsWith(tenantId)), cancellationToken);
+        }
+
         private async Task<bool> ValidAssignee(Command c, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(c.AssigneeId) || c.CurrentUser is null)
@@ -101,34 +118,24 @@ public static class AssignUnassignedCase
                 return false;
             }
 
-            // Get the participant to determine their tenant
-            var participant = await _unitOfWork.DbContext.Participants
-                .Include(p => p.CurrentLocation)
-                    .ThenInclude(l => l.Tenants)
-                .FirstOrDefaultAsync(p => p.Id == c.ParticipantId, cancellationToken);
-
-            if (participant is null)
+            var tenantId = c.CurrentUser.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
             {
                 return false;
             }
 
-            // Get the participant's tenant from their current location
-            var participantTenantId = participant.CurrentLocation!.Tenants
-                .Where(t => t.Id.StartsWith(c.CurrentUser.TenantId!))
-                .Select(t => t.Id)
-                .FirstOrDefault() ?? c.CurrentUser.TenantId;
+            var assignee = await _unitOfWork.DbContext.Users
+                .Where(x => x.Id == c.AssigneeId && x.IsActive == true)
+                .Select(x => new { x.Id, x.TenantId })
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if (string.IsNullOrEmpty(participantTenantId))
+            if (assignee?.TenantId is null)
             {
                 return false;
             }
 
-            // Check the assignee is within the participant's tenant
-            return await _unitOfWork.DbContext.Users
-                .Where(x => x.TenantId!.StartsWith(participantTenantId)
-                            && x.Id == c.AssigneeId
-                            && x.IsActive == true)
-                .AnyAsync(cancellationToken);
+            // Assignee must be in the logged-in user's tenant scope (and descendants).
+            return assignee.TenantId.StartsWith(tenantId);
         }
 
         private bool NotHaveActiveTransfer(string participantId)

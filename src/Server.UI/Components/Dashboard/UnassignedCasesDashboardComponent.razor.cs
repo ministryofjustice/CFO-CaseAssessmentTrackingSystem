@@ -266,13 +266,11 @@ public partial class UnassignedCasesDashboardComponent
 
     private async Task AssignToSelf(UnassignedCaseDto participant)
     {
-        var effectiveUser = GetEffectiveUserProfile();
-
         var command = new AssignUnassignedCase.Command
         {
             ParticipantId = participant.Id,
-            CurrentUser = effectiveUser,
-            AssigneeId = effectiveUser.UserId
+            CurrentUser = CurrentUser,
+            AssigneeId = CurrentUser.UserId
         };
 
         var result = await Service.Send(command);
@@ -290,8 +288,6 @@ public partial class UnassignedCasesDashboardComponent
 
     private async Task AssignToOther(UnassignedCaseDto participant)
     {
-        var effectiveUser = GetEffectiveUserProfile();
-
         var parameters = new DialogParameters<AssignCaseDialog>
         {
             {
@@ -300,14 +296,14 @@ public partial class UnassignedCasesDashboardComponent
             },
             {
                 x => x.TenantId,
-                TenantId
+                CurrentUser.TenantId!
             },
             {
                 x => x.Model,
                 new AssignUnassignedCase.Command
                 {
                     ParticipantId = participant.Id,
-                    CurrentUser = effectiveUser
+                    CurrentUser = CurrentUser
                 }
             }
         };

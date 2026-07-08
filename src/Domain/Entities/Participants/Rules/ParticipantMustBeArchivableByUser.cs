@@ -17,6 +17,11 @@ public class ParticipantMustBeArchivableByUser(
             return true;
         }
 
+        if (string.IsNullOrEmpty(participantOwnerId))
+        {
+            return false;
+        }
+
         if (currentUserId == participantOwnerId)
         {
             return false;
