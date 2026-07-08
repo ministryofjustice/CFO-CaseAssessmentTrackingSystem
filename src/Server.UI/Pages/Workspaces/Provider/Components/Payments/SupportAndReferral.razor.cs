@@ -6,37 +6,33 @@ using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components.Payments;
 
-public partial class EnrolmentPayments
+public partial class SupportAndReferral
 {
+    private readonly ApexChartOptions<SupportAndReferralPaymentSummaryDto> _options = new();
     private bool _loading = true;
     private bool _downloading;
 
-    [Parameter, EditorRequired]
-    public bool DataView { get; set; }
+    [Parameter, EditorRequired] public bool DataView { get; set; }
 
-    [Parameter, EditorRequired]
-    public int Month { get; set; }
+    [Parameter, EditorRequired] public int Month { get; set; }
 
-    [Parameter, EditorRequired]
-    public int Year { get; set; }
+    [Parameter, EditorRequired] public int Year { get; set; }
 
-    [Parameter]
-    public ContractDto? Contract { get; set; }
+    [Parameter] public ContractDto? Contract { get; set; }
 
-    [CascadingParameter]
-    public UserProfile CurrentUser { get; set; } = default!;
+    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
-    private EnrolmentPaymentDto[] Payments { get; set; } = [];
-    private List<EnrolmentPaymentSummaryDto> SummaryData = [];
+    private SupportAndReferralPaymentDto[] Payments { get; set; } = [];
+    private List<SupportAndReferralPaymentSummaryDto> SummaryData = [];
 
-    private GetEnrolmentPayments.Query? Query;
+    private GetSupportAndReferralPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    public ApexChartOptions<EnrolmentPaymentSummaryDto> Options => new()
+    public ApexChartOptions<SupportAndReferralPaymentSummaryDto> Options => new()
     {
         Theme = new Theme
         {
@@ -96,7 +92,7 @@ public partial class EnrolmentPayments
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportEnrolmentPayments.Command()
+            var result = await GetNewMediator().Send(new ExportSupportAndReferralPayments.Command()
             {
                 Query = Query!
             });
@@ -119,5 +115,4 @@ public partial class EnrolmentPayments
             _downloading = false;
         }
     }
-
 }
