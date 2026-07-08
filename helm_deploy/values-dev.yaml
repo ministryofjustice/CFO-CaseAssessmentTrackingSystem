@@ -1,19 +1,19 @@
-# Development overrides. Namespace: cfocats-dev
+# Development overrides. Namespace: hmpps-cfo-case-assessment-tracking-system-dev
 
 # The IRSA-annotated service account (name == namespace) used by all workloads and hooks.
-serviceAccountName: cfocats-dev
+serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
 
 app:
-  serviceAccountName: cfocats-dev
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
   replicaCount: 3
   ingress:
-    host: cfocats-dev.live.cloud-platform.service.justice.gov.uk
+    host: hmpps-cfo-case-assessment-tracking-system-dev.live.cloud-platform.service.justice.gov.uk
   env:
     DOTNET_ENVIRONMENT: "Development"
     Sentry__Environment: "Development-CloudPlatform"
 
 worker:
-  serviceAccountName: cfocats-dev
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
   replicaCount: 1
   env:
     DOTNET_ENVIRONMENT: "Development"

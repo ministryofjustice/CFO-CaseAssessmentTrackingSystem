@@ -1,10 +1,10 @@
-serviceAccountName: cfocats-prod
+serviceAccountName: hmpps-cfo-case-assessment-tracking-system-prod
 
 app:
-  serviceAccountName: cfocats-prod
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-prod
   replicaCount: 4
   ingress:
-    host: cfocats-prod.live.cloud-platform.service.justice.gov.uk
+    host: hmpps-cfo-case-assessment-tracking-system-prod.live.cloud-platform.service.justice.gov.uk
     className: modsec
     # modsecurity_mode: On # Default to modsecurity_mode "DetectionOnly" until staging is tuned, then "On".
 
@@ -20,7 +20,7 @@ app:
     Sentry__Environment: "Production-CloudPlatform"
 
 worker:
-  serviceAccountName: cfocats-prod
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-prod
   replicaCount: 1
   resources:
     requests:
