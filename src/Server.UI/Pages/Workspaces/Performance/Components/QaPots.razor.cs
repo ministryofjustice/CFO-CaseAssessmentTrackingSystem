@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Common.Security;
 using Microsoft.EntityFrameworkCore;
 using Align = ApexCharts.Align;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
 public partial class QaPots
 {
@@ -16,8 +16,8 @@ public partial class QaPots
     private int _activityQa1;
     private int _activityQa2;
     private int _activityEscalation;
-    private List<QueueData> _enrolmentData = new();
-    private List<QueueData> _activityData = new();
+    private List<QueueData> _enrolmentData = [];
+    private List<QueueData> _activityData = [];
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -28,20 +28,20 @@ public partial class QaPots
         {
             Height = "100%",
             Stacked = false,
-            Toolbar = new ApexCharts.Toolbar
+            Toolbar = new Toolbar
             {
                 Show = true,
                 Export = new ExportOptions
                 {
-                    Csv = new ApexCharts.ExportCSV()
+                    Csv = new ExportCSV
                     {
                         Filename = "Participants",
                     },
-                    Png = new ExportPng()
+                    Png = new ExportPng
                     {
                         Filename = "Participants-Chart"
                     },
-                    Svg = new ExportSvg()
+                    Svg = new ExportSvg
                     {
                         Filename = "Participants-Pie-Chart"
                     }
@@ -100,7 +100,7 @@ public partial class QaPots
         }
     };
 
-    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +109,7 @@ public partial class QaPots
         var unitOfWork = GetNewUnitOfWork();
 
         var context = unitOfWork.DbContext;
+        
         // pqa, first pass, second pass, escalation
         _enrolmentPqa = await context.EnrolmentPqaQueue.CountAsync(e => e.IsCompleted == false);
         _enrolmentQa1 = await context.EnrolmentQa1Queue.CountAsync(e => e.IsCompleted == false);
