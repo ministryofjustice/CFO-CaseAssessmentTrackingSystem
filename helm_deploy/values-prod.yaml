@@ -6,8 +6,7 @@ app:
   ingress:
     host: cfocats-prod.live.cloud-platform.service.justice.gov.uk
     className: modsec
-    # modsecurity_mode: On # Default to modsecurity_mode "DetectionOnly" until staging is tuned, then "On".
-
+    modsecurity_audit_enabled: true
   resources:
     requests:
       cpu: 500m
