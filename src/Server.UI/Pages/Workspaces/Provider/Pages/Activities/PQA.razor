@@ -1,4 +1,4 @@
-@page "/pages/qa/activities/pqa/{id:guid}"
+@page "/pages/workspace/provider/activities/pqa/{id:guid}"
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 @using Cfo.Cats.Application.Common.Validators
@@ -7,8 +7,11 @@
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
 @inherits CatsComponentBase
+
+<ProviderPageHeader />
 
 <style>
     .document-container {
@@ -152,7 +155,7 @@
 				};
 
 				Snackbar.Add(message, Severity.Info);
-				Navigation.NavigateTo("/pages/qa/activities/pqa");
+				Navigation.NavigateTo("/pages/workspace/provider/activities/pqa");
 			}
 			else
 			{
