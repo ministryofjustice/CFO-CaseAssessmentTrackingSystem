@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.Identity.Specifications;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages.Users;
 
-public partial class LoginAudit : CatsComponentBase
+public partial class UserAudit : CatsComponentBase
 {
     private MudDataGrid<IdentityAuditTrailDto> _table = null!;
     private bool _loading;
