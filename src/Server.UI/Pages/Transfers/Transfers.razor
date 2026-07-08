@@ -46,10 +46,12 @@
         <MudTd DataLabel="@ConstantString.Actions">
             <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                 <MudMenuItem OnClick="async() => await Process(context)">Process and Assign</MudMenuItem>
-                @if (context.EnrolmentStatus == Cfo.Cats.Domain.Common.Enums.EnrolmentStatus.ArchivedStatus)
-                {
-                    <MudMenuItem OnClick="async () => await Dismiss(context)">Dismiss</MudMenuItem>
-                }
+                <AuthorizeView Policy="@SecurityPolicies.SeniorInternal" Context="ctx">
+                    @if (context.EnrolmentStatus == Cfo.Cats.Domain.Common.Enums.EnrolmentStatus.ArchivedStatus)
+                    {
+                        <MudMenuItem OnClick="async () => await Dismiss(context)">Dismiss</MudMenuItem>
+                    }
+                </AuthorizeView>
                 <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
                 <MudMenuItem OnClick="async () => await ViewOffenderManagerSummary(context.ParticipantId)">View Offender Manager Summary</MudMenuItem>
             </MudMenu>            
