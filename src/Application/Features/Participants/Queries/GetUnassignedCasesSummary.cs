@@ -9,6 +9,7 @@ public static class GetUnassignedCasesSummary
     public class Query : IQuery<Result<UnassignedCasesSummaryDto>>
     {
         public required UserProfile CurrentUser { get; init; }
+        public string? TenantId { get; init; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<UnassignedCasesSummaryDto>>
@@ -16,7 +17,7 @@ public static class GetUnassignedCasesSummary
         public async Task<Result<UnassignedCasesSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
-            var currentTenantId = request.CurrentUser.TenantId!;
+            var currentTenantId = request.TenantId ?? request.CurrentUser.TenantId!;
 
             // Base query: unassigned participants at accessible locations without inaccessible incoming transfers
             var baseQuery = from p in context.Participants

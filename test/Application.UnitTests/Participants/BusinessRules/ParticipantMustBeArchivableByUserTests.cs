@@ -70,4 +70,16 @@ public class ParticipantMustBeArchivableByUserTests
 
         rule.IsBroken().ShouldBeTrue();
     }
+
+    [Test]
+    public void IsBroken_WhenParticipantIsUnassigned_ShouldReturnFalse()
+    {
+        var rule = new ParticipantMustBeArchivableByUser(
+            currentUserId: "user-any",
+            currentUserTenantId: "1.1.3.",
+            participantOwnerId: null,
+            participantOwnerTenantId: null);
+
+        rule.IsBroken().ShouldBeFalse();
+    }
 }

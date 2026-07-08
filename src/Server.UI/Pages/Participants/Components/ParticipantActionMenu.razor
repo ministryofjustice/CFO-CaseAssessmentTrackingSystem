@@ -14,7 +14,8 @@
     <ChildContent>
 
         @if (Participant.EnrolmentStatus.AllowArchive()
-            && (UserProfile.UserId == Participant.OwnerId
+            && (Participant.OwnerId is null
+            || UserProfile.UserId == Participant.OwnerId
             || (!string.IsNullOrEmpty(UserProfile.TenantId)
                 && !string.IsNullOrEmpty(Participant.OwnerTenantId)
                 && Participant.OwnerTenantId.StartsWith(UserProfile.TenantId, StringComparison.Ordinal))))
