@@ -1,8 +1,9 @@
-﻿@page "/pages/qa/enrolments/pqa"
+﻿@page "/pages/workspace/provider/enrolments/pqa"
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
 @using Humanizer
 
 @inherits OwningComponentBase<IMediator>;
@@ -10,6 +11,8 @@
 @inject IStringLocalizer<PQA> L
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
+<ProviderPageHeader />
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
     <MudStack>
