@@ -6,11 +6,10 @@ using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components.Payments;
 
-public partial class SupportAndReferral
+public partial class EmploymentPayments
 {
-    private readonly ApexChartOptions<SupportAndReferralPaymentSummaryDto> _options = new();
     private bool _loading = true;
     private bool _downloading;
 
@@ -24,15 +23,15 @@ public partial class SupportAndReferral
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
-    private SupportAndReferralPaymentDto[] Payments { get; set; } = [];
-    private List<SupportAndReferralPaymentSummaryDto> SummaryData = [];
+    private EmploymentPaymentDto[] Payments { get; set; } = [];
+    private List<EmploymentPaymentSummaryDto> SummaryData = [];
 
-    private GetSupportAndReferralPayments.Query? Query;
+    private GetEmploymentPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    public ApexChartOptions<SupportAndReferralPaymentSummaryDto> Options => new()
+    public ApexChartOptions<EmploymentPaymentSummaryDto> Options => new()
     {
         Theme = new Theme
         {
@@ -92,7 +91,7 @@ public partial class SupportAndReferral
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportSupportAndReferralPayments.Command()
+            var result = await GetNewMediator().Send(new ExportEmploymentPayments.Command()
             {
                 Query = Query!
             });
