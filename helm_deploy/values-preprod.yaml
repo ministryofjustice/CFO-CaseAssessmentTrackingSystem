@@ -5,6 +5,7 @@ app:
   replicaCount: 3
   ingress:
     host: cfocats-preprod.live.cloud-platform.service.justice.gov.uk
+    modsecurity_audit_enabled: true
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
     Sentry__Environment: "PreProduction-CloudPlatform"
