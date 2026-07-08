@@ -1,8 +1,9 @@
-@page "/pages/qa/activities/pqa"
+@page "/pages/workspace/provider/activities/pqa"
 @using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
 @using Humanizer
 
 @inherits OwningComponentBase<IMediator>
@@ -11,6 +12,8 @@
 @inject ILogger<PqaList> Logger
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
+<ProviderPageHeader />
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
     <MudStack>
