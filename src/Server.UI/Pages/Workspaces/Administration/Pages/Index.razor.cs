@@ -63,6 +63,7 @@ public partial class Index
             links.Add(AdministrationLinks.PickList);
             links.Add(AdministrationLinks.Tenants);
             links.Add(AdministrationLinks.Users);
+            links.Add(AdministrationLinks.UserAudit);
         }
         
         if (_showJobManagement)
