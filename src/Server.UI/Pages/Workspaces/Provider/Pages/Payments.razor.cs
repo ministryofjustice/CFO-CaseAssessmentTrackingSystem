@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 
-namespace Cfo.Cats.Server.UI.Pages.Payments;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages;
 
 public partial class Payments
 {
