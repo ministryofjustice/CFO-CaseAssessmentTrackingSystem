@@ -1,11 +1,12 @@
 ﻿@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Pages.Payments.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components.Payments
 
-@page "/pages/finance/payments/"
+@page "/pages/workspace/provider/payments"
 
 @attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
-<MudText Typo="Typo.h5">Contract Payment Auditing &amp; Management</MudText>
+<ProviderPageHeader />
 
 @if (_noAccessToContracts)
 {
