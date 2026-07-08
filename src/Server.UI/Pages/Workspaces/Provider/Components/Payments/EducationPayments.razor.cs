@@ -6,7 +6,7 @@ using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components.Payments;
 
 public partial class EducationPayments
 {
