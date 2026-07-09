@@ -40,12 +40,8 @@ app:
     # ModSecurity WAF. Default class is the non-prod controller; production overrides to "modsec".
     className: modsec-non-prod
     modsecurity_enabled: true
-    # WAF engine: "DetectionOnly" (log only) or "On" (block). Flip per-env in overlays once tuned.
-    modsecurity_mode: DetectionOnly
-    modsecurity_snippet: |
-      SecAuditEngine On
-      SecRuleEngine {{ .Values.ingress.modsecurity_mode }}
-      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-creating-future-opportunities-devs,tag:namespace={{ .Release.Namespace }}"
+    modsecurity_audit_enabled: false
+    modsecurity_github_team: "hmpps-creating-future-opportunities-devs"
     annotations:
       nginx.ingress.kubernetes.io/affinity: "cookie"
       nginx.ingress.kubernetes.io/session-cookie-name: "http-cookie"
