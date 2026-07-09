@@ -1,6 +1,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 @using Microsoft.AspNetCore.WebUtilities
 
 <PageHeader Title="Participants" 
@@ -53,11 +54,34 @@
                 "activities-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
                 "enrolments-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
                 "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
+                "dipsample-review-list" => BuildDipSampleParticipantBreadcrumbs(parsedQuery, participant),
                 _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
             };
         }
 
         return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
+    }
+
+    private static IReadOnlyList<BreadcrumbItem> BuildDipSampleParticipantBreadcrumbs(
+        Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery,
+        BreadcrumbItem participant)
+    {
+        var home = PerformanceLinks.Home.AsMudBreadcrumb();
+        var outcomeQuality = PerformanceLinks.OutcomeQualityDipSamples.AsMudBreadcrumb();
+
+        if (parsedQuery.TryGetValue("sampleId", out var sampleIdRaw)
+            && Guid.TryParse(sampleIdRaw.ToString(), out var sampleId))
+        {
+            var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
+            var sampleTitle = parsedQuery.TryGetValue("sampleLabel", out var sampleLabel)
+                && !string.IsNullOrWhiteSpace(sampleLabel.ToString())
+                ? sampleLabel.ToString()
+                : sample.Title;
+
+            return [home, outcomeQuality, new BreadcrumbItem(sampleTitle, sample.Href), participant];
+        }
+
+        return [home, outcomeQuality, participant];
     }
 
 }
