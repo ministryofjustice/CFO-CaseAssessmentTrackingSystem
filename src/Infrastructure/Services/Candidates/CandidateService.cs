@@ -22,11 +22,12 @@ public class CandidateService(
                 $"lastName={searchQuery.LastName}",
                 $"dateOfBirth={searchQuery.DateOfBirth!.Value:yyyy-MM-dd}"
             };
+            
             var result = await client.GetFromJsonAsync<SearchResult[]>($"/search?{string.Join('&', queryParams)}");
 
-            if (result == null)
+            if (result is null)
             {
-                return Result<SearchResult[]>.NotFound();
+                return Result<SearchResult[]>.Failure("DMS Search returned no data.");
             }
             
             return Result<SearchResult[]>.Success(result);
@@ -34,6 +35,11 @@ public class CandidateService(
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             return Result<SearchResult[]>.NotFound();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "DMS Search is currently unavailable");
+            return Result<SearchResult[]>.Failure("DMS Search service is currently unavailable.");
         }
         catch (Exception ex)
         {
@@ -44,117 +50,159 @@ public class CandidateService(
 
     public async Task<Result<CandidateDto>> GetByUpciAsync(string upci)
     {
-        var candidate = await client.GetFromJsonAsync<CandidateDto>($"clustering/{upci}/Aggregate");
+        try
+        {
+            var candidate = await client.GetFromJsonAsync<CandidateDto>($"clustering/{upci}/Aggregate");
+            
+            if (candidate is null)
+            {
+                return Result<CandidateDto>.Failure("Get Candidate by upci returned no data.");
+            }
+            
+            // 1. Primary record is a prison record (excluding OUT)
+            // 2. Primary record is a community record
+            //  2a. Use Sticky Location if present
+            //  2b. Use Org code if not
+            // 3. Primary record is a prison record but shown as "OUT" (outside)...
+            //  3a. Use Sticky Location or Org Code probation if an organisation code is present
+            //  3b. Use prison if an organisation code is not present
+            // 4. Unknown
+            var locationMapping = candidate switch
+            {
+                /* 1  */ { Primary: "NOMIS", EstCode: not "OUT" } => (Code: candidate.EstCode, Type: "Prison"),
+                /* 2  */
+                { Primary: "DELIUS" } => (Code: candidate.StickyLocation ?? candidate.OrgCode, Type: "Probation"),
+                /* 3a */
+                { Primary: "NOMIS", EstCode: "OUT", OrgCode: not null } => (
+                    Code: candidate.StickyLocation ?? candidate.OrgCode, Type: "Probation"),
+                /* 3b */
+                { Primary: "NOMIS", EstCode: "OUT", OrgCode: null } => (Code: candidate.EstCode, Type: "Prison"),
+                /* 4  */ _ => (null, null)
+            };
 
-        if (candidate is null)
+            var query = from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                where dl.Code == locationMapping.Code && dl.CodeType == locationMapping.Type
+                select new
+                {
+                    dl.Code,
+                    dl.CodeType,
+                    dl.Description,
+                    dl.DeliveryRegion,
+                    dl.Location
+                };
+            
+            var location = await query.FirstOrDefaultAsync();
+
+            candidate.LocationDescription = location switch
+            {
+                { Location: not null } => location.Location.Name,
+                { Code: not null } =>
+                    $"Unmapped Location ({location.Code} - {location.DeliveryRegion} - {location.Description})",
+                _ => "Unmapped Location",
+            };
+
+            candidate.IsInCustody = location?.Location?.LocationType.IsCustody ?? false;
+
+            if (candidate.OrgCode is not null)
+            {
+                var community = await (from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                        where dl.CodeType == "Probation" && dl.Code == candidate.OrgCode
+                        select new
+                        {
+                            dl.Code,
+                            dl.CodeType,
+                            dl.Description,
+                            dl.DeliveryRegion,
+                            dl.Location
+                        }
+                    ).FirstOrDefaultAsync();
+
+                if (community is not null)
+                {
+                    candidate.CommunityLocation = community.Location.Name;
+                }
+            }
+
+            if (candidate.EstCode is not null)
+            {
+                var custody = await (from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                        where dl.CodeType == "Prison" && dl.Code == candidate.EstCode
+                        select new
+                        {
+                            dl.Code,
+                            dl.CodeType,
+                            dl.Description,
+                            dl.DeliveryRegion,
+                            dl.Location
+                        }
+                    ).FirstOrDefaultAsync();
+
+                if (custody is not null)
+                {
+                    candidate.CustodyLocation = custody.Location.Name;
+                }
+            }
+
+            if (location is { Location: not null })
+            {
+                candidate.MappedLocationId = location.Location.Id;
+            }
+            else
+            {
+                candidate.MappedLocationId = locationMapping.Type switch
+                {
+                    "Prison" => Location.Constants.UnmappedCustody,
+                    "Probation" => Location.Constants.UnmappedCommunity,
+                    _ => Location.Constants.Unknown
+                };
+            }
+
+            candidate.RegistrationDetailsJson = JsonConvert.SerializeObject(candidate.RegistrationDetails);
+
+            return candidate;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             return Result<CandidateDto>.NotFound();
         }
-        
-        // 1. Primary record is a prison record (excluding OUT)
-        // 2. Primary record is a community record
-        //  2a. Use Sticky Location if present
-        //  2b. Use Org code if not
-        // 3. Primary record is a prison record but shown as "OUT" (outside)...
-        //  3a. Use Sticky Location or Org Code probation if an organisation code is present
-        //  3b. Use prison if an organisation code is not present
-        // 4. Unknown
-        var locationMapping = candidate switch
+        catch (HttpRequestException ex)
         {
-            /* 1  */ { Primary: "NOMIS", EstCode: not "OUT" } => (Code: candidate.EstCode, Type: "Prison"),
-            /* 2  */ { Primary: "DELIUS" } => (Code: candidate.StickyLocation ?? candidate.OrgCode, Type: "Probation"),
-            /* 3a */
-            { Primary: "NOMIS", EstCode: "OUT", OrgCode: not null } => (
-                Code: candidate.StickyLocation ?? candidate.OrgCode, Type: "Probation"),
-            /* 3b */ { Primary: "NOMIS", EstCode: "OUT", OrgCode: null } => (Code: candidate.EstCode, Type: "Prison"),
-            /* 4  */ _ => (null, null)
-        };
-
-        var query = from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
-            where dl.Code == locationMapping.Code && dl.CodeType == locationMapping.Type
-            select new
-            {
-                dl.Code,
-                dl.CodeType,
-                dl.Description,
-                dl.DeliveryRegion,
-                dl.Location
-            };
-
-        var location = await query.FirstOrDefaultAsync();
-
-        candidate.LocationDescription = location switch
-        {
-            { Location: not null } => location.Location.Name,
-            { Code: not null } =>
-                $"Unmapped Location ({location.Code} - {location.DeliveryRegion} - {location.Description})",
-            _ => "Unmapped Location",
-        };
-
-        candidate.IsInCustody = location?.Location?.LocationType?.IsCustody ?? false;
-
-        if (candidate.OrgCode is not null)
-        {
-            var community = await (from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
-                    where dl.CodeType == "Probation" && dl.Code == candidate.OrgCode
-                    select new
-                    {
-                        dl.Code,
-                        dl.CodeType,
-                        dl.Description,
-                        dl.DeliveryRegion,
-                        dl.Location
-                    }
-                ).FirstOrDefaultAsync();
-
-            if (community is not null)
-            {
-                candidate.CommunityLocation = community.Location.Name;
-            }
+            logger.LogError(ex, "Get Candidate by upci is unavailable");
+            return Result<CandidateDto>.Failure("Get Candidate by upci is currently unavailable.");
         }
-
-        if (candidate.EstCode is not null)
+        catch (Exception ex)
         {
-            var custody = await (from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
-                    where dl.CodeType == "Prison" && dl.Code == candidate.EstCode
-                    select new
-                    {
-                        dl.Code,
-                        dl.CodeType,
-                        dl.Description,
-                        dl.DeliveryRegion,
-                        dl.Location
-                    }
-                ).FirstOrDefaultAsync();
-
-            if (custody is not null)
-            {
-                candidate.CustodyLocation = custody.Location.Name;
-            }
+            logger.LogError(ex, "Error calling Get Candidate by upci");
+            return Result<CandidateDto>.Failure("Error getting Get Candidate by upci results");
         }
-
-        if (location is { Location: not null })
-        {
-            candidate.MappedLocationId = location.Location.Id;
-        }
-        else
-        {
-            candidate.MappedLocationId = locationMapping.Type switch
-            {
-                "Prison" => Location.Constants.UnmappedCustody,
-                "Probation" => Location.Constants.UnmappedCommunity,
-                _ => Location.Constants.Unknown
-            };
-        }
-
-        candidate.RegistrationDetailsJson = JsonConvert.SerializeObject(candidate.RegistrationDetails);
-
-        return candidate;
     }
-
+    
     public async Task<Result<bool>> SetStickyLocation(string upci, string location)
     {
-        var result = await client.PostAsync($"/reference/{upci}/{location}", null);
-        return result.IsSuccessStatusCode;
+        try
+        {
+            var result = await client.PostAsync($"/reference/{upci}/{location}", null);
+        
+            if (result.IsSuccessStatusCode)
+            {
+                return Result<bool>.Success(true);
+            }
+
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return Result<bool>.Failure("The sticky location endpoint or target participant could not be found.");
+            }
+            return Result<bool>.Failure($"Failed to update sticky location. The DMS API returned status: {result.StatusCode}. Please try again or contact support if the issue persists.");
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "DMS Service is unavailable during sticky location update for {Upci}", upci);
+            return Result<bool>.Failure("DMS Service is currently unavailable. Please try again later.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected exception calling SetStickyLocation for {Upci}", upci);
+            return Result<bool>.Failure("An internal error occurred while communicating with the candidate service.");
+        }
     }
 }

@@ -50,4 +50,7 @@ public class ParticipantPaginationDto
     [Description("Assigned On")]
     public DateTime? AssignedOn { get; set; }
     
+    [Description("Accessed On")]
+    public DateTime? AccessedOn { get; set; }    
+    
 }

@@ -1,0 +1,9 @@
+.git
+.github
+**/bin
+**/obj
+test
+**/.vs
+**/.idea
+**/.vscode
+*.user

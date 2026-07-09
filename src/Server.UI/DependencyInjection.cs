@@ -1,4 +1,4 @@
-﻿using BlazorDownloadFile;
+using BlazorDownloadFile;
 using Cfo.Cats.Infrastructure.Constants.Localization;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Fusion;
@@ -13,10 +13,14 @@ using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
+using Cfo.Cats.Server.UI.Hubs;
 using ApexCharts;
 using Cfo.Cats.Server.UI.Pages.Participants;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 using Cfo.Cats.Server.UI.Pages.QA.Activities;
+using StackExchange.Redis;
+using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Infrastructure.Services.Identity;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -87,15 +91,41 @@ public static class DependencyInjection
         services.AddMvc();
         services.AddControllers();
         
-        services.AddSignalR(options =>
+        var signalRBuilder = services.AddSignalR(options =>
             {
-                options.HandshakeTimeout = TimeSpan.FromSeconds(60); // Adjust as needed
-                options.KeepAliveInterval = TimeSpan.FromSeconds(10); // SignalR keep-alive interval
-                options.ClientTimeoutInterval = TimeSpan.FromSeconds(120); // SignalR client timeout interval
+                options.HandshakeTimeout = TimeSpan.FromSeconds(60);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
+
+        if (config.GetValue<bool>("Features:PresenceHub:Enabled"))
+        {
+            services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
+            services.AddScoped<PresenceHubClient>();
+        }
+
+        if(config.GetValue<bool>("Features:UseSignalRBackplane") is not true)
+        {
+            services.AddSingleton<IUsersStateContainer, InMemoryUsersStateContainer>();
+        }
+        else
+        {
+            var redisConnectionString = config.GetConnectionString("redis") 
+                ?? throw new InvalidOperationException("Redis connection must be configured to use the SignalR backplane. Please set the 'redis' connection string in your configuration.");
+
+            signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
+            {
+                options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisConnectionString));
+
+            services.AddSingleton<IUsersStateContainer, RedisUsersStateContainer>();
+        }
+
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-            
         
         services.AddScoped<LocalTimezoneOffset>();
         services.AddHttpContextAccessor();
@@ -178,14 +208,14 @@ public static class DependencyInjection
         //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
-        if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"Files")))
+        if (!Directory.Exists(Path.Combine(app.Environment.ContentRootPath, @"Files")))
         {
-            Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), @"Files"));
+            Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, @"Files"));
         }
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Files")),
+            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, @"Files")),
             RequestPath = new PathString("/Files")
         });
 
@@ -199,6 +229,17 @@ public static class DependencyInjection
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
         
+        if (app.Configuration.GetValue<bool>("Features:PresenceHub:Enabled"))
+        {
+            app.MapHub<PresenceHub>(PresenceHub.HubUrl);
+        }
+
+        app.MapGet("/.well-known/security.txt", () =>
+            Results.Redirect(
+                "https://security-guidance.service.justice.gov.uk/.well-known/security.txt",
+                permanent: true))
+            .AllowAnonymous();
+
         app.MapAdditionalIdentityEndpoints();
         app.UseForwardedHeaders();
       

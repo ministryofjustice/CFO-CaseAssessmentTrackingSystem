@@ -13,7 +13,12 @@
     </ActivatorContent>
     <ChildContent>
 
-        @if (Participant.EnrolmentStatus.AllowArchive())
+        @if (Participant.EnrolmentStatus.AllowArchive()
+            && (Participant.OwnerId is null
+            || UserProfile.UserId == Participant.OwnerId
+            || (!string.IsNullOrEmpty(UserProfile.TenantId)
+                && !string.IsNullOrEmpty(Participant.OwnerTenantId)
+                && Participant.OwnerTenantId.StartsWith(UserProfile.TenantId, StringComparison.Ordinal))))
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="@Archive">Archive</MudMenuItem>
         }

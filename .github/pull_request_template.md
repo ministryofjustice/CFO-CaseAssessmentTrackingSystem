@@ -20,13 +20,6 @@
 
 ---
 
-## 🔄 Changes
-- Added:
-- Updated:
-- Removed:
-
----
-
 ## 🧪 How to Test
 > Step-by-step instructions to verify this works.
 

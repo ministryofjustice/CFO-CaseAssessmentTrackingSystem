@@ -4,22 +4,34 @@ using Cfo.Cats.Application.Features.Offloc.DTOs;
 
 namespace Cfo.Cats.Infrastructure.Services.OffLoc;
 
-public class OfflocService(HttpClient client) : IOfflocService
+public class OfflocService(HttpClient client, ILogger<OfflocService> logger) : IOfflocService
 {
     public async Task<Result<SentenceDataDto>> GetSentenceDataAsync(string nomsNumber)
     {
         try
         {
             var result = await client.GetFromJsonAsync<SentenceDataDto>($"/offloc/{nomsNumber}/sentences");
-            return result!;
+            
+            if (result is null)
+            {
+                return Result<SentenceDataDto>.Failure("Nomis returned no data.");
+            }
+            
+            return result;
         }
         catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
         {
             return Result<SentenceDataDto>.NotFound();
         }
+        catch (HttpRequestException e)
+        {
+            logger.LogError(e, "Offloc service is unavailable when calling get sentence");
+            return Result<SentenceDataDto>.Failure("Nomis service is currently unavailable.");
+        }
         catch (Exception e)
         {
-            return Result<SentenceDataDto>.Failure(e.Message);
+            logger.LogError(e, "Error calling Offloc get sentence for NOMS: {NomsNumber}", nomsNumber);
+            return Result<SentenceDataDto>.Failure("An unexpected error occurred while retrieving sentence data from Nomis.");
         }
     }
 }

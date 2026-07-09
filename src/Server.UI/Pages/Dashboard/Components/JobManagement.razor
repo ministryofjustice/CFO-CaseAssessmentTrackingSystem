@@ -17,41 +17,43 @@
                 <MudText Typo="Typo.h5">
                     Jobs
                 </MudText>
-                @if(_scheduler is not null)
+                @if (_schedulerInfo is not null)
                 {
-                    <MudAlert Severity="Severity.Info">
+                    <MudAlert Severity="@(_schedulerInfo.IsInStandby || _schedulerInfo.IsShutdown ? Severity.Warning : Severity.Info)">
                         @GetSchedulerStatus()
                     </MudAlert>
                 }
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
-
-            <MudTable 
-                Items="JobDetails" 
-                Hover="true" 
-                Breakpoint="Breakpoint.Sm"
-                GroupBy="@_groupDefinition"
-                GroupHeaderStyle="background-color:var(--mud-palette-background-gray)">
+            <MudTable
+                Items="_jobs"
+                Hover="true"
+                Breakpoint="Breakpoint.Sm">
                 <HeaderContent>
-                    <MudTh>Trigger</MudTh>
-                    <MudTh>State</MudTh>
+                    <MudTh>Job</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh>Status</MudTh>
                     <MudTh>Next Scheduled</MudTh>
                     <MudTh>Last Scheduled</MudTh>
+                    <MudTh></MudTh>
                 </HeaderContent>
-                <GroupHeaderTemplate>
-                    <MudTh Class="mud-table-cell-custom-group" colspan="3">@context.Key: @context.Items.First().Description</MudTh>
-                    <MudTh Class="mud-table-cell-custom-group">
-                        <MudLoadingButton Color="Color.Warning" Variant="Variant.Filled" Disabled="@(_scheduler?.InStandbyMode ?? false)" Loading="@_isTriggering"  OnClick="() => TriggerJob(context.Key!.ToString()!)">
-                            @ConstantString.Trigger
-                        </MudLoadingButton>
-                    </MudTh>
-                </GroupHeaderTemplate>
                 <RowTemplate>
-                    <MudTd DataLabel="Trigger">@context.TriggerDescription</MudTd>
-                    <MudTd DataLabel="State">@context.TriggerState</MudTd>
+                    <MudTd DataLabel="Job">@context.Name</MudTd>
+                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                    <MudTd DataLabel="Status">@context.Status</MudTd>
                     <MudTd DataLabel="Next Scheduled">@context.NextFireTime</MudTd>
                     <MudTd DataLabel="Last Scheduled">@context.PreviousFireTime</MudTd>
+                    <MudTd>
+                        <MudLoadingButton
+                            Color="Color.Warning"
+                            Variant="Variant.Filled"
+                            Disabled="@(_schedulerInfo?.IsInStandby ?? false)"
+                            Loading="@_isTriggering"
+                            OnClick="() => TriggerJob(context.Name)">
+                            @ConstantString.Trigger
+                        </MudLoadingButton>
+                    </MudTd>
                 </RowTemplate>
             </MudTable>
         </MudCardContent>

@@ -70,21 +70,21 @@ BEGIN
            '1.1.6.1.1.' as [TenantId]
     from [Configuration].[Location]
     where [Name] in ( 'HMP Portland', 'HMP Exeter', 'HMP Bristol', 'HMP Dartmoor', 'HMP Channings Wood', 'HMP Leyhill',
-                      'HMP Guys Marsh', 'HMP The Verne', 'HMP Eastwood Park', 'Bristol', 'Plymouth', 'South West Community'
+                      'HMP Guys Marsh', 'HMP The Verne', 'HMP Eastwood Park', 'HMP Erlestoke', 'Bristol', 'Plymouth', 'South West Community'
         )
     union
     select Id as [LocationId],
            '1.1.5.1.1.' as [TenantId]
     from [Configuration].[Location]
     where [Name] in ( 'HMP High Down', 'HMP Wandsworth', 'HMP Thameside', 'HMP Pentonville', 'HMP Brixton', 'HMP Feltham',
-                      'HMP Isis', 'HMP Bronzefield', 'HMP Downview', 'Croydon', 'Lambeth', 'Lewisham', 'London Community'
+                      'HMP Isis', 'HMP Bronzefield', 'HMP Downview', 'HMP Wormwood Scrubs', 'Croydon', 'Lambeth', 'Lewisham', 'London Community'
         )
     union
     select Id as [LocationId],
            '1.1.5.1.2.' as [TenantId]
     from [Configuration].[Location]
     where [Name] in ( 'HMP High Down', 'HMP Wandsworth', 'HMP Thameside', 'HMP Pentonville', 'HMP Brixton', 'HMP Feltham',
-                      'HMP Isis', 'HMP Bronzefield', 'HMP Downview', 'London Community'
+                      'HMP Isis', 'HMP Bronzefield', 'HMP Downview', 'London Community', 'HMP Wormwood Scrubs'
         )
     union
     select Id as [LocationId],

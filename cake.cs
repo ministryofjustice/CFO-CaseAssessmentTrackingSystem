@@ -12,8 +12,25 @@ Task("Clean")
         {
             Force = true
         };
-        CleanDirectories("./src/**/bin/{configuration}", settings);
-        CleanDirectory("./artifacts", settings);
+        
+        var dirsToClean = GetDirectories("./**/bin");
+        dirsToClean.Add(GetDirectories("./**/obj"));
+        dirsToClean.Add("./artifacts");
+
+        foreach(var dir in dirsToClean)
+        {
+            Information($"Cleaning directory {dir}");
+            CleanDirectory(dir);    
+        }
+
+        var filesToClean = GetFiles("./*.zip");
+
+        foreach(var file in filesToClean)
+        {
+            Information($"Deleting file {file}");
+            DeleteFile(file);
+        }
+
     });
 
 Task("Restore")

@@ -2,6 +2,7 @@ using Cfo.Cats.Application;
 using Cfo.Cats.Infrastructure;
 using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server.UI;
+using Cfo.Cats.Server.UI.Hubs;
 using System.Globalization;
 
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-GB");
