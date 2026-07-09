@@ -1,53 +1,15 @@
-## 🔗 Related Work
-- Closes: #
-- Related: #
+## 📝 Description
 
----
+## 🔗 Jira Ticket
 
-## 📌 Summary
-> What does this PR do? Keep it short but clear.
+## 🚀 How to QA
+1. Go to...
+2. Click on...
+3. Verify that...
 
----
 
-## 🎯 Purpose / Motivation
-> Why does this change exist? What problem are we solving?
-
----
-
-## 🧠 Approach
-> Key implementation details, trade-offs, or design decisions.
-> Mention anything reviewers should pay attention to.
-
----
-
-## 🧪 How to Test
-> Step-by-step instructions to verify this works.
-
-1.
-2.
-3.
-
-Expected result:
-> What should happen if everything is correct?
-
----
-
-## 📸 Screenshots / Output (if applicable)
-> UI changes, logs, API responses, etc.
-
----
-
-## ⚠️ Risks & Impact
-- [ ] Breaking change
-- [ ] Database change
-- [ ] Performance impact
-- [ ] Security impact
-
-Details:
-> Anything reviewers should be cautious about.
-
----
-
-## 🙋 Notes for Reviewers
-> Anything specific you want feedback on.
-> e.g. "Unsure about approach in X", "Focus on Y logic"
+## 📸 Screenshots / Recordings (If applicable)
+## ☑️ Checklist Before Merging
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have updated the Jira ticket status to `In Review`
