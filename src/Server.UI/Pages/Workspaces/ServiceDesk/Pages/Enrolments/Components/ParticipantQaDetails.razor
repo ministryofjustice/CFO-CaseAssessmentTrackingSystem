@@ -84,7 +84,7 @@
     <MudDivider />
 
     <MudStack Row="true" AlignItems="AlignItems.End" Breakpoint="Breakpoint.Md">
-        <MudLink Href="@($"/pages/workspace/participants/{Participant.Id}?from=enrolments-queue")" Color="Color.Primary">View Participant</MudLink>
+        <MudLink Href="@($"/pages/workspace/participants/{Participant.Id}?from={WorkspaceRef}")" Color="Color.Primary">View Participant</MudLink>
     </MudStack>
 
 
@@ -102,4 +102,6 @@
     [Parameter, EditorRequired] 
     public bool ShowNationality { get; set; } = false;
 
+    [Parameter]
+    public string? WorkspaceRef { get; set; }
 } 
