@@ -103,7 +103,7 @@
                         <MudMenuItem Href="@($"/pages/workspace/performance/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
                             @ConstantString.Review
                         </MudMenuItem>
-                        <MudMenuItem Href="@($"/pages/workspace/participants/{context.Item.ParticipantId}")">
+                        <MudMenuItem Href="@($"/pages/workspace/participants/{context.Item.ParticipantId}?from=dipsample-review-list&sampleId={SampleId}&sampleLabel={Uri.EscapeDataString(SampleLabel ?? string.Empty)}")">
                             @ConstantString.ViewParticipant
                         </MudMenuItem>
                     </MudMenu>
