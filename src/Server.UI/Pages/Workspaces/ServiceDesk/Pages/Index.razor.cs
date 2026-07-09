@@ -13,32 +13,68 @@ public partial class Index
     public IAuthorizationService AuthorizationService { get; set; } = null!;
 
     [CascadingParameter]
-    public Task<AuthenticationState> AuthState { get; set; } = default!;
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = null!;
 
     private BreadcrumbLinkModel[] Links { get; set; } = [];    
+    
+    private bool _showQaPots;
+    private bool _showSyncInfo;
+    private bool _showActivitiesQueue;
+    private bool _showActivitiesFeedback;
+    private bool _showEnrolmentsQueue;
+    private bool _showEnrolmentsFeedback;
 
-protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
-        var isInternalUser = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Internal)).Succeeded;
+        var isInternalUser = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Internal))
+            .Succeeded;
+        var isQa1User = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Qa1))
+            .Succeeded;
 
+        _showQaPots = isInternalUser;
+        _showSyncInfo = isInternalUser;
+        _showActivitiesQueue = isQa1User;
+        _showActivitiesFeedback = isQa1User;
+        _showEnrolmentsQueue = isQa1User;
+        _showEnrolmentsFeedback = isQa1User;
+        
         List<BreadcrumbLinkModel> links = [];
 
-        //links.Add(ServiceDeskLinks.Home);
-        links.Add(ServiceDeskLinks.ActivitiesQueue);
-        links.Add(ServiceDeskLinks.ActivitiesFeedback);
-        links.Add(ServiceDeskLinks.EnrolmentsQueue);
-        links.Add(ServiceDeskLinks.EnrolmentsFeedback);
-        if (isInternalUser)
+        if(_showActivitiesQueue)
+        {
+            links.Add(ServiceDeskLinks.ActivitiesQueue);
+        }
+        
+        if(_showActivitiesFeedback)
+        {  
+            links.Add(ServiceDeskLinks.ActivitiesFeedback);
+        }
+
+        if(_showEnrolmentsQueue)
+        {
+            links.Add(ServiceDeskLinks.EnrolmentsQueue);
+        }
+        
+        if(_showEnrolmentsFeedback)
+        {
+            links.Add(ServiceDeskLinks.EnrolmentsFeedback);
+        }
+        
+        if (_showSyncInfo)
         {
             links.Add(ServiceDeskLinks.SyncInfo);
         }
 
-        Links = links.ToArray();        
+        if (_showQaPots)
+        {
+            links.Add(ServiceDeskLinks.QaPots);
+        }
 
+        Links = links.ToArray();
     }
 
     private Task OnViewQueueNavigate(string target)
@@ -57,5 +93,4 @@ protected override async Task OnInitializedAsync()
         Navigation.NavigateTo(destination);
         return Task.CompletedTask;
     }
-
 }
