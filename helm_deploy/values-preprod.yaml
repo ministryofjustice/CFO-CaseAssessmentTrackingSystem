@@ -1,17 +1,17 @@
-serviceAccountName: cfocats-preprod
+serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
 
 app:
-  serviceAccountName: cfocats-preprod
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
   replicaCount: 3
   ingress:
-    host: cfocats-preprod.live.cloud-platform.service.justice.gov.uk
+    host: hmpps-cfo-case-assessment-tracking-system-preprod.live.cloud-platform.service.justice.gov.uk
     modsecurity_audit_enabled: true
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
     Sentry__Environment: "PreProduction-CloudPlatform"
 
 worker:
-  serviceAccountName: cfocats-preprod
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
   replicaCount: 1
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
