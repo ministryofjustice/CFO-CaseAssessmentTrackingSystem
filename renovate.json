@@ -3,7 +3,7 @@
   "extends": [
     "github>ministryofjustice/hmpps-renovate-config:base"
   ],
-  "baseBranches": ["develop"],
+  "baseBranches": ["main"],
   "prCreation": "immediate",
   "packageRules": [
     {
