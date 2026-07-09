@@ -7,6 +7,9 @@ public partial class ActivityQaDetails
 {
     [Parameter, EditorRequired] public ActivityQaDetailsDto Activity { get; set; } = null!;
 
+    [Parameter]
+    public string? WorkspaceRef { get; set; }
+
     private bool _hasParticipantBeenAtThisLocationOnThisDate;
 
     protected override async Task OnInitializedAsync()
