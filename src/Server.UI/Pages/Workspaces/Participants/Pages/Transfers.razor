@@ -1,9 +1,5 @@
 @page "/pages/workspace/participants/transfers"
 
-@using Cfo.Cats.Application.Features.Transfers.Commands
-@using Cfo.Cats.Application.Features.Transfers.DTOs
-@using Cfo.Cats.Application.Features.Transfers.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
 
@@ -19,13 +15,13 @@
     <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 </MudStack>
 
-<MudTable Items="@incomingTransfers" 
+<MudTable Items="@_incomingTransfers" 
           Hover="true" 
           Breakpoint="Breakpoint.Sm" 
-          Loading="@isLoadingIncomingTransfers" 
+          Loading="@_isLoadingIncomingTransfers" 
           LoadingProgressColor="Color.Info" 
           Class="mb-8 pa-4"
-          Filter="new Func<IncomingTransferDto, bool>(FilterIncoming1)">
+          Filter="FilterIncoming1">
     <HeaderContent>
             <MudTh>@ConstantString.Actions</MudTh>
             <MudTh>Participant</MudTh>
@@ -39,7 +35,7 @@
         <MudTd DataLabel="@ConstantString.Actions">
             <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                 <MudMenuItem OnClick="async() => await Process(context)">Process and Assign</MudMenuItem>
-                @if (context.EnrolmentStatus == Cfo.Cats.Domain.Common.Enums.EnrolmentStatus.ArchivedStatus)
+                @if (context.EnrolmentStatus == EnrolmentStatus.ArchivedStatus)
                 {
                     <MudMenuItem OnClick="async () => await Dismiss(context)">Dismiss</MudMenuItem>
                 }
@@ -100,13 +96,13 @@
     <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 </MudStack>
 
-<MudTable Items="@outgoingTransfers" 
+<MudTable Items="@_outgoingTransfers" 
           Hover="true" 
           Breakpoint="Breakpoint.Sm" 
-          Loading="@isLoadingOutgoingTransfers" 
+          Loading="@_isLoadingOutgoingTransfers" 
           LoadingProgressColor="Color.Info" 
           Class="mb-8 pa-4"
-          Filter="new Func<OutgoingTransferDto, bool>(FilterOutgoing1)">
+          Filter="FilterOutgoing1">
     <HeaderContent>
             <MudTh>Actions</MudTh>
             <MudTh>Participant</MudTh>

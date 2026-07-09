@@ -333,7 +333,7 @@ public partial class UnassignedCasesDashboardComponent
     }
 
     private void ViewParticipant(string participantId) =>
-        Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+        Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=dashboard");
 
     private void NavigateToTransfers() =>
         Navigation.NavigateTo("/pages/workspace/participants/transfers");

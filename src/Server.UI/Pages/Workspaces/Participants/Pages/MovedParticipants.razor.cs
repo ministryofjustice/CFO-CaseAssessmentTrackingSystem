@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.Features.Participants.Queries;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
@@ -12,5 +11,5 @@ public partial class MovedParticipants
         participantAccess = await GetNewMediator().Send(new GetParticipantsWithAccessEndingSoon.Query());
         await base.OnInitializedAsync();
     }
-    private void View(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+    private void View(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=moved");
 }

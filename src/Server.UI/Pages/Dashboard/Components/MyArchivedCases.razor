@@ -1,7 +1,4 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
 @inherits CatsComponent<PaginatedData<ParticipantsArchivedResultsSummaryDto>>
@@ -34,7 +31,7 @@
                 
 						@if (_canSearch)
 						{
-							<MudTextField T="string" ValueChanged="@(OnSearch)" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+							<MudTextField T="string" ValueChanged="@(OnSearch!)" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
 										  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
 							</MudTextField>
 						}

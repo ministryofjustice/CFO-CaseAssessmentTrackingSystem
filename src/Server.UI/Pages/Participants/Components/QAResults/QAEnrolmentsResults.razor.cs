@@ -10,16 +10,16 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 
 public partial class QAEnrolmentsResults 
 {
-    private bool _includeInternalNotes = false;
+    private bool _includeInternalNotes;
     private int _pageNumber = 1;
-    private LocationDto? _selectedLocation = null;
-    private EnrolmentStatus? _status = null;
+    private LocationDto? _selectedLocation;
+    private EnrolmentStatus? _status;
 
     [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public bool JustMyParticipants { get; set; } = false;
+    public bool JustMyParticipants { get; set; }
 
     protected override IQuery<Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>> CreateQuery() 
         => new QAEnrolmentsResultsWithPagination.Query()
@@ -56,5 +56,5 @@ public partial class QAEnrolmentsResults
         return LoadDataAsync();
     }
 
-    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=qa-results");
 }

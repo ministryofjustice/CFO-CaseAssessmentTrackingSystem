@@ -10,10 +10,10 @@ public partial class MyParticipantsInLicenceEndPeriod
 {
     private int _pageNumber = 1;
     private bool _canSearch;
-    private string? _keyWord = null;
+    private string? _keyWord;
 
     [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     protected override IQuery<Result<PaginatedData<ParticipantsInLicenceEndPeriodResultsSummaryDto>>> CreateQuery()
         => new ParticipantsInLicenceEndPeriodResultsWithPagination.Query()
@@ -48,5 +48,5 @@ public partial class MyParticipantsInLicenceEndPeriod
         return LoadDataAsync();
     }
 
-    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=dashboard");
 }

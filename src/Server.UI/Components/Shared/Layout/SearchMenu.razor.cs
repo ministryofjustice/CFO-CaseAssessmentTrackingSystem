@@ -1,22 +1,19 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
-using Cfo.Cats.Infrastructure.Extensions;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 using Cfo.Cats.Server.UI.Services.Navigation;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
-using MudBlazor;
 
 namespace Cfo.Cats.Server.UI.Components.Shared.Layout;
 
 public partial class SearchMenu
 {
-    [Inject] private IAsyncMenuService MenuService { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private IAsyncMenuService MenuService { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [Parameter] public bool Open { get; set; }
     [Parameter] public EventCallback<bool> OpenChanged { get; set; }
@@ -84,7 +81,7 @@ public partial class SearchMenu
 
     private async Task OnSearchChanged(string value)
     {
-        _search = value?.Trim() ?? string.Empty;
+        _search = value.Trim();
 
         if (string.IsNullOrWhiteSpace(_search))
         {
@@ -135,7 +132,7 @@ public partial class SearchMenu
     private void NavigateToParticipant(string participantId)
     {
         _ = CloseAsync();
-        NavigationManager.NavigateTo($"/pages/workspace/participants/{participantId}");
+        NavigationManager.NavigateTo($"/pages/workspace/participants/{participantId}?from=search");
     }
 
     private async Task CloseAsync()

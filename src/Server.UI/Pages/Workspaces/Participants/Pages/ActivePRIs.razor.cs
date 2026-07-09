@@ -6,7 +6,6 @@ using Cfo.Cats.Application.Features.PRIs.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.PRIs.Components;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
@@ -44,7 +43,7 @@ public partial class ActivePRIs
             _loading = true;
             Query!.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
             var result = await GetNewMediator().Send(Query, cancellationToken);
@@ -103,7 +102,7 @@ public partial class ActivePRIs
         await _table.ReloadServerData();
     }
 
-    private void ViewParticipant(PRIPaginationDto PRI) => Navigation.NavigateTo($"/pages/workspace/participants/{PRI.ParticipantId}");
+    private void ViewParticipant(PRIPaginationDto PRI) => Navigation.NavigateTo($"/pages/workspace/participants/{PRI.ParticipantId}?from=active-pris");
 
     private async Task CreatePriCode()
     {
@@ -153,13 +152,13 @@ public partial class ActivePRIs
 
     private async Task CompletePRI(PRIPaginationDto PRI)
     {
-        var completePRICommand = new CompletePRI.Command()
+        var completePriCommand = new CompletePRI.Command()
         {
             ParticipantId = PRI.ParticipantId,
             CompletedBy = CurrentUser.UserId
         };
 
-        var result = await GetNewMediator().Send(completePRICommand);
+        var result = await GetNewMediator().Send(completePriCommand);
 
         if (result.Succeeded)
         {
@@ -172,7 +171,7 @@ public partial class ActivePRIs
         }
     }
 
-    private async Task AbandonPRI(PRIPaginationDto PRI)
+    private async Task AbandonPri(PRIPaginationDto PRI)
     {
         var parameters = new DialogParameters<AbandonPriDialog>()
         {
