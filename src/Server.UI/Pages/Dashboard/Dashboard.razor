@@ -1,4 +1,4 @@
-@page "/"
+﻿@page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Sync.Components
@@ -36,12 +36,7 @@
         <MyParticipantsLatestEngagementComponent/>
     }
 
-    @if (_showQaPots)
-    {
-        <QaPots/>
-    }
-
-    @if (_showMyTeamsActivitiesInQAPots)
+    @if (_showMyTeamsActivitiesInQaPots)
     {
         <MyTeamsActivitiesInQaPots/>
     }
