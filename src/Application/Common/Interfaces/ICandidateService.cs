@@ -9,6 +9,8 @@ public interface ICandidateService
     Task<Result<CandidateDto>> GetByUpciAsync(string upci);
 
     Task<Result<bool>> SetStickyLocation(string upci, string location);
+    
+    Task<Result<bool>> SetHardLink(string participantId, string? primaryRecordKeyAtCreation, DateTime occurredOn);
 }
 
 public record SearchResult(string Upci, int Precedence);
