@@ -13,5 +13,4 @@ public static class PerformanceLinks
     public static BreadcrumbLinkModel OutcomeQualityDipSampleParticipant(Guid sampleId, string participantId) => new(participantId, "Link for specific participant" , $"{OutcomeQualityDipSamples.Href}/{sampleId}/{participantId}");
 
     public static BreadcrumbLinkModel ArchivedCaseBehaviour => new ("Archived Case Behaviour", "View participants moving into and out of archiving" , $"{Home.Href}/archived-case-behaviour");
-
 }
