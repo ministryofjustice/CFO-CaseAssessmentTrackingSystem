@@ -1,7 +1,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
-@using MudBlazor.Extensions
 
 <PageHeader Title="Performance Management"
+            
             Items="@_breadcrumbs" />
 
 @code
@@ -14,6 +14,12 @@
 
     private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
 
+    private static class RouteSegments
+    {
+        public const string OutcomeQualityDipSampling = "outcome-quality-dip-sampling";
+        public const string ArchivedCaseBehaviour = "archived-case-behaviour";
+    }
+    
     protected override void OnParametersSet()
     {
         _breadcrumbs = BuildBreadcrumbs();
@@ -41,7 +47,7 @@
             home
         ];
 
-        if(segments[0] == "outcome-quality-dip-sampling")
+        if(segments[0] == RouteSegments.OutcomeQualityDipSampling)
         {
             crumbs.Add(PerformanceLinks.OutcomeQualityDipSamples.AsMudBreadcrumb());
             
@@ -59,12 +65,11 @@
                 }
             }
         }
-        else if (segments[0] == "archived-case-behaviour")
+        else if (segments[0] == RouteSegments.ArchivedCaseBehaviour)
         {
             crumbs.Add(PerformanceLinks.ArchivedCaseBehaviour.AsMudBreadcrumb());
         }
 
         return crumbs;
     }
-
 }
