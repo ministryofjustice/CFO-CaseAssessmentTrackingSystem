@@ -90,6 +90,8 @@ app:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
       Sentry__Dsn: "SentryDsn"
+      Ordnance__Places__ApiKey: "OrdnanceApiKey"
+      Notify__ApiKey: "NotifyApiKey"
 
   env:
     ConnectionStrings__CatsDb: *catsDb
