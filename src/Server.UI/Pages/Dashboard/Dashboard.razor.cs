@@ -7,12 +7,11 @@ namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 public partial class Dashboard
 {
-    private bool _showQaPots;
     private bool _showMyTeamsParticipants;
     private bool _showRiskDueAggregate;
     private bool _showSyncInformation;
     private bool _showSearchParticipant;
-    private bool _showMyTeamsActivitiesInQAPots;
+    private bool _showMyTeamsActivitiesInQaPots;
     
     private readonly string _title  = "Dashboard";
 
@@ -29,9 +28,8 @@ public partial class Dashboard
         // Feature flags derived from permissions
         _showMyTeamsParticipants = hasAdditionalRoles;
         _showRiskDueAggregate = hasAdditionalRoles;
-        _showMyTeamsActivitiesInQAPots = hasAdditionalRoles;
+        _showMyTeamsActivitiesInQaPots = hasAdditionalRoles;
         
-        _showQaPots = isInternalUser;
         _showSearchParticipant = isInternalUser;
         _showSyncInformation = isInternalUser;
     }  
