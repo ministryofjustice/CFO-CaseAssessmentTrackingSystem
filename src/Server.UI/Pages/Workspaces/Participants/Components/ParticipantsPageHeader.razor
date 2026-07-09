@@ -1,6 +1,7 @@
-@using Microsoft.AspNetCore.WebUtilities
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
+@using Microsoft.AspNetCore.WebUtilities
 
 <PageHeader Title="Participants" 
             Items="@_breadcrumbs" />
@@ -49,6 +50,8 @@
                 "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
                 "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
+                "activities-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
+                "enrolments-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
                 "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
             };
