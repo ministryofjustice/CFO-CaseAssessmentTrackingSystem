@@ -13,6 +13,7 @@ using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Activities;
 using Cfo.Cats.Server.UI.Pages.Activities.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -30,7 +31,7 @@ public enum ActivitiesQuickFilter
 public partial class Activities
 {
     [Inject]
-    public ActivitiesSessionStorage SessionStorage { get; set; } = null!;
+    public CatsSessionStorage SessionStorage { get; set; } = null!;
 
     [Inject]
     public IUserService UserService { get; set; } = null!;
@@ -89,7 +90,7 @@ public partial class Activities
             _currentFilter = ActivitiesQuickFilter.MyActivities;
         }
 
-        var cached = await SessionStorage.GetAsync();
+        var cached = await SessionStorage.GetAsync<ActivitiesSessionData>();
 
         if (cached is { Succeeded: true, Data: { } sd })
         {
