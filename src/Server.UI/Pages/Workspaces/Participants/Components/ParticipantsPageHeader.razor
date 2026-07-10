@@ -48,7 +48,11 @@
         {
             return from.ToString().ToLowerInvariant() switch
             {
+                "all" => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant],
                 "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
+                "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
+                "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
+                "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb(), participant],
                 "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
                 "activities-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
@@ -83,5 +87,4 @@
 
         return [home, outcomeQuality, participant];
     }
-
 }

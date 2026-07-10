@@ -18,10 +18,8 @@ using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Participants.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
-using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
@@ -54,7 +52,7 @@ public partial class Participants
     public IAuthorizationService AuthorizationService { get; set; } = null!;
 
     [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
@@ -65,19 +63,19 @@ public partial class Participants
     private IDictionary<string, string> _tenants = null!;
 
     private IDictionary<Guid, LabelDto> _labels = null!;
-    private int _totalPages = 0;
-    private int _totalItems = 0;
+    private int _totalPages;
+    private int _totalItems;
 
-    private bool Tabular { get; set; } = false;
+    private bool Tabular { get; set; }
 
-    private bool _downloading = false;
+    private bool _downloading;
     private bool _canReassign;
     private readonly HashSet<string> _selectedParticipantIds = [];
     private QuickFilter _currentFilter = QuickFilter.All;
 
     private ParticipantPaginationDto[] _data = [];
 
-    private ParticipantsWithPagination.Query Query { get; set; } = new ParticipantsWithPagination.Query()
+    private ParticipantsWithPagination.Query Query { get; } = new()
     {
         JustMyCases = false,
         ListView = ParticipantListView.Default,
@@ -89,7 +87,7 @@ public partial class Participants
 
     private void OnRowClick(TableRowClickEventArgs<ParticipantPaginationDto> args)
     {
-        if(args?.Item is not null)
+        if(args.Item is not null)
         {
             ViewParticipant(args.Item);
         }
@@ -116,7 +114,6 @@ public partial class Participants
         {
             _labels = labelsResult.Data
                         .ToDictionary(k => k.Id, v => v);
-
         }
 
         if(UserProfile.AssignedRoles is [])
@@ -135,7 +132,7 @@ public partial class Participants
             Query.Label = sd.LabelId;
             Query.ListView = sd.ListView;
             Query.Locations = sd.Locations;
-            Query.OrderBy = sd.OrderBy ?? "Id";
+            Query.OrderBy = sd.OrderBy;
             Query.SortDirection = sd.SortDirection;
             Query.PageNumber = sd.PageNumber;
             Query.OwnerId = sd.OwnerId;
@@ -156,12 +153,6 @@ public partial class Participants
             };
         }
 
-        await OnRefresh();
-    }
-
-    private async Task LocationValueChanged(int? locationId)
-    {
-        Query.Locations = locationId == null ? [] : [locationId.Value];
         await OnRefresh();
     }
 
@@ -368,7 +359,7 @@ public partial class Participants
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Ascending.ToString();
+            Query.SortDirection = nameof(SortDirection.Ascending);
         }
         await OnRefresh();
     }
@@ -386,7 +377,7 @@ public partial class Participants
         ResetQuery();
         _currentFilter = QuickFilter.OverdueRisk;
         Query.RiskDue = DateTime.UtcNow.Date;
-        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.SortDirection = nameof(SortDirection.Ascending);
         Query.OrderBy = "RiskDue";
         await OnRefresh();
     }
@@ -405,7 +396,7 @@ public partial class Participants
         Query.Keyword = null;
         Query.OrderBy = "Id";
         Query.ListView = ParticipantListView.Default;
-        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.SortDirection = nameof(SortDirection.Ascending);
         Query.PageNumber = 1;
         Query.Label = null;
         Query.OwnerId = null;
@@ -435,7 +426,7 @@ public partial class Participants
             _downloading = true;
             var result = await Service.Send(new ExportParticipants.Command()
             {
-                Query = Query!
+                Query = Query
             });
 
             if (result.Succeeded)
@@ -461,7 +452,7 @@ public partial class Participants
     {
         var targetUrl = item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus
             ? $"/pages/enrolments/{item.Id}"
-            : $"/pages/workspace/participants/{item.Id}";
+            : $"/pages/workspace/participants/{item.Id}?from=all";
         
         Navigation.NavigateTo(targetUrl);
     }
