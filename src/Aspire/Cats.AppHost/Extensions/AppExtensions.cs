@@ -8,7 +8,9 @@ internal static class AppExtensions
         CatsDatabaseResources databases)
     {
         var useWorkerForJobs = string.Equals(builder.Configuration["Features:UseWorkerForJobs"], "true", StringComparison.OrdinalIgnoreCase);
-        var useSignalRBackplane = string.Equals(builder.Configuration["Features:UseSignalRBackplane"], "true", StringComparison.OrdinalIgnoreCase);
+        var redisEnabled = string.Equals(builder.Configuration["Features:Redis:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
+        var useRedisSignalRBackplane = string.Equals(builder.Configuration["Features:Redis:SignalRBackplane"], "true", StringComparison.OrdinalIgnoreCase);
+        var useRedisSessionStore = string.Equals(builder.Configuration["Features:Redis:SessionStore"], "true", StringComparison.OrdinalIgnoreCase);
         var useDmsHardLinkApi = string.Equals(builder.Configuration["Features:UseDmsHardLinkApi"], "true", StringComparison.OrdinalIgnoreCase);
         var enablePresenceHub = string.Equals(builder.Configuration["Features:PresenceHub:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
         var relayUserPresenceNotifications = string.Equals(builder.Configuration["Features:PresenceHub:RelayUserPresenceNotifications"], "true", StringComparison.OrdinalIgnoreCase);
@@ -17,7 +19,9 @@ internal static class AppExtensions
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
             .WithEnvironment("Features__UseWorkerForJobs", useWorkerForJobs.ToString().ToLowerInvariant())
-            .WithEnvironment("Features__UseSignalRBackplane", useSignalRBackplane.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__Redis__Enabled", redisEnabled.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__Redis__SignalRBackplane", useRedisSignalRBackplane.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__Redis__SessionStore", useRedisSessionStore.ToString().ToLowerInvariant())
             .WithEnvironment("Features__UseDmsHardLinkApi", useDmsHardLinkApi.ToString().ToLowerInvariant())
             .WithEnvironment("Features__PresenceHub__Enabled", enablePresenceHub.ToString().ToLowerInvariant())
             .WithEnvironment("Features__PresenceHub__RelayUserPresenceNotifications", relayUserPresenceNotifications.ToString().ToLowerInvariant())
@@ -29,9 +33,9 @@ internal static class AppExtensions
             cats.WithReplicas(replicaCount);        
         }
 
-        if(useSignalRBackplane)
+        if(redisEnabled)
         {
-            var redis = builder.AddSignalRBackplane();
+            var redis = builder.AddCatsRedis();
             
             cats.WithReference(redis)
                 .WaitFor(redis);
@@ -70,7 +74,7 @@ internal static class AppExtensions
         return rabbit;
     }
 
-    public static IResourceBuilder<RedisResource> AddSignalRBackplane(this IDistributedApplicationBuilder builder)
+    public static IResourceBuilder<RedisResource> AddCatsRedis(this IDistributedApplicationBuilder builder)
     {
         var redis = builder.AddRedis("redis")
             // 7.4-alpine
