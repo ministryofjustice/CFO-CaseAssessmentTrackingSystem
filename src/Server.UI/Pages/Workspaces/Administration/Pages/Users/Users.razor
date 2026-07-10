@@ -7,7 +7,6 @@
 @using ZiggyCreatures.Caching.Fusion
 @using Cfo.Cats.Infrastructure.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
-@using Cfo.Cats.Server.UI.Services.Fusion
 
 @attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
@@ -18,7 +17,6 @@
 @inject ITenantService TenantsService
 @inject IFusionCache FusionCache;
 @inject IFusionCache Cache;
-@inject IOnlineUserTracker OnlineUserTracker
 @inject INetworkIpProvider NetworkIpProvider
 
 @inject IStringLocalizer<Users> L

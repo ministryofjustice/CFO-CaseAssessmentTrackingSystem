@@ -1,4 +1,3 @@
-using ActualLab.Fusion.Blazor;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;

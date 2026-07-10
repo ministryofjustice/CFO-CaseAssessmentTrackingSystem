@@ -1,4 +1,3 @@
-using ActualLab.Fusion.Authentication;
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 
