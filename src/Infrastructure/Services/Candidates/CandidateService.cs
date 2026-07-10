@@ -205,4 +205,38 @@ public class CandidateService(
             return Result<bool>.Failure("An internal error occurred while communicating with the candidate service.");
         }
     }
+
+    public async Task<Result<bool>> SetHardLink(string upci, string? primaryRecordKeyAtCreation, DateTime occurredOn)
+    {
+        try
+        {
+            var result = await client.PostAsJsonAsync($"/clustering/{upci}/hardlink", new
+            {
+                primaryRecordKeyAtCreation,
+                occurredOn
+            });
+        
+            if (result.IsSuccessStatusCode)
+            {
+                return Result<bool>.Success(true);
+            }
+
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return Result<bool>.Failure("The hard link endpoint or target participant could not be found.");
+            }
+            
+            return Result<bool>.Failure($"Failed to set hard link. The DMS API returned status: {result.StatusCode}. Please try again or contact support if the issue persists.");
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "DMS Service is unavailable during hard link set for {Upci}", upci);
+            return Result<bool>.Failure("DMS Service is currently unavailable. Please try again later.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected exception calling SetHardLink for {Upci}", upci);
+            return Result<bool>.Failure("An internal error occurred while communicating with the candidate service.");
+        }
+    }
 }
