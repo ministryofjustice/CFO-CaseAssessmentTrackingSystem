@@ -1,13 +1,6 @@
 using Cfo.Cats.Application.Features.Activities.Specifications;
-using Cfo.Cats.Server.UI.Services;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Activities;
-
-public class ActivityPQASessionStorage(ProtectedSessionStorage protectedSessionStorage, ICurrentUserService currentUserService)
-    : CatsSessionStorage<ActivityPQASessionData>(protectedSessionStorage, currentUserService)
-{
-}
 
 public record ActivityPQASessionData
 {
