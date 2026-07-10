@@ -48,7 +48,7 @@ public partial class Participants
     public ITenantService TenantService {get;set;} = null!;
 
     [Inject]
-    public ParticipantsSessionStorage SessionStorage { get;set; } = null!;
+    public CatsSessionStorage SessionStorage { get;set; } = null!;
 
     [Inject]
     public IAuthorizationService AuthorizationService { get; set; } = null!;
@@ -127,7 +127,7 @@ public partial class Participants
             _currentFilter = QuickFilter.MyParticipants;
         }
                     
-        var cached = await SessionStorage.GetAsync();
+        var cached = await SessionStorage.GetAsync<ParticipantsSessionData>();
 
         if (cached is { Succeeded: true, Data: { } sd })
         {
