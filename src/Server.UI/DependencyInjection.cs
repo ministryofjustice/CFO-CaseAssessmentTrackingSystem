@@ -18,6 +18,7 @@ using ApexCharts;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Enrolments;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Activities;
 using StackExchange.Redis;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Infrastructure.Services.Identity;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
@@ -160,10 +161,22 @@ public static class DependencyInjection
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
 
-        services.AddScoped<ParticipantsSessionStorage>();
-        services.AddScoped<ActivitiesSessionStorage>();
-        services.AddScoped<PQASessionStorage>();
-        services.AddScoped<ActivityPQASessionStorage>();
+        if (config.GetValue<bool>("Features:UseRedisSessionStore"))
+        {
+            var redisConnectionString = config.GetConnectionString("redis")
+                ?? throw new InvalidOperationException("Redis connection must be configured to use the Redis session store. Please set the 'redis' connection string in your configuration.");
+
+            services.TryAddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisConnectionString));
+
+            services.AddScoped<ICatsSessionStore, RedisSessionStore>();
+        }
+        else
+        {
+            services.AddScoped<ICatsSessionStore, ProtectedBrowserSessionStore>();
+        }
+
+        services.AddScoped<CatsSessionStorage>();
         
         return builder;
     }
