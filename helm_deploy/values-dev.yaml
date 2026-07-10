@@ -14,6 +14,13 @@ app:
     scaleUpStabilizationWindowSeconds: 60
   ingress:
     host: hmpps-cfo-case-assessment-tracking-system-dev.live.cloud-platform.service.justice.gov.uk
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
   env:
     DOTNET_ENVIRONMENT: "Development"
     Sentry__Environment: "Development-CloudPlatform"
@@ -21,6 +28,13 @@ app:
 worker:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   env:
     DOTNET_ENVIRONMENT: "Development"
     Sentry__Environment: "Development-CloudPlatform"

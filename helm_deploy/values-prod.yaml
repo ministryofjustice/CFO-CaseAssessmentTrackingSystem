@@ -15,10 +15,10 @@ app:
     modsecurity_audit_enabled: true
   resources:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 1Gi
     limits:
-      cpu: "2"
+      cpu: 1500m
       memory: 2Gi
   env:
     DOTNET_ENVIRONMENT: "Production"

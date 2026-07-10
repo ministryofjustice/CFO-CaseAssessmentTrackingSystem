@@ -12,6 +12,13 @@ app:
   ingress:
     host: hmpps-cfo-case-assessment-tracking-system-preprod.live.cloud-platform.service.justice.gov.uk
     modsecurity_audit_enabled: true
+  resources:
+    requests:
+      cpu: 350m
+      memory: 1Gi
+    limits:
+      cpu: 1200m
+      memory: 2Gi
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
     Sentry__Environment: "PreProduction-CloudPlatform"
@@ -19,6 +26,13 @@ app:
 worker:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 150m
+      memory: 384Mi
+    limits:
+      cpu: 750m
+      memory: 768Mi
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
     Sentry__Environment: "PreProduction-CloudPlatform"
