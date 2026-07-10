@@ -1,21 +1,8 @@
 @page "/pages/workspace/participants/all"
 
-@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Labels.DTOs
-@using Cfo.Cats.Application.Features.Labels.Queries
-@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Analytics
-@using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Specifications
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Components.Labels
-@using Cfo.Cats.Server.UI.Components.Locations
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
-
-@inject IStringLocalizer<Participants> L
 
 @inherits OwningComponentBase<IMediator>
 
@@ -36,7 +23,7 @@
 
             </MudMenu>
             <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
-                          ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
+                          ValueChanged="@(OnSearch!)" Clearable="true" ShrinkLabel="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
                           AdornmentColor="Color.Secondary">
             </MudTextField>
@@ -44,26 +31,26 @@
             @if (_canReassign)
             {
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
-                           StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="ReassignSelectedItems"
+                           StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@ReassignSelectedItems"
                            Disabled="@(!_selectedParticipantIds.Any())">
                     Reassign Selected (@_selectedParticipantIds.Count)
                 </MudButton>
                 <MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Small"
-                           StartIcon="@Icons.Material.Filled.Deselect" OnClick="ClearSelectedParticipants"
+                           StartIcon="@Icons.Material.Filled.Deselect" OnClick="@ClearSelectedParticipants"
                            Disabled="@(!_selectedParticipantIds.Any())">
                     Clear Selection
                 </MudButton>
             }
             <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
-                       StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefreshClicked">
+                       StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefreshClicked">
                 @ConstantString.Refresh
             </MudButton>
-            <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="OnExport"
+            <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="@OnExport"
                               StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
                 @ConstantString.Export
             </MudLoadingButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
-                       StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="OnEnrol">
+                       StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="@OnEnrol">
                 Enrol
             </MudButton>
         </MudStack>
@@ -111,7 +98,7 @@
                 <MudMenuItem Label="Archived" OnClick="@(() => ListViewChanged(ParticipantListView.Archived))" />
                 <MudMenuItem Label="All" OnClick="@(() => ListViewChanged(ParticipantListView.All))" />
             </MudMenu>
-             <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowAssigneeDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+             <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowAssigneeDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 @if(string.IsNullOrEmpty(Query.OwnerId))
                 {
                     @("All Assignees")
@@ -121,7 +108,7 @@
                     @_users[Query.OwnerId]
                 }
             </MudButton>
-            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 @if(string.IsNullOrEmpty(Query.TenantId))
                 {
                     @("All Tenants")
@@ -131,7 +118,7 @@
                     @_tenants[Query.TenantId]
                 }
             </MudButton>
-            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 @if(Query.Locations is [])
                 {
                     @("All Locations")
@@ -170,7 +157,7 @@
                 <MudMenuItem Label="Enrolment Status" OnClick="@(() => SortBy("EnrolmentStatus"))"/>
             </MudMenu>
             <MudTooltip Text="Clear search parameters">
-                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(ClearSearch)" />
             </MudTooltip>
         </MudStack>
     </MudStack>
