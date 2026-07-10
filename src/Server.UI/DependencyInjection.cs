@@ -175,21 +175,6 @@ public static class DependencyInjection
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
 
-        if (config.GetValue<bool>("Features:UseRedisSessionStore"))
-        {
-            var redisConnectionString = config.GetConnectionString("redis")
-                ?? throw new InvalidOperationException("Redis connection must be configured to use the Redis session store. Please set the 'redis' connection string in your configuration.");
-
-            services.TryAddSingleton<IConnectionMultiplexer>(_ =>
-                ConnectionMultiplexer.Connect(redisConnectionString));
-
-            services.AddScoped<ICatsSessionStore, RedisSessionStore>();
-        }
-        else
-        {
-            services.AddScoped<ICatsSessionStore, ProtectedBrowserSessionStore>();
-        }
-
         services.AddScoped<CatsSessionStorage>();
         
         return builder;
