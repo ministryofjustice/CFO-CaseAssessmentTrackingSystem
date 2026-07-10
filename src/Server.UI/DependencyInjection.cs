@@ -105,24 +105,42 @@ public static class DependencyInjection
             services.AddScoped<PresenceHubClient>();
         }
 
-        if(config.GetValue<bool>("Features:UseSignalRBackplane") is not true)
-        {
-            services.AddSingleton<IUsersStateContainer, InMemoryUsersStateContainer>();
-        }
-        else
-        {
-            var redisConnectionString = config.GetConnectionString("redis") 
-                ?? throw new InvalidOperationException("Redis connection must be configured to use the SignalR backplane. Please set the 'redis' connection string in your configuration.");
+        // Configure Redis, SignalR backplane, and session store
+        var redisEnabled = config.GetValue<bool>("Features:Redis:Enabled");
+        var useRedisSignalRBackplane = redisEnabled && config.GetValue<bool>("Features:Redis:SignalRBackplane");
+        var useRedisSessionStore = redisEnabled && config.GetValue<bool>("Features:Redis:SessionStore");
 
-            signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
-            {
-                options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats");
-            });
+        if (redisEnabled)
+        {
+            var redisConnectionString = config.GetConnectionString("redis")
+                ?? throw new InvalidOperationException("Redis connection must be configured when Features:Redis:Enabled is true. Please set the 'redis' connection string in your configuration.");
 
             services.AddSingleton<IConnectionMultiplexer>(_ =>
                 ConnectionMultiplexer.Connect(redisConnectionString));
 
+            if (useRedisSignalRBackplane)
+            {
+                signalRBuilder.AddStackExchangeRedis(redisConnectionString, options =>
+                    options.Configuration.ChannelPrefix = RedisChannel.Literal("Cats"));
+            }
+        }
+
+        if (useRedisSignalRBackplane)
+        {
             services.AddSingleton<IUsersStateContainer, RedisUsersStateContainer>();
+        }
+        else
+        {
+            services.AddSingleton<IUsersStateContainer, InMemoryUsersStateContainer>();
+        }
+
+        if (useRedisSessionStore)
+        {
+            services.AddScoped<ICatsSessionStore, RedisSessionStore>();
+        }
+        else
+        {
+            services.AddScoped<ICatsSessionStore, ProtectedBrowserSessionStore>();
         }
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -156,21 +174,6 @@ public static class DependencyInjection
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
-
-        if (config.GetValue<bool>("Features:UseRedisSessionStore"))
-        {
-            var redisConnectionString = config.GetConnectionString("redis")
-                ?? throw new InvalidOperationException("Redis connection must be configured to use the Redis session store. Please set the 'redis' connection string in your configuration.");
-
-            services.TryAddSingleton<IConnectionMultiplexer>(_ =>
-                ConnectionMultiplexer.Connect(redisConnectionString));
-
-            services.AddScoped<ICatsSessionStore, RedisSessionStore>();
-        }
-        else
-        {
-            services.AddScoped<ICatsSessionStore, ProtectedBrowserSessionStore>();
-        }
 
         services.AddScoped<CatsSessionStorage>();
         
