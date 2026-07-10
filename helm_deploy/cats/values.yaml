@@ -101,7 +101,9 @@ app:
     Features__UseWorkerForJobs: "true"
     Features__PresenceHub__Enabled: "true"
     Features__PresenceHub__RelayUserPresenceNotifications: "true"
-    Features__UseSignalRBackplane: "true"
+    Features__Redis__Enabled: "true"
+    Features__Redis__SignalRBackplane: "true"
+    Features__Redis__SessionStore: "true"
     WorkerOptions__BaseUrl: "http://cats-worker:8080"
     Sentry__Release: "0.0.0"                    # overridden by CI
     AppConfigurationSettings__Version: "0.0.0"  # overridden by CI
