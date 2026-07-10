@@ -3,43 +3,42 @@ using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.Features.Transfers.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class Transfers
 {
 
-    private bool isLoadingIncomingTransfers = true;
-    private bool isLoadingOutgoingTransfers = true;
+    private bool _isLoadingIncomingTransfers = true;
+    private bool _isLoadingOutgoingTransfers = true;
 
-    private List<IncomingTransferDto> incomingTransfers = [];
-    private List<OutgoingTransferDto> outgoingTransfers = [];
+    private List<IncomingTransferDto> _incomingTransfers = [];
+    private List<OutgoingTransferDto> _outgoingTransfers = [];
 
     private string _searchIncomingString = "";
     private string _searchOutgoingString = "";
 
     protected async override Task OnInitializedAsync()
     {
-        incomingTransfers = await GetIncomingTransfers();
-        outgoingTransfers = await GetOutgoingTransfers();
+        _incomingTransfers = await GetIncomingTransfers();
+        _outgoingTransfers = await GetOutgoingTransfers();
 
         await base.OnInitializedAsync();
     }
 
     private async Task<List<IncomingTransferDto>> GetIncomingTransfers()
     {
-        isLoadingIncomingTransfers = true;
+        _isLoadingIncomingTransfers = true;
         var query = await GetNewMediator().Send(new GetIncomingTransfers.Query());
-        isLoadingIncomingTransfers = false;
+        _isLoadingIncomingTransfers = false;
         return query.Data?.ToList() ?? [];
     }
 
     private async Task<List<OutgoingTransferDto>> GetOutgoingTransfers()
     {
-        isLoadingOutgoingTransfers = true;
+        _isLoadingOutgoingTransfers = true;
         var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
-        isLoadingOutgoingTransfers = false;
+        _isLoadingOutgoingTransfers = false;
         return query.Data?.ToList() ?? [];
     }
 
@@ -70,7 +69,7 @@ public partial class Transfers
             }
 
             // Remove dto from UI
-            incomingTransfers.Remove(incomingTransfer);
+            _incomingTransfers.Remove(incomingTransfer);
         }
     }
 
@@ -95,7 +94,7 @@ public partial class Transfers
 
         if (dismissResult.Succeeded)
         {
-            incomingTransfers.Remove(incomingTransfer);
+            _incomingTransfers.Remove(incomingTransfer);
             Snackbar.Add("Transfer dismissed successfully.", Severity.Info);
         }
         else
@@ -104,12 +103,11 @@ public partial class Transfers
         }
     }
 
-    private void View(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+    private void View(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=transfers");
 
     private async Task ViewOffenderManagerSummary(string participantId)
     {
-        var parameters = new DialogParameters<OffenderManagerSummaryDialog>();
-        parameters.Add(x => x.ParticipantId, participantId);
+        var parameters = new DialogParameters<OffenderManagerSummaryDialog> { { x => x.ParticipantId, participantId } };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
 
@@ -180,5 +178,4 @@ public partial class Transfers
         }
         return false;
     }
-
 }
