@@ -1,14 +1,8 @@
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Domain.Labels;
-using Cfo.Cats.Server.UI.Services;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
-
-public class ParticipantsSessionStorage(ProtectedSessionStorage protectedSessionStorage, ICurrentUserService currentUserService) : CatsSessionStorage<ParticipantsSessionData>(protectedSessionStorage, currentUserService)
-{
-}
 
 public record ParticipantsSessionData
 {
