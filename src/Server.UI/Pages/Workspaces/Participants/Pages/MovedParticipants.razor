@@ -1,11 +1,7 @@
 ﻿@page "/pages/workspace/participants/moved"
 
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
-@using static Cfo.Cats.Application.Features.Participants.Queries.GetParticipantsWithAccessEndingSoon
 
 @inherits CatsComponentBase
 
@@ -16,7 +12,7 @@
 <MudSimpleTable Class="pa-4">
 
     <tbody>
-        @foreach (var access in participantAccess.OrderBy(p => p.HasAccessTo))
+        @foreach (var access in _participantAccess.OrderBy(p => p.HasAccessTo))
         {
             <tr>
                 <td>
@@ -39,7 +35,7 @@
             <td colspan="6">
                 <div class="d-flex justify-center">
                     <MudText Typo="Typo.caption">
-                        @participantAccess.Count() participant(s)
+                        @_participantAccess.Count() participant(s)
                     </MudText>
                 </div>
             </td>
