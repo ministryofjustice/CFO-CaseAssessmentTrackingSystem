@@ -6,6 +6,7 @@ using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
+using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Enrolments;
 
@@ -20,7 +21,7 @@ public partial class PqaList
     public ITenantService TenantService { get; set; } = null!;
 
     [Inject]
-    public PQASessionStorage SessionStorage { get; set; } = null!;
+    public CatsSessionStorage SessionStorage { get; set; } = null!;
 
     private IDictionary<string, string> _users = null!;
 
@@ -46,7 +47,7 @@ public partial class PqaList
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
                     .ToDictionary(k => k.Id, k => k.Name);
 
-        var cached = await SessionStorage.GetAsync();
+        var cached = await SessionStorage.GetAsync<PQASessionData>();
 
         if(cached is { Succeeded: true, Data: { } sd })
         {
