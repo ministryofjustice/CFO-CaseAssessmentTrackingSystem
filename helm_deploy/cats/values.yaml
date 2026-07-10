@@ -99,6 +99,10 @@ app:
       Sentry__Dsn: "SentryDsn"
       Ordnance__Places__ApiKey: "OrdnanceApiKey"
       Notify__ApiKey: "NotifyApiKey"
+    hmpps-envoy-https-proxy-env:
+      HTTPS_PROXY: "HTTPS_PROXY"
+      HTTP_PROXY: "HTTP_PROXY"
+      NO_PROXY: "NO_PROXY"
 
   env:
     ConnectionStrings__CatsDb: *catsDb
@@ -187,6 +191,10 @@ worker:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
       Sentry__Dsn: "SentryDsn"
+    hmpps-envoy-https-proxy-env:
+      HTTPS_PROXY: "HTTPS_PROXY"
+      HTTP_PROXY: "HTTP_PROXY"
+      NO_PROXY: "NO_PROXY"
 
   env:
     ConnectionStrings__CatsDb: *catsDb
