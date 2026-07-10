@@ -5,7 +5,13 @@ serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
 
 app:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
-  replicaCount: 3
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+    scaleUpStabilizationWindowSeconds: 60
   ingress:
     host: hmpps-cfo-case-assessment-tracking-system-dev.live.cloud-platform.service.justice.gov.uk
   env:

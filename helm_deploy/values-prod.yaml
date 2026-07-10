@@ -2,7 +2,13 @@ serviceAccountName: hmpps-cfo-case-assessment-tracking-system-prod
 
 app:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-prod
-  replicaCount: 4
+  autoscaling:
+    enabled: true
+    minReplicas: 4
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+    scaleUpStabilizationWindowSeconds: 60
   ingress:
     host: hmpps-cfo-case-assessment-tracking-system-prod.live.cloud-platform.service.justice.gov.uk
     className: modsec
