@@ -18,6 +18,7 @@ using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Participants.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
