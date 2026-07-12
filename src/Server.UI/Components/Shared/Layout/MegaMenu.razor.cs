@@ -11,7 +11,7 @@ public partial class MegaMenu : IDisposable
     [Inject] private IAsyncMenuService MenuService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-    [Inject] private AppConfigurationSettings Configuration { get; set; } = default!;
+    [Inject] private AppConfigurationSettings Settings { get; set; } = default!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
