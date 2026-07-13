@@ -4,7 +4,7 @@ serviceAccountName: ""
 # Component toggles — every workload is off by default and each release opts in
 # via --set (see README). The shared values-<env>.yaml files are used by all
 # three releases, so enabling happens per release in CI, not in those files:
-#   app deploy : --set app.enabled=true worker.enabled=true rabbitmq.enabled=true redis.enabled=true
+#   app deploy : --set app.enabled=true worker.enabled=true rabbitmq.enabled=true
 #   migrate    : --set migrator.enabled=true
 #   seed       : --set seeder.enabled=true
 # ---------------------------------------------------------------------------
@@ -12,7 +12,9 @@ serviceAccountName: ""
 connectionStrings:
   catsDb: &catsDb "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=False;Encrypt=True;"
   rabbit: &rabbit "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
-  redis: &redis "redis-service:6379"
+  # Managed ElastiCache (Redis) — in-transit encryption is enabled because an auth token is
+  # issued, so TLS (ssl=True) is required. Endpoint/token come from the elasticache-redis-instance-output secret.
+  redis: &redis "$(REDIS_PRIMARY_ENDPOINT):6379,password=$(REDIS_AUTH_TOKEN),ssl=True,abortConnect=False"
 
 app:
   enabled: true
@@ -86,6 +88,9 @@ app:
       DATABASE_ADDRESS: "rds_instance_address"
       DATABASE_USERNAME: "database_username"
       DATABASE_PASSWORD: "database_password"
+    elasticache-redis-instance-output:
+      REDIS_PRIMARY_ENDPOINT: "primary_endpoint_address"
+      REDIS_AUTH_TOKEN: "auth_token"
     s3-bucket-output:
       AWS__Bucket: "bucket_name"
     config:
@@ -192,10 +197,6 @@ worker:
 rabbitmq:
   enabled: true
   image: "rabbitmq:4.3-management-alpine@sha256:e6862a7d804c80fc72d2265aed3b725fd9a6afd330b735363eeecc4b6ec4dd3d"
-
-redis:
-  enabled: true
-  image: "redis:8.8-alpine@sha256:cd5f3ac681c77791c6a8eaa62de876ad2be043ee5a428afb7c0095aa08246277"
 
 migrator:
   enabled: true
