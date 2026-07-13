@@ -42,7 +42,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         {
             await SignInAsync(user, isPersistent);
             await UserManager.ResetAccessFailedCountAsync(user);
-            sessionService.StartSession(user.Id);
+            await sessionService.StartSessionAsync(user.Id);
             return passwordCheckResult;
         }        
 
@@ -54,7 +54,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         SignInResult result = await  base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         if (result.Succeeded)
         {
-            sessionService.StartSession(user.Id);
+            await sessionService.StartSessionAsync(user.Id);
         }
         return result;
     }
@@ -68,7 +68,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
             var info = await GetTwoFactorAuthenticationUserAsync();
             if (info != null)
             {
-                sessionService.StartSession(info.Id);
+                await sessionService.StartSessionAsync(info.Id);
             }
         }
         return result;
