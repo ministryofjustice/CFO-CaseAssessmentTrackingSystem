@@ -1,9 +1,6 @@
-using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Toolbelt.Blazor.HotKeys2;
 
 namespace Cfo.Cats.Server.UI.Components.Shared.Layout;
@@ -13,6 +10,7 @@ public partial class HeaderMenu
     [Inject] private HotKeys HotKeys { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private IWorkspacePreferenceService WorkspacePreferenceService { get; set; } = null!;
+    [Inject] private ILogger<HeaderMenu> Logger { get; set; } = null!;
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
     
     [EditorRequired] [Parameter] public EventCallback OpenSearch { get; set; }
@@ -36,48 +34,60 @@ public partial class HeaderMenu
         // Refresh HomePage whenever navigation occurs
         NavigationManager.LocationChanged += OnLocationChanged;
         
-        // Listen for workspace preference changes from other components (e.g. MegaMenu)
+        // Listen for workspace preference changes from other components (e.g., MegaMenu)
         WorkspacePreferenceService.OnWorkspacePreferenceChanged += OnWorkspacePreferenceChanged;
         
         await base.OnInitializedAsync();
     }
 
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private async Task OnLocationChangedAsync()
     {
         // Refresh the HomePage from database when navigation occurs
         await LoadUserHomePage();
         await InvokeAsync(StateHasChanged);
     }
 
-    private async void OnWorkspacePreferenceChanged()
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        try
+        {
+            await OnLocationChangedAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to refresh home page after navigation");
+        }
+    }
+
+    private async Task OnWorkspacePreferenceChangedAsync()
     {
         // Refresh the HomePage when another component (MegaMenu) changes it
         await LoadUserHomePage();
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task LoadUserHomePage()
+    private async void OnWorkspacePreferenceChanged()
     {
         try
         {
-            var state = await AuthState;
-            if (state.User.Identity?.IsAuthenticated == true)
-            {
-                var userProfile = state.User.GetUserProfileFromClaim();
-                var userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-                // Use AsNoTracking to always get fresh data from database
-                var user = await userManager.Users
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.Id == userProfile.UserId);
-                
-                // Use user's HomePage if set, otherwise default to "/"
-                _homePageUrl = string.IsNullOrWhiteSpace(user?.HomePage) ? "/" : user.HomePage;
-            }
+            await OnWorkspacePreferenceChangedAsync();
         }
-        catch
+        catch (Exception ex)
         {
-            // If anything fails, default to "/"
-            _homePageUrl = "/";
+            Logger.LogError(ex, "Failed to refresh home page after workspace preference change");
+        }
+    }
+
+    private async Task LoadUserHomePage()
+    {
+        var state = await AuthState;
+        if (state.User.Identity?.IsAuthenticated == true)
+        {
+            var userProfile = state.User.GetUserProfileFromClaim();
+            var homePage = await WorkspacePreferenceService.GetHomePageAsync(userProfile.UserId);
+
+            // Use user's HomePage if set, otherwise default to "/"
+            _homePageUrl = string.IsNullOrWhiteSpace(homePage) ? "/" : homePage;
         }
     }
 

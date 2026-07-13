@@ -1,13 +1,9 @@
-using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.Commands;
-using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Navigation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cfo.Cats.Server.UI.Components.Shared.Layout;
 
@@ -16,6 +12,7 @@ public partial class MegaMenu
     [Inject] private IAsyncMenuService MenuService { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private IWorkspacePreferenceService WorkspacePreferenceService { get; set; } = null!;
+    [Inject] private ILogger<MegaMenu> Logger { get; set; } = null!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
@@ -24,7 +21,7 @@ public partial class MegaMenu
 
     private NavigationMenuModel _menuModel = null!;
     private string? _defaultWorkspace;
-    private UserProfile? _userProfile;
+    private string? _currentUserId;
     private bool _previousOpenState;
     
     private bool _loaded;
@@ -33,7 +30,8 @@ public partial class MegaMenu
 
     protected override async Task OnParametersSetAsync()
     {
-        // Detect when menu is newly opened (transition from closed to open)
+        // Detect when menu is newly opened (transition from closed to open), so we only
+        // hit the database on open rather than on every render while the menu stays open.
         var justOpened = Open && !_previousOpenState;
         _previousOpenState = Open;
         
@@ -41,8 +39,7 @@ public partial class MegaMenu
         {
             await LoadMenuIfNeededAsync();
             
-            // Always refresh workspace preference, especially when menu just opened
-            if (justOpened || _userProfile is not null)
+            if (justOpened)
             {
                 await RefreshWorkspacePreferenceAsync();
             }
@@ -55,23 +52,29 @@ public partial class MegaMenu
         {
             var state = await AuthState;
             _menuModel = await MenuService.GetFeaturesAsync(state.User);
-            _userProfile = state.User.GetUserProfileFromClaim();
+            if (state.User.Identity?.IsAuthenticated == true)
+            {
+                _currentUserId = state.User.GetUserProfileFromClaim().UserId;
+            }
             _loaded = true;
         }
     }
 
     private async Task RefreshWorkspacePreferenceAsync()
     {
-        if (_userProfile is not null)
+        if (string.IsNullOrWhiteSpace(_currentUserId))
         {
-            var userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-            // Get fresh data from database
-            var user = await userManager.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == _userProfile.UserId);
-            
-            _defaultWorkspace = user?.HomePage;
+            return;
+        }
+
+        try
+        {
+            _defaultWorkspace = await WorkspacePreferenceService.GetHomePageAsync(_currentUserId);
             await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to refresh workspace preference");
         }
     }
 

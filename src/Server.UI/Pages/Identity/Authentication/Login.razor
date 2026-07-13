@@ -17,7 +17,6 @@
 @inject IdentityRedirectManager RedirectManager
 @inject IMediator Sender
 @inject INetworkIpProvider NetworkIpProvider
-@inject IApplicationDbContext DbContext
 
 
 <PageTitle>@_title</PageTitle>
@@ -146,7 +145,7 @@
             return;
         }
 
-        // This doesn't count login failures towards account lock out
+        // This doesn't count login failures towards account lockout.
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, false, lockoutOnFailure: true);
 
@@ -154,14 +153,7 @@
         {
             await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName, NetworkIpProvider.IpAddress));
             
-            // Fetch fresh HomePage value from database (avoid cached entity)
-            var homePage = await DbContext.Users
-                .AsNoTracking()
-                .Where(u => u.Id == user.Id)
-                .Select(u => u.HomePage)
-                .FirstOrDefaultAsync();
-            
-            var redirectUrl = !string.IsNullOrWhiteSpace(homePage) ? homePage : (ReturnUrl ?? "/");
+            var redirectUrl = !string.IsNullOrWhiteSpace(user.HomePage) ? user.HomePage : (ReturnUrl ?? "/");
             RedirectManager.RedirectTo(redirectUrl);
         }
         else if(result is CustomSignInResult customSignInResult)

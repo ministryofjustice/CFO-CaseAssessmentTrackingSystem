@@ -19,13 +19,13 @@
                         {
                             if(item is NavigationMenuItemLinkModel link)
                             {
-                                @if (section.Title == "Workspaces")
+                                @if (section.IsBookmarkable)
                                 {
                                     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width: 100%;">
                                         <MudLink
                                             Href="@link.Href"
                                             Target="@link.Target"
-                                            aria-description="@link.AccessbilityText"
+                                            aria-description="@link.AccessibilityText"
                                             Class="pa-1"
                                             Underline="Underline.Always">
                                             @L[@link.DisplayText]
@@ -43,7 +43,7 @@
                                     <MudLink
                                         Href="@link.Href"
                                         Target="@link.Target"
-                                        aria-description="@link.AccessbilityText"
+                                        aria-description="@link.AccessibilityText"
                                         Class="pa-1"
                                         Underline="Underline.Always">
                                         @L[@link.DisplayText]
