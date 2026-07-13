@@ -2,10 +2,10 @@
 
 public interface ISessionService
 {
-    bool IsSessionValid(string? userId);
-    void UpdateActivity(string? userId);
-    void InvalidateSession(string? userId);
-    
-    void StartSession(string? userId);
-    TimeSpan? GetRemainingSessionTime(string? userId);
+    Task<bool> IsSessionValidAsync(string? userId, CancellationToken cancellationToken = default);
+    Task UpdateActivityAsync(string? userId, CancellationToken cancellationToken = default);
+    Task InvalidateSessionAsync(string? userId, CancellationToken cancellationToken = default);
+
+    Task StartSessionAsync(string? userId, CancellationToken cancellationToken = default);
+    Task<TimeSpan?> GetRemainingSessionTimeAsync(string? userId, CancellationToken cancellationToken = default);
 }
