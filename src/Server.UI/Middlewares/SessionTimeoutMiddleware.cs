@@ -12,7 +12,7 @@ public class SessionTimeoutMiddleware(RequestDelegate next, ISessionService sess
         {
             var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             
-            if (sessionService.IsSessionValid(userId) == false)
+            if (await sessionService.IsSessionValidAsync(userId) == false)
             {
                 context.Response.Cookies.Append(".AspNetCore.Identity.Application", "", new CookieOptions
                 {
@@ -37,7 +37,7 @@ public class SessionTimeoutMiddleware(RequestDelegate next, ISessionService sess
             }
             
             // refresh the activity on a page refresh
-            sessionService.UpdateActivity(userId);
+            await sessionService.UpdateActivityAsync(userId);
         }
         
         await next(context);

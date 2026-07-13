@@ -18,38 +18,38 @@ public class SessionService(IFusionCache cache, IConfiguration configuration) : 
             IsFailSafeEnabled = false
         };
 
-    public void StartSession(string? userId)
-        => SetSafe(userId);
+    public Task StartSessionAsync(string? userId, CancellationToken cancellationToken = default)
+        => SetSafeAsync(userId, cancellationToken);
 
-    public void UpdateActivity(string? userId)
-        => SetSafe(userId);
+    public Task UpdateActivityAsync(string? userId, CancellationToken cancellationToken = default)
+        => SetSafeAsync(userId, cancellationToken);
 
-    public void InvalidateSession(string? userId)
+    public async Task InvalidateSessionAsync(string? userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
             return;
         }
-        cache.Remove(Key(userId));
+        await cache.RemoveAsync(Key(userId), token: cancellationToken);
     }
 
-    public bool IsSessionValid(string? userId)
+    public async Task<bool> IsSessionValidAsync(string? userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
             return false;
         }
-        return cache.TryGet<DateTime>(Key(userId)).HasValue;
+        return (await cache.TryGetAsync<DateTime>(Key(userId), token: cancellationToken)).HasValue;
     }
 
-    public TimeSpan? GetRemainingSessionTime(string? userId)
+    public async Task<TimeSpan?> GetRemainingSessionTimeAsync(string? userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
             return null;
         }
 
-        var entry = cache.TryGet<DateTime>(Key(userId));
+        var entry = await cache.TryGetAsync<DateTime>(Key(userId), token: cancellationToken);
         if (entry.HasValue == false)
         {
             return null;
@@ -72,11 +72,11 @@ public class SessionService(IFusionCache cache, IConfiguration configuration) : 
         return remaining;
     }
 
-    private void SetSafe(string? userId)
+    private async Task SetSafeAsync(string? userId, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            cache.Set(Key(userId), DateTime.UtcNow, IdleOptions());
+            await cache.SetAsync(Key(userId), DateTime.UtcNow, IdleOptions(), token: cancellationToken);
         }
     }
 }
