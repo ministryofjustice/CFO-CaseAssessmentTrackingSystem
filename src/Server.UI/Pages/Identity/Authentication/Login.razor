@@ -1,10 +1,8 @@
 ﻿@page "/pages/authentication/login"
 
-
 @using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
 @using Microsoft.AspNetCore.Authentication
 @using Cfo.Cats.Domain.Identity
-@using Cfo.Cats.Application.Common.Interfaces.Identity
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Text
@@ -14,15 +12,15 @@
 
 @inject ILogger<Login> Logger
 @inject UserManager<ApplicationUser> UserManager
-@inject IIdentityService IdentityService
 @inject IStringLocalizer<Login> L
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityRedirectManager RedirectManager
 @inject IMediator Sender
 @inject INetworkIpProvider NetworkIpProvider
+@inject IApplicationDbContext DbContext
 
 
-<PageTitle>@title</PageTitle>
+<PageTitle>@_title</PageTitle>
 
 <MudPaper Elevation="3" Class="pa-4">
     <MudGrid Spacing="6" Justify="Justify.Center" Class="pa-4">
@@ -58,7 +56,7 @@
             <EditForm Model="Input" method="post" OnValidSubmit="OnSubmit" FormName="login">
                 <DataAnnotationsValidator />
                 <MudText Typo="Typo.h4" GutterBottom="true">@L["Sign In"]</MudText>
-                <StatusMessage Message="@errorMessage" Error="true" />
+                <StatusMessage Message="@_errorMessage" Error="true" />
                 <div class="mud-input-control mud-input-input-control my-4">
                     <div class="mud-input-control-input-container">
                         <!--!--><!--!-->
@@ -113,13 +111,13 @@
 
 @code {
     public const string PageUrl = "/pages/authentication/login";
-    private string? errorMessage;
+    private string? _errorMessage;
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
     [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-    private string title = "Sign In";
-    private AuthenticationScheme[] externalLogins = [];
+    private HttpContext HttpContext { get; set; } = null!;
+    private string _title = "Sign In";
+
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new()
         {
@@ -129,7 +127,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        title = L["Sign In"];
+        _title = L["Sign In"];
         if (HttpContext is not null && HttpMethods.IsGet(HttpContext.Request.Method))
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -144,18 +142,27 @@
         if(user is null)
         {
             await Sender.Publish( IdentityAuditNotification.UnknownUserNameNotification(Input.UserName, NetworkIpProvider.IpAddress));
-            errorMessage = L["Error: Invalid login attempt."];
+            _errorMessage = L["Error: Invalid login attempt."];
             return;
         }
 
-        // This doesn't count login failures towards account lockout
+        // This doesn't count login failures towards account lock out
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, false, lockoutOnFailure: true);
 
         if (result.Succeeded)
         {
             await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName, NetworkIpProvider.IpAddress));
-            RedirectManager.RedirectTo(user.HomePage ?? ReturnUrl);
+            
+            // Fetch fresh HomePage value from database (avoid cached entity)
+            var homePage = await DbContext.Users
+                .AsNoTracking()
+                .Where(u => u.Id == user.Id)
+                .Select(u => u.HomePage)
+                .FirstOrDefaultAsync();
+            
+            var redirectUrl = !string.IsNullOrWhiteSpace(homePage) ? homePage : (ReturnUrl ?? "/");
+            RedirectManager.RedirectTo(redirectUrl);
         }
         else if(result is CustomSignInResult customSignInResult)
         {
@@ -168,7 +175,7 @@
             else if(customSignInResult.IsInactive)
             {
                 await Sender.Publish(IdentityAuditNotification.UserInactive(Input.UserName, NetworkIpProvider.IpAddress));
-                errorMessage = L["Account is inactive. Please contact CFO Service Desk"];
+                _errorMessage = L["Account is inactive. Please contact CFO Service Desk"];
             }
         }
         else if (result.RequiresTwoFactor)
@@ -188,7 +195,7 @@
         else
         {
             await Sender.Publish( IdentityAuditNotification.LoginFailedPassword(Input.UserName,NetworkIpProvider.IpAddress) );
-            errorMessage = L["Error: Invalid login attempt."];
+            _errorMessage = L["Error: Invalid login attempt."];
         }
     }
 
