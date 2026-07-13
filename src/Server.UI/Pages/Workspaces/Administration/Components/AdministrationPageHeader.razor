@@ -20,22 +20,22 @@
         var homeUrl = AdministrationLinks.Home.Href;
 
         var segment = uri.AbsolutePath.Length > homeUrl.Length
-            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/').ToLower()
             : string.Empty;
 
         return segment switch
         {
             "" => [home],
-            "Jobs" => [home, AdministrationLinks.Jobs.AsMudBreadcrumb()],
-            "CacheManagement" => [home, AdministrationLinks.CacheManagement.AsMudBreadcrumb()],
-            "AuditTrails" => [home, AdministrationLinks.AuditTrails.AsMudBreadcrumb()],
-            "Outbox" => [home, AdministrationLinks.Outbox.AsMudBreadcrumb()],
+            "jobs" => [home, AdministrationLinks.Jobs.AsMudBreadcrumb()],
+            "cachemanagement" => [home, AdministrationLinks.CacheManagement.AsMudBreadcrumb()],
+            "audittrails" => [home, AdministrationLinks.AuditTrails.AsMudBreadcrumb()],
+            "outbox" => [home, AdministrationLinks.Outbox.AsMudBreadcrumb()],
             "picklist" => [home, AdministrationLinks.PickList.AsMudBreadcrumb()],
-            "Labels" => [home, AdministrationLinks.Labels.AsMudBreadcrumb()],
-            "Initiatives" => [home, AdministrationLinks.Initiatives.AsMudBreadcrumb()],
-            "Tenants" => [home, AdministrationLinks.Tenants.AsMudBreadcrumb()],
-            "users/Users" => [home, AdministrationLinks.Users.AsMudBreadcrumb()],
-            "users/UserAudit" => [home, AdministrationLinks.UserAudit.AsMudBreadcrumb()],
+            "labels" => [home, AdministrationLinks.Labels.AsMudBreadcrumb()],
+            "initiatives" => [home, AdministrationLinks.Initiatives.AsMudBreadcrumb()],
+            "tenants" => [home, AdministrationLinks.Tenants.AsMudBreadcrumb()],
+            "users/users" => [home, AdministrationLinks.Users.AsMudBreadcrumb()],
+            "users/useraudit" => [home, AdministrationLinks.UserAudit.AsMudBreadcrumb()],
             _ => [home]
         };
     }

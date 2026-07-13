@@ -1,7 +1,6 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 
 <PageHeader Title="Performance Management"
-            
             Items="@_breadcrumbs" />
 
 @code
@@ -33,7 +32,7 @@
         var homeUrl = PerformanceLinks.Home.Href;
 
         var relativePath = uri.AbsolutePath.Length > homeUrl.Length
-            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/').ToLower()
             : string.Empty;
 
         var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
