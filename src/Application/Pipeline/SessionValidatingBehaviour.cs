@@ -19,12 +19,12 @@ public abstract class SessionValidatingBehaviour<TRequest, TResponse>(
                 throw new UnauthorizedAccessException("Session is not valid");
             }
 
-            if (sessionService.IsSessionValid(userId) == false)
+            if (await sessionService.IsSessionValidAsync(userId) == false)
             {
                 throw new UnauthorizedAccessException("Session is not valid");
             }
 
-            sessionService.UpdateActivity(userId);
+            await sessionService.UpdateActivityAsync(userId);
             return await next();
         }
         finally
