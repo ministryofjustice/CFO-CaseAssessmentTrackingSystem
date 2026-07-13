@@ -42,6 +42,10 @@ worker:
 rdsPortForward:
   enabled: false
 
+# Redis bridge - disabled in non-development environments
+redisPortForward:
+  enabled: false
+
 # todo: enable prometheus alerts
 # generic-prometheus-alerts:
 #   alertSeverity: cfo-alerts-nonprod

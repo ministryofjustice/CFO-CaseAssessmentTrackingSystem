@@ -221,6 +221,17 @@ rdsPortForward:
   localPort: 11433   # port the pod listens on (your LOCAL_PORT)
   remotePort: 1433   # SQL Server port in the cloud
 
+# ---------------------------------------------------------------------------
+# Redis port-forward — an ad-hoc helper Deployment that bridges to the cloud
+# ElastiCache (Redis) so it can be reached via `kubectl port-forward`. Off in
+# non-development environments.
+# ---------------------------------------------------------------------------
+redisPortForward:
+  enabled: false
+  image: "ministryofjustice/port-forward@sha256:eaed873978acf6ccf23f08315f56ef71f0a7ffcd6a0bea821459bfb363b65e76"
+  localPort: 16379   # port the pod listens on (your LOCAL_PORT)
+  remotePort: 6379   # Redis port in the cloud
+
 # todo: enable prometheus alerts
 # generic-prometheus-alerts:
 #   targetApplication: cats
