@@ -55,7 +55,7 @@ public partial class SessionTimeoutDisplay
 
     private async Task UpdateRemainingTime()
     {
-        _remainingTime = SessionService.GetRemainingSessionTime(_userId);
+        _remainingTime = await SessionService.GetRemainingSessionTimeAsync(_userId);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -90,7 +90,7 @@ public partial class SessionTimeoutDisplay
 
     private async Task TimerClicked()
     {
-        SessionService.UpdateActivity(_userId);
+        await SessionService.UpdateActivityAsync(_userId);
         await UpdateRemainingTime();
     }
 
