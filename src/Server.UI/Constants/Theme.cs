@@ -2,11 +2,6 @@
 
 public static class Theme
 {
-    /// <summary>
-    /// The default primary colour for the site.
-    /// </summary>
-    public const string DefaultPrimaryColour = "#6E3562";
-
     public static MudTheme ApplicationTheme(string primaryColour)
     {
 
@@ -16,7 +11,7 @@ public static class Theme
         {
             PaletteLight = new PaletteLight
             {
-                Primary = primaryColour, // the default CFO Purple
+                Primary = primaryColour, 
                 Secondary = "#34586E",
                 Success = "#62ae2f",
                 Info = "#34586E",
