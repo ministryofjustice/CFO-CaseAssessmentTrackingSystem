@@ -76,5 +76,8 @@ jobs:
       push: true
       docker_multiplatform: false
       download_build_artifacts: false
+      generate_sbom: true
+      attach_sbom_to_registry: true
+      sign_image: true
       # Optional human-friendly tag alongside the generated date.run_number.sha7 tag.
       additional_docker_tag: ${{ inputs.image_tag }}
