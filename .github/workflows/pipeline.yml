@@ -74,6 +74,9 @@ jobs:
       push: true
       docker_multiplatform: false
       download_build_artifacts: false
+      generate_sbom: true
+      attach_sbom_to_registry: true
+      sign_image: true
 
   deploy_dev:
     name: Deploy to the development environment
