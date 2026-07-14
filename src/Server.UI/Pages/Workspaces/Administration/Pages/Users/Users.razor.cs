@@ -10,7 +10,6 @@ using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services;
 using Cfo.Cats.Server.UI.Extensions;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Users;
-using Cfo.Cats.Server.UI.Services.Fusion;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -315,22 +314,6 @@ public partial class Users
             Snackbar.Add($"{L["The user updated successfully."]}", Severity.Info);
             await OnRefresh();
             UserService.Refresh();
-
-            var userInfo = new UserInfo(
-                model.Id,
-                model.UserName,
-                model.Email,
-                model.DisplayName,
-                model.ProfilePictureDataUrl ?? string.Empty,
-                model.SuperiorName ?? string.Empty,
-                model.SuperiorId ?? string.Empty,
-                model.TenantId ?? string.Empty,
-                model.TenantName ?? string.Empty,
-                model.PhoneNumber,
-                model.AssignedRoles,
-                UserPresence.Available);
-
-            await OnlineUserTracker.UpdateUser(userInfo);
 
             await Cache.RemoveAsync(ApplicationUserClaimsPrincipalFactory.GetCacheKey(user.Id));
         }

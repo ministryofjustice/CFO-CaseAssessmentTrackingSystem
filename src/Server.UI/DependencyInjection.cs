@@ -1,7 +1,6 @@
 using BlazorDownloadFile;
 using Cfo.Cats.Infrastructure.Constants.Localization;
 using Cfo.Cats.Server.UI.Services;
-using Cfo.Cats.Server.UI.Services.Fusion;
 using Cfo.Cats.Server.UI.Services.JsInterop;
 using Cfo.Cats.Server.UI.Services.Navigation;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -9,9 +8,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using MudExtensions.Services;
-using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
-using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
 using Cfo.Cats.Server.UI.Hubs;
 using ApexCharts;
@@ -69,12 +66,6 @@ public static class DependencyInjection
         services.AddMudBlazorDialog();
         services.AddHotKeys2();
         
-        services.AddFusion(fusion => {
-            fusion.AddInMemoryKeyValueStore();
-            fusion.AddService<IUserSessionTracker, UserSessionTracker>();
-            fusion.AddService<IOnlineUserTracker, OnlineUserTracker>();
-        });
-
         services.AddScoped<LocalizationCookiesMiddleware>()
             .Configure<RequestLocalizationOptions>(options =>
             {

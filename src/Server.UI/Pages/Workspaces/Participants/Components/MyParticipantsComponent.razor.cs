@@ -4,7 +4,6 @@ using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Enums;
-using MemoryPack.Formatters;
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
