@@ -14,9 +14,9 @@ public class CumulativeExcelService : ICumulativeExcelService
 
     private XLColor _backgroundColor; 
 
-    public CumulativeExcelService(IConfiguration cfg)
+    public CumulativeExcelService(IApplicationSettings settings)
     {
-        _backgroundColor = XLColor.FromHtml(cfg["PrimaryColour"] ?? "#722660" );
+        _backgroundColor = XLColor.FromHtml(settings.PrimaryColour);
     }
 
     public ICumulativeExcelService WithThisMonth(DateOnly date)

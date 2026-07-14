@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Hosting
 
-@inject IConfiguration Configuration
+@inject IApplicationSettings Settings
+@inject IWebHostEnvironment Environment
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,20 +15,6 @@
     <link href="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.css?v=@Version" rel="stylesheet"/>
     <link href="css/app.css?v=@Version" rel="stylesheet" />
     <link href="Cfo.Cats.Server.UI.styles.css?v=@Version" rel="stylesheet" />
-    @* Seed the primary palette colour into the first server-rendered paint so the
-       correct environment colour shows immediately, before MudThemeProvider runs.
-       This eliminates the default-colour flash on every page, including the
-       statically-rendered authentication pages. *@
-    <style>
-        :root {
-            --mud-palette-primary: @PrimaryColour;
-            --mud-palette-primary-rgb: @PrimaryColourRgb;
-            --mud-palette-primary-text: #ffffff;
-            --mud-palette-appbar-background: @PrimaryColour;
-            --mud-palette-appbar-text: #ffffff;
-            --mud-palette-table-lines: @PrimaryColour;
-        }
-    </style>
     <title>Case Assessment and Tracking System (CATS)</title>
     <link href="cats.ico" rel="icon" />
 </head>
@@ -56,11 +44,9 @@
 @code {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
 
-    string Version => Configuration["AppConfigurationSettings:Version"]!;
+    string Version => Settings.Version.Equals("Development") ? Guid.NewGuid().ToString("N") : Settings.Version;
 
-    private string PrimaryColour => Configuration["PrimaryColour"] ?? Constants.Theme.DefaultPrimaryColour;
-
-    private string PrimaryColourRgb => HexToRgb(PrimaryColour);
+    private string PrimaryColourRgb => HexToRgb(Settings.PrimaryColour);
 
     private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/pages/authentication")
         ? null
