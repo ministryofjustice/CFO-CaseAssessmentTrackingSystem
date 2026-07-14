@@ -21,9 +21,6 @@ spec:
         runAsUser: 1001
         runAsGroup: 1001
         runAsNonRoot: true
-        capabilities:
-          drop:
-            - ALL
       serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
         - name: rabbitmq
@@ -35,6 +32,9 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
+            capabilities:
+              drop:
+                - ALL
           startupProbe:
             tcpSocket:
               port: 5672
