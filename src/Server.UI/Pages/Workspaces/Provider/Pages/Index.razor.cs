@@ -36,6 +36,7 @@ public partial class Index
         [
             ProviderLinks.CaseManagement,
             ProviderLinks.Performance,
+            ProviderLinks.RecentApprovedActivities,
         ];
 
         if (_showCaseWorkload)

@@ -12,4 +12,5 @@ public static class ProviderLinks
     public static BreadcrumbLinkModel EnrolmentsPqa => new ( "Enrolments PQA", "Review enrolments submitted for provider quality assurance" , $"{Home.Href}/enrolments/pqa");
     public static BreadcrumbLinkModel ActivitiesPqa => new ( "Activities PQA", "Review activities submitted for provider quality assurance" , $"{Home.Href}/activities/pqa");
     public static BreadcrumbLinkModel Payments => new ( "Payments", "Contract payment auditing and management" , $"{Home.Href}/payments");
+    public static BreadcrumbLinkModel RecentApprovedActivities => new ( "Recent Approved Activities", "View recent approved activities" , $"{Home.Href}/recent-approved-activities");
 }

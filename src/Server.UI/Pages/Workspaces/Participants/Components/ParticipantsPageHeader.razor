@@ -58,6 +58,7 @@
                 "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
                 "activities-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
                 "enrolments-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
+                "recent-approved-activities" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.RecentApprovedActivities.AsMudBreadcrumb(), participant],
                 "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "dipsample-review-list" => BuildDipSampleParticipantBreadcrumbs(parsedQuery, participant),
                 _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]

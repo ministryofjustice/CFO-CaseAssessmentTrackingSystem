@@ -37,6 +37,7 @@
             _ when segment.StartsWith("activities/pqa/", StringComparison.Ordinal) =>
                 [home, ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), new BreadcrumbItem("Activity", href: null, disabled: true)],
             "payments" => [home, ProviderLinks.Payments.AsMudBreadcrumb()],
+            "recent-approved-activities" => [home, ProviderLinks.RecentApprovedActivities.AsMudBreadcrumb()],
             _ => throw new Exception()
         };
     }
