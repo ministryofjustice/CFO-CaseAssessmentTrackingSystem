@@ -6,10 +6,6 @@
     <NoWarn>NU1608</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ActualLab.Fusion" Version="13.0.12" />
-    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="13.0.12" />
-    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="13.0.12" />
-    <PackageVersion Include="ActualLab.Generators" Version="13.0.12" />
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
