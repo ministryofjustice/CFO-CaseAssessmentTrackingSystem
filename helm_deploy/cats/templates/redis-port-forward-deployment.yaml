@@ -16,19 +16,35 @@ spec:
         app: redis-port-forward
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
+
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: redis-port-forward
           image: {{ .Values.redisPortForward.image | quote }}
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
           ports:
-            - containerPort: {{ .Values.redisPortForward.localPort }}   # this is your LOCAL_PORT inside the pod
+            - containerPort: {{ .Values.redisPortForward.localPort }} # this is your LOCAL_PORT inside the pod
+
           env:
             - name: REMOTE_HOST
               valueFrom:
                 secretKeyRef:
                   name: elasticache-redis-instance-output
                   key: primary_endpoint_address
+
             - name: LOCAL_PORT
-              value: {{ .Values.redisPortForward.localPort | quote }}    # what the pod listens on
+              value: {{ .Values.redisPortForward.localPort | quote }} # what the pod listens on
+
             - name: REMOTE_PORT
-              value: {{ .Values.redisPortForward.remotePort | quote }}   # Redis in the cloud
+              value: {{ .Values.redisPortForward.remotePort | quote }} # Redis in the cloud
 {{- end }}
