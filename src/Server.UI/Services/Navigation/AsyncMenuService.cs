@@ -46,7 +46,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             items.Add(new NavigationMenuItemLinkModel("Administration", "/pages/workspace/administration/", "Navigates to the root workspace for CATS administrative function"));
         }
         
-        return new("Workspaces", items.ToArray() );
+        return new("Workspaces", items.ToArray(), IsBookmarkable: true);
     }
 
     private async Task<NavigationMenuSectionModel> CreateProfileMenu() => new("Profile", [
