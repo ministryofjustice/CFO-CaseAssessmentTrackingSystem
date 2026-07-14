@@ -9,10 +9,11 @@ namespace Cfo.Cats.Server.UI.Components.Shared.Layout;
 
 public partial class MegaMenu
 {
-    [Inject] private IAsyncMenuService MenuService { get; set; } = null!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private IAsyncMenuService MenuService { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private IWorkspacePreferenceService WorkspacePreferenceService { get; set; } = null!;
     [Inject] private ILogger<MegaMenu> Logger { get; set; } = null!;
+    [Inject] private IApplicationSettings Settings { get; set; } = default!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
