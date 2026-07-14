@@ -21,12 +21,12 @@
                     }
                 </MudAppBar>
                 <div class="mud-main-content">
-                    @if(string.IsNullOrEmpty(Configuration["PreLoginMessage"]) == false)
+                    @if(string.IsNullOrEmpty(Settings.PreLoginMessage) == false)
                     {
                         <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Square="true" 
                             ContentAlignment="HorizontalAlignment.Center"
                             Icon="@Icons.Material.Filled.EventNote">
-                            @Configuration["PreLoginMessage"]
+                            @Settings.PreLoginMessage
                         </MudAlert>
                     }
                     <MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
