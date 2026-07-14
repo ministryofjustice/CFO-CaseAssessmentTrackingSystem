@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Models.NavigationMenu;
@@ -17,34 +13,35 @@ public record NavigationMenuModel(NavigationMenuSectionModel[] Sections);
 /// </summary>
 /// <param name="Title">The heading for the title</param>
 /// <param name="Links">The links that sit under this section</param>
-public record NavigationMenuSectionModel(string Title, NavigationMenuItemModel[] Links);
+/// <param name="IsBookmarkable">Whether links in this section can be bookmarked as the user's default workspace</param>
+public record NavigationMenuSectionModel(string Title, NavigationMenuItemModel[] Links, bool IsBookmarkable = false);
 
 /// <summary>
-/// Represents the smallest deriviative of the main menu (for example links and buttons)
+/// Represents the smallest derivative of the main menu (for example, links and buttons)
 /// </summary>
-public abstract record NavigationMenuItemModel();
+public abstract record NavigationMenuItemModel;
 
 /// <summary>
-/// Represents a menu item that should be dispayed as a button.
+/// Represents a menu item that should be displayed as a button.
 /// </summary>
 /// <param name="DisplayText">The text to display in the button</param>
 /// <param name="Href">The Href to navigate to</param>
 /// <param name="AccessibilityText">Accessibility description</param>
 public sealed record NavigationMenuItemButtonModel(string DisplayText, string? Href, string AccessibilityText, AppColour Colour = AppColour.Default) 
-    : NavigationMenuItemModel();
+    : NavigationMenuItemModel;
 
 /// <summary>
 /// Represents a menu item that should be display as a link.
 /// </summary>
 /// <param name="DisplayText">The text to display as the link</param>
 /// <param name="Href">The URL of the link</param>
-/// <param name="AccessbilityText">Accessibility description</param>
+/// <param name="AccessibilityText">Accessibility description</param>
 /// <param name="Target">HTML standard for target</param>
-public sealed record NavigationMenuItemLinkModel(string DisplayText, string? Href, string AccessbilityText, string? Target = null)
-    : NavigationMenuItemModel();
+public sealed record NavigationMenuItemLinkModel(string DisplayText, string? Href, string AccessibilityText, string? Target = null)
+    : NavigationMenuItemModel;
 
 /// <summary>
 /// Represents a menu divider.
 /// </summary>
-public sealed record NavigationMenuItemDividerModel() 
-    : NavigationMenuItemModel();
+public sealed record NavigationMenuItemDividerModel 
+    : NavigationMenuItemModel;
