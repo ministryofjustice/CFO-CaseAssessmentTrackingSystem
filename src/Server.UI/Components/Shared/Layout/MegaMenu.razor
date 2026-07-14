@@ -1,5 +1,6 @@
 @using Cfo.Cats.Server.UI.Models.NavigationMenu
 @inject IStringLocalizer<HeaderMenu> L
+@inherits CatsComponentBase
 
 @if (Open)
 {
@@ -14,19 +15,40 @@
                         <MudDivider Class="mb-3" />
                         <MudStack Spacing="2" AlignItems="AlignItems.Start">
 
-                        
                         @foreach (var item in section.Links)
                         {
                             if(item is NavigationMenuItemLinkModel link)
                             {
-                                <MudLink
-                                    Href="@link.Href"
-                                    Target="@link.Target"
-                                    aria-description="@link.AccessbilityText"
-                                    Class="pa-1"
-                                    Underline="Underline.Always">
-                                    @L[@link.DisplayText]
-                                </MudLink>
+                                @if (section.IsBookmarkable)
+                                {
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width: 100%;">
+                                        <MudLink
+                                            Href="@link.Href"
+                                            Target="@link.Target"
+                                            aria-description="@link.AccessibilityText"
+                                            Class="pa-1"
+                                            Underline="Underline.Always">
+                                            @L[@link.DisplayText]
+                                        </MudLink>
+                                        <MudIconButton 
+                                            Icon="@(link.Href == _defaultWorkspace ? Icons.Material.Filled.Star : Icons.Material.Outlined.StarBorder)"
+                                            Color="@(link.Href == _defaultWorkspace ? Color.Warning : Color.Default)"
+                                            Size="Size.Small"
+                                            OnClick="@(async () => await ToggleWorkspaceBookmark(link.Href!))"
+                                            aria-label="@(link.Href == _defaultWorkspace ? "Remove bookmark" : "Set as default workspace")" />
+                                    </MudStack>
+                                }
+                                else
+                                {
+                                    <MudLink
+                                        Href="@link.Href"
+                                        Target="@link.Target"
+                                        aria-description="@link.AccessibilityText"
+                                        Class="pa-1"
+                                        Underline="Underline.Always">
+                                        @L[@link.DisplayText]
+                                    </MudLink>
+                                }
                             }
 
                             if(item is NavigationMenuItemButtonModel button)
@@ -60,19 +82,4 @@
             </MudGrid>
         </MudContainer>
     </MudPaper>
-}
-
-@code
-{
-    private RenderFragment? RenderStatus(PageStatus status) => status == PageStatus.Completed
-        ? null
-        : @<MudChip T="string" Size="Size.Small" Color="@StatusColour(status)" Variant="Variant.Filled">@status.GetDescription()</MudChip>;
-
-    private static Color StatusColour(PageStatus status) => status switch
-    {
-        PageStatus.Wip => Color.Warning,
-        PageStatus.New => Color.Success,
-        PageStatus.ComingSoon => Color.Default,
-        _ => Color.Default
-    };
 }
