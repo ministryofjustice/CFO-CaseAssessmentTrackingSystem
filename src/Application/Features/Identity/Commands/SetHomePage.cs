@@ -22,9 +22,9 @@ public static class SetHomePage
     public class Command : ICommand<Result>
     {
         /// <summary>
-        /// The home page path (must start with '/').
+        /// The home page path (must start with '/'). Null or empty to clear the preference.
         /// </summary>
-        public required string HomePage { get; set; }
+        public string? HomePage { get; set; }
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public static class SetHomePage
 
     /// <summary>
     /// Validates the SetHomePage command request.
-    /// Ensures the home page is provided and conforms to path requirements.
+    /// Ensures the home page conforms to path requirements when provided.
     /// </summary>
     public class Validator : AbstractValidator<Command>
     {
@@ -68,10 +68,9 @@ public static class SetHomePage
         public Validator()
         {
             RuleFor(x => x.HomePage)
-                .NotEmpty()
                 .MaximumLength(HomePageMaxLength)
-                .Must(x => x.StartsWith('/'))
-                .WithMessage("Home page must start with '/'");
+                .Must(x => string.IsNullOrWhiteSpace(x) || x.StartsWith('/'))
+                .WithMessage("Home page must start with '/' when provided");
         }
     }
 }
