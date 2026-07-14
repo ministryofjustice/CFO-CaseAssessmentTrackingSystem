@@ -32,11 +32,10 @@
     private DateTime _lastActivity = DateTime.Now;
 
     [Inject]
-    protected IConfiguration Configuration { get; set; } = default!;
+    protected IApplicationSettings Settings { get; set;} = default!;
 
     protected override void OnInitialized()
-    => _theme = Theme.ApplicationTheme(Configuration["PrimaryColour"] 
-                                                      ?? Theme.DefaultPrimaryColour);
+        => _theme = Theme.ApplicationTheme(Settings.PrimaryColour);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -52,10 +51,8 @@
             }
 
             await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
-            
-            int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
-
-            _timer = new System.Timers.Timer(60000 * idleTimeOutMinutes); 
+          
+            _timer = new System.Timers.Timer(60000 * Settings.IdleTimeOutMinutes); 
             _timer.Elapsed += UpdateTimer;
             _timer.AutoReset = false;
             _timer.Start();
@@ -78,8 +75,7 @@
     [JSInvokable]  
     public void TimerInterval()  
     {  
-        int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
-        DateTime maximumAge = _lastActivity.AddMinutes(idleTimeOutMinutes);
+        DateTime maximumAge = _lastActivity.AddMinutes(Settings.IdleTimeOutMinutes);
         if (maximumAge < DateTime.Now)
         {
             Logout();
@@ -88,7 +84,6 @@
         {
             _lastActivity = DateTime.Now;
         }
-
 
         _timer!.Stop();  
         _timer!.Start();  
