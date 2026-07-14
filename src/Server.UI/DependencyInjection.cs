@@ -15,13 +15,9 @@ using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
 using Cfo.Cats.Server.UI.Hubs;
 using ApexCharts;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Enrolments;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Pages.Activities;
 using StackExchange.Redis;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Infrastructure.Services.Identity;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -31,10 +27,8 @@ public static class DependencyInjection
     {
         var services = builder.Services;
         var config = builder.Configuration;
-        var environment = builder.Environment;
-
-        
-        CookieSecurePolicy policy = CookieSecurePolicy.SameAsRequest;
+           
+        var policy = CookieSecurePolicy.SameAsRequest;
         if(config["IdentitySettings:SecureCookies"] is not null && config["IdentitySettings:SecureCookies"]!.Equals("True", StringComparison.CurrentCultureIgnoreCase))
         {
             policy = CookieSecurePolicy.Always;
@@ -49,6 +43,7 @@ public static class DependencyInjection
         services.AddCascadingAuthenticationState();
         services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
+        services.AddScoped<IWorkspacePreferenceService, WorkspacePreferenceService>();
         services
             .AddMudBlazorDialog()
             .AddMudServices(mudServicesConfiguration => {
@@ -148,7 +143,6 @@ public static class DependencyInjection
         
         services.AddScoped<LocalTimezoneOffset>();
         services.AddHttpContextAccessor();
-/*        services.AddScoped<HubClient>(); */
         services.AddMudExtensions()
             .AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>()
             .AddScoped<DialogServiceHelper>()
@@ -211,8 +205,8 @@ public static class DependencyInjection
         {
             if (context.Response.Headers.IsReadOnly == false)
             {
-                string csp = app.Configuration["Content-Security-Policy"] ??
-                                      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'self' data:; frame-src 'self' data:;";
+                var csp = app.Configuration["Content-Security-Policy"] ??
+                          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'self' data:; frame-src 'self' data:;";
 
                 context.Response.Headers.Append("Content-Security-Policy", csp);
             }
@@ -222,7 +216,6 @@ public static class DependencyInjection
 
         app.UseAntiforgery();
         
-        //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         if (!Directory.Exists(Path.Combine(app.Environment.ContentRootPath, @"Files")))
@@ -262,5 +255,4 @@ public static class DependencyInjection
       
         return app;
     }
-
 }
