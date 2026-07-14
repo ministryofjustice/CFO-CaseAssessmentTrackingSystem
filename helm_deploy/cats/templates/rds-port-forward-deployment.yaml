@@ -16,19 +16,35 @@ spec:
         app: rds-port-forward
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
+
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: rds-port-forward
           image: {{ .Values.rdsPortForward.image | quote }}
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
           ports:
-            - containerPort: {{ .Values.rdsPortForward.localPort }}   # this is your LOCAL_PORT inside the pod
+            - containerPort: {{ .Values.rdsPortForward.localPort }}
+
           env:
             - name: REMOTE_HOST
               valueFrom:
                 secretKeyRef:
                   name: rds-mssql-instance-output
                   key: rds_instance_address
+
             - name: LOCAL_PORT
-              value: {{ .Values.rdsPortForward.localPort | quote }}    # what the pod listens on
+              value: {{ .Values.rdsPortForward.localPort | quote }}
+
             - name: REMOTE_PORT
-              value: {{ .Values.rdsPortForward.remotePort | quote }}   # SQL Server in the cloud
+              value: {{ .Values.rdsPortForward.remotePort | quote }}
 {{- end }}
