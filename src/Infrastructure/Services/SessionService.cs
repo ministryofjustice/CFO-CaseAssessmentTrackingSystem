@@ -4,10 +4,10 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class SessionService(IFusionCache cache, IConfiguration configuration) : ISessionService
+public class SessionService(IFusionCache cache, IApplicationSettings settings) : ISessionService
 {
     private readonly TimeSpan _timeout =
-        TimeSpan.FromMinutes(configuration.GetValue<int>("IdleTimeOutMinutes"));
+        TimeSpan.FromMinutes(settings.IdleTimeOutMinutes);
 
     private static string Key(string userId) => $"LastActivity_{userId}";
 
