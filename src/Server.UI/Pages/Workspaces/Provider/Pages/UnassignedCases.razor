@@ -14,22 +14,29 @@
 </MudAlert>
 
 <MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-    <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
+    <MudSwitch Label="Visual Mode" Color="Color.Info" Value="VisualMode" ValueChanged="OnVisualModeChanged" T="bool" />
     <MudSpacer />
     @if (CanFilter)
     {
         <ProviderDashboardFilter CurrentUser="CurrentUser"
                                  SelectedTenantId="@SelectedTenantId"
                                  SelectedUserId="@SelectedUserId"
-                                 TenantSelected="OnTenantSelected"
-                                 UserSelected="OnUserSelected"
-                                 ClearRequested="OnClearFilter" />
+                                 TenantSelected="OnTenantSelectedWithSave"
+                                 UserSelected="OnUserSelectedWithSave"
+                                 ClearRequested="OnClearFilterWithSave" />
     }
 </MudStack>
 
 @if (IsTenantLevel)
 {
-    <UnassignedCasesDashboardComponent TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+    <UnassignedCasesDashboardComponent TenantId="@EffectiveTenantId"
+                                       @key="@SelectionKey"
+                                       VisualMode="@VisualMode"
+                                       IncludeTransferIn="@_includeTransferIn"
+                                       KeywordFilter="@_keyword"
+                                       SelectedEnrolmentStatus="@_enrolmentStatus"
+                                       SelectedLocationId="@_locationId"
+                                       FiltersChanged="OnFiltersChanged" />
 }
 else
 {

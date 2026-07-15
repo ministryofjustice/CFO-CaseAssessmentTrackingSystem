@@ -27,7 +27,7 @@
         </MudItem>
         <!-- Toggle button -->
         <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-            <MudSwitch T="bool" @bind-Value="ShowOverdueOnly" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
+            <MudSwitch T="bool" Value="ShowOverdueOnly" ValueChanged="OnShowOverdueOnlyChanged" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
         </MudItem>
     </MudGrid>
     @if(VisualMode)

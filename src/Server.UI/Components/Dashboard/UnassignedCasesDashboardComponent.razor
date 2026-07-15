@@ -62,14 +62,7 @@
                     }
                 </MudMenu>
                 <MudButton Size="MudSize.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                    @if(Query.Locations is { Length: 0 })
-                    {
-                        @("All Locations")
-                    }
-                    else
-                    {
-                        @_locations[Query.Locations[0]]
-                    }
+                    @GetSelectedLocationLabel()
                 </MudButton>
                 <MudSwitch Value="_includeTransferIn"
                         T="bool"
@@ -175,7 +168,7 @@ else
             <CellTemplate>
                 <MudStack AlignItems="AlignItems.Start" Spacing="0">
                     <div class="d-flex align-items-center gap-2">
-                        <MudLink Href="@($"/pages/workspace/participants/{context.Item.Id}?from=unassigned-cases")">
+                        <MudLink OnClick="@(() => ViewParticipant(context.Item.Id))">
                             @context.Item.ParticipantName
                         </MudLink>
                         @if (context.Item.HasIncomingTransfer)

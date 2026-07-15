@@ -36,11 +36,10 @@ public partial class Index
         // workers see their own data, senior staff can drill down by tenant and user.
         List<BreadcrumbLinkModel> links =
         [
-            ProviderLinks.CaseManagement,
+            ProviderLinks.Performance,
             ProviderLinks.LocationBreakdown,
             ProviderLinks.PathwayPlanReviews,
             ProviderLinks.Initiatives,
-            ProviderLinks.Performance,
             ProviderLinks.RecentApprovedActivities,
         ];
 

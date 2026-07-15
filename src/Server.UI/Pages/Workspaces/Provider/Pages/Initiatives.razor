@@ -14,17 +14,24 @@
 </MudAlert>
 
 <MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-    <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
+    <MudSwitch Label="Visual Mode" Color="Color.Info" Value="VisualMode" ValueChanged="OnVisualModeChanged" T="bool" />
     <MudSpacer />
     @if (CanFilter)
     {
         <ProviderDashboardFilter CurrentUser="CurrentUser"
                                  SelectedTenantId="@SelectedTenantId"
                                  SelectedUserId="@SelectedUserId"
-                                 TenantSelected="OnTenantSelected"
-                                 UserSelected="OnUserSelected"
-                                 ClearRequested="OnClearFilter" />
+                                 TenantSelected="OnTenantSelectedWithSave"
+                                 UserSelected="OnUserSelectedWithSave"
+                                 ClearRequested="OnClearFilterWithSave" />
     }
 </MudStack>
 
-<InitiativeObjectivesDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+<InitiativeObjectivesDashboardComponent UserId="@EffectiveUserId"
+                                       TenantId="@EffectiveTenantId"
+                                       @key="@SelectionKey"
+                                       VisualMode="@VisualMode"
+                                       ShowActiveOnly="@_showActiveOnly"
+                                       ShowActiveOnlyChanged="OnShowActiveOnlyChanged"
+                                       InitiativeFilter="@_initiativeFilter"
+                                       InitiativeFilterChanged="OnInitiativeFilterChanged" />
