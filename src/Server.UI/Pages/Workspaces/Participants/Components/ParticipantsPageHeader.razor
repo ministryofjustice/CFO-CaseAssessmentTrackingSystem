@@ -61,6 +61,9 @@
                 "recent-approved-activities" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.RecentApprovedActivities.AsMudBreadcrumb(), participant],
                 "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "dipsample-review-list" => BuildDipSampleParticipantBreadcrumbs(parsedQuery, participant),
+                "pathway-plan-reviews" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.PathwayPlanReviews.AsMudBreadcrumb(), participant],
+                "unassigned-cases" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.UnassignedCases.AsMudBreadcrumb(), participant],
+                "initiatives" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.Initiatives.AsMudBreadcrumb(), participant],
                 _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
             };
         }

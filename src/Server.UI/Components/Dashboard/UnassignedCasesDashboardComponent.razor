@@ -175,7 +175,7 @@ else
             <CellTemplate>
                 <MudStack AlignItems="AlignItems.Start" Spacing="0">
                     <div class="d-flex align-items-center gap-2">
-                        <MudLink Href="@($"/pages/workspace/participants/{context.Item.Id}")">
+                        <MudLink Href="@($"/pages/workspace/participants/{context.Item.Id}?from=unassigned-cases")">
                             @context.Item.ParticipantName
                         </MudLink>
                         @if (context.Item.HasIncomingTransfer)
