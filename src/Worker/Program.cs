@@ -16,6 +16,9 @@ builder.AddServiceDefaults();
 
 var app = builder.Build();
 
+app.UseRequestTimeouts();
+app.UseOutputCache();
+
 app.MapDefaultEndpoints();
 
 // ─── Job Management API ────────────────────────────────────────────────────────
