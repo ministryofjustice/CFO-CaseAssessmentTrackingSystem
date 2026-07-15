@@ -27,7 +27,8 @@
             ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
             : string.Empty;
 
-        return segment switch
+        var normalizedSegment = segment.ToLowerInvariant();
+        return normalizedSegment switch
         {
             "" => [home],
             "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],

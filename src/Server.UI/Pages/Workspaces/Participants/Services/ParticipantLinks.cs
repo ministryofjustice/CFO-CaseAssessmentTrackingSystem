@@ -1,12 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Amazon.S3.Model;
-using Cfo.Cats.Domain.Labels.Rules;
 using Cfo.Cats.Server.UI.Models.Breadcrumb;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using Microsoft.AspNetCore.StaticAssets;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
@@ -23,8 +15,4 @@ public static class ParticipantLinks
     public static BreadcrumbLinkModel Transfers = new ("Transfers", "Manage incoming and view outgoing transfers", $"{Home.Href}/transfers");
 
     public static BreadcrumbLinkModel AllActivities = new ("Activities", "Access all activities" ,$"{Home.Href}/activities");
-
-    public static BreadcrumbLinkModel ParticipantByActivity(string id) => new(id, "Participant links" ,$"{AllActivities}/{id}");
-
 }
-
