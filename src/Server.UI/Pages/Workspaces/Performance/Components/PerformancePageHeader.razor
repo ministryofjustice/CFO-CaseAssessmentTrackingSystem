@@ -1,7 +1,6 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 
 <PageHeader Title="Performance Management"
-            
             Items="@_breadcrumbs" />
 
 @code
@@ -47,7 +46,7 @@
             home
         ];
 
-        if(segments[0] == RouteSegments.OutcomeQualityDipSampling)
+        if(segments[0].Equals(RouteSegments.OutcomeQualityDipSampling, StringComparison.OrdinalIgnoreCase))
         {
             crumbs.Add(PerformanceLinks.OutcomeQualityDipSamples.AsMudBreadcrumb());
             
@@ -65,7 +64,7 @@
                 }
             }
         }
-        else if (segments[0] == RouteSegments.ArchivedCaseBehaviour)
+        else if (segments[0].Equals(RouteSegments.ArchivedCaseBehaviour, StringComparison.OrdinalIgnoreCase))
         {
             crumbs.Add(PerformanceLinks.ArchivedCaseBehaviour.AsMudBreadcrumb());
         }
