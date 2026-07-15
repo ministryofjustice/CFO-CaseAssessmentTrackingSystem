@@ -1,4 +1,4 @@
-﻿@page "/pages/workspace/administration/users/Users"
+﻿@page "/pages/workspace/administration/users/users"
 
 @using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
@@ -10,6 +10,7 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
+
 @implements IDisposable
 
 @inject IUsersStateContainer UsersStateContainer
@@ -18,7 +19,6 @@
 @inject IFusionCache FusionCache;
 @inject IFusionCache Cache;
 @inject INetworkIpProvider NetworkIpProvider
-
 @inject IStringLocalizer<Users> L
 @inject ILogger<Users> Logger
 
