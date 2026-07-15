@@ -37,6 +37,9 @@ if (useSentry)
 
 var app = builder.Build();
 
+app.UseRequestTimeouts();
+app.UseOutputCache();
+
 app.ConfigureServer();
 app.MapDefaultEndpoints();
 
