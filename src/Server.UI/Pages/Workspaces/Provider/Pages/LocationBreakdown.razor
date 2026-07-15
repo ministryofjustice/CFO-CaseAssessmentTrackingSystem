@@ -1,0 +1,32 @@
+@page "/pages/workspace/provider/location-breakdown"
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@inherits ProviderDashboardBase
+
+<ProviderPageHeader />
+
+<MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mb-4">
+    This page is still under development and may produce inaccurate results.
+</MudAlert>
+
+<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
+    <MudSpacer />
+    @if (CanFilter)
+    {
+        <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 SelectedTenantId="@SelectedTenantId"
+                                 SelectedUserId="@SelectedUserId"
+                                 TenantSelected="OnTenantSelected"
+                                 UserSelected="OnUserSelected"
+                                 ClearRequested="OnClearFilter" />
+    }
+</MudStack>
+
+
+<CasesPerLocationDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+    

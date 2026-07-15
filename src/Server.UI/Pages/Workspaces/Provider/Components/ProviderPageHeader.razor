@@ -38,6 +38,10 @@
                 [home, ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), new BreadcrumbItem("Activity", href: null, disabled: true)],
             "payments" => [home, ProviderLinks.Payments.AsMudBreadcrumb()],
             "recent-approved-activities" => [home, ProviderLinks.RecentApprovedActivities.AsMudBreadcrumb()],
+            "location-breakdown" => [home, ProviderLinks.LocationBreakdown.AsMudBreadcrumb()],
+            "pathway-plan-reviews" => [home, ProviderLinks.PathwayPlanReviews.AsMudBreadcrumb()],
+            "initiatives" => [home, ProviderLinks.Initiatives.AsMudBreadcrumb()],
+            "unassigned-cases" => [home, ProviderLinks.UnassignedCases.AsMudBreadcrumb()],
             _ => throw new Exception()
         };
     }

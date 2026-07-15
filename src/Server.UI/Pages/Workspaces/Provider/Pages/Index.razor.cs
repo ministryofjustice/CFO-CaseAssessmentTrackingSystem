@@ -17,6 +17,7 @@ public partial class Index
     private BreadcrumbLinkModel[] Links { get; set; } = [];
     
     private bool _showCaseWorkload;
+    private bool _showUnassignedCases;
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,12 +30,16 @@ public partial class Index
         var canViewPayments = authState.User.IsInRole(RoleNames.SystemSupport) || authState.User.IsInRole(RoleNames.Finance);
 
         _showCaseWorkload = hasAdditionalRoles;
+        _showUnassignedCases = hasAdditionalRoles;
 
         // Case Management and Performance are available to every authorised user: support
         // workers see their own data, senior staff can drill down by tenant and user.
         List<BreadcrumbLinkModel> links =
         [
             ProviderLinks.CaseManagement,
+            ProviderLinks.LocationBreakdown,
+            ProviderLinks.PathwayPlanReviews,
+            ProviderLinks.Initiatives,
             ProviderLinks.Performance,
             ProviderLinks.RecentApprovedActivities,
         ];
@@ -42,6 +47,11 @@ public partial class Index
         if (_showCaseWorkload)
         {
             links.Add(ProviderLinks.CaseWorkload);
+        }
+
+        if (_showUnassignedCases)
+        {
+            links.Add(ProviderLinks.UnassignedCases);
         }
 
         if (canViewCumulatives)
