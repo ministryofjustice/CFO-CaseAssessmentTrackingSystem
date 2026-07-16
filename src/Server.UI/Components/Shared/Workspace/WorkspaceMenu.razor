@@ -1,22 +1,33 @@
 @using Cfo.Cats.Server.UI.Models.Breadcrumb
 
 <MudText Typo="Typo.h2">
-    Workspace
+    Workspace Links
 </MudText>
-<MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
-    @foreach(var menuItem in Links)
+<MudStack Class="ma-2" Justify="Justify.SpaceBetween" Row="true" StretchItems="StretchItems.All" >
+    
+    @foreach(var grp in Links.GroupBy(x => x.Group).Where(g => g.Count() > 0))
     {
-        var id = Guid.NewGuid();
-
-        <MudStack Spacing="2" AlignItems="AlignItems.Stretch">
-            <MudLink Href="@menuItem.Href" aria-describedby="@id" Underline="Underline.Always">
-                @menuItem.Title
-            </MudLink>
-            <MudText id="@id" Typo="Typo.subtitle2">
-                @menuItem.Description
-            </MudText>
+        <MudStack AlignItems="AlignItems.Stretch">
+            @if(string.IsNullOrWhiteSpace(grp.Key) == false)
+            {
+                <MudText Typo="Typo.h3" Color="Color.Secondary">
+                    @grp.Key
+                </MudText>
+            }
+            @foreach(var link in grp.OrderBy(x => x.Order))
+            {
+                var id = Guid.NewGuid();
+                <MudStack Spacing="0">
+                    <MudLink Href="@link.Href" aria-describedby="@id" Underline="Underline.Always">
+                        @link.Title
+                    </MudLink>
+                    <MudText id="@id" Typo="Typo.subtitle2">
+                        @link.Description
+                    </MudText>
+                </MudStack>
+            }
         </MudStack>
-    }
+    }    
 </MudStack>
 
 @code {
