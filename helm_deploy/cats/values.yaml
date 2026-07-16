@@ -51,19 +51,6 @@ app:
       nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
       nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
       nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
-      # Block public access to health checks; k8s probes hit the pod directly, bypassing this ingress.
-      nginx.ingress.kubernetes.io/server-snippet: |
-        server_tokens off;
-
-        location = /health {
-          deny all;
-          return 401;
-        }
-
-        location = /alive {
-          deny all;
-          return 401;
-        }
 
   startupProbe:
     httpGet:
