@@ -70,5 +70,5 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
         Colors = ["#5cb85c", "#d9534f"]
     };
 
-    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}");
+    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=recent-approved-activities");
 }
