@@ -20,7 +20,6 @@
                 <MudMenuItem OnClick="@(() => RecentlyAssignedFilterChanged(RecentParticipantFilter.AssignedLast10Days))">Assigned (Last 10 Days)</MudMenuItem>
                 <MudMenuItem OnClick="@(() => RecentlyAssignedFilterChanged(RecentParticipantFilter.AssignedLast30Days))">Assigned (Last 30 Days)</MudMenuItem>
                 <MudMenuItem OnClick="@(() => RecentlyVisitedFilterChanged())">Visited (Last 7 Days)</MudMenuItem>
-
             </MudMenu>
             <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
                           ValueChanged="@(OnSearch!)" Clearable="true" ShrinkLabel="true"
@@ -83,8 +82,6 @@
 
             <MudSpacer />
 
-         
-
             <!-- Enrolment Status -->
             <MudMenu Size="Size.Small" Label="@Query.ListView.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudMenuItem Label="Default" OnClick="@(() => ListViewChanged(ParticipantListView.Default))" />
@@ -137,7 +134,7 @@
                 }
             </MudMenu>
 
-            <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenu Size="Size.Small" Label="@($"Sort: {Query.OrderBy}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudMenuItem Label="Id" OnClick="@(() => SortBy("Id"))"/>
                 <MudMenuItem Label="First Name" OnClick="@(() => SortBy("FirstName"))"/>
                 <MudMenuItem Label="Last Name" OnClick="@(() => SortBy("LastName"))"></MudMenuItem>
@@ -162,10 +159,8 @@
         </MudStack>
     </MudStack>
 
-   
     @if (_data is { Length: > 0 })
     {
-
         @if(Tabular)
         {
             <MudTable T="ParticipantPaginationDto" Items="@_data" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
@@ -174,21 +169,39 @@
                     {
                         <MudTh>Select</MudTh>
                     }
-                    <MudTh>Id</MudTh>
-                    <MudTh>Participant</MudTh>
-                    <MudTh>Status</MudTh>
-                    <MudTh>Location</MudTh>
-                    <MudTh>Enrolled At</MudTh>
-                    <MudTh>Assignee</MudTh>
+                    <MudTh @onclick="@(() => SortBy("Id"))">
+                        <span style="cursor: pointer;">Id @GetSortIcon("Id")</span>
+                    </MudTh>
+                    <MudTh @onclick="@(() => SortBy("FirstName"))">
+                        <span style="cursor: pointer;">Participant @GetSortIcon("FirstName")</span>
+                    </MudTh>
+                    <MudTh @onclick="@(() => SortBy("EnrolmentStatus"))">
+                        <span style="cursor: pointer;">Status @GetSortIcon("EnrolmentStatus")</span>
+                    </MudTh>
+                    <MudTh @onclick="@(() => SortBy("CurrentLocation"))">
+                        <span style="cursor: pointer;">Location @GetSortIcon("CurrentLocation")</span>
+                    </MudTh>
+                    <MudTh @onclick="@(() => SortBy("EnrolmentLocation"))">
+                        <span style="cursor: pointer;">Enrolled At @GetSortIcon("EnrolmentLocation")</span>
+                    </MudTh>
+                    <MudTh @onclick="@(() => SortBy("Owner"))">
+                        <span style="cursor: pointer;">Assignee @GetSortIcon("Owner")</span>
+                    </MudTh>
                     @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
                     {
-                        <MudTh>Assigned On</MudTh>
+                        <MudTh @onclick="@(() => SortBy("AssignedOn"))">
+                            <span style="cursor: pointer;">Assigned On @GetSortIcon("AssignedOn")</span>
+                        </MudTh>
                     }
                     @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
                     {
-                        <MudTh>Accessed On</MudTh>
+                        <MudTh @onclick="@(() => SortBy("AccessedOn"))">
+                            <span style="cursor: pointer;">Accessed On @GetSortIcon("AccessedOn")</span>
+                        </MudTh>
                     }
-                    <MudTh>Risk Due</MudTh>
+                    <MudTh @onclick="@(() => SortBy("RiskDue"))">
+                        <span style="cursor: pointer;">Risk Due @GetSortIcon("RiskDue")</span>
+                    </MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     @if (_canReassign)
@@ -290,7 +303,6 @@
                                         <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
                                                     Label="@l.Name" ShowDelete="false" />
                                     }
-
                                 }
                             </MudStack>
                         </MudStack>
@@ -308,8 +320,6 @@
                 }
             </MudStack>
         }
-
-        
     }
     else
     {
