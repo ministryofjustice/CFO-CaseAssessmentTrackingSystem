@@ -7,7 +7,7 @@
 # Each app is published into its own directory so their appsettings.json files do not
 # collide. The Worker, Seeder and Migrator run this same image with a command override
 # (see helm_deploy/cats: worker.containerCommand and the migrator/seeder hook Jobs).
-FROM mcr.microsoft.com/dotnet/sdk:10.0.300@sha256:c0790639332692a0d56cdd81ed581cfd24d040d9839764c138994866df89a3b6 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.302@sha256:ed034a8bf0b24ded0cbbac07e17825d8e9ebfe21e308191d0f7421eaf5ad4664 AS build
 WORKDIR /src
 
 # Copy solution-level config required to restore and build
@@ -35,7 +35,7 @@ RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --configuration Release \
  && cp src/Database/CatsDb/bin/Release/CatsDb.dacpac /app/migrator/CatsDb.dacpac
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.9@sha256:7644f992230d35cf230017189d4038c0ae0f7388b13f4f7ae1900a155bafb597 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.10-noble-chiseled-extra@sha256:f9bd6be9b5ab75b8196bff0f0972580edaea7fa8ca04e6ef530950e33caee5b0 AS final
 WORKDIR /app
 
 COPY --from=build /app/ui ./ui
