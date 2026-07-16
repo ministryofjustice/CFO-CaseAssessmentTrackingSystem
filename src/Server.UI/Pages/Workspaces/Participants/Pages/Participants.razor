@@ -58,11 +58,11 @@
         <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
             <MudPagination 
-                Selected="Query.PageNumber"
+                @bind-Selected="Query.PageNumber"
+                @bind-Selected:after="OnRefresh"
                 Count="@_totalPages"
                 MiddleCount="2"
                 BoundaryCount="1"
-                SelectedChanged="PageChanged"
                 Size="Size.Small">
             </MudPagination>
 

@@ -81,7 +81,7 @@ public partial class Participants
         JustMyCases = false,
         ListView = ParticipantListView.Default,
         PageNumber = 1,
-        PageSize = 50,
+        PageSize = 10,
         Keyword = null,
         OrderBy = "Id",
         SortDirection = "Ascending"
