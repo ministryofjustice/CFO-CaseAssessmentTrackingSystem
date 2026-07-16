@@ -61,7 +61,7 @@
                     Participant="_participantDto"
                     QueueEntry="_queueEntry"
                     ShowNationality="true" 
-                    WorkspaceRef="enrolments-queue" />
+                    WorkspaceRef="@($"enrolments-item&stage=qa2&queueEntryId={_queueEntry?.Id}")" />
             </MudItem>
 
             <MudItem xs="8" Style="height: 100%; width: 100%;">
