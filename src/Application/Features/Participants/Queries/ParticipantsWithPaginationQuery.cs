@@ -20,7 +20,7 @@ public static class ParticipantsWithPagination
         public ParticipantListView ListView { get; set; } = ParticipantListView.Default;
 
         /// <summary>
-        /// The currently logged in user
+        /// The currently logged-in user
         /// </summary>
         public UserProfile? CurrentUser { get; set; }
 
@@ -37,9 +37,9 @@ public static class ParticipantsWithPagination
         public LabelId? Label { get; set; }
         public string? OwnerId { get; set; }
         public string? TenantId { get; set; }
-        public DateTime? RiskDue { get; set; }        
-        public RecentParticipantFilter RecentAction { get; set; } = RecentParticipantFilter.All;    
-        }
+        public DateTime? RiskDue { get; set; }
+        public RecentParticipantFilter RecentAction { get; set; } = RecentParticipantFilter.All;
+    }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
     {
@@ -73,10 +73,9 @@ public static class ParticipantsWithPagination
                 else
                 {
                     query = query.Where(p => p.FirstName.Contains(request.Keyword)
-                                || p.LastName!.Contains(request.Keyword)
+                                || p.LastName.Contains(request.Keyword)
                                 || p.Id.Contains(request.Keyword)
                                 || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(request.Keyword)));
-                    
                 }
             }
 
@@ -147,7 +146,6 @@ public static class ParticipantsWithPagination
 
             if (recentlyAssignedCutoff.HasValue)
             {
-                // Filter participants who have ownership history within the date range and are currently assigned
                 var participantIdsWithRecentOwnership = context.ParticipantOwnershipHistories
                     .Where(oh => oh.OwnerId == request.CurrentUser!.UserId
                                  && oh.From >= recentlyAssignedCutoff.Value
@@ -160,7 +158,6 @@ public static class ParticipantsWithPagination
 
             if (recentlyVisitedCutoff.HasValue)
             {
-                // Filter participants who have access audit trail within the date range for currently logged in user
                 var participantIdsWithAccessAuditTrail = context.AccessAuditTrails
                     .Where(oh => oh.UserId == request.CurrentUser!.UserId
                                  && oh.AccessDate >= recentlyVisitedCutoff.Value)
@@ -172,8 +169,7 @@ public static class ParticipantsWithPagination
 
             var count = await query.AsNoTracking().CountAsync(cancellationToken);
 
-                        // Only join to the extra history tables when the selected filter needs those dates.
-                        var transformedSource = recentlyAssignedCutoff.HasValue
+            var transformedSource = recentlyAssignedCutoff.HasValue
                 ? from p in query
                   join oh in (
                       from h in context.ParticipantOwnershipHistories
@@ -272,9 +268,13 @@ public static class ParticipantsWithPagination
                     ConsentGranted = item.Participant.DateOfFirstConsent
                 };
 
-            var sortColumn = request.OrderBy.Trim().ToLowerInvariant() switch
+            // 1. Determine if the user is relying on the default sort
+            var isDefaultSort = string.IsNullOrWhiteSpace(request.OrderBy) || 
+                                request.OrderBy.Trim().Equals("id", StringComparison.OrdinalIgnoreCase);
+
+            // 2. Map the requested sort column
+            var sortColumn = string.IsNullOrWhiteSpace(request.OrderBy) ? "Id" : request.OrderBy.Trim().ToLowerInvariant() switch
             {
-                "id" => "Id",
                 "firstname" => "FirstName",
                 "enrolmentstatus" => "EnrolmentStatus",
                 "consentstatus" => "ConsentStatus",
@@ -289,9 +289,32 @@ public static class ParticipantsWithPagination
                 _ => "Id"
             };
 
-            var sortDirection = request.SortDirection.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
+            // 3. Map the requested sort direction
+            var sortDirection = string.IsNullOrWhiteSpace(request.SortDirection) || 
+                                request.SortDirection.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
                 ? "ascending"
                 : "descending";
+
+            // 4. Apply Smart Defaults if the user hasn't explicitly requested a specific sort
+            if (isDefaultSort)
+            {
+                if (request.RecentAction == RecentParticipantFilter.VisitedLast7Days)
+                {
+                    sortColumn = "AccessedOn";
+                    sortDirection = "descending";
+                }
+                else if (request.RecentAction == RecentParticipantFilter.AssignedLast10Days || 
+                         request.RecentAction == RecentParticipantFilter.AssignedLast30Days)
+                {
+                    sortColumn = "AssignedOn";
+                    sortDirection = "descending";
+                }
+                else if (request.RiskDue.HasValue)
+                {
+                    sortColumn = "RiskDue";
+                    sortDirection = "ascending"; 
+                }
+            }
 
             var data = await transformedQuery
                 .AsNoTracking()
@@ -301,7 +324,6 @@ public static class ParticipantsWithPagination
                 .ToListAsync(cancellationToken);
 
             return new PaginatedData<ParticipantPaginationDto>(data, count, request.PageNumber, request.PageSize);
-
         }
     }
     public class Validator : AbstractValidator<Query>
@@ -325,12 +347,9 @@ public static class ParticipantsWithPagination
                 .Matches(ValidationConstants.SortDirection)
                 .WithMessage(ValidationConstants.SortDirectionMessage);
 
-            //May be at some point in future validate against columns of query result dataset
             RuleFor(r => r.OrderBy)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "OrderBy"));
-
         }
     }
 }
-
