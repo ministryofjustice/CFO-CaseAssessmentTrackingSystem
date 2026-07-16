@@ -27,7 +27,6 @@
         {
             "" => [home],
             "case-workload" => [home, ProviderLinks.CaseWorkload.AsMudBreadcrumb()],
-            "case-management" => [home, ProviderLinks.CaseManagement.AsMudBreadcrumb()],
             "performance" => [home, ProviderLinks.Performance.AsMudBreadcrumb()],
             "cumulatives" => [home, ProviderLinks.Cumulatives.AsMudBreadcrumb()],
             "enrolments/pqa" => [home, ProviderLinks.EnrolmentsPqa.AsMudBreadcrumb()],
@@ -37,6 +36,11 @@
             _ when segment.StartsWith("activities/pqa/", StringComparison.Ordinal) =>
                 [home, ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), new BreadcrumbItem("Activity", href: null, disabled: true)],
             "payments" => [home, ProviderLinks.Payments.AsMudBreadcrumb()],
+            "location-breakdown" => [home, ProviderLinks.LocationBreakdown.AsMudBreadcrumb()],
+            "pathway-plan-reviews" => [home, ProviderLinks.PathwayPlanReviews.AsMudBreadcrumb()],
+            "initiatives" => [home, ProviderLinks.Initiatives.AsMudBreadcrumb()],
+            "unassigned-cases" => [home, ProviderLinks.UnassignedCases.AsMudBreadcrumb()],
+            "recent-approved-activities" => [home, ProviderLinks.RecentApprovedActivities.AsMudBreadcrumb()],
             _ => throw new Exception()
         };
     }
