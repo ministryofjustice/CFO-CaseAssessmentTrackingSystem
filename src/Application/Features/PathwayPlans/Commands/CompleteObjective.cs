@@ -19,6 +19,7 @@ public static class CompleteObjective
 
         public string? Justification { get; set; }
 
+        [Description("The participant's last day on the initiative")]
         public DateTime? InitiativeEndDate { get; set; }
     }
 
@@ -84,17 +85,17 @@ public static class CompleteObjective
                             .AnyAsync(io => io.ObjectiveId == command.ObjectiveId, token);
                         return !hasInitiative || endDate.HasValue;
                     })
-                    .WithMessage("You must provide an end date when the objective has a linked initiative");
+                    .WithMessage("You must provide the participant's last day on the initiative when the objective has a linked initiative");
 
                 RuleFor(x => x.InitiativeEndDate)
                     .MustAsync((command, endDate, token) => BeWithinInitiativeLifetime(command.ObjectiveId, endDate, token))
                     .When(x => x.InitiativeEndDate.HasValue)
-                    .WithMessage("The end date must fall within the initiative's lifetime");
+                    .WithMessage("The participant's last day on the initiative must fall within the initiative's lifetime");
 
                 RuleFor(x => x.InitiativeEndDate)
                     .MustAsync((command, endDate, token) => BeOnOrAfterInitiativeStartDate(command.ObjectiveId, endDate, token))
                     .When(x => x.InitiativeEndDate.HasValue)
-                    .WithMessage("The end date must be on or after the initiative start date");
+                    .WithMessage("The participant's last day on the initiative must be on or after their first day on the initiative");
             });
         }
 

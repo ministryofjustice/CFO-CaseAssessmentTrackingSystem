@@ -27,7 +27,7 @@
             @if (HasLinkedInitiative)
             {
                 <MudDatePicker @bind-Date="Model.InitiativeEndDate"
-                               Label="Initiative End Date"
+                               Label="@Model.GetMemberDescription(x => x.InitiativeEndDate)"
                                For="@(() => Model.InitiativeEndDate)"
                                Class="mt-4" />
             }

@@ -16,7 +16,7 @@
             @if (_selectedInitiative is not null)
             {
                 <MudDatePicker @bind-Date="Model.InitiativeStartDate"
-                               Label="Initiative Start Date"
+                               Label="@Model.GetMemberDescription(x => x.InitiativeStartDate)"
                                For="@(() => Model.InitiativeStartDate)"
                                Class="mt-4" />
             }

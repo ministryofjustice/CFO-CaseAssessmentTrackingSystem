@@ -19,7 +19,7 @@ public static class AddObjective
         [Description("Initiative")]
         public Guid? InitiativeId { get; set; }
 
-        [Description("Initiative Start Date")]
+        [Description("The participant's first day on the initiative")]
         public DateTime? InitiativeStartDate { get; set; }
 
         public class Mapping : Profile
@@ -80,7 +80,7 @@ public static class AddObjective
             RuleFor(x => x.InitiativeStartDate)
                 .NotNull()
                 .When(x => x.InitiativeId.HasValue)
-                .WithMessage("You must provide a start date when linking an initiative");
+                .WithMessage("You must provide the participant's first day on the initiative when linking an initiative");
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
@@ -91,7 +91,7 @@ public static class AddObjective
                 RuleFor(x => x.InitiativeStartDate)
                     .MustAsync((command, startDate, token) => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token))
                     .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
-                    .WithMessage("The start date must fall within the initiative's lifetime");
+                    .WithMessage("The participant's first day on the initiative must fall within the initiative's lifetime");
             });
         }
 

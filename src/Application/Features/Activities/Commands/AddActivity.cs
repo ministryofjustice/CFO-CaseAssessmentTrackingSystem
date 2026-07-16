@@ -297,7 +297,7 @@ public static class AddActivity
                 RuleFor(c => c.CommencedOn)
                     .Must((command, commencedOn) => BeOnOrAfterInitiativeObjectiveStartDate(command.TaskId, commencedOn))
                     .When(c => c.CommencedOn is not null)
-                    .WithMessage("The activity commencement date cannot be before the participant's start date on the linked initiative");
+                    .WithMessage("The activity commencement date cannot be before the participant's first day on the initiative");
 
                 RuleFor(c => c.ISWTemplate.BaselineAchievedOn)
                 .Must((command, baselineAchievedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, baselineAchievedOn))
