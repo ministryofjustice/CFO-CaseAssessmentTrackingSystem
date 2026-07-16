@@ -422,7 +422,6 @@ public partial class Participants
         Query.RiskDue = null;
         Query.RecentAction = RecentParticipantFilter.All;
         Query.JustMyCases = false;
-        Tabular = false;
     }
 
     private string GetCurrentFilterLabel()
