@@ -13,10 +13,14 @@ public partial class PathwayPlanReviewDashboardComponent
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
 
+    [Parameter]
+    public bool ShowOverdueOnly { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowOverdueOnlyChanged { get; set; }
+
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
-
-    private bool ShowOverdueOnly { get; set; } = false;
 
     private GetPathwayPlans.Query Query { get; set; } = default!;
 
@@ -93,6 +97,16 @@ public partial class PathwayPlanReviewDashboardComponent
         ShowOverdueOnly && Data is not null
             ? Data.ChartData.Where(d => d.LocationType?.IsCommunity == true).Sum(d => d.OverdueCount)
             : Data?.Community ?? 0;
+
+    private async Task OnShowOverdueOnlyChanged(bool value)
+    {
+        ShowOverdueOnly = value;
+
+        if (ShowOverdueOnlyChanged.HasDelegate)
+        {
+            await ShowOverdueOnlyChanged.InvokeAsync(value);
+        }
+    }
 
     private async Task ShowReviewNotes(string notes)
     {
