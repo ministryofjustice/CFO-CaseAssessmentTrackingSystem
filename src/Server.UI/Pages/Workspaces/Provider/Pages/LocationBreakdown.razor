@@ -1,4 +1,4 @@
-@page "/pages/workspace/provider/case-management"
+@page "/pages/workspace/provider/location-breakdown"
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Components
@@ -27,20 +27,6 @@
     }
 </MudStack>
 
-<MudTabs TabPanelsClass="pa-4" ApplyEffectsToContainer="true" Outlined="true" Color="Color.Info">
-    <MudTabPanel Text="Location Breakdown" Class="pa-3">
-        <CasesPerLocationDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
-    </MudTabPanel>
-    <MudTabPanel Text="Pathway Plan Reviews" Class="pa-3">
-        <PathwayPlanReviewDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
-    </MudTabPanel>
-    <MudTabPanel Text="Initiatives" Class="pa-3">
-        <InitiativeObjectivesDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
-    </MudTabPanel>
-    @if (IsTenantLevel)
-    {
-        <MudTabPanel Text="Unassigned Cases" Class="pa-3">
-            <UnassignedCasesDashboardComponent TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
-        </MudTabPanel>
-    }
-</MudTabs>
+
+<CasesPerLocationDashboardComponent UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@SelectionKey" VisualMode="@VisualMode" />
+    
