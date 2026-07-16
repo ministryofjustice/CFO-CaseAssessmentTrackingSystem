@@ -16,12 +16,25 @@ public partial class InitiativeObjectivesDashboardComponent
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
 
+    [Parameter]
+    public bool ShowActiveOnly { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowActiveOnlyChanged { get; set; }
+
+    [Parameter]
+    public InitiativeDto? InitiativeFilter { get; set; }
+
+    [Parameter]
+    public EventCallback<InitiativeDto?> InitiativeFilterChanged { get; set; }
+
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
     private InitiativeDto? _initiativeFilter;
     private bool _downloading;
-    private bool ShowActiveOnly { get; set; } = false;
+
+    protected override void OnParametersSet() => _initiativeFilter = InitiativeFilter;
 
     protected override IQuery<Result<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>> CreateQuery()
      => new GetInitiativeObjectivesDashboard.Query
@@ -110,6 +123,24 @@ public partial class InitiativeObjectivesDashboardComponent
         ShowActiveOnly && Data is not null
             ? ChartData.Where(x => x.ActiveCount > 0).ToArray()
             : ChartData ?? Array.Empty<InitiativeChartPoint>();
+
+    private async Task OnShowActiveOnlyChanged(bool value)
+    {
+        ShowActiveOnly = value;
+
+        if (ShowActiveOnlyChanged.HasDelegate)
+        {
+            await ShowActiveOnlyChanged.InvokeAsync(value);
+        }
+    }
+
+    private async Task OnInitiativeFilterChanged()
+    {
+        if (InitiativeFilterChanged.HasDelegate)
+        {
+            await InitiativeFilterChanged.InvokeAsync(_initiativeFilter);
+        }
+    }
 
     private async Task OnExport()
     {
