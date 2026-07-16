@@ -34,6 +34,12 @@ RUN dotnet publish scripts/migrate-database.cs --configuration Release --output 
 RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --configuration Release \
  && cp src/Database/CatsDb/bin/Release/CatsDb.dacpac /app/migrator/CatsDb.dacpac
 
+# Trust the Amazon RDS eu-west-2 root CAs for TLS to the RDS SQL Server (fetched at build).
+# This must run in the SDK stage: the chiseled final image has no shell or package manager
+# (no /bin/sh, no update-ca-certificates), so the trust store is built here and copied in.
+ADD https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem /usr/local/share/ca-certificates/rds-eu-west-2-bundle.crt
+RUN update-ca-certificates
+
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.10-noble-chiseled-extra@sha256:f9bd6be9b5ab75b8196bff0f0972580edaea7fa8ca04e6ef530950e33caee5b0 AS final
 WORKDIR /app
@@ -43,9 +49,8 @@ COPY --from=build /app/worker ./worker
 COPY --from=build /app/seeder ./seeder
 COPY --from=build /app/migrator ./migrator
 
-# Trust the Amazon RDS eu-west-2 root CAs for TLS to the RDS SQL Server (fetched at build).
-ADD https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem /usr/local/share/ca-certificates/rds-eu-west-2-bundle.crt
-RUN update-ca-certificates
+# Bring across the updated CA trust store built in the SDK stage above.
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 # Run as the image's non-root user (Cloud Platform requires non-root).
 # APP_UID is a default set by the Microsoft .NET base image (uid 1654).
