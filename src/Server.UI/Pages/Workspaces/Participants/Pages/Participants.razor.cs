@@ -182,8 +182,6 @@ public partial class Participants
             _ => QuickFilter.All
         };
         
-        // Smart defaults will apply in query handler
-        
         await OnRefresh();
     }
 
@@ -192,8 +190,6 @@ public partial class Participants
         ResetQuery();
         Query.RecentAction = RecentParticipantFilter.VisitedLast7Days;
         _currentFilter = QuickFilter.VisitedLast7Days;
-        
-        // Smart defaults will apply in query handler
         
         await OnRefresh();
     }
@@ -360,7 +356,9 @@ public partial class Participants
     {
         if (Query.OrderBy == key)
         {
-            Query.SortDirection = Query.SortDirection == "Ascending" ? "Descending" : "Ascending";
+            Query.SortDirection = Query.SortDirection == nameof(SortDirection.Ascending) 
+                ? nameof(SortDirection.Descending) 
+                : nameof(SortDirection.Ascending);
         }
         else
         {
@@ -368,18 +366,6 @@ public partial class Participants
             Query.SortDirection = nameof(SortDirection.Ascending);
         }
         await OnRefresh();
-    }
-
-    private string GetSortIcon(string columnName)
-    {
-        if (!Query.OrderBy.Equals(columnName, StringComparison.OrdinalIgnoreCase))
-        {
-            return "";
-        }
-
-        return Query.SortDirection.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
-            ? "▲"
-            : "▼";
     }
 
     private async Task ApplyMyParticipantsFilter()
@@ -395,8 +381,6 @@ public partial class Participants
         ResetQuery();
         _currentFilter = QuickFilter.OverdueRisk;
         Query.RiskDue = DateTime.UtcNow.Date;
-        
-        // Smart defaults will apply in query handler
         
         await OnRefresh();
     }

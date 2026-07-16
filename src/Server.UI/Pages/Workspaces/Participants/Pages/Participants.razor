@@ -169,39 +169,21 @@
                     {
                         <MudTh>Select</MudTh>
                     }
-                    <MudTh @onclick="@(() => SortBy("Id"))">
-                        <span style="cursor: pointer;">Id @GetSortIcon("Id")</span>
-                    </MudTh>
-                    <MudTh @onclick="@(() => SortBy("FirstName"))">
-                        <span style="cursor: pointer;">Participant @GetSortIcon("FirstName")</span>
-                    </MudTh>
-                    <MudTh @onclick="@(() => SortBy("EnrolmentStatus"))">
-                        <span style="cursor: pointer;">Status @GetSortIcon("EnrolmentStatus")</span>
-                    </MudTh>
-                    <MudTh @onclick="@(() => SortBy("CurrentLocation"))">
-                        <span style="cursor: pointer;">Location @GetSortIcon("CurrentLocation")</span>
-                    </MudTh>
-                    <MudTh @onclick="@(() => SortBy("EnrolmentLocation"))">
-                        <span style="cursor: pointer;">Enrolled At @GetSortIcon("EnrolmentLocation")</span>
-                    </MudTh>
-                    <MudTh @onclick="@(() => SortBy("Owner"))">
-                        <span style="cursor: pointer;">Assignee @GetSortIcon("Owner")</span>
-                    </MudTh>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Participant</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Location</MudTh>
+                    <MudTh>Enrolled At</MudTh>
+                    <MudTh>Assignee</MudTh>
                     @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
                     {
-                        <MudTh @onclick="@(() => SortBy("AssignedOn"))">
-                            <span style="cursor: pointer;">Assigned On @GetSortIcon("AssignedOn")</span>
-                        </MudTh>
+                        <MudTh>Assigned On</MudTh>
                     }
                     @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
                     {
-                        <MudTh @onclick="@(() => SortBy("AccessedOn"))">
-                            <span style="cursor: pointer;">Accessed On @GetSortIcon("AccessedOn")</span>
-                        </MudTh>
+                        <MudTh>Accessed On</MudTh>
                     }
-                    <MudTh @onclick="@(() => SortBy("RiskDue"))">
-                        <span style="cursor: pointer;">Risk Due @GetSortIcon("RiskDue")</span>
-                    </MudTh>
+                    <MudTh>Risk Due</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     @if (_canReassign)
