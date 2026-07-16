@@ -37,7 +37,7 @@ public enum QuickFilter
 public partial class Participants
 {
 
-     [Inject]
+    [Inject]
     public ILocationService LocationService { get; set; } = null!;
 
     [Inject]
@@ -82,8 +82,9 @@ public partial class Participants
         ListView = ParticipantListView.Default,
         PageNumber = 1,
         PageSize = 50,
-        Keyword = null
-
+        Keyword = null,
+        OrderBy = "Id",
+        SortDirection = "Ascending"
     };
 
     private void OnRowClick(TableRowClickEventArgs<ParticipantPaginationDto> args)
@@ -109,7 +110,7 @@ public partial class Participants
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
                     .ToDictionary(k => k.Id, k => k.Name);
 
-        var labelsResult = await Service.Send(new GetVisibleLabels.Query(UserProfile!));
+        var labelsResult = await Service.Send(new GetVisibleLabels.Query(UserProfile));
 
         if(labelsResult.Succeeded && labelsResult.Data is not null)
         {
@@ -133,8 +134,8 @@ public partial class Participants
             Query.Label = sd.LabelId;
             Query.ListView = sd.ListView;
             Query.Locations = sd.Locations;
-            Query.OrderBy = sd.OrderBy;
-            Query.SortDirection = sd.SortDirection;
+            Query.OrderBy = string.IsNullOrWhiteSpace(sd.OrderBy) ? "Id" : sd.OrderBy;
+            Query.SortDirection = string.IsNullOrWhiteSpace(sd.SortDirection) ? "Ascending" : sd.SortDirection;
             Query.PageNumber = sd.PageNumber;
             Query.OwnerId = sd.OwnerId;
             Query.TenantId = sd.TenantId;
@@ -171,12 +172,9 @@ public partial class Participants
 
     private async Task RecentlyAssignedFilterChanged(RecentParticipantFilter filter)
     {
-        // Reset query like other quick filters to avoid unintended filter combinations
         ResetQuery();
-        
         Query.RecentAction = filter;
         
-        // Update the current filter tracking
         _currentFilter = filter switch
         {
             RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
@@ -189,15 +187,13 @@ public partial class Participants
 
     private async Task RecentlyVisitedFilterChanged()
     {
-        // Reset query like other quick filters to avoid unintended filter combinations
         ResetQuery();
-        
         Query.RecentAction = RecentParticipantFilter.VisitedLast7Days;
-        // Update the current filter tracking
         _currentFilter = QuickFilter.VisitedLast7Days;
         
         await OnRefresh();
     }
+
     private async Task OnSearch(string text)
     {
         Query.Keyword = text;
@@ -244,6 +240,11 @@ public partial class Participants
             _data = [];
             _totalPages = 0;
             _totalItems = 0;
+            
+            if (results?.ErrorMessage is not null)
+            {
+                Snackbar.Add(results.ErrorMessage, Severity.Error);
+            }
         }
         await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
     }
@@ -355,7 +356,9 @@ public partial class Participants
     {
         if (Query.OrderBy == key)
         {
-            Query.SortDirection = Query.SortDirection == "Ascending" ? "Descending" : "Ascending";
+            Query.SortDirection = Query.SortDirection == nameof(SortDirection.Ascending) 
+                ? nameof(SortDirection.Descending) 
+                : nameof(SortDirection.Ascending);
         }
         else
         {
@@ -378,8 +381,7 @@ public partial class Participants
         ResetQuery();
         _currentFilter = QuickFilter.OverdueRisk;
         Query.RiskDue = DateTime.UtcNow.Date;
-        Query.SortDirection = nameof(SortDirection.Ascending);
-        Query.OrderBy = "RiskDue";
+        
         await OnRefresh();
     }
 
@@ -395,16 +397,15 @@ public partial class Participants
         Query.Locations = [];
         Query.TenantId = null;
         Query.Keyword = null;
-        Query.OrderBy = "Id";
+        Query.OrderBy = "Id"; // Default value - smart defaults will apply in handler
         Query.ListView = ParticipantListView.Default;
-        Query.SortDirection = nameof(SortDirection.Ascending);
+        Query.SortDirection = "Ascending"; // Default value
         Query.PageNumber = 1;
         Query.Label = null;
         Query.OwnerId = null;
         Query.RiskDue = null;
         Query.RecentAction = RecentParticipantFilter.All;
         Query.JustMyCases = false;
-        Tabular = false;
     }
 
     private string GetCurrentFilterLabel()
