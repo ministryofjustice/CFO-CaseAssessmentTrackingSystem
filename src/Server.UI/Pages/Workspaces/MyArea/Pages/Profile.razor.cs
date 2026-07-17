@@ -10,7 +10,7 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Pages;
 public partial class Profile
 {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
-    private UserManager<ApplicationUser> _userManager = null!; 
+    
     public string Title { get; set; } = "Profile";
     private MudForm? _form;
 
@@ -20,7 +20,6 @@ public partial class Profile
 
     protected override async Task OnInitializedAsync()
     {
-        _userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
         var state = await AuthState;
 
         var user = state.User;
@@ -38,11 +37,11 @@ public partial class Profile
             if (_form.IsValid)
             {
                 //var state = await AuthState;
-                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == Model!.UserId);
+                var user = await Service.Users.FirstOrDefaultAsync(u => u.Id == Model!.UserId);
                 user!.PhoneNumber = Model!.PhoneNumber;
                 user.DisplayName = Model.DisplayName;
                 user.ProfilePictureDataUrl = Model.ProfilePictureDataUrl;
-                await _userManager.UpdateAsync(user);
+                await Service.UpdateAsync(user);
                 Snackbar.Add($"{ConstantString.UpdateSuccess}", Severity.Info);
             }
         }
