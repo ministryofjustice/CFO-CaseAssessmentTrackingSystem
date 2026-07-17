@@ -1,12 +1,10 @@
 @page "/pages/workspace/participants/all"
+@inherits OwningComponentBase<IMediator>
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 
-@inherits OwningComponentBase<IMediator>
-
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
-
-<ParticipantsPageHeader />
+    <ParticipantsPageHeader />
 
 <ParticipantFilterBar 
     Query="@Query"

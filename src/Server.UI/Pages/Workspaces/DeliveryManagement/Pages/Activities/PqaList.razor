@@ -1,17 +1,13 @@
 @page "/pages/workspace/deliverymanagement/activities/pqa"
-@using Cfo.Cats.Application.Features.Activities.Commands
+@inherits OwningComponentBase<IMediator>
+@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
 @using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 @using Humanizer
 
-@inherits OwningComponentBase<IMediator>
-
 @inject IStringLocalizer<PqaList> L
 @inject ILogger<PqaList> Logger
-
-@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
 <DeliveryManagementPageHeader />
 

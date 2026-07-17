@@ -1,6 +1,4 @@
-﻿@using Cfo.Cats.Domain.Common.Enums
-
-<MudChip T="string" Icon="@Details.Icon" Color="@Details.Colour" Size="Size.Small" Disabled="@Details.Disabled">
+﻿<MudChip T="string" Icon="@Details.Icon" Color="@Details.Colour" Size="Size.Small" Disabled="@Details.Disabled">
     @if(string.IsNullOrEmpty(Prefix) is false)
     {
         @($"{Prefix} ")
