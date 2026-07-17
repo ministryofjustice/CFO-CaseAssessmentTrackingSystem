@@ -28,15 +28,35 @@ public partial class QA1
 
     [SupplyParameterFromQuery]
     public Guid? QueueEntryId { get; set; }
+    
+    [SupplyParameterFromQuery(Name = "action")]
+    public string? Action { get; set; }
 
     private SubmitQa1Response.Command Command { get; set; } = default!;
+    private Guid? _lastQueueEntryId;
+    private string? _lastAction;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        var queueEntryChanged = QueueEntryId != _lastQueueEntryId;
+        var actionChanged = !string.Equals(Action, _lastAction, StringComparison.OrdinalIgnoreCase);
+        _lastQueueEntryId = QueueEntryId;
+        _lastAction = Action;
+
+        if (!queueEntryChanged && !actionChanged)
+        {
+            return;
+        }
+
         if (QueueEntryId.HasValue)
         {
-            _loadingQueueItem = true;
             await LoadQueueItem(QueueEntryId.Value);
+            return;
+        }
+
+        if (string.Equals(Action, "next", StringComparison.OrdinalIgnoreCase))
+        {
+            await GetQueueItem();
         }
     }
 

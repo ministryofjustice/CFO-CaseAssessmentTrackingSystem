@@ -54,6 +54,8 @@
                 "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
                 "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
                 "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb(), participant],
+                "activities-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],
+                "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
                 "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
                 "activities-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
@@ -69,6 +71,28 @@
         }
 
         return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
+    }
+
+    private static BreadcrumbItem BuildProcessingBreadcrumb(string title, string queueType, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
+    {
+        var stage = parsedQuery.TryGetValue("stage", out var stageValue)
+            ? stageValue.ToString().ToLowerInvariant()
+            : "qa1";
+
+        if (stage == "escalation"
+            && parsedQuery.TryGetValue("id", out var escalationId)
+            && Guid.TryParse(escalationId.ToString(), out var parsedEscalationId))
+        {
+            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/escalation/{parsedEscalationId}");
+        }
+
+        if (parsedQuery.TryGetValue("queueEntryId", out var queueEntryId)
+            && Guid.TryParse(queueEntryId.ToString(), out var parsedQueueEntryId))
+        {
+            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/{stage}?queueEntryId={parsedQueueEntryId}");
+        }
+
+        return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/{stage}");
     }
 
     private static IReadOnlyList<BreadcrumbItem> BuildDipSampleParticipantBreadcrumbs(
