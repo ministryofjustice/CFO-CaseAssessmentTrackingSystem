@@ -28,7 +28,8 @@ public enum QuickFilter
     AssignedLast10Days,
     AssignedLast30Days,
     VisitedLast7Days,
-    ArchivedLast30Days
+    ArchivedLast30Days,
+    LicenceEndPeriod
 }
 
 public partial class Participants
@@ -150,6 +151,7 @@ public partial class Participants
                 RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
                 RecentParticipantFilter.VisitedLast7Days => QuickFilter.VisitedLast7Days,
                 RecentParticipantFilter.ArchivedLast30Days => QuickFilter.ArchivedLast30Days,
+                RecentParticipantFilter.LicenceEndPeriod => QuickFilter.LicenceEndPeriod,
                 _ when sd.RiskDue.HasValue => QuickFilter.OverdueRisk,
                 _ when !string.IsNullOrEmpty(sd.OwnerId) => QuickFilter.MyParticipants,
                 _ => QuickFilter.All
@@ -181,6 +183,7 @@ public partial class Participants
             RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
             RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
             RecentParticipantFilter.ArchivedLast30Days => QuickFilter.ArchivedLast30Days,
+            RecentParticipantFilter.LicenceEndPeriod => QuickFilter.LicenceEndPeriod,
             _ => QuickFilter.All
         };
 
@@ -384,6 +387,7 @@ public partial class Participants
             QuickFilter.AssignedLast30Days => "Assigned (Last 30 Days)",
             QuickFilter.VisitedLast7Days => "Visited (Last 7 Days)",
             QuickFilter.ArchivedLast30Days => "Archived (Last 30 Days)",
+            QuickFilter.LicenceEndPeriod => "In Licence End Period",
             _ => "All"
         };
     

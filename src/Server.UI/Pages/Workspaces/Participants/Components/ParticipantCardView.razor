@@ -53,6 +53,11 @@
                         {
                             @($" archived on {item.ArchivedOn.Value.ToShortDateString()}")
                         }
+                        @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod 
+                        && item.PostLicenceCaseClosureEnd.HasValue)
+                        {
+                            @($" licence ends {item.PostLicenceCaseClosureEnd.Value.ToShortDateString()}")
+                        }
                     </MudText>
                 </MudStack>
                 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
