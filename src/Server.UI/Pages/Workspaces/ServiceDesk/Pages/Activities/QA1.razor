@@ -54,7 +54,7 @@
         <MudGrid Style="height: 100vh; width: 100%;">
 
             <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-                <ActivityQaDetails Activity="_activityQaDetailsDto" WorkspaceRef="activities-queue"/>
+                <ActivityQaDetails Activity="_activityQaDetailsDto" WorkspaceRef="@($"activities-item&stage=qa1&queueEntryId={_queueEntry?.Id}")"/>
             </MudItem>
 
             <MudItem xs="8" Style="height: 100%; width: 100%;">
@@ -135,15 +135,35 @@
 
     [SupplyParameterFromQuery]
     public Guid? QueueEntryId { get; set; }
+    
+    [SupplyParameterFromQuery(Name = "action")]
+    public string? Action { get; set; }
 
     private SubmitActivityQa1Response.Command Command { get; set; } = default!;
+    private Guid? _lastQueueEntryId;
+    private string? _lastAction;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        var queueEntryChanged = QueueEntryId != _lastQueueEntryId;
+        var actionChanged = !string.Equals(Action, _lastAction, StringComparison.OrdinalIgnoreCase);
+        _lastQueueEntryId = QueueEntryId;
+        _lastAction = Action;
+
+        if (!queueEntryChanged && !actionChanged)
+        {
+            return;
+        }
+
         if (QueueEntryId.HasValue)
         {
-            _loadingQueueItem = true;
             await LoadQueueItem(QueueEntryId.Value);
+            return;
+        }
+
+        if (string.Equals(Action, "next", StringComparison.OrdinalIgnoreCase))
+        {
+            await GetQueueItem();
         }
     }
 
