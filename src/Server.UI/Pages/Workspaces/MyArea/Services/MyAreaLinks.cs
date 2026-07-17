@@ -12,4 +12,6 @@ public static class MyAreaLinks
 
     public static BreadcrumbLinkModel MyDocuments = new ("My Documents", "List recently generated documents", $"{Home.Href}/my-documents");
 
+    public static BreadcrumbLinkModel Notifications = new ("My Notifications", "System notificcations", $"{Home.Href}/notifications");
+
 }

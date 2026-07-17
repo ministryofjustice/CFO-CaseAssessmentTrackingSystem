@@ -9,5 +9,6 @@ public partial class Index
         MyAreaLinks.EditProfile,
         MyAreaLinks.PasswordReset,
         MyAreaLinks.MyDocuments,
+        MyAreaLinks.Notifications,
     ];
 }
