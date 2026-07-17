@@ -1,5 +1,6 @@
 using BlazorDownloadFile;
 using Cfo.Cats.Infrastructure.Constants.Localization;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.JsInterop;
 using Cfo.Cats.Server.UI.Services.Navigation;
@@ -165,6 +166,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<CatsSessionStorage>();
+        services.AddScoped<IParticipantDialogService, ParticipantDialogService>();
         
         return builder;
     }
