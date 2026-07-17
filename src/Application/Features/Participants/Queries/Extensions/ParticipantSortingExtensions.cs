@@ -30,6 +30,7 @@ public static class ParticipantSortingExtensions
             "lastname" => "LastName",
             "assignedon" => "AssignedOn",
             "accessedon" => "AccessedOn",
+            "archivedon" => "ArchivedOn",
             _ => "Id"
         };
 
@@ -51,6 +52,11 @@ public static class ParticipantSortingExtensions
                      recentAction == RecentParticipantFilter.AssignedLast30Days)
             {
                 sortColumn = "AssignedOn";
+                direction = "descending";
+            }
+            else if (recentAction == RecentParticipantFilter.ArchivedLast30Days)
+            {
+                sortColumn = "ArchivedOn";
                 direction = "descending";
             }
             else if (riskDue.HasValue)
