@@ -1,5 +1,5 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Provider.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 @using Microsoft.AspNetCore.WebUtilities
@@ -58,14 +58,14 @@
                 "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
                 "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
-                "activities-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
-                "enrolments-pqa-queue" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
-                "recent-approved-activities" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.RecentApprovedActivities.AsMudBreadcrumb(), participant],
+                "activities-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
+                "enrolments-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
+                "recent-approved-activities" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.RecentApprovedActivities.AsMudBreadcrumb(), participant],
                 "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "dipsample-review-list" => BuildDipSampleParticipantBreadcrumbs(parsedQuery, participant),
-                "pathway-plan-reviews" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.PathwayPlanReviews.AsMudBreadcrumb(), participant],
-                "unassigned-cases" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.UnassignedCases.AsMudBreadcrumb(), participant],
-                "initiatives" => [ProviderLinks.Home.AsMudBreadcrumb(), ProviderLinks.Initiatives.AsMudBreadcrumb(), participant],
+                "pathway-plan-reviews" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.PathwayPlanReviews.AsMudBreadcrumb(), participant],
+                "unassigned-cases" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb(), participant],
+                "initiatives" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.Initiatives.AsMudBreadcrumb(), participant],
                 _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
             };
         }
