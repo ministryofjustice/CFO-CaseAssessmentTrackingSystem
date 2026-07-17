@@ -1,10 +1,8 @@
-﻿@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
-
+﻿@page "/pages/workspace/deliverymanagement/cumulatives"
 @inherits CatsComponentBase
 @attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
-@page "/pages/workspace/deliverymanagement/cumulatives"
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 
 <DeliveryManagementPageHeader />
 
