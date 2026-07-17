@@ -4,7 +4,6 @@ using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.Features.Labels.Queries;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
@@ -14,9 +13,6 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Components.Identity;
-using Cfo.Cats.Server.UI.Components.Locations;
-using Cfo.Cats.Server.UI.Pages.Participants.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -52,6 +48,9 @@ public partial class Participants
     [Inject]
     public IAuthorizationService AuthorizationService { get; set; } = null!;
 
+    [Inject]
+    public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
+
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = null!;
 
@@ -81,7 +80,7 @@ public partial class Participants
         JustMyCases = false,
         ListView = ParticipantListView.Default,
         PageNumber = 1,
-        PageSize = 50,
+        PageSize = 10,
         Keyword = null,
         OrderBy = "Id",
         SortDirection = "Ascending"
@@ -194,7 +193,7 @@ public partial class Participants
         await OnRefresh();
     }
 
-    private async Task OnSearch(string text)
+    private async Task OnSearch(string? text)
     {
         Query.Keyword = text;
         await OnRefresh();
@@ -203,12 +202,6 @@ public partial class Participants
     private async Task ListViewChanged(ParticipantListView listView)
     {
         Query.ListView = listView;
-        await OnRefresh();
-    }
-
-    private async Task PageChanged(int page)
-    {
-        Query.PageNumber = page;
         await OnRefresh();
     }
 
@@ -249,8 +242,6 @@ public partial class Participants
         await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
     }
 
-    private bool IsParticipantSelected(string participantId) => _selectedParticipantIds.Contains(participantId);
-
     private void SetParticipantSelection(string participantId, bool isSelected)
     {
         if (isSelected)
@@ -262,6 +253,8 @@ public partial class Participants
         _selectedParticipantIds.Remove(participantId);
     }
 
+    private void HandleParticipantSelectionChanged((string ParticipantId, bool IsSelected) args) => SetParticipantSelection(args.ParticipantId, args.IsSelected);
+
     private void ClearSelectedParticipants() => _selectedParticipantIds.Clear();
 
     private async Task ReassignSelectedItems()
@@ -271,26 +264,11 @@ public partial class Participants
             return;
         }
 
-        var parameters = new DialogParameters<ReassignParticipantDialog>
-        {
-            {
-                x => x.Model, new ReassignParticipants.Command()
-                {
-                    CurrentUser = UserProfile,
-                    ParticipantIdsToReassign = _selectedParticipantIds.ToArray()
-                }
-            },
-            {
-                x => x.UserProfile,
-                UserProfile
-            }
-        };
+        var wasReassigned = await ParticipantDialogService.PromptForReassignAsync(
+            UserProfile, 
+            _selectedParticipantIds.ToArray());
 
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var dialog = await DialogService.ShowAsync<ReassignParticipantDialog>("Reassign participants", parameters, options);
-        var state = await dialog.Result;
-
-        if (state?.Canceled == false)
+        if (wasReassigned)
         {
             ParticipantCacheKey.Refresh();
             _selectedParticipantIds.Clear();
@@ -300,16 +278,9 @@ public partial class Participants
 
     private async Task ShowSelectLocationDialog()
     {
-        var parameters = new DialogParameters<SelectLocationDialog>
-        {
-            { "CurrentUser", UserProfile }
-        };
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
-        var dialog = await DialogService.ShowAsync<SelectLocationDialog>("Select a location", parameters, options);
-        var result = await dialog.Result;
-
-        if (result is { Canceled: false, Data: LocationDto location })
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile);
+        
+        if (location is not null)
         {
             Query.Locations = [location.Id];
             await OnRefresh();
@@ -318,16 +289,9 @@ public partial class Participants
 
     private async Task ShowAssigneeDialog()
     {
-        var parameters = new DialogParameters<SelectUserDialog>
-        {
-            { "CurrentUser", UserProfile }
-        };
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
-        var dialog = await DialogService.ShowAsync<SelectUserDialog>("Select an assingee", parameters, options);
-        var result = await dialog.Result;
-
-        if(result is { Canceled: false, Data: SelectedUser user })
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile);
+        
+        if (user is not null)
         {
             Query.OwnerId = user.UserId;
             await OnRefresh();
@@ -336,16 +300,9 @@ public partial class Participants
 
     private async Task ShowTenantDialog()
     {
-        var parameters = new DialogParameters<SelectTenantDialog>()
-        {
-            { "CurrentUser", UserProfile }
-        };
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
-        var dialog = await DialogService.ShowAsync<SelectTenantDialog>("Select a tenant", parameters, options);
-        var result = await dialog.Result;
-
-        if(result is { Canceled: false, Data: SelectedTenant tenant })
+        var tenant = await ParticipantDialogService.PromptForTenantAsync(UserProfile);
+        
+        if (tenant is not null)
         {
             Query.TenantId = tenant.TenantId;
             await OnRefresh();
