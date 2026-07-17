@@ -50,6 +50,7 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
-# todo: enable prometheus alerts
+# todo: enable prometheus alerts (namespace not yet provisioned; add RDS/ElastiCache identifiers
+# once it exists, pulled via `kubectl get secret ... | base64 -d` — see values-dev.yaml)
 # generic-prometheus-alerts:
-#   alertSeverity: cfo-alerts
+#   alertSeverity: <to-be-determined>

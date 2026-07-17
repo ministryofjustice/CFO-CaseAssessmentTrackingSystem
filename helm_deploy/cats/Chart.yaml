@@ -25,9 +25,8 @@ dependencies:
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
     condition: worker.enabled
 
-  # todo: enable prometheus alerts
+  # Prometheus alerting rules (pod/deployment/HPA health, ingress 5xx, RDS, ElastiCache).
   # https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
-  # uncomment and re-run `helm dependency update ./helm_deploy/cats` to fetch it.
-  # - name: generic-prometheus-alerts
-  #   version: "1.17.1"
-  #   repository: https://ministryofjustice.github.io/hmpps-helm-charts
+  - name: generic-prometheus-alerts
+    version: "1.17.1"
+    repository: https://ministryofjustice.github.io/hmpps-helm-charts

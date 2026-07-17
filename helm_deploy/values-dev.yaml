@@ -50,6 +50,10 @@ rdsPortForward:
 redisPortForward:
   enabled: true
 
-# todo: enable prometheus alerts
-# generic-prometheus-alerts:
-#   alertSeverity: cfo-alerts-nonprod
+generic-prometheus-alerts:
+  alertSeverity: <to-be-determined>
+  rdsAlertsDatabases:
+    hmpps-cfo-case-assessment-tracking-system-db-development: "CATS dev SQL Server"
+  elastiCacheAlertsClusterIds:
+    cp-20b02f1c5ace00c5-001: "CATS dev Redis (primary)"
+    cp-20b02f1c5ace00c5-002: "CATS dev Redis (replica)"

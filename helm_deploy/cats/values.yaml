@@ -264,8 +264,18 @@ redisPortForward:
   localPort: 16379   # port the pod listens on (your LOCAL_PORT)
   remotePort: 6379   # Redis port in the cloud
 
-# todo: enable prometheus alerts
-# generic-prometheus-alerts:
-#   targetApplication: cats
-#   businessUnit: hmpps
-#   alertSeverity: cfo-alerts
+# Prometheus alert rules. alertSeverity (which Slack channel alerts route to) and the
+# RDS/ElastiCache resource identifiers are environment-specific, so they're set per environment
+# in values-<env>.yaml (identifiers differ because each namespace provisions its own RDS/ElastiCache).
+generic-prometheus-alerts:
+  targetApplication: cats
+  businessUnit: hmpps
+
+  # Both the "cats" (app) and "cats-worker" Deployments live in this namespace, and pod names
+  # don't match the chart's default single-app regex (built from targetApplication), so target
+  # every Deployment/Pod/HPA in the namespace instead of just those matching "cats-<hash>-<hash>".
+  podTargetOverride: ".*"
+  deploymentTargetOverride: ".*"
+  hpaTargetOverride: ".*"
+  # Ingress only exists on the "app" release (worker has ingress.enabled=false), and its ingress
+  # name matches targetApplication ("cats") by default, so no ingressTargetOverride is needed.
