@@ -1,7 +1,8 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Account.Services
 
-<PageHeader Title="My Account" Items="@_breadcrumbs" />
+@inject IStringLocalizer<AccountPageHeader> L
 
+<PageHeader Title="@L["My Account"]" Items="@_breadcrumbs" />
 
 @code {
 
@@ -14,6 +15,20 @@
     {
         var home = AccountLinks.Home.AsMudBreadcrumb();
 
-        return [home];
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = AccountLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        var normalizedSegment = segment.ToLowerInvariant();
+
+        return normalizedSegment switch {
+            "" => [home],
+            "profile" => [home, AccountLinks.EditProfile.AsMudBreadcrumb()],
+            "passwordreset" => [home, AccountLinks.PasswordReset.AsMudBreadcrumb()],
+            _ => throw new NotImplementedException("Unable to workout where we are in the profile page tree")
+        };
     }
 }

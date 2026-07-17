@@ -8,4 +8,6 @@ public static class AccountLinks
 
     public static BreadcrumbLinkModel EditProfile = new("My Profile", "View and edit profile details", $"{Home.Href}/profile");
 
+    public static BreadcrumbLinkModel PasswordReset = new("Reset Password", "Reset your account password", $"{Home.Href}/passwordreset");
+
 }

@@ -6,6 +6,7 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Account.Pages;
 public partial class Index
 {
     private BreadcrumbLinkModel[] Links { get; set; } = [
-        AccountLinks.EditProfile
+        AccountLinks.EditProfile,
+        AccountLinks.PasswordReset,
     ];
 }
