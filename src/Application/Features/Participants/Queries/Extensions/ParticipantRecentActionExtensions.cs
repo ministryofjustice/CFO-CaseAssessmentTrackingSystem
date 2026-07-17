@@ -30,6 +30,17 @@ public static class ParticipantRecentActionExtensions
             _ => (DateTime?)null
         };
 
+        var deactivatedInFeedCutoff = recentAction switch
+        {
+            RecentParticipantFilter.LicenceEndPeriod => DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30)),
+            _ => (DateOnly?)null
+        };
+
+        if (deactivatedInFeedCutoff.HasValue)
+        {
+            query = query.Where(p => p.DeactivatedInFeed >= deactivatedInFeedCutoff.Value);
+        }
+
         if (recentlyArchivedCutoff.HasValue)
         {
             var participantIdsArchivedRecently = context.ParticipantEnrolmentHistories
