@@ -48,6 +48,11 @@
                         {
                             @($" last accessed on {item.AccessedOn.Value.ToShortDateString()}")
                         }
+                        @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days 
+                        && item.ArchivedOn.HasValue)
+                        {
+                            @($" archived on {item.ArchivedOn.Value.ToShortDateString()}")
+                        }
                     </MudText>
                 </MudStack>
                 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
