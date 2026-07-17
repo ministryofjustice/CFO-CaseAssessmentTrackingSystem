@@ -24,6 +24,23 @@ public static class ParticipantRecentActionExtensions
             _ => (DateTime?)null
         };
 
+        var recentlyArchivedCutoff = recentAction switch
+        {
+            RecentParticipantFilter.ArchivedLast30Days => DateTime.UtcNow.Date.AddDays(-30),
+            _ => (DateTime?)null
+        };
+
+        if (recentlyArchivedCutoff.HasValue)
+        {
+            var participantIdsArchivedRecently = context.ParticipantEnrolmentHistories
+                .Where(peh => peh.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value
+                              && peh.From >= recentlyArchivedCutoff.Value)
+                .Select(peh => peh.ParticipantId)
+                .Distinct();
+
+            query = query.Where(p => participantIdsArchivedRecently.Contains(p.Id));
+        }
+
         if (recentlyAssignedCutoff.HasValue)
         {
             var participantIdsWithRecentOwnership = context.ParticipantOwnershipHistories
