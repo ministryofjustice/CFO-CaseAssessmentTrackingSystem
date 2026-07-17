@@ -205,7 +205,7 @@ BEGIN
     (N'SPI', N'Prison', N'Spring Hill', N'South East', 84),
     (N'SSP', N'Probation', N'Surrey and Sussex', N'South East Community', 98),
     (N'STI', N'Prison', N'Styal', N'North West', 14),
-    (N'SUI', N'Prison', N'Sudbury', N'East Midlands', null),
+    (N'SUI', N'Prison', N'Sudbury', N'East Midlands', 135),
     (N'SWI', N'Prison', N'Swansea', N'Unknown', null),
     (N'SWM', N'Probation', N'Staffordshire and West Midlands', N'West Midlands Community', 93),
     (N'T01', N'Probation', N'Migration artifact - do not use', N'National', null),

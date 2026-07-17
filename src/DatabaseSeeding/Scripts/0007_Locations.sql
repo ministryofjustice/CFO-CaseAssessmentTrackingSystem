@@ -143,7 +143,8 @@ BEGIN
      (131, N'Portsmouth', N'con_24046', '01 Aug 2024', N'2029-03-31 23:59:59.0000000', 129, 2, 6, '01 Aug 2024', N'2a9b3450-1feb-4be3-ab94-24e64cd34829'),
      (132, N'HMP Leicester', N'con_24042', '01 Aug 2024', N'2029-03-31 23:59:59.0000000', null, 0, 2, '01 Aug 2024', N'2a9b3450-1feb-4be3-ab94-24e64cd34829'),
      (133, N'HMP Wormwood Scrubs', N'con_24044', '12 Jun 2026', N'2029-03-31 23:59:59.0000000', null, 0, 1, '12 Jun 2026', N'2a9b3450-1feb-4be3-ab94-24e64cd34829'),
-     (134, N'HMP Erlestoke', N'con_24045', '12 Jun 2026', N'2029-03-31 23:59:59.0000000', null, 0, 2, '12 Jun 2026', N'2a9b3450-1feb-4be3-ab94-24e64cd34829');
+     (134, N'HMP Erlestoke', N'con_24045', '12 Jun 2026', N'2029-03-31 23:59:59.0000000', null, 0, 2, '12 Jun 2026', N'2a9b3450-1feb-4be3-ab94-24e64cd34829'),
+     (135, N'HMP Sudbury', N'con_24041', '17 Jul 2026', N'2029-03-31 23:59:59.0000000', null, 0, 2, '17 Jul 2026', N'2a9b3450-1feb-4be3-ab94-24e64cd34829');
 
     SET IDENTITY_INSERT [Configuration].[Location] OFF;
 END;
