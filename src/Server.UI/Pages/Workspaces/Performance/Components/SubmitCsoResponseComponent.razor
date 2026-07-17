@@ -1,14 +1,10 @@
-@using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
-
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+@inherits CatsComponentBase
+
+@using Cfo.Cats.Application.Common.Validators
 
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
-@inherits CatsComponentBase
-
 
 @if (Status != DipSampleStatus.AwaitingReview)
 {

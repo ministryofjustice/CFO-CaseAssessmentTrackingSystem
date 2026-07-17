@@ -1,23 +1,15 @@
 @page "/pages/qa/enrolments/qa1/"
 @page "/pages/workspace/servicedesk/enrolments/qa1"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
 @using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Assessments.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Commands
-@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components
 
-@inherits CatsComponentBase
-
-@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+@inject IRightToWorkSettings RightToWorkSettings;
 
 <ServiceDeskPageHeader />
-
-@inject IRightToWorkSettings RightToWorkSettings;
 
 <style>
     .document-container {
