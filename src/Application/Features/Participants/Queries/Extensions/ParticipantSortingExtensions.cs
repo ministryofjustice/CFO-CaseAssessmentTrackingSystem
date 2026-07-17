@@ -31,6 +31,7 @@ public static class ParticipantSortingExtensions
             "assignedon" => "AssignedOn",
             "accessedon" => "AccessedOn",
             "archivedon" => "ArchivedOn",
+            "deactivatedinfeed" => "DeactivatedInFeed",
             _ => "Id"
         };
 
@@ -58,6 +59,11 @@ public static class ParticipantSortingExtensions
             {
                 sortColumn = "ArchivedOn";
                 direction = "descending";
+            }
+            else if (recentAction == RecentParticipantFilter.LicenceEndPeriod)
+            {
+                sortColumn = "DeactivatedInFeed";
+                direction = "ascending";
             }
             else if (riskDue.HasValue)
             {

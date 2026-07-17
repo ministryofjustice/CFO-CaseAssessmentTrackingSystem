@@ -17,4 +17,7 @@ public enum RecentParticipantFilter
     [Description("Archived (Last 30 Days)")]
     ArchivedLast30Days,
 
+    [Description("In Licence End Period")]
+    LicenceEndPeriod,
+
 }
