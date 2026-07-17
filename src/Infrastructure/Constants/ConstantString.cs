@@ -66,7 +66,7 @@ public static class ConstantString
 
     public static string ArchiveSuccess => Localize("Archive successfully");
     public static string ArchiveFail => Localize("Archive fail");
-    public static string UpdateSuccess => Localize("AddOrUpdate successfully");
+    public static string UpdateSuccess => Localize("Update succeeded");
     public static string CreateSuccess => Localize("Create successfully");
     public static string LoginSuccess => Localize("Login successfully");
     public static string LogoutSuccess => Localize("Logout successfully");
