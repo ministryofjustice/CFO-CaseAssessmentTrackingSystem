@@ -194,7 +194,7 @@ public partial class Participants
         await OnRefresh();
     }
 
-    private async Task OnSearch(string text)
+    private async Task OnSearch(string? text)
     {
         Query.Keyword = text;
         await OnRefresh();
@@ -203,12 +203,6 @@ public partial class Participants
     private async Task ListViewChanged(ParticipantListView listView)
     {
         Query.ListView = listView;
-        await OnRefresh();
-    }
-
-    private async Task PageChanged(int page)
-    {
-        Query.PageNumber = page;
         await OnRefresh();
     }
 
@@ -249,8 +243,6 @@ public partial class Participants
         await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
     }
 
-    private bool IsParticipantSelected(string participantId) => _selectedParticipantIds.Contains(participantId);
-
     private void SetParticipantSelection(string participantId, bool isSelected)
     {
         if (isSelected)
@@ -261,6 +253,8 @@ public partial class Participants
 
         _selectedParticipantIds.Remove(participantId);
     }
+
+    private void HandleParticipantSelectionChanged((string ParticipantId, bool IsSelected) args) => SetParticipantSelection(args.ParticipantId, args.IsSelected);
 
     private void ClearSelectedParticipants() => _selectedParticipantIds.Clear();
 
