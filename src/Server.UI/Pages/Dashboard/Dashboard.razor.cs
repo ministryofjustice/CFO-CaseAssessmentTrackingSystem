@@ -9,7 +9,6 @@ public partial class Dashboard
 {
     private bool _showMyTeamsParticipants;
     private bool _showRiskDueAggregate;
-    private bool _showSyncInformation;
     private bool _showSearchParticipant;
     private bool _showMyTeamsActivitiesInQaPots;
     
@@ -31,6 +30,5 @@ public partial class Dashboard
         _showMyTeamsActivitiesInQaPots = hasAdditionalRoles;
         
         _showSearchParticipant = isInternalUser;
-        _showSyncInformation = isInternalUser;
     }  
 }
