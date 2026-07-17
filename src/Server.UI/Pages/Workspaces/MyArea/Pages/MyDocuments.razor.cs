@@ -2,24 +2,14 @@
 using Cfo.Cats.Application.Features.Documents.Queries;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Pages;
 
 public partial class MyDocuments
 {
-    private GeneratedDocumentDto[] documents = [];
-
-    private bool loading = false;
     private string searchString = "";
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            loading = true;
-            documents = await GetNewMediator().Send(new GetMyDocumentsQuery.Query());
-        }
-        finally { loading = false; }
-    }
+    protected override IQuery<Result<GeneratedDocumentDto[]>> CreateQuery() => 
+        new GetMyDocumentsQuery.Query();
 
     private async Task Download(GeneratedDocumentDto document)
     {

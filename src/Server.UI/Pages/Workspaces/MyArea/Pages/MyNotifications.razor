@@ -1,0 +1,62 @@
+﻿@using Cfo.Cats.Application.Features.Notifications.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
+@using Humanizer
+
+@page "/pages/workspace/my-area/notifications"
+
+@inherits CatsComponent<PaginatedData<NotificationDto>>
+
+
+<style>
+    .pointer-cursor {
+        cursor: pointer;
+    }
+</style>
+
+    <MyAreaPageHeader />
+
+    @if (Loading)
+    {
+        <MudLoading Text="Notifications" />
+    }
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error">
+            @ErrorMessage
+        </MudAlert>
+    }
+
+    @if (Data is { Items: not null})
+    {
+        <MudSwitch T="bool" Value="@_showUnread" ValueChanged="OnShowUnreadChanged" Color="Color.Info">
+            Include Read 
+        </MudSwitch>
+        <MudText Typo="Typo.h3">
+            Notifications
+        </MudText>
+        <MudList T="string">
+            @foreach (var item in Data.Items)
+            {
+                <MudListItem T="string" OnClickPreventDefault="true" OnClick="(() => GotoNotification(item.Link))">
+                    <div class="d-flex justify-space-between align-center width-90">
+                        <div>
+                            <MudText Typo="Typo.caption" Color="Color.Info">@item.Heading</MudText>
+                            <MudText Typo="Typo.body1">@item.Details</MudText>
+                            <MudText Typo="Typo.body2">@item.NotificationDate.Humanize()</MudText>
+                        </div>
+                        @if (item.ReadDate is null)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="(() => DismissNotification(item.Id))" Disabled="Loading"  />
+                        }
+                        else
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.MarkAsUnread" OnClick="(() => UnreadNotification(item.Id))" Disabled="Loading" />
+                        }
+
+                    </div>
+                </MudListItem>
+            }
+        </MudList>
+        <MudPagination Class="pt-2" Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged"/>
+    }
