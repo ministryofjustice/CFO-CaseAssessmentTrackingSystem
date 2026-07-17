@@ -1,10 +1,9 @@
-@using Cfo.Cats.Application.SecurityConstants
+@page "/pages/workspace/servicedesk/activities/feedback"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
-@inherits CatsComponentBase
-
-@page "/pages/workspace/servicedesk/activities/feedback"
-@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
 <ServiceDeskPageHeader />
 
