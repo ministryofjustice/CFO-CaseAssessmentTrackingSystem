@@ -1,10 +1,9 @@
-﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+﻿@inherits CatsComponentBase
+
+@using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.Features.Participants.Queries
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
-
-@inherits CatsComponentBase
 
 <MudForm>
     <MudTable Items="@previousActivities" Striped="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingPreviousActivities" LoadingProgressColor="Color.Info" Class="mb-8 pa-4">

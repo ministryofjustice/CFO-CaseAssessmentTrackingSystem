@@ -8,12 +8,11 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class Index
 {
-
     [Inject]
     public IAuthorizationService AuthorizationService { get; set; } = null!;
 
     [CascadingParameter]
-    public Task<AuthenticationState> AuthState { get; set; } = default!;
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
 
     private bool _allowTransfers = false;
 
@@ -24,21 +23,19 @@ public partial class Index
         var authState = await AuthState;
         _allowTransfers = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Transfers)).Succeeded;
 
-        List<BreadcrumbLinkModel> links = [];
-
-        links.Add(ParticipantLinks.All);
-        links.Add(ParticipantLinks.AllActivities);
-        links.Add(ParticipantLinks.MovedParticipants);
+        List<BreadcrumbLinkModel> links =
+        [
+            ParticipantLinks.All,
+            ParticipantLinks.AllActivities,
+            ParticipantLinks.MovedParticipants,
+            ParticipantLinks.AllPris
+        ];
 
         if(_allowTransfers)
         {
             links.Add(ParticipantLinks.Transfers);    
         }
 
-        links.Add(ParticipantLinks.AllPris);
-
         Links = links.ToArray();        
-
     }
-
 }

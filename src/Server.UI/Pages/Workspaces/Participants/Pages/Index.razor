@@ -1,4 +1,6 @@
 @page "/pages/workspace/participants/"
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
 @using Cfo.Cats.Server.UI.Components.Shared.Workspace
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 

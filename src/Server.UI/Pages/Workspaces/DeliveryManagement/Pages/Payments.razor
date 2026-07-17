@@ -1,10 +1,8 @@
-﻿@using Cfo.Cats.Application.SecurityConstants
+﻿@page "/pages/workspace/deliverymanagement/payments"
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components.Payments
-
-@page "/pages/workspace/deliverymanagement/payments"
-
-@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
 <DeliveryManagementPageHeader />
 

@@ -1,12 +1,10 @@
-﻿
-@page "/pages/workspace/deliverymanagement/case-workload"
+﻿@page "/pages/workspace/deliverymanagement/case-workload"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
 @using Cfo.Cats.Application.Features.Dashboard.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
-
-@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
-
-@inherits CatsComponentBase
 
 <DeliveryManagementPageHeader />
 
