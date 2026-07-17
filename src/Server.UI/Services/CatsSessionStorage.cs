@@ -10,7 +10,7 @@ namespace Cfo.Cats.Server.UI.Services;
 /// configuration without changing consumers. A stored item is stamped with the id of the
 /// user who wrote it and only returned to that same user.
 /// </summary>
-public class CatsSessionStorage(ICatsSessionStore sessionStore, ICurrentUserService currentUserService)
+public class CatsSessionStorage(ICatsSessionStore sessionStore, ICurrentUserService currentUserService, ILogger<CatsSessionStorage> logger)
 {
     /// <summary>
     /// Persists <paramref name="item"/> under a key derived from its type name.
@@ -41,17 +41,25 @@ public class CatsSessionStorage(ICatsSessionStore sessionStore, ICurrentUserServ
     /// </summary>
     public async Task<Result<TItem>> GetAsync<TItem>(string key)
     {
-        var result = await sessionStore.GetAsync<CatsSessionItem<TItem>>(key);
-
-        if (result is { Succeeded: true, Data.Item: not null })
+        try
         {
-            if (result.Data.SessionUserId == currentUserService.UserId)
-            {
-                return Result<TItem>.Success(result.Data.Item);
-            }
-        }
+            var result = await sessionStore.GetAsync<CatsSessionItem<TItem>>(key);
 
-        return Result<TItem>.Failure();
+            if (result is { Succeeded: true, Data.Item: not null })
+            {
+                if (result.Data.SessionUserId == currentUserService.UserId)
+                {
+                    return Result<TItem>.Success(result.Data.Item);
+                }
+            }
+
+            return Result<TItem>.Failure();
+        }
+        catch(Exception ex)
+        {
+            logger.LogError(ex, "Cache fail for {Key} for User {Id}", key, currentUserService.UserId);
+            return Result<TItem>.Failure();
+        }
     }
 
     private class CatsSessionItem<TItem>
