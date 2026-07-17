@@ -27,7 +27,7 @@
 
 
             <SessionTimeoutDisplay />
-            <MudStack Row="true" Spacing="1">
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
                 <MudButton StartIcon="@(MenuOpen ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown)"
                            Style="color:white;"
                            OnClick="@OnMenuClick"
@@ -39,6 +39,15 @@
                 </MudButton>
 
                 <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
+                
+                <MudTooltip Arrow="true" Text="@L["Notifications"]">
+                    <div @onclick="GotoNotifiations" style="cursor: pointer;" class="d-flex align-center">
+                        <MudBadge Content="@_notifications" Color="Color.Warning" Overlap="true">
+                            <MudIcon Icon="@Icons.Material.Filled.Notifications" />
+                        </MudBadge>
+                    </div>
+                </MudTooltip>
+                
                 <MudTooltip Arrow="true" Text="@L["Search (CTL + K)"]">
                     <MudIconButton Style="color: white;"
                                    Icon="@Icons.Material.Filled.Search"
