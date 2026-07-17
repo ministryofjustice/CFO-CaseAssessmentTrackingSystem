@@ -1,11 +1,9 @@
 ﻿@page "/pages/workspace/participants/moved"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
-
-@inherits CatsComponentBase
-
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <ParticipantsPageHeader />
 

@@ -1,7 +1,8 @@
-﻿@using Humanizer
-@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+﻿@inherits CatsComponentBase;
+@attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
 
-@inherits CatsComponentBase;
+@using Humanizer
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 
 @inject IStringLocalizer<EscalationList> L
 

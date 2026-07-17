@@ -1,11 +1,10 @@
-﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+﻿@inherits CatsComponentBase;
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
+@using Cfo.Cats.Application.Features.Activities.DTOs
 @using Humanizer
 
-@inherits CatsComponentBase;
-
 @inject IStringLocalizer<QA1List> L
-
-@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"

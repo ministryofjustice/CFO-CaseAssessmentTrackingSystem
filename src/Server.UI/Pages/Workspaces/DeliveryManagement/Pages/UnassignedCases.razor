@@ -1,11 +1,9 @@
 @page "/pages/workspace/deliverymanagement/unassigned-cases"
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Components.Dashboard
-@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
-
+@inherits ProviderDashboardBase
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
-@inherits ProviderDashboardBase
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 
 <DeliveryManagementPageHeader />
 

@@ -1,16 +1,9 @@
-﻿@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-
-@page "/pages/workspace/performance/outcome-quality-dip-sampling/{SampleId:guid}"
-
+﻿@page "/pages/workspace/performance/outcome-quality-dip-sampling/{SampleId:guid}"
 @inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
-@using Cfo.Cats.Application.Features.ManagementInformation.DTOs
 @using Cfo.Cats.Application.Features.PerformanceManagement.DTOs
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
-@using MudBlazor.Utilities
-
 
 <PerformancePageHeader SampleLabel="@SampleLabel" />
 
