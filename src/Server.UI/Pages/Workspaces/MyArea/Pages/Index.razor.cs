@@ -8,5 +8,6 @@ public partial class Index
     private BreadcrumbLinkModel[] Links { get; set; } = [
         MyAreaLinks.EditProfile,
         MyAreaLinks.PasswordReset,
+        MyAreaLinks.MyDocuments,
     ];
 }

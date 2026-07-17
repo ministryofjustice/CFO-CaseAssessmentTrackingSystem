@@ -10,4 +10,6 @@ public static class MyAreaLinks
 
     public static BreadcrumbLinkModel PasswordReset = new("Reset Password", "Reset your account password", $"{Home.Href}/passwordreset");
 
+    public static BreadcrumbLinkModel MyDocuments = new ("My Documents", "List recently generated documents", $"{Home.Href}/my-documents");
+
 }
