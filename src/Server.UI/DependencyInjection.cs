@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
         services.AddScoped<IWorkspacePreferenceService, WorkspacePreferenceService>();
+        services.AddScoped<INotificationService, NotificationService>();
         services
             .AddMudBlazorDialog()
             .AddMudServices(mudServicesConfiguration => {
