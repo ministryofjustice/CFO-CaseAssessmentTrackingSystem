@@ -47,11 +47,11 @@
 
         if (normalizedSegment.StartsWith("activities/", StringComparison.Ordinal))
         {
-            middle = ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb();
+            middle = BuildProcessingBreadcrumb("Activity", "activities", normalizedSegment, uri);
         }
         else if (normalizedSegment.StartsWith("enrolments/", StringComparison.Ordinal))
         {
-            middle = ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb();
+            middle = BuildProcessingBreadcrumb("Enrolment", "enrolments", normalizedSegment, uri);
         }
 
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("from", out var from))
@@ -60,8 +60,8 @@
             {
                 "activities-feedback" => ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(),
                 "enrolments-feedback" => ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(),
-                "activities-queue" => ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(),
-                "enrolments-queue" => ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(),
+                "activities-item" => BuildItemBreadcrumbFromQuery("Activity", "activities", uri.Query),
+                "enrolments-item" => BuildItemBreadcrumbFromQuery("Enrolment", "enrolments", uri.Query),
                 _ => middle
             };
         }
@@ -74,6 +74,58 @@
         };
 
         return [home, middle, new BreadcrumbItem(currentTitle, href: null, disabled: true)];
+    }
+
+    private static BreadcrumbItem BuildProcessingBreadcrumb(string title, string queueType, string normalizedSegment, Uri uri)
+    {
+        if (normalizedSegment.StartsWith($"{queueType}/qa1", StringComparison.Ordinal))
+        {
+            return BuildQaBreadcrumb(title, queueType, "qa1", uri.Query);
+        }
+
+        if (normalizedSegment.StartsWith($"{queueType}/qa2", StringComparison.Ordinal))
+        {
+            return BuildQaBreadcrumb(title, queueType, "qa2", uri.Query);
+        }
+
+        if (normalizedSegment.StartsWith($"{queueType}/escalation/", StringComparison.Ordinal))
+        {
+            var escalationId = normalizedSegment.Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+            if (Guid.TryParse(escalationId, out var parsedEscalationId))
+            {
+                return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/escalation/{parsedEscalationId}");
+            }
+        }
+
+        return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/qa1?action=next");
+    }
+
+    private static BreadcrumbItem BuildItemBreadcrumbFromQuery(string title, string queueType, string queryString)
+    {
+        var parsedQuery = QueryHelpers.ParseQuery(queryString);
+        var stage = parsedQuery.TryGetValue("stage", out var stageValue)
+            ? stageValue.ToString().ToLowerInvariant()
+            : "qa1";
+
+        return stage switch
+        {
+            "qa2" => BuildQaBreadcrumb(title, queueType, "qa2", queryString),
+            "escalation" when parsedQuery.TryGetValue("id", out var escalationId) && Guid.TryParse(escalationId.ToString(), out var parsedEscalationId)
+                => new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/escalation/{parsedEscalationId}"),
+            _ => BuildQaBreadcrumb(title, queueType, "qa1", queryString)
+        };
+    }
+
+    private static BreadcrumbItem BuildQaBreadcrumb(string title, string queueType, string qaStage, string queryString)
+    {
+        var parsedQuery = QueryHelpers.ParseQuery(queryString);
+        if (parsedQuery.TryGetValue("queueEntryId", out var queueEntryId)
+            && Guid.TryParse(queueEntryId.ToString(), out var parsedQueueEntryId))
+        {
+            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/{qaStage}?queueEntryId={parsedQueueEntryId}");
+        }
+
+        return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/{qaStage}");
     }
 
     private static string BuildFallbackTitle(string segment)
