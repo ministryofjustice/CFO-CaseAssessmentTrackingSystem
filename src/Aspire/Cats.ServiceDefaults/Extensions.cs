@@ -68,7 +68,8 @@ public static class Extensions
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     // Custom mediator pipeline metrics (see Cfo.Cats.Application MediatorInstrumentation).
-                    .AddMeter(MediatorInstrumentationNames.MeterName);
+                    .AddMeter(MediatorInstrumentationNames.MeterName)
+                    .AddPrometheusExporter();
             })
             .WithTracing(tracing =>
             {
@@ -145,6 +146,11 @@ public static class Extensions
         {
             Predicate = r => r.Tags.Contains("live")
         });
+
+        // Exposes OpenTelemetry metrics in Prometheus text format for the Cloud Platform
+        // Prometheus to scrape (see app.custommetrics/worker.custommetrics in the Helm values).
+        // Not meant to be reachable externally; the ingress blocks /metrics (see helm values).
+        app.MapPrometheusScrapingEndpoint();
 
         return app;
     }
