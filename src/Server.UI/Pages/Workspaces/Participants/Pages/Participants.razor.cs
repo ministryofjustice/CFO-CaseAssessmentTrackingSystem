@@ -27,7 +27,8 @@ public enum QuickFilter
     OverdueRisk,
     AssignedLast10Days,
     AssignedLast30Days,
-    VisitedLast7Days
+    VisitedLast7Days,
+    ArchivedLast30Days
 }
 
 public partial class Participants
@@ -148,6 +149,7 @@ public partial class Participants
                 RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
                 RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
                 RecentParticipantFilter.VisitedLast7Days => QuickFilter.VisitedLast7Days,
+                RecentParticipantFilter.ArchivedLast30Days => QuickFilter.ArchivedLast30Days,
                 _ when sd.RiskDue.HasValue => QuickFilter.OverdueRisk,
                 _ when !string.IsNullOrEmpty(sd.OwnerId) => QuickFilter.MyParticipants,
                 _ => QuickFilter.All
@@ -178,8 +180,16 @@ public partial class Participants
         {
             RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
             RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
+            RecentParticipantFilter.ArchivedLast30Days => QuickFilter.ArchivedLast30Days,
             _ => QuickFilter.All
         };
+
+        if (filter == RecentParticipantFilter.ArchivedLast30Days)
+        {
+            // Archived participants are excluded from the Default list view, so widen it
+            // to ensure participants archived in the last 30 days are still shown.
+            Query.ListView = ParticipantListView.All;
+        }
         
         await OnRefresh();
     }
@@ -373,6 +383,7 @@ public partial class Participants
             QuickFilter.AssignedLast10Days => "Assigned (Last 10 Days)",
             QuickFilter.AssignedLast30Days => "Assigned (Last 30 Days)",
             QuickFilter.VisitedLast7Days => "Visited (Last 7 Days)",
+            QuickFilter.ArchivedLast30Days => "Archived (Last 30 Days)",
             _ => "All"
         };
     
