@@ -34,12 +34,14 @@ public partial class Index
             .Succeeded;
         var isQa1User = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Qa1))
             .Succeeded;
+        var canViewQueueLinks = isQa1User && CurrentUser.AssignedRoles.Any(role =>
+            role is RoleNames.QASupportManager or RoleNames.QAManager or RoleNames.SMT or RoleNames.SystemSupport);
 
         _showQaPots = isInternalUser;
         _showSyncInfo = isInternalUser;
-        _showActivitiesQueue = isQa1User;
+        _showActivitiesQueue = canViewQueueLinks;
         _showActivitiesFeedback = isQa1User;
-        _showEnrolmentsQueue = isQa1User;
+        _showEnrolmentsQueue = canViewQueueLinks;
         _showEnrolmentsFeedback = isQa1User;
         
         List<BreadcrumbLinkModel> links = [];
