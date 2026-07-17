@@ -1,0 +1,47 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Services
+
+<PageHeader Title="Provider" 
+            Items="@_breadcrumbs" />
+
+@code
+{
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = DeliveryManagementLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = DeliveryManagementLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/').ToLower()
+            : string.Empty;
+
+        return segment switch
+        {
+            "" => [home],
+            "case-workload" => [home, DeliveryManagementLinks.CaseWorkload.AsMudBreadcrumb()],
+            "performance" => [home, DeliveryManagementLinks.Performance.AsMudBreadcrumb()],
+            "cumulatives" => [home, DeliveryManagementLinks.Cumulatives.AsMudBreadcrumb()],
+            "enrolments/pqa" => [home, DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb()],
+            "activities/pqa" => [home, DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb()],
+            _ when segment.StartsWith("enrolments/pqa/", StringComparison.Ordinal) =>
+                [home, DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb(), new BreadcrumbItem("Enrolment", href: null, disabled: true)],
+            _ when segment.StartsWith("activities/pqa/", StringComparison.Ordinal) =>
+                [home, DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb(), new BreadcrumbItem("Activity", href: null, disabled: true)],
+            "payments" => [home, DeliveryManagementLinks.Payments.AsMudBreadcrumb()],
+            "location-breakdown" => [home, DeliveryManagementLinks.LocationBreakdown.AsMudBreadcrumb()],
+            "pathway-plan-reviews" => [home, DeliveryManagementLinks.PathwayPlanReviews.AsMudBreadcrumb()],
+            "initiatives" => [home, DeliveryManagementLinks.Initiatives.AsMudBreadcrumb()],
+            "unassigned-cases" => [home, DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb()],
+            "recent-approved-activities" => [home, DeliveryManagementLinks.RecentApprovedActivities.AsMudBreadcrumb()],
+            _ => throw new Exception()
+        };
+    }
+}
