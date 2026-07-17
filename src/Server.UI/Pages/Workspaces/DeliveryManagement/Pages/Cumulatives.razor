@@ -1,0 +1,64 @@
+﻿@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+@inherits CatsComponentBase
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+
+@page "/pages/workspace/deliverymanagement/cumulatives"
+
+<DeliveryManagementPageHeader />
+
+@if (_noAccessToContracts)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mt-3">
+        <MudStack>
+            Cumulative figures are only available at the Contract level.
+        </MudStack>
+    </MudAlert>
+}
+else
+{
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" md="2">
+            <MudSelect T="int" Label="Month" @bind-Value="Month">
+                @foreach (var month in Enumerable.Range(1, 12))
+                {
+                    <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="1">
+            <MudSelect T="int" Label="Year" @bind-Value="Year">
+                @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
+                {
+                    <MudSelectItem Value="year">@year</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
+        </MudItem>
+        <MudSpacer />
+        <MudItem xs="12" md="2">
+            <MudLoadingButton 
+                        Loading="@_downloading"
+                       Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.CloudDownload"
+                       Size="Size.Small"
+                       OnClick="OnExport">
+                       @ConstantString.Export
+            </MudLoadingButton>
+        </MudItem>
+    </MudGrid>
+
+    <CumulativeDetailsComponent @key="@($"{Month}-{Year}-{SelectedContract?.Id}-LastMonth")" 
+                                EndDate="new DateOnly(Year, Month, 1).AddDays(-1)" 
+                                Contract="SelectedContract" />
+
+ 
+    <CumulativeDetailsComponent @key="@($"{Month}-{Year}-{SelectedContract?.Id}-ThisMonth")" 
+                                EndDate="new DateOnly(Year, Month, DateTime.DaysInMonth(Year, Month))"
+                                Contract="SelectedContract" />
+   
+}
