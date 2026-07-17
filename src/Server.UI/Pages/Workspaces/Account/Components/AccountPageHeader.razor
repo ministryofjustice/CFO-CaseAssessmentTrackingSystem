@@ -1,0 +1,19 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Account.Services
+
+<PageHeader Title="My Account" Items="@_breadcrumbs" />
+
+
+@code {
+
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet() =>
+        _breadcrumbs = BuildBreadcrumbs();
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = AccountLinks.Home.AsMudBreadcrumb();
+
+        return [home];
+    }
+}
