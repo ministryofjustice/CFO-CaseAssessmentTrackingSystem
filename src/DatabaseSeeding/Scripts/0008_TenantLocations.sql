@@ -34,7 +34,7 @@ BEGIN
     from [Configuration].[Location]
     where [Name] in ( 'HMP Drake Hall', 'HMP Featherstone', 'HMP Birmingham', 'North West Community', 'HMP Oakwood',
                       'HMP Dovegate', 'HMP Stoke Heath', 'HMP Brinsford', 'HMP Hewell', 'HMP Swinfen Hall', 'Birmingham',
-                      'Wolverhampton', 'Stoke', 'West Midlands Community'
+                      'Wolverhampton', 'Stoke', 'West Midlands Community', 'HMP Sudbury'
         )
     union
     select Id as [LocationId],
