@@ -27,8 +27,8 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
     {
         List<NavigationMenuItemLinkModel> items =
         [
-            new NavigationMenuItemLinkModel("Participants", "/pages/workspace/participants/", "Navigates to the root workspace for accessing participant management functions"),
-            new NavigationMenuItemLinkModel("Provider", "/pages/workspace/provider/", "Navigates to the root workspace for accessing provider functions"),
+            new NavigationMenuItemLinkModel("Participants", "/pages/workspace/participants", "Navigates to the root workspace for accessing participant management functions"),
+            new NavigationMenuItemLinkModel("Provider", "/pages/workspace/deliverymanagement", "Navigates to the root workspace for accessing delivery management information and functions"),
         ];
 
         if(await PassesPolicy( principal, SecurityPolicies.ServiceDesk))
@@ -38,12 +38,12 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
 
         if(await PassesPolicy(principal, SecurityPolicies.OutcomeQualityDipChecks))
         {
-            items.Add(new NavigationMenuItemLinkModel("Performance Management", "/pages/workspace/performance/", "Navigates to the root workspace for accessing performance function"));    
+            items.Add(new NavigationMenuItemLinkModel("Performance Management", "/pages/workspace/performance", "Navigates to the root workspace for accessing performance function"));    
         }
 
         if(await PassesPolicy(principal, SecurityPolicies.SystemFunctionsRead))
         {
-            items.Add(new NavigationMenuItemLinkModel("Administration", "/pages/workspace/administration/", "Navigates to the root workspace for CATS administrative function"));
+            items.Add(new NavigationMenuItemLinkModel("Administration", "/pages/workspace/administration", "Navigates to the root workspace for CATS administrative function"));
         }
         
         return new("Workspaces", items.ToArray(), IsBookmarkable: true);
