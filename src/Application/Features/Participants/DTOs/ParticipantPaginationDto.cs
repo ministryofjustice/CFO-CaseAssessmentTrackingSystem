@@ -53,4 +53,7 @@ public class ParticipantPaginationDto
     [Description("Accessed On")]
     public DateTime? AccessedOn { get; set; }    
     
+    [Description("Archived On")]
+    public DateTime? ArchivedOn { get; set; }
+
 }
