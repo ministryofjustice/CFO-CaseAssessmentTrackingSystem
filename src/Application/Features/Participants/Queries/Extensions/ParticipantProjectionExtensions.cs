@@ -27,6 +27,12 @@ public static class ParticipantProjectionExtensions
             _ => (DateTime?)null
         };
 
+        var recentlyArchivedCutoff = recentAction switch
+        {
+            RecentParticipantFilter.ArchivedLast30Days => DateTime.UtcNow.Date.AddDays(-30),
+            _ => (DateTime?)null
+        };
+
         // Only join to the extra history tables when the selected filter needs those dates
         var transformedSource = recentlyAssignedCutoff.HasValue
             ? from p in query
@@ -46,6 +52,7 @@ public static class ParticipantProjectionExtensions
               {
                   AssignedOn = ownership != null ? ownership.MostRecentFrom : (DateTime?)null,
                   AccessedOn = (DateTime?)null,
+                  ArchivedOn = (DateTime?)null,
                   Participant = p
               }
             : recentlyVisitedCutoff.HasValue
@@ -65,6 +72,28 @@ public static class ParticipantProjectionExtensions
               {
                   AssignedOn = (DateTime?)null,
                   AccessedOn = visited != null ? visited.MostRecentAccess : (DateTime?)null,
+                  ArchivedOn = (DateTime?)null,
+                  Participant = p
+              }
+            : recentlyArchivedCutoff.HasValue
+            ? from p in query
+              join oh in (
+                  from h in context.ParticipantEnrolmentHistories
+                  where h.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value
+                        && h.From >= recentlyArchivedCutoff.Value
+                  group h by h.ParticipantId into g
+                  select new
+                  {
+                      ParticipantId = g.Key,
+                      MostRecentArchive = g.Max(x => x.From)
+                  }
+              ) on p.Id equals oh.ParticipantId into archivedGroup
+              from archived in archivedGroup.DefaultIfEmpty()
+              select new
+              {
+                  AssignedOn = (DateTime?)null,
+                  AccessedOn = (DateTime?)null,
+                  ArchivedOn = archived != null ? archived.MostRecentArchive : (DateTime?)null,
                   Participant = p
               }
             : from p in query
@@ -72,6 +101,7 @@ public static class ParticipantProjectionExtensions
               {
                   AssignedOn = (DateTime?)null,
                   AccessedOn = (DateTime?)null,
+                  ArchivedOn = (DateTime?)null,
                   Participant = p
               };
 
@@ -80,6 +110,7 @@ public static class ParticipantProjectionExtensions
                {
                    AssignedOn = item.AssignedOn,
                    AccessedOn = item.AccessedOn,
+                   ArchivedOn = item.ArchivedOn,
                    EnrolmentStatus = item.Participant.EnrolmentStatus!,
                    Owner = item.Participant.Owner!.DisplayName!,
                    ConsentStatus = item.Participant.ConsentStatus!,
