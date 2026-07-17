@@ -1,3 +1,4 @@
+using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
@@ -11,6 +12,7 @@ public partial class HeaderMenu
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private IWorkspacePreferenceService WorkspacePreferenceService { get; set; } = null!;
     [Inject] private ILogger<HeaderMenu> Logger { get; set; } = null!;
+    [Inject] private INotificationService NotificationService { get; set; } = null!;
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
     
     [EditorRequired] [Parameter] public EventCallback OpenSearch { get; set; }
@@ -24,6 +26,8 @@ public partial class HeaderMenu
     private HotKeysContext? _hotKeysContext;
     private string _homePageUrl = "/";
 
+    private int _notifications;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUserHomePage();
@@ -36,8 +40,16 @@ public partial class HeaderMenu
         
         // Listen for workspace preference changes from other components (e.g., MegaMenu)
         WorkspacePreferenceService.OnWorkspacePreferenceChanged += OnWorkspacePreferenceChanged;
+
+        NotificationService.OnRefreshed += OnNotificationsRefreshed;
         
         await base.OnInitializedAsync();
+    }
+
+    private async void OnNotificationsRefreshed()
+    {
+        await LoadUserHomePage();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnLocationChangedAsync()
@@ -88,6 +100,9 @@ public partial class HeaderMenu
 
             // Use user's HomePage if set, otherwise default to "/"
             _homePageUrl = string.IsNullOrWhiteSpace(homePage) ? "/" : homePage;
+
+            _notifications = await NotificationService.GetNotificationCount(userProfile.UserId);
+
         }
     }
 
@@ -102,4 +117,6 @@ public partial class HeaderMenu
         
         base.Dispose(disposing);
     }
+
+    protected void GotoNotifiations() => NavigationManager.NavigateTo(MyAreaLinks.Notifications.Href, false);
 }

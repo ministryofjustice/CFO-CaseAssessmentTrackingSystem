@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Notifications.Command;
 using Cfo.Cats.Application.Features.Notifications.DTOs;
 using Cfo.Cats.Application.Features.Notifications.Queries;
+using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Pages;
 
@@ -10,6 +11,8 @@ public partial class MyNotifications
     private int _pageNumber = 1;
     private bool _showUnread = false;
     [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
+
+    [Inject] public INotificationService NotificationService { get; set; } = null!;
 
     protected override IQuery<Result<PaginatedData<NotificationDto>>> CreateQuery() => 
         new NotificationsWithPaginationQuery.Query()
@@ -30,6 +33,7 @@ public partial class MyNotifications
             CurrentUser = UserProfile,
             NotificationsToMarkAsRead = [id]
         });
+        NotificationService.Refresh();
         await LoadDataAsync();
     }
 
@@ -41,6 +45,7 @@ public partial class MyNotifications
             CurrentUser = UserProfile,
             NotificationsToMarkAsUnread = [id]
         });
+        NotificationService.Refresh();
         await LoadDataAsync();
     }
     private Task OnPaginationChanged(int arg)
