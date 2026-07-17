@@ -95,7 +95,7 @@ public static class ParticipantFilterExtensions
     {
         if (justMyCases)
         {
-            return query.Where(p => p.OwnerId == currentUserId);
+            query = query.Where(p => p.OwnerId == currentUserId);
         }
 
         if (!string.IsNullOrEmpty(ownerId))
