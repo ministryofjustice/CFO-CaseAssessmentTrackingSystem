@@ -25,6 +25,10 @@
         {
             <MudTh>Archived On</MudTh>
         }
+        @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod)
+        {
+            <MudTh>Licence End Date</MudTh>
+        }
         <MudTh>Risk Due</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -54,6 +58,10 @@
         @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days)
         {
             <MudTd>@context.ArchivedOn?.ToShortDateString()</MudTd>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod)
+        {
+            <MudTd>@context.PostLicenceCaseClosureEnd?.ToShortDateString()</MudTd>
         }
         <MudTd>
             @context.RiskDue.ToShortDateOrEmptyString()

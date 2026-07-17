@@ -56,4 +56,10 @@ public class ParticipantPaginationDto
     [Description("Archived On")]
     public DateTime? ArchivedOn { get; set; }
 
+    [Description("Deactivated In Feed")]
+    public DateOnly? DeactivatedInFeed { get; set; }
+
+    [Description("Post Licence Case Closure End")]
+    public DateOnly? PostLicenceCaseClosureEnd => DeactivatedInFeed?.AddDays(30);
+
 }
