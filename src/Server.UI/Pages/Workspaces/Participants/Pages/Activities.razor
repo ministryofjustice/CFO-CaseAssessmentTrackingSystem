@@ -1,17 +1,13 @@
 @page "/pages/workspace/participants/activities"
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+@inherits OwningComponentBase<IMediator>
 
 @using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
 
 @inject IStringLocalizer<Activities> L
-
-@inherits OwningComponentBase<IMediator>
-
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @{
     Color StatusColour(ActivityStatus status) => status switch

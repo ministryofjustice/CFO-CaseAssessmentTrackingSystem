@@ -1,16 +1,12 @@
 ﻿@page "/pages/workspace/deliverymanagement/enrolments/pqa"
-@using Cfo.Cats.Application.Features.QualityAssurance.Commands
+@inherits OwningComponentBase<IMediator>;
+@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 @using Humanizer
 
-@inherits OwningComponentBase<IMediator>;
-
 @inject IStringLocalizer<PQA> L
-
-@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
 <DeliveryManagementPageHeader />
 
