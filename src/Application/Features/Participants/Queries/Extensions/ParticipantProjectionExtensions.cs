@@ -111,6 +111,7 @@ public static class ParticipantProjectionExtensions
                    AssignedOn = item.AssignedOn,
                    AccessedOn = item.AccessedOn,
                    ArchivedOn = item.ArchivedOn,
+                   DeactivatedInFeed = item.Participant.DeactivatedInFeed,
                    EnrolmentStatus = item.Participant.EnrolmentStatus!,
                    Owner = item.Participant.Owner!.DisplayName!,
                    ConsentStatus = item.Participant.ConsentStatus!,

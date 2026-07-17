@@ -11,6 +11,7 @@
             <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.AssignedLast30Days))">Assigned (Last 30 Days)</MudMenuItem>
             <MudMenuItem OnClick="@(() => OnRecentlyVisited.InvokeAsync())">Visited (Last 7 Days)</MudMenuItem>
             <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.ArchivedLast30Days))">Archived (Last 30 Days)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.LicenceEndPeriod))">In Licence End Period</MudMenuItem>
         </MudMenu>
         <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
                       ValueChanged="@OnSearchChanged" Clearable="true" ShrinkLabel="true"
@@ -143,6 +144,10 @@
             @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days)
             {
                 <MudMenuItem Label="Archived On" OnClick="@(() => OnSortBy.InvokeAsync("ArchivedOn"))"/>
+            }
+            @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod)
+            {
+                <MudMenuItem Label="Deactivated In Feed" OnClick="@(() => OnSortBy.InvokeAsync("DeactivatedInFeed"))"/>
             }
             <MudMenuItem Label="Current Location" OnClick="@(() => OnSortBy.InvokeAsync("CurrentLocation"))"/>
             <MudMenuItem Label="Enrolment Location" OnClick="@(() => OnSortBy.InvokeAsync("EnrolmentLocation"))"/>
