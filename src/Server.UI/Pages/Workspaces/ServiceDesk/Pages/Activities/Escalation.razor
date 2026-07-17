@@ -1,16 +1,12 @@
 @page "/pages/qa/activities/escalation/{id:guid}"
 @page "/pages/workspace/servicedesk/activities/escalation/{id:guid}"
-
 @attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
+@inherits CatsComponentBase
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Activities.Commands
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
-
-@inherits CatsComponentBase
 
 <ServiceDeskPageHeader />
 

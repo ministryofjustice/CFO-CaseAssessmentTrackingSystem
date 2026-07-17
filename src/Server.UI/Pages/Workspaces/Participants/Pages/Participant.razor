@@ -1,16 +1,12 @@
 @page "/pages/workspace/participants/{id}"
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
-@using Cfo.Cats.Server.UI.Pages.Participants.Components.Summary
-
-@inherits CatsComponentBase
- 
-@attribute [Authorize]
 
 <style>
     .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}

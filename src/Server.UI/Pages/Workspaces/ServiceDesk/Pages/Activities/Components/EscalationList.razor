@@ -1,7 +1,8 @@
-﻿@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Humanizer
+﻿@inherits CatsComponentBase;
+@attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 
-@inherits CatsComponentBase;
+@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Humanizer
 
 @inject IStringLocalizer<EscalationList> L
 
