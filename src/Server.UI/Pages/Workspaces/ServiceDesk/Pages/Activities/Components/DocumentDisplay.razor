@@ -1,5 +1,6 @@
-﻿@using Cfo.Cats.Application.Features.Documents.Queries
-@inherits CatsComponentBase
+﻿@inherits CatsComponentBase
+
+@using Cfo.Cats.Application.Features.Documents.Queries
 
 <MudPaper Class="document-container">
     @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))

@@ -1,15 +1,13 @@
 @page "/pages/workspace/deliverymanagement/activities/pqa/{id:guid}"
-
+@inherits CatsComponentBase
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
-@inherits CatsComponentBase
 
 <DeliveryManagementPageHeader />
 
@@ -84,7 +82,6 @@
 
 @code 
 {
-
     private bool _saving;
 
 	private int CharacterCount => Command.Message?.Length ?? 0;
