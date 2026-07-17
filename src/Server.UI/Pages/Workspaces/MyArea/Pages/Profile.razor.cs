@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Account.Pages;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Pages;
 
 public partial class Profile
 {

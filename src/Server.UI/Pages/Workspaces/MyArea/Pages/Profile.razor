@@ -1,15 +1,15 @@
-﻿@page "/pages/workspace/account/profile"
+﻿@attribute [Authorize]
 
-@attribute [Authorize]
+@page "/pages/workspace/my-area/profile"
 
 @using Cfo.Cats.Infrastructure.Services
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Account.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
 @inherits CatsComponentBase
 @inject IValidationService Validator
 @inject IStringLocalizer<Profile> L
 @inject INetworkIpProvider NetworkIpProvider
 
-<AccountPageHeader />
+<MyAreaPageHeader />
 
 <ErrorBoundary>
     <ChildContent>

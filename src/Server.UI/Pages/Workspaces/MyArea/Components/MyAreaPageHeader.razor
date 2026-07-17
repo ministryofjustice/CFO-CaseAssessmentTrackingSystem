@@ -1,6 +1,6 @@
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Account.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services
 
-@inject IStringLocalizer<AccountPageHeader> L
+@inject IStringLocalizer<MyAreaPageHeader> L
 
 <PageHeader Title="@L["My Account"]" Items="@_breadcrumbs" />
 
@@ -13,10 +13,10 @@
 
     private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
     {
-        var home = AccountLinks.Home.AsMudBreadcrumb();
+        var home = MyAreaLinks.Home.AsMudBreadcrumb();
 
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var homeUrl = AccountLinks.Home.Href;
+        var homeUrl = MyAreaLinks.Home.Href;
 
         var segment = uri.AbsolutePath.Length > homeUrl.Length
             ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
@@ -26,8 +26,8 @@
 
         return normalizedSegment switch {
             "" => [home],
-            "profile" => [home, AccountLinks.EditProfile.AsMudBreadcrumb()],
-            "passwordreset" => [home, AccountLinks.PasswordReset.AsMudBreadcrumb()],
+            "profile" => [home, MyAreaLinks.EditProfile.AsMudBreadcrumb()],
+            "passwordreset" => [home, MyAreaLinks.PasswordReset.AsMudBreadcrumb()],
             _ => throw new NotImplementedException("Unable to workout where we are in the profile page tree")
         };
     }

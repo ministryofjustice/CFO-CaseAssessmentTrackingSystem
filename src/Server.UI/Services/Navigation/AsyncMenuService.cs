@@ -50,7 +50,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
     }
 
     private async Task<NavigationMenuSectionModel> CreateProfileMenu() => new("Profile", [
-        new NavigationMenuItemLinkModel("My Account", "/pages/workspace/account", "Manage my account, documents and notifications"),
+        new NavigationMenuItemLinkModel("My Area", "/pages/workspace/my-area", "Manage my account, documents and notifications"),
         new NavigationMenuItemDividerModel(),
         new NavigationMenuItemLinkModel("Logout", "/pages/authentication/logout", "Logs out of the system"),
     ]);
