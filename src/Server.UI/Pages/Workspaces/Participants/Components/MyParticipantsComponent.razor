@@ -1,9 +1,8 @@
-﻿@using ApexCharts
+﻿@inherits CatsComponent<ParticipantCountSummaryDto>
+
+@using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-
-@inherits CatsComponent<ParticipantCountSummaryDto>
-
 
 @if(ErrorMessage is not null)
 {

@@ -1,11 +1,9 @@
 @page "/pages/workspace/participants/transfers"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
-
-@inherits CatsComponentBase
-
-@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
 <ParticipantsPageHeader />
 

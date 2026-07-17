@@ -1,9 +1,9 @@
 ﻿@inherits CatsComponentBase;
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
 @using Humanizer
 
 @inject IStringLocalizer<QA1List> L
-
-@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"

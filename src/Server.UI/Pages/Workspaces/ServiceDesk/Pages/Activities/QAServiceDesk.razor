@@ -1,10 +1,9 @@
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
-@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
-
 @page "/pages/workspace/servicedesk/activities/queue"
 @page "/pages/qa/activities/activities"
 @attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
 
 <ServiceDeskPageHeader />
 

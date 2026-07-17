@@ -1,11 +1,9 @@
 @page "/pages/workspace/deliverymanagement/initiatives"
-@using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Components.Dashboard
-@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
-
+@inherits ProviderDashboardBase
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-@inherits ProviderDashboardBase
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 
 <DeliveryManagementPageHeader />
 
