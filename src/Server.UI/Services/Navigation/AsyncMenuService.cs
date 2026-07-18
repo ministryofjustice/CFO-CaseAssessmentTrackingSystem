@@ -28,7 +28,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
         List<NavigationMenuItemLinkModel> items =
         [
             new NavigationMenuItemLinkModel("Participants", "/pages/workspace/participants", "Navigates to the root workspace for accessing participant management functions"),
-            new NavigationMenuItemLinkModel("Provider", "/pages/workspace/deliverymanagement", "Navigates to the root workspace for accessing delivery management information and functions"),
+            new NavigationMenuItemLinkModel("Delivery Management", "/pages/workspace/deliverymanagement", "Navigates to the root workspace for accessing delivery management information and functions"),
         ];
 
         if(await PassesPolicy( principal, SecurityPolicies.ServiceDesk))
