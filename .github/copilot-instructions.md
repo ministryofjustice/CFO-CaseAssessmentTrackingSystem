@@ -101,7 +101,7 @@ RuleFor(v => v.Name)
 ### Cortex.Mediator Pipeline Behaviours (order matters)
 
 Registered in `Application/DependencyInjection.cs`:
-1. `TraceMetricsBehaviour` — Sentry performance tracing
+1. `TraceMetricsBehaviour` — OpenTelemetry traces and metrics (Aspire dashboard / Grafana)
 2. `ValidationBehaviour` — runs FluentValidation validators
 3. `UnhandledExceptionBehaviour` — catches and logs unhandled exceptions
 4. `SessionValidatingBehaviour`
