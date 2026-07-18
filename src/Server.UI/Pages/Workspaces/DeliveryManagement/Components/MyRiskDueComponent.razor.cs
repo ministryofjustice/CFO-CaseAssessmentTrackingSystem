@@ -1,48 +1,33 @@
-﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Dashboard.DTOs;
+﻿using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components;
 
-public partial class MyRiskDueComponent
+public partial class MyRiskDueComponent : CatsComponent<RiskDueDto[]>
 {
-    private bool _loading = true;
     private bool _approvedOnly = true;
     private string _searchString = "";
     private bool _downloading = false;
 
     private GetRiskDueDashboard.Query Query { get; set; } = default!;
 
-    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
-
-    private Result<RiskDueDto[]>? Model { get; set; }
-    
-    protected override async Task OnInitializedAsync()
+    protected override IQuery<Result<RiskDueDto[]>> CreateQuery()
     {
         Query = new GetRiskDueDashboard.Query()
         {
             UserId = CurrentUser.UserId,
-            ApprovedOnly = true,
+            ApprovedOnly = _approvedOnly,
             FuturesDays = 14
         };
-        await OnRefresh();
-    }
-
-    private async Task OnRefresh()
-    {
-        _loading = true;
-        var mediator = GetNewMediator();
-        Model = await mediator.Send(Query);
-        _loading = false;
+        return Query;
     }
 
     private async Task OnApprovedOnlyChanged(bool value)
     {
         _approvedOnly = value;
-        Query.ApprovedOnly = value;
-        await OnRefresh();
+        await RefreshAsync();
     }
 
     private bool FilterFunc(RiskDueDto data) => FilterFunc(data, _searchString);
@@ -82,7 +67,7 @@ public partial class MyRiskDueComponent
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportRiskDue.Command()
+            var result = await Service.Send(new ExportRiskDue.Command()
             {
                 Query = Query
             });
