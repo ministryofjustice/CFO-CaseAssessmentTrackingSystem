@@ -1,0 +1,28 @@
+@page "/pages/workspace/deliverymanagement/riskdue"
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+<DeliveryManagementPageHeader />
+
+@if (_showRiskDueAggregate)
+{
+    <RiskDueAggregateComponent/>
+}
+else
+{
+    <MyRiskDueComponent/>
+}
+
+@code 
+{
+    private bool _showRiskDueAggregate = true;
+
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = null!;
+
+    protected override void OnInitialized() 
+        => _showRiskDueAggregate = CurrentUser.AssignedRoles.Length > 0;
+
+}
