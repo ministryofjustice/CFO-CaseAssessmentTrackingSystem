@@ -1,0 +1,11 @@
+# Auto-discovered by the Cloud Platform Grafana's k8s-sidecar (labeled searchNamespace: ALL),
+# which watches for ConfigMaps carrying the "grafana_dashboard" label in any namespace.
+# See helm_deploy/cats/grafana/cats-dashboard.json for the dashboard definition.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cats-dashboard
+  labels:
+    grafana_dashboard: "cats-dashboard"
+data:
+{{ (.Files.Glob "grafana/cats-dashboard.json").AsConfig | indent 2 }}
