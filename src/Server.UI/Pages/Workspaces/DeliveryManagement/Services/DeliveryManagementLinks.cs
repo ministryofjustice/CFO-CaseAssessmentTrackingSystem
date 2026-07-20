@@ -16,6 +16,7 @@ public static class DeliveryManagementLinks
     public static BreadcrumbLinkModel ActivitiesPqa => new ( "Activities PQA", "Review activities submitted for provider quality assurance" , $"{Home.Href}/activities/pqa", Group: QA);
     public static BreadcrumbLinkModel Payments => new ( "Payments", "Contract payment auditing and management" , $"{Home.Href}/payments", Group: Insights);
     public static BreadcrumbLinkModel RecentApprovedActivities => new ( "Recent Approved Activities", "View recent approved activities" , $"{Home.Href}/recent-approved-activities", Group: Insights);
+    public static BreadcrumbLinkModel ActivitiesInQaPots => new ( "Activities in QA Pots", "View your activities awaiting quality assurance" , $"{Home.Href}/activities-in-qa-pots", Group: QA);
 
     private static string Insights = "Insights";
     private static string QA = "QA Functions";
