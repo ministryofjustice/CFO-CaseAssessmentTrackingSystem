@@ -6,7 +6,7 @@ public abstract class TraceMetricsBehaviour<TRequest, TResponse>(ICurrentUserSer
 {
     protected async Task<TResponse> HandleCore(string requestKind, Func<Task<TResponse>> next)
     {
-        var requestName = typeof(TRequest).Name;
+        var requestName = GetRequestName(typeof(TRequest));
 
         using var activity = MediatorInstrumentation.ActivitySource.StartActivity(
             $"mediator {requestName}",
@@ -65,6 +65,14 @@ public abstract class TraceMetricsBehaviour<TRequest, TResponse>(ICurrentUserSer
             activity?.SetTag("mediator.status", status);
         }
     }
+
+    // Walks the DeclaringType chain to build a dotted name (e.g. "ParticipantsWithPagination.Query")
+    // for nested requests, mirroring how the type would read in code minus the namespace.
+    // Types declared directly at namespace scope (no DeclaringType) just return their own name.
+    private static string GetRequestName(Type type) =>
+        type.DeclaringType is { } declaringType
+            ? $"{GetRequestName(declaringType)}.{type.Name}"
+            : type.Name;
 }
 
 public sealed class CommandTraceMetricsBehaviour<TCommand, TResponse>(ICurrentUserService currentUserService)
