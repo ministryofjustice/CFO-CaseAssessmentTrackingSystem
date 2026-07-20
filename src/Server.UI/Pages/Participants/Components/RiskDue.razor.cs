@@ -33,7 +33,8 @@ public partial class RiskDue
 
         var mediator = GetNewMediator();
 
-        Model = await mediator.Send(query);
+        var result = await mediator.Send(query);
+        Model = result.Data ?? [];
 
         _loading = false;
 
