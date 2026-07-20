@@ -168,12 +168,12 @@ worker:
     type: ClusterIP
     port: 8080
 
-  # See app.custommetrics above — the worker exposes the same /metrics endpoint.
-  custommetrics:
-    enabled: true
-    scrapeInterval: 15s
-    metricsPath: /metrics
-    metricsPort: http
+  # todo: enable prometheus metrics for the worker
+  # custommetrics:
+  #   enabled: true
+  #   scrapeInterval: 15s
+  #   metricsPath: /metrics
+  #   metricsPort: http
 
   ingress:
     enabled: false
