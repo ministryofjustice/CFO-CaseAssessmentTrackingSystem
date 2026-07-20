@@ -2,9 +2,12 @@
 @using Cfo.Cats.Domain.Entities.Documents
 @using Cfo.Cats.Application.Features.Documents.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
 @using Humanizer
 
 @inherits CatsComponent<GeneratedDocumentDto[]>
+
+<MyAreaPageHeader />
 
 @if(Loading)
 {
