@@ -71,6 +71,8 @@ public partial class Index
             links.Add(DeliveryManagementLinks.Payments);
         }
 
+        links.Add(DeliveryManagementLinks.QaEnrolmentResults);
+
         Links = links.ToArray();        
 
     }
