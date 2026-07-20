@@ -140,6 +140,10 @@ public static class DependencyInjection
         {
             e.GlobalOptions = new ApexChartBaseOptions()
             {
+                Chart = new Chart
+                {
+                    Background = "transparent"
+                },
                 Theme = new Theme
                 {
                     //Palette = new Palette
