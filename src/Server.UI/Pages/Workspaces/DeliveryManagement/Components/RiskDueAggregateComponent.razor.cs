@@ -1,50 +1,34 @@
-﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components;
 
-public partial class RiskDueAggregateComponent
+public partial class RiskDueAggregateComponent : CatsComponent<RiskDueAggregateDto[]>
 {
-    private bool _loading = true;
     private bool _byPerson = false;
     private string _searchString = "";
     private bool _downloading = false;
 
     private GetRiskDueAggregate.Query Query { get; set; } = default!;
 
-    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
-
-    private Result<RiskDueAggregateDto[]>? Model { get; set; }
-    
-    protected override async Task OnInitializedAsync()
+    protected override IQuery<Result<RiskDueAggregateDto[]>> CreateQuery()
     {
         Query = new GetRiskDueAggregate.Query()
         {
             TenantId = CurrentUser.TenantId!,
-            GroupingType = GetRiskDueAggregate.RiskAggregateGroupingType.Tenant
+            GroupingType = _byPerson
+                ? GetRiskDueAggregate.RiskAggregateGroupingType.User
+                : GetRiskDueAggregate.RiskAggregateGroupingType.Tenant
         };
-        await OnRefresh();
-    }
-
-    private async Task OnRefresh()
-    {
-        _loading = true;
-        var mediator = GetNewMediator();
-        Model = await mediator.Send(Query);
-        _loading = false;
+        return Query;
     }
 
     private async Task OnByPersonChanged(bool value)
     {
         _byPerson = value;
-        Query.GroupingType =
-            value
-                ? GetRiskDueAggregate.RiskAggregateGroupingType.User
-                : GetRiskDueAggregate.RiskAggregateGroupingType.Tenant;
-        await OnRefresh();
+        await RefreshAsync();
     }
 
     private bool FilterFunc(RiskDueAggregateDto data) => FilterFunc(data, _searchString);
@@ -69,11 +53,10 @@ public partial class RiskDueAggregateComponent
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportRiskDueAggregate.Command()
+            var result = await Service.Send(new ExportRiskDueAggregate.Command()
             {
                 Query = Query
             });
-
             if (result.Succeeded)
             {
                 Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
