@@ -1,43 +1,68 @@
+using System.Diagnostics;
+
 namespace Cfo.Cats.Application.Pipeline;
 
 public abstract class TraceMetricsBehaviour<TRequest, TResponse>(ICurrentUserService currentUserService)
 {
-    protected async Task<TResponse> HandleCore(Func<Task<TResponse>> next)
+    protected async Task<TResponse> HandleCore(string requestKind, Func<Task<TResponse>> next)
     {
-        var requestName = typeof(TRequest).FullName!.Split(".").Last();
-        var transaction = SentrySdk.StartTransaction(requestName, "mediator.handle");
+        var requestName = typeof(TRequest).Name;
 
-        transaction.SetTag("tenant_id", currentUserService.TenantId ?? "none");
-        transaction.SetTag("tenant_name", currentUserService.TenantName ?? "none");
+        using var activity = MediatorInstrumentation.ActivitySource.StartActivity(
+            $"mediator {requestName}",
+            ActivityKind.Internal);
 
-        SentrySdk.ConfigureScope(scope =>
-        {
-            scope.Transaction = transaction;
-            scope.User = new SentryUser
-            {
-                Id = currentUserService.UserId ?? "none",
-                Username = currentUserService.UserName ?? "none",
-            };
-        });
+        // Traces get the high-cardinality context (per-user / per-tenant) so individual
+        // requests can be inspected in the Aspire dashboard without polluting metrics.
+        activity?.SetTag("mediator.request", requestName);
+        activity?.SetTag("mediator.request_kind", requestKind);
+        activity?.SetTag("enduser.id", currentUserService.UserId ?? "none");
+        activity?.SetTag("enduser.name", currentUserService.UserName ?? "none");
+        activity?.SetTag("cats.tenant_id", currentUserService.TenantId ?? "none");
+        activity?.SetTag("cats.tenant_name", currentUserService.TenantName ?? "none");
+
+        var startTimestamp = Stopwatch.GetTimestamp();
+        var inFlightTags = new TagList { { "mediator.request_kind", requestKind } };
+        MediatorInstrumentation.ActiveRequests.Add(1, inFlightTags);
+
+        var status = "success";
 
         try
         {
-            return await next();
+            var response = await next();
+
+            if (response is IResult { Succeeded: false })
+            {
+                status = "failure";
+                activity?.SetStatus(ActivityStatusCode.Error);
+            }
+
+            return response;
         }
         catch (Exception ex)
         {
-            transaction.Finish(SpanStatus.InternalError);
-            SentrySdk.CaptureException(ex);
+            status = "error";
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            activity?.AddException(ex);
             throw;
         }
         finally
         {
-            if (transaction.IsFinished == false)
-            {
-                transaction.Finish();
-            }
+            var elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
 
-            SentrySdk.ConfigureScope(scope => scope.Transaction = null);
+            // Metrics stay low-cardinality: request name, kind and outcome only.
+            var tags = new TagList
+            {
+                { "mediator.request", requestName },
+                { "mediator.request_kind", requestKind },
+                { "mediator.status", status },
+            };
+
+            MediatorInstrumentation.RequestDuration.Record(elapsedMs, tags);
+            MediatorInstrumentation.RequestCount.Add(1, tags);
+            MediatorInstrumentation.ActiveRequests.Add(-1, inFlightTags);
+
+            activity?.SetTag("mediator.status", status);
         }
     }
 }
@@ -51,7 +76,7 @@ public sealed class CommandTraceMetricsBehaviour<TCommand, TResponse>(ICurrentUs
         TCommand command,
         CommandHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
-        => HandleCore(() => next());
+        => HandleCore("command", () => next());
 }
 
 public sealed class QueryTraceMetricsBehaviour<TQuery, TResponse>(ICurrentUserService currentUserService)
@@ -63,5 +88,5 @@ public sealed class QueryTraceMetricsBehaviour<TQuery, TResponse>(ICurrentUserSe
         TQuery query,
         QueryHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
-        => HandleCore(() => next());
+        => HandleCore("query", () => next());
 }

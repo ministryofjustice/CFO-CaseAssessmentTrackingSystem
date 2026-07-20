@@ -10,6 +10,18 @@ using OpenTelemetry.Trace;
 
 namespace Microsoft.Extensions.Hosting;
 
+/// <summary>
+///     OpenTelemetry source / meter names emitted by the CATS mediator pipeline. These are
+///     duplicated here (rather than referenced from Cfo.Cats.Application) so that this Aspire
+///     shared project stays free of an application dependency. They MUST be kept in sync with
+///     <c>Cfo.Cats.Application.Pipeline.MediatorInstrumentation</c>.
+/// </summary>
+internal static class MediatorInstrumentationNames
+{
+    public const string ActivitySourceName = "Cfo.Cats.Mediator";
+    public const string MeterName = "Cfo.Cats.Mediator";
+}
+
 // Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
 // This project should be referenced by each service project in your solution.
 // To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
@@ -54,11 +66,15 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
+                    .AddRuntimeInstrumentation()
+                    // Custom mediator pipeline metrics (see Cfo.Cats.Application MediatorInstrumentation).
+                    .AddMeter(MediatorInstrumentationNames.MeterName);
             })
             .WithTracing(tracing =>
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
+                    // Custom mediator pipeline traces (see Cfo.Cats.Application MediatorInstrumentation).
+                    .AddSource(MediatorInstrumentationNames.ActivitySourceName)
                     .AddAspNetCoreInstrumentation()
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
