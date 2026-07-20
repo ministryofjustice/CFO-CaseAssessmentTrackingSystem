@@ -41,8 +41,9 @@
             "initiatives" => [home, DeliveryManagementLinks.Initiatives.AsMudBreadcrumb()],
             "unassigned-cases" => [home, DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb()],
             "recent-approved-activities" => [home, DeliveryManagementLinks.RecentApprovedActivities.AsMudBreadcrumb()],
+            "riskdue" => [home, DeliveryManagementLinks.RiskDue.AsMudBreadcrumb()],
             "activities-in-qa-pots" => [home, DeliveryManagementLinks.ActivitiesInQaPots.AsMudBreadcrumb()],
-            _ => throw new Exception()
+            _ => throw new Exception($"Unknown page: {segment}")
         };
     }
 }
