@@ -29,6 +29,7 @@
             "profile" => [home, MyAreaLinks.EditProfile.AsMudBreadcrumb()],
             "passwordreset" => [home, MyAreaLinks.PasswordReset.AsMudBreadcrumb()],
             "notifications" => [home, MyAreaLinks.Notifications.AsMudBreadcrumb()],
+            "my-documents" => [home, MyAreaLinks.MyDocuments.AsMudBreadcrumb()],
             _ => throw new NotImplementedException("Unable to workout where we are in the My Area page tree")
         };
     }
