@@ -61,12 +61,9 @@ app:
       nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
       nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
       # The ingress path is "/", which would otherwise expose /metrics (Prometheus scrape
-      # endpoint, see app.custommetrics) to the public internet. Metrics are only meant to be
-      # scraped in-cluster by the Cloud Platform Prometheus (via the ServiceMonitor/NetworkPolicy),
-      # so block external requests to it at the ingress. Nested location blocks like this are
-      # valid nginx and take precedence over the enclosing "/" location for this path.
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        location /metrics {
+      # endpoint, see app.custommetrics) to the public internet.
+      nginx.ingress.kubernetes.io/server-snippet: |
+        location = /metrics {
           deny all;
           return 404;
         }
@@ -133,6 +130,7 @@ app:
     Features__PresenceHub__RelayUserPresenceNotifications: "true"
     Features__UseSignalRBackplane: "true"
     Features__DmsHardLinkApiEnabled: "true"
+    Features__EnablePrometheusScrapingEndpoint: "true"
     WorkerOptions__BaseUrl: "http://cats-worker:8080"
     Sentry__Release: "0.0.0"                    # overridden by CI
     AppConfigurationSettings__Version: "0.0.0"  # overridden by CI
