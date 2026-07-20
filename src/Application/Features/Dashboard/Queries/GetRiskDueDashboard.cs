@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetRiskDueDashboard
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IQuery<RiskDueDto[]>
+    public class Query : IQuery<Result<RiskDueDto[]>>
     {
         public required string UserId { get; set; }
 
@@ -18,9 +18,9 @@ public static class GetRiskDueDashboard
 
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, RiskDueDto[]>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<RiskDueDto[]>>
     {
-        public async Task<RiskDueDto[]> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<RiskDueDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
             var maxDate = DateTime.Today.AddDays(request.FuturesDays);
 
