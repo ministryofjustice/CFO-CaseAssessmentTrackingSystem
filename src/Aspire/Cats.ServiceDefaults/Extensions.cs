@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -147,10 +148,10 @@ public static class Extensions
             Predicate = r => r.Tags.Contains("live")
         });
 
-        // Exposes OpenTelemetry metrics in Prometheus text format for the Cloud Platform
-        // Prometheus to scrape (see app.custommetrics/worker.custommetrics in the Helm values).
-        // Not meant to be reachable externally; the ingress blocks /metrics (see helm values).
-        app.MapPrometheusScrapingEndpoint();
+        if (app.Configuration.GetValue<bool>("Features:EnablePrometheusScrapingEndpoint"))
+        {
+            app.MapPrometheusScrapingEndpoint();
+        }
 
         return app;
     }
