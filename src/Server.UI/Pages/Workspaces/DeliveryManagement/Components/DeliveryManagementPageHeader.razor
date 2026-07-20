@@ -1,4 +1,5 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Services
+@using Microsoft.AspNetCore.SignalR
 
 <PageHeader Title="Provider" 
             Items="@_breadcrumbs" />
@@ -43,6 +44,7 @@
             "recent-approved-activities" => [home, DeliveryManagementLinks.RecentApprovedActivities.AsMudBreadcrumb()],
             "riskdue" => [home, DeliveryManagementLinks.RiskDue.AsMudBreadcrumb()],
             "activities-in-qa-pots" => [home, DeliveryManagementLinks.ActivitiesInQaPots.AsMudBreadcrumb()],
+            "qa-enrolment-results" => [home, DeliveryManagementLinks.QaEnrolmentResults.AsMudBreadcrumb()],
             _ => throw new Exception($"Unknown page: {segment}")
         };
     }

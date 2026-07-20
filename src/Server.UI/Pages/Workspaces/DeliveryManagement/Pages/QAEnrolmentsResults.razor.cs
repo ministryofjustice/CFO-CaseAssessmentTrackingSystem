@@ -6,10 +6,11 @@ using Cfo.Cats.Domain.Common.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
 
 public partial class QAEnrolmentsResults 
 {
+
     private bool _includeInternalNotes = false;
     private int _pageNumber = 1;
     private LocationDto? _selectedLocation = null;
