@@ -2,9 +2,12 @@
 @using Cfo.Cats.Domain.Entities.Documents
 @using Cfo.Cats.Application.Features.Documents.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
 @using Humanizer
 
 @inherits CatsComponent<GeneratedDocumentDto[]>
+
+<MyAreaPageHeader />
 
 @if(Loading)
 {
@@ -27,18 +30,8 @@
     LoadingProgressColor="Color.Info"
     Class="mb-8 pa-4">
         <ToolBarContent>
-            <div class="d-flex align-start flex-grow-1">
-                <div class="d-flex gap-4">
-                    <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Size="Size.Large" />
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption">My Documents</MudText>
-                        <MudText Typo="Typo.body1">Requested documents will appear here for 7 days</MudText>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex flex-column justify-end">
-                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
-            </div>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
         </ToolBarContent>
         <HeaderContent>
             <MudTh>@ConstantString.Actions</MudTh>
