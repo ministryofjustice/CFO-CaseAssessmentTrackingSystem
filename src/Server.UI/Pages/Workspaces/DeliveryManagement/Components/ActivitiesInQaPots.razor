@@ -1,0 +1,89 @@
+@using ApexCharts
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@inherits CatsComponent<ActivitiesInQaPotsDto>
+
+@if (Loading)
+{
+    <LoadingCard Title="My Teams Activities in QA Pots" />
+}
+else if (ErrorMessage is not null)
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@ErrorMessage</MudAlert>
+}
+else if (Data is not null)
+{
+
+    <MudGrid Spacing="2">
+        <MudItem sm="12" md="6">
+            <MudSimpleTable Striped="true">
+                <thead>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th>
+                            Provider QA
+                        </th>
+                        <th>
+                            CFO QA
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Education</td>
+                        <td>@Data.EducationPqa</td>
+                        <td>@Data.EducationCfo</td>
+                        <td>@(Data.EducationCfo + Data.EducationPqa)</td>
+                    </tr>
+                    <tr>
+                        <td>Employment</td>
+                        <td>@Data.EmploymentPqa</td>
+                        <td>@Data.EmploymentCfo</td>
+                        <td>@(Data.EmploymentCfo + Data.EmploymentCfo)</td>
+                    </tr>
+                    <tr>
+                        <td>ISWS</td>
+                        <td>@Data.IswSupportPqa</td>
+                        <td>@Data.IswSupportCfo</td>
+                        <td>@(Data.IswSupportCfo + Data.IswSupportPqa)</td>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <td>@(Data.EducationPqa + Data.EmploymentPqa + Data.IswSupportPqa)</td>
+                        <td>@(Data.EducationCfo + Data.EmploymentCfo + Data.IswSupportCfo)</td>
+                        <td>@(Data.EducationCfo + Data.EmploymentCfo + Data.IswSupportCfo + Data.EducationPqa + Data.EmploymentPqa + Data.IswSupportPqa)</td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+        </MudItem>
+        <MudItem sm="12" md="6">
+            <ApexChart TItem="QaPotPoint" Options="Options" Height="350" Width="@("100%")">
+                <ApexPointSeries TItem="QaPotPoint"
+                                Items="ChartPoints"
+                                SeriesType="SeriesType.Bar"
+                                Name="Provider QA"
+                                XValue="@(p => p.Category)"
+                                YValue="@(p => p.ProviderQa)"
+                                ShowDataLabels="true" />
+                <ApexPointSeries TItem="QaPotPoint"
+                                Items="ChartPoints"
+                                SeriesType="SeriesType.Bar"
+                                Name="CFO QA"
+                                XValue="@(p => p.Category)"
+                                YValue="@(p => p.CfoQa)"
+                                ShowDataLabels="true" />
+            </ApexChart>
+        </MudItem>
+    </MudGrid>
+
+
+    
+
+    
+          
+}
