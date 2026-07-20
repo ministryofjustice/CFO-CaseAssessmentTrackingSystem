@@ -34,6 +34,15 @@ app:
     type: ClusterIP
     port: 8080
 
+  # Exposes the OpenTelemetry Prometheus exporter's /metrics endpoint (added via
+  # Cats.ServiceDefaults) to the Cloud Platform Prometheus. This creates a ServiceMonitor and a
+  # NetworkPolicy that allows scraping only from the "monitoring" namespace.
+  custommetrics:
+    enabled: true
+    scrapeInterval: 15s
+    metricsPath: /metrics
+    metricsPort: http
+
   ingress:
     enabled: true
     path: /
@@ -51,6 +60,16 @@ app:
       nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
       nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
       nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+      # The ingress path is "/", which would otherwise expose /metrics (Prometheus scrape
+      # endpoint, see app.custommetrics) to the public internet. Metrics are only meant to be
+      # scraped in-cluster by the Cloud Platform Prometheus (via the ServiceMonitor/NetworkPolicy),
+      # so block external requests to it at the ingress. Nested location blocks like this are
+      # valid nginx and take precedence over the enclosing "/" location for this path.
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        location /metrics {
+          deny all;
+          return 404;
+        }
 
   startupProbe:
     httpGet:
@@ -148,6 +167,13 @@ worker:
     enabled: true
     type: ClusterIP
     port: 8080
+
+  # todo: enable prometheus metrics for the worker
+  # custommetrics:
+  #   enabled: true
+  #   scrapeInterval: 15s
+  #   metricsPath: /metrics
+  #   metricsPort: http
 
   ingress:
     enabled: false
