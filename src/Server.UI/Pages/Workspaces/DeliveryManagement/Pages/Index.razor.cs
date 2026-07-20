@@ -41,6 +41,7 @@ public partial class Index
             DeliveryManagementLinks.PathwayPlanReviews,
             DeliveryManagementLinks.Initiatives,
             DeliveryManagementLinks.RecentApprovedActivities,
+            DeliveryManagementLinks.RiskDue,
             DeliveryManagementLinks.ActivitiesInQaPots,
         ];
 

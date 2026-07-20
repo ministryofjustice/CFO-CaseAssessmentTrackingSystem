@@ -37,7 +37,7 @@ public class DocumentExportRiskDueIntegrationEventConsumer(
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
             var data = await new GetRiskDueDashboard.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
-            var results = await excelService.ExportAsync(data,
+            var results = await excelService.ExportAsync(data.Data!,
                 new Dictionary<string, Func<RiskDueDto, object?>>
                 {
                     { "Participant", item => item.ParticipantId },

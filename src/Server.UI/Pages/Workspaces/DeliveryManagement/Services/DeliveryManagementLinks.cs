@@ -18,6 +18,8 @@ public static class DeliveryManagementLinks
     public static BreadcrumbLinkModel RecentApprovedActivities => new ( "Recent Approved Activities", "View recent approved activities" , $"{Home.Href}/recent-approved-activities", Group: Insights);
     public static BreadcrumbLinkModel ActivitiesInQaPots => new ( "Activities in QA Pots", "View your activities awaiting quality assurance" , $"{Home.Href}/activities-in-qa-pots", Group: QA);
 
+    public static BreadcrumbLinkModel RiskDue => new ("Risk Due", "View and manage upcoming risk", $"{Home.Href}/riskdue" ,Group: Insights);
+
     private static string Insights = "Insights";
     private static string QA = "QA Functions";
 
