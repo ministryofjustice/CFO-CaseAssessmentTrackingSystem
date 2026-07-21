@@ -1,7 +1,7 @@
 {
   "id": null,
   "uid": "cats-application-metrics",
-  "title": "CATS - Application Metrics",
+  "title": "HMPPS Case Assessment and Tracking System",
   "description": "CATS application metrics (mediator pipeline, HTTP/Kestrel, Blazor Server/SignalR circuits, .NET runtime), sourced from the OpenTelemetry Prometheus exporter.",
   "tags": [
     "cats",
@@ -43,34 +43,6 @@
     "list": [
       {
         "current": {
-          "text": "dev",
-          "value": "dev"
-        },
-        "includeAll": false,
-        "label": "Environment",
-        "name": "environment",
-        "options": [
-          {
-            "selected": true,
-            "text": "dev",
-            "value": "dev"
-          },
-          {
-            "selected": false,
-            "text": "preprod",
-            "value": "preprod"
-          },
-          {
-            "selected": false,
-            "text": "prod",
-            "value": "prod"
-          }
-        ],
-        "query": "dev,preprod,prod",
-        "type": "custom"
-      },
-      {
-        "current": {
           "text": "",
           "value": ""
         },
@@ -85,7 +57,7 @@
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
-        "regex": "/^(hmpps-cfo-case-assessment-tracking-system-$environment)$/",
+        "regex": "/^(hmpps-cfo-case-assessment-tracking-system-.*)$/",
         "sort": 1,
         "type": "query"
       }
@@ -680,7 +652,7 @@
     {
       "id": 12,
       "type": "table",
-      "title": "Top 10 slowest requests (p95, 1h)",
+      "title": "Top 25 slowest requests (p95, selected range)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -712,7 +684,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "topk(10, histogram_quantile(0.95, sum by (le, mediator_request) (rate(cats_mediator_request_duration_milliseconds_bucket{namespace=~\"$namespace\"}[1h]))))",
+          "expr": "topk(25, histogram_quantile(0.95, sum by (le, mediator_request) (rate(cats_mediator_request_duration_milliseconds_bucket{namespace=~\"$namespace\"}[$__range]))))",
           "format": "table",
           "instant": true,
           "range": false,
