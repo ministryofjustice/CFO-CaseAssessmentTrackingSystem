@@ -38,6 +38,7 @@ public partial class Index
         [
             DeliveryManagementLinks.Performance,
             DeliveryManagementLinks.LocationBreakdown,
+            DeliveryManagementLinks.LatestEngagements,
             DeliveryManagementLinks.PathwayPlanReviews,
             DeliveryManagementLinks.Initiatives,
             DeliveryManagementLinks.RecentApprovedActivities,

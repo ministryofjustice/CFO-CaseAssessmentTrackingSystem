@@ -7,6 +7,7 @@ public static class DeliveryManagementLinks
     public static BreadcrumbLinkModel Home => new ( "Delivery Management", "" ,"/pages/workspace/deliverymanagement");
     public static BreadcrumbLinkModel CaseWorkload => new ( "Case Workload", "An overview of how cases are spread across your team" , $"{Home.Href}/case-workload", Group: Insights);
     public static BreadcrumbLinkModel LocationBreakdown => new ( "Location Breakdown", "View breakdown of cases by location" , $"{Home.Href}/location-breakdown", Group: Insights);
+    public static BreadcrumbLinkModel LatestEngagements => new ( "Latest Engagements", "See where engagement is lapsing, broken down by location" , $"{Home.Href}/latest-engagements", Group: Insights);
     public static BreadcrumbLinkModel PathwayPlanReviews => new ( "Pathway Plan Reviews", "Review pathway plan activity for your cases" , $"{Home.Href}/pathway-plan-reviews", Group: Insights);
     public static BreadcrumbLinkModel Initiatives => new ( "Initiatives", "View initiative objectives across your cases" , $"{Home.Href}/initiatives", Group: Insights);
     public static BreadcrumbLinkModel UnassignedCases => new ( "Unassigned Cases", "View unassigned cases by tenant" , $"{Home.Href}/unassigned-cases", Group: QA);
