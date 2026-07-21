@@ -4,37 +4,31 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
-public static class GetParticipantsLatestEngagement
+/// <summary>
+/// Groups each participant's latest engagement by their current location, split into recent
+/// (engaged within the last 3 months) versus inactive (engaged more than 3 months ago, or never).
+/// The per-location summary is aggregated in the database over the whole filtered set, while the
+/// participant detail rows are paged, so a single request serves both the chart and the table.
+/// </summary>
+public static class GetLatestEngagementsByLocation
 {
-    /// <summary>
-    /// The date on or after which an engagement is considered recent. Engagements before this
-    /// date (or the absence of any engagement) are considered inactive.
-    /// </summary>
-    public static DateOnly RecencyThreshold => DateOnly.FromDateTime(DateTime.Today).AddMonths(-3);
-
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : PaginationFilter, IQuery<Result<PaginatedData<ParticipantEngagementDto>>>
+    public class Query : PaginationFilter, IQuery<Result<LatestEngagementsByLocationDto>>
     {
         public required UserProfile CurrentUser { get; init; }
         public bool JustMyCases { get; init; }
         public bool HideRecentEngagements { get; set; }
-
-        /// <summary>Optional filter to a specific current location (by location id).</summary>
         public int? LocationId { get; set; }
-
-        /// <summary>Optional filter to a specific engagement type (the engagement category).</summary>
         public string? EngagementType { get; set; }
-
-        /// <summary>Optional narrowing to a sub-tenant within the current user's visible hierarchy.</summary>
         public string? TenantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantEngagementDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<LatestEngagementsByLocationDto>>
     {
-        public async Task<Result<PaginatedData<ParticipantEngagementDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<LatestEngagementsByLocationDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
-            var threeMonthsAgo = RecencyThreshold;
+            var threeMonthsAgo = GetParticipantsLatestEngagement.RecencyThreshold;
 
 #pragma warning disable CS8602, CS8604
             var query =
@@ -55,16 +49,6 @@ public static class GetParticipantsLatestEngagement
                 where request.LocationId == null || currentLocation.Id == request.LocationId
                 where string.IsNullOrWhiteSpace(request.EngagementType) || (engagement != null && engagement.Category == request.EngagementType)
                 where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < threeMonthsAgo)
-                where string.IsNullOrWhiteSpace(request.Keyword)
-                      || participant.FirstName.Contains(request.Keyword)
-                      || participant.LastName.Contains(request.Keyword)
-                      || participant.Id.Contains(request.Keyword)
-                      || (engagement != null &&
-                          (
-                              engagement.Description.Contains(request.Keyword) ||
-                              engagement.Category.Contains(request.Keyword) ||
-                              engagement.EngagedAtLocation.Contains(request.Keyword)
-                          ))
                 select new
                 {
                     participant.Id,
@@ -77,13 +61,27 @@ public static class GetParticipantsLatestEngagement
                     engagement.EngagedWithTenant,
                     owner.DisplayName,
                     CurrentLocationName = currentLocation.Name,
-                    engagement.EngagedOn
+                    EngagedOn = (DateOnly?)engagement.EngagedOn
                 };
 #pragma warning restore CS8602, CS8604
 
+            // Aggregate the whole filtered set for the chart / headline totals.
+            var records = await query
+                .GroupBy(x => x.CurrentLocationName)
+                .Select(g => new LocationEngagementSummaryDto(
+                    g.Key,
+                    g.Count(x => x.EngagedOn != null && x.EngagedOn >= threeMonthsAgo),
+                    g.Count(x => x.EngagedOn == null || x.EngagedOn < threeMonthsAgo)))
+                .ToArrayAsync(cancellationToken);
+
+            var ordered = records
+                .OrderBy(x => x.LocationName)
+                .ToArray();
+
+            // Page the detail rows for the table.
             var count = await query.CountAsync(cancellationToken);
 
-            var engagements = await query
+            var items = await query
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
@@ -98,11 +96,12 @@ public static class GetParticipantsLatestEngagement
                     e.EngagedWithTenant,
                     e.DisplayName,
                     e.CurrentLocationName,
-                    e.EngagedOn
-                )).ToListAsync(cancellationToken);
+                    e.EngagedOn))
+                .ToListAsync(cancellationToken);
 
-            return Result<PaginatedData<ParticipantEngagementDto>>.Success(
-                new PaginatedData<ParticipantEngagementDto>(engagements, count, request.PageNumber, request.PageSize));
+            var details = new PaginatedData<ParticipantEngagementDto>(items, count, request.PageNumber, request.PageSize);
+
+            return Result<LatestEngagementsByLocationDto>.Success(new LatestEngagementsByLocationDto(ordered, details));
         }
     }
 }
