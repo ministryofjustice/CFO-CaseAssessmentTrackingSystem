@@ -1,0 +1,113 @@
+name: Bug report
+description: Report a problem with the service or documentation
+title: "[Bug]: "
+labels:
+  - bug
+  - triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!WARNING]
+        > Preferred method for reporting an issue is through the Service Desk. If that is not possible, please feel free to raise an issue here.
+        >
+        > **Do not enter confidential information in this request.**
+        >
+        > GitHub must not be used to process or store OFFICIAL-SENSITIVE information, personal data, case records, operational details, security information, passwords, access tokens, API keys, or any other information that could compromise individuals, services, or the Ministry of Justice.
+        >
+        > **If in doubt, do not submit it.**
+
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A clear and concise description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide the steps needed to reproduce the issue, including the URL of the page where the error was encountered.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Enter '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Describe what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Describe what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: >-
+        Describe who is affected by the issue and how severe the impact is. 
+        For example, does it prevent you from completing your work, 
+        significantly disrupt your duties, or is there a workaround available?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: work_space
+    attributes:
+      label: Workspace
+      description: Which workspace did you encounter this bug in?
+      options:
+        - Administration
+        - Delivery Management
+        - Participants
+        - Performance Management
+        - Service Desk
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: e.g. Chrome 125, Safari 17
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: e.g. MacBook Pro, iPhone 14
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Information
+      description: Add screenshots, logs, or supporting detail if safe to share publicly.
+
+  - type: checkboxes
+    id: sensitive_confirmation
+    attributes:
+      label: OFFICIAL-SENSITIVE confirmation
+      options:
+        - label: >-
+            I confirm that this issue does not contain confidential information. 
+            I understand that GitHub must not be used to process or store OFFICIAL-SENSITIVE information, 
+            personal data, case records, operational details, security information, passwords, 
+            access tokens, API keys, or any other information that could compromise individuals, 
+            services, or the Ministry of Justice.
+          required: true
