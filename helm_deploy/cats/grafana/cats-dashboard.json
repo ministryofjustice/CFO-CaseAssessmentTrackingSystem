@@ -43,34 +43,6 @@
     "list": [
       {
         "current": {
-          "text": "dev",
-          "value": "dev"
-        },
-        "includeAll": false,
-        "label": "Environment",
-        "name": "environment",
-        "options": [
-          {
-            "selected": true,
-            "text": "dev",
-            "value": "dev"
-          },
-          {
-            "selected": false,
-            "text": "preprod",
-            "value": "preprod"
-          },
-          {
-            "selected": false,
-            "text": "prod",
-            "value": "prod"
-          }
-        ],
-        "query": "dev,preprod,prod",
-        "type": "custom"
-      },
-      {
-        "current": {
           "text": "",
           "value": ""
         },
@@ -85,7 +57,7 @@
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
-        "regex": "/^(hmpps-cfo-case-assessment-tracking-system-$environment)$/",
+        "regex": "/^(hmpps-cfo-case-assessment-tracking-system-.*)$/",
         "sort": 1,
         "type": "query"
       }
