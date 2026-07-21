@@ -17,7 +17,7 @@
     </MudText>
     <MudText Typo="Typo.body2" Class="mt-1">
         <strong>Last 3 months</strong> counts participants whose most recent engagement was on or after
-        @GetParticipantsLatestEngagement.RecencyThreshold.ToShortDateString().
+        @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).
         <strong>More than 3 months ago</strong> counts participants who last engaged before that date, or who have never engaged.
         Use it to spot locations where engagement is lapsing.
     </MudText>
