@@ -244,7 +244,6 @@ public partial class LatestEngagementsByLocation
     private async Task ClearSearch()
     {
         _selectedEngagementType = string.Empty;
-        _selectedEngagementType = string.Empty;
         _selectedLocationId = 0;
         _selectedTenantName = null;
         
