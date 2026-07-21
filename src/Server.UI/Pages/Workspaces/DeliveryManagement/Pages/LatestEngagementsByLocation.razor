@@ -144,9 +144,8 @@ else
                 <MudTd DataLabel="Engaged With">@context.EngagedWithDisplayName</MudTd>
                 <MudTd DataLabel="Engaged On">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-                        @if (context.HasEngaged)
                         {
-                            <MudText>@context.EngagedOn?.ToShortDateString()</MudText>
+                            <MudText>@context.EngagedOn?.ToString("d")</MudText>
                             @if (context.HasEngagedRecently is false)
                             {
                                 <MudTooltip Text="This participant has not engaged in the last 3 months.">
