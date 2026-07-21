@@ -6,7 +6,8 @@ public partial class AuthenticationLayout
     [Inject] protected IApplicationSettings Settings { get; set; } = default!;
 
     protected string PrimaryColour => Settings.PrimaryColour;
+    protected ThemeDarkColours PrimaryColourDark => Settings.PrimaryColourDark;
 
-    protected override void OnInitialized() => _theme = Constants.Theme.ApplicationTheme(PrimaryColour);
+    protected override void OnInitialized() => _theme = Constants.Theme.ApplicationTheme(PrimaryColour, PrimaryColourDark);
 
 }

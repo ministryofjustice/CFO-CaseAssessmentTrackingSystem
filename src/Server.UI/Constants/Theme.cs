@@ -2,7 +2,7 @@
 
 public static class Theme
 {
-    public static MudTheme ApplicationTheme(string primaryColour)
+    public static MudTheme ApplicationTheme(string primaryColour, ThemeDarkColours primaryColourDark)
     {
 
         var myFont = new[] { "Arial", "Helvetica", "sans-serif" };
@@ -11,7 +11,7 @@ public static class Theme
         {
             PaletteLight = new PaletteLight
             {
-                Primary = primaryColour, 
+                Primary = primaryColour,
                 Secondary = "#34586E",
                 Success = "#62ae2f",
                 Info = "#34586E",
@@ -36,20 +36,20 @@ public static class Theme
                 TextSecondary = "#D7CBD5",
 
                 // Brand colours - lightened for dark backgrounds
-                Primary = "#D7A3CB",      // accessible tint of CFO Purple
-                Secondary = "#9ECBE2",    // accessible tint of your blue
+                Primary = primaryColourDark.Primary,
+                Secondary = "#9ECBE2",
                 Info = "#9ECBE2",
-                Tertiary = "#F1D08B",     // accessible tint of gold
+                Tertiary = "#F1D08B",
 
                 // Semantic colours
                 Success = "#9BE06B",
-                Error = "#FF6B8A",
+                Error = "#FF99AF",
 
-                AppbarBackground = "#6E3562",
+                AppbarBackground = primaryColourDark.AppbarBackground,
                 AppbarText = "#FFFFFF",
 
                 // Lines / tables / dividers
-                TableLines = "#766370",
+                TableLines = primaryColourDark.TableLines,
                 Divider = "#766370",
                 DividerLight = "#4A3B48",
 
