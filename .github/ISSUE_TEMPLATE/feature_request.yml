@@ -1,0 +1,76 @@
+name: Feature request
+description: Suggest an improvement or new capability
+title: "[Feature]: "
+labels:
+  - enhancement
+  - triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!WARNING]
+        > Preferred method for reporting an issue is through the Service Desk. If that is not possible, please feel free to raise an issue here.
+        >
+        > **Do not enter confidential information in this request.**
+        >
+        > GitHub must not be used to process or store OFFICIAL-SENSITIVE information, personal data, case records, operational details, security information, passwords, access tokens, API keys, or any other information that could compromise individuals, services, or the Ministry of Justice.
+        >
+        > **If in doubt, do not submit it.**
+
+  - type: textarea
+    id: user_need
+    attributes:
+      label: User need
+      description: Describe the user need this feature addresses.
+      placeholder: "As a user, I need..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the problem, gap, or frustration this request addresses.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_change
+    attributes:
+      label: Proposed change
+      description: Describe the feature or improvement you would like to see.
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: Explain the expected user or service benefit.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe any alternative approaches or workarounds you have considered.
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Add links, examples, or screenshots if they are safe to share publicly.
+
+  - type: checkboxes
+    id: sensitive_confirmation
+    attributes:
+      label: OFFICIAL-SENSITIVE confirmation
+      options:
+        - label: >-
+            I confirm that this issue does not contain confidential information. 
+            I understand that GitHub must not be used to process or store OFFICIAL-SENSITIVE information, 
+            personal data, case records, operational details, security information, passwords, 
+            access tokens, API keys, or any other information that could compromise individuals, 
+            services, or the Ministry of Justice.
+          required: true
