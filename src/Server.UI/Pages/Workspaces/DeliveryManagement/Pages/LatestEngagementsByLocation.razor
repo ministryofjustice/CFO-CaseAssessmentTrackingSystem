@@ -29,7 +29,7 @@
     <MudSpacer />
 
     <MudSwitch T="bool" Value="Query.HideRecentEngagements" Color="Color.Info"
-               ValueChanged="OnHideRecentChanged" Label="Only 3+ Month Inactive" />
+               ValueChanged="OnHideRecentChanged" Label="3+ Month Inactive" />
 
     <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="ShowLocationDialog"
                EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -85,7 +85,7 @@ else
 {
     <MudStack Row="true" Class="pb-2" Spacing="1">
         <MudChip T="string" Color="Color.Success" Variant="Variant.Text">Last 3 months (@_data.TotalRecent)</MudChip>
-        <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">More than 3 months ago (@_data.TotalInactive)</MudChip>
+        <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">3+ Month Inactive (@_data.TotalInactive)</MudChip>
     </MudStack>
 
     @if (_visualMode)
@@ -127,7 +127,7 @@ else
                 <MudTd DataLabel="Participant">
                     <MudStack Spacing="0">
                         <MudText>@context.FullName</MudText>
-                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}")>
+                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=latest-engagements")>
                             @context.ParticipantId
                         </MudLink>
                     </MudStack>
@@ -144,6 +144,7 @@ else
                 <MudTd DataLabel="Engaged With">@context.EngagedWithDisplayName</MudTd>
                 <MudTd DataLabel="Engaged On">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        @if(context.HasEngaged)
                         {
                             <MudText>@context.EngagedOn?.ToString("d")</MudText>
                             @if (context.HasEngagedRecently is false)
