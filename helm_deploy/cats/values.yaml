@@ -228,7 +228,7 @@ worker:
 
 rabbitmq:
   enabled: true
-  image: "rabbitmq:4.3-management-alpine@sha256:e6862a7d804c80fc72d2265aed3b725fd9a6afd330b735363eeecc4b6ec4dd3d"
+  image: "rabbitmq:4.3-management-alpine@sha256:9a101aaeaa9cd18d190529714cdf5722b7b60f8e27f2d4148b8c7340c35437d1"
 
 migrator:
   enabled: true
