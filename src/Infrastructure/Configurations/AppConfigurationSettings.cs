@@ -8,6 +8,7 @@ public class AppConfigurationSettings : IApplicationSettings
     public required string Copyright { get; set; }
     public required string Version { get; set; }
     public required string PrimaryColour { get; set; }
+    public required ThemeDarkColours PrimaryColourDark { get; set; }
     public required string PreLoginMessage { get; set; }
     public int IdleTimeOutMinutes { get; set; }
 }
