@@ -1,7 +1,7 @@
 {
   "id": null,
   "uid": "cats-application-metrics",
-  "title": "CATS - Application Metrics",
+  "title": "HMPPS Case Assessment and Tracking System",
   "description": "CATS application metrics (mediator pipeline, HTTP/Kestrel, Blazor Server/SignalR circuits, .NET runtime), sourced from the OpenTelemetry Prometheus exporter.",
   "tags": [
     "cats",
