@@ -15,6 +15,7 @@ generic-service:
     host: hmpps-cfo-case-assessment-tracking-system-prod.live.cloud-platform.service.justice.gov.uk
     className: modsec
     modsecurity_audit_enabled: true
+  allowlist: null # Production is accessible publicly - external providers, prison and probation staff, and our many hubs
   resources:
     requests:
       cpu: 250m
