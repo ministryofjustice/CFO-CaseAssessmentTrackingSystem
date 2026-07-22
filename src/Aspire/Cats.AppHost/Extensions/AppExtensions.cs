@@ -13,6 +13,7 @@ internal static class AppExtensions
         var enablePresenceHub = string.Equals(builder.Configuration["Features:PresenceHub:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
         var relayUserPresenceNotifications = string.Equals(builder.Configuration["Features:PresenceHub:RelayUserPresenceNotifications"], "true", StringComparison.OrdinalIgnoreCase);
         var enablePrometheusScrapingEndpoint = string.Equals(builder.Configuration["Features:EnablePrometheusScrapingEndpoint"], "true", StringComparison.OrdinalIgnoreCase);
+        var enableInfoEndpoint = string.Equals(builder.Configuration["Features:EnableInfoEndpoint"], "true", StringComparison.OrdinalIgnoreCase);
         var replicaCount = int.TryParse(builder.Configuration["Replicas"], out var n) ? n : 1;
         
         var cats = builder.AddProject<Projects.Server_UI>("cats")
@@ -23,6 +24,7 @@ internal static class AppExtensions
             .WithEnvironment("Features__PresenceHub__Enabled", enablePresenceHub.ToString().ToLowerInvariant())
             .WithEnvironment("Features__PresenceHub__RelayUserPresenceNotifications", relayUserPresenceNotifications.ToString().ToLowerInvariant())
             .WithEnvironment("Features__EnablePrometheusScrapingEndpoint", enablePrometheusScrapingEndpoint.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__EnableInfoEndpoint", enableInfoEndpoint.ToString().ToLowerInvariant())
             .WithReference(rabbit)
             .WaitFor(rabbit);
 

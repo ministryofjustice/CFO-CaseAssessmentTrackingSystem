@@ -10,7 +10,8 @@ connectionStrings:
 generic-service:
   nameOverride: cats
   fullnameOverride: cats
-  
+  productId: "UNASSIGNED"
+
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""  # set by the shared deploy_env.yml action itself (--set generic-service.image.tag)
@@ -144,6 +145,7 @@ generic-service:
     Features__UseSignalRBackplane: "true"
     Features__DmsHardLinkApiEnabled: "true"
     Features__EnablePrometheusScrapingEndpoint: "true"
+    Features__EnableInfoEndpoint: "true"
     WorkerOptions__BaseUrl: "http://cats-worker:8080"
     Sentry__Release: "0.0.0"                    # overridden by CI
     AppConfigurationSettings__Version: "0.0.0"  # overridden by CI
