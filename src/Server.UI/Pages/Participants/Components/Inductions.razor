@@ -11,7 +11,7 @@
 
 @if (ParticipantIsActive)
 {
-    <MudMenu Icon="@Icons.Material.Filled.Add" AriaLabel="Add Induction" AnchorOrigin="Origin.BottomLeft">
+    <MudMenu Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" IconColor="Color.Primary" AriaLabel="Add Induction" AnchorOrigin="Origin.BottomLeft" Class="ma-3">
         <MudMenuItem OnClick="AddHubInduction" Label="Hub Induction" />
         <MudMenuItem OnClick="AddWingInduction" Label="Wing Induction" />
     </MudMenu>
@@ -107,7 +107,9 @@
                                 </RowTemplate>
                                 <FooterContent>
                                     <MudTd col-span="5">
-                                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddPhase(i)" Size="Size.Small" Disabled="@(i.Phases.Any(c => c.CompletedDate is null) || !ParticipantIsActive)" />
+                                        <MudTooltip Text="Add Phase">
+                                            <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="() => AddPhase(i)" Disabled="@(i.Phases.Any(c => c.CompletedDate is null) || !ParticipantIsActive)" />
+                                        </MudTooltip>
                                     </MudTd>
                                 </FooterContent>
                             </MudTable>

@@ -104,10 +104,9 @@ else
                     <MudCardActions>
                         @if (ParticipantIsActive)
                         {
-                           <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="AddContact">
-                            Add
-                           </MudButton>
-                           
+                            <MudTooltip Text="Add Label">
+                                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="AddContact" />
+                            </MudTooltip>
                         }
                     </MudCardActions>
                 </MudCard>
