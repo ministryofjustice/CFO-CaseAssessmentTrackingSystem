@@ -9,6 +9,8 @@ app:
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 70
     scaleUpStabilizationWindowSeconds: 60
+  scheduledDowntime:
+    enabled: false
   ingress:
     host: hmpps-cfo-case-assessment-tracking-system-prod.live.cloud-platform.service.justice.gov.uk
     className: modsec
@@ -30,6 +32,8 @@ app:
 worker:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-prod
   replicaCount: 1
+  scheduledDowntime:
+    enabled: false
   resources:
     requests:
       cpu: 250m

@@ -51,4 +51,5 @@ redisPortForward:
 
 # todo: enable prometheus alerts
 # generic-prometheus-alerts:
+#   businessHoursOnly: true
 #   alertSeverity: cfo-alerts-nonprod
