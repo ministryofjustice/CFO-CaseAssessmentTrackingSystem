@@ -294,6 +294,11 @@ public static class AddActivity
                     .When(c => c.CommencedOn is not null)
                     .WithMessage("The activity commencement date must fall within the linked initiative's lifetime");
 
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn) => BeOnOrAfterInitiativeObjectiveStartDate(command.TaskId, commencedOn))
+                    .When(c => c.CommencedOn is not null)
+                    .WithMessage("The activity commencement date cannot be before the participant's first day on the initiative");
+
                 RuleFor(c => c.ISWTemplate.BaselineAchievedOn)
                 .Must((command, baselineAchievedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, baselineAchievedOn))
                 .When(c =>
@@ -436,6 +441,28 @@ public static class AddActivity
             }
 
             return commencedOn.Value >= lifetime.StartDate && commencedOn.Value <= lifetime.EndDate;
+        }
+
+        private bool BeOnOrAfterInitiativeObjectiveStartDate(Guid taskId, DateTime? commencedOn)
+        {
+            if (commencedOn is null)
+            {
+                return true;
+            }
+
+            var startDate = (
+                from task in unitOfWork.DbContext.ObjectiveTasks
+                join io in unitOfWork.DbContext.InitiativeObjectives on task.ObjectiveId equals io.ObjectiveId
+                where task.Id == taskId
+                select (DateOnly?)io.StartDate
+            ).FirstOrDefault();
+
+            if (startDate is null)
+            {
+                return true;
+            }
+
+            return DateOnly.FromDateTime(commencedOn.Value) >= startDate.Value;
         }
 
         private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? date)

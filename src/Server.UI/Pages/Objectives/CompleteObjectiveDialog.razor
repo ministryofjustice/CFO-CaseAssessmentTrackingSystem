@@ -24,6 +24,14 @@
                           Immediate="true" 
                           Counter="2000"/>
 
+            @if (HasLinkedInitiative)
+            {
+                <MudDatePicker @bind-Date="Model.InitiativeEndDate"
+                               Label="@Model.GetMemberDescription(x => x.InitiativeEndDate)"
+                               For="@(() => Model.InitiativeEndDate)"
+                               Class="mt-4" />
+            }
+
             <MudCheckBox @bind-Value="_understood" 
                          Label="@(@"I understand that completing this objective will also complete any outstanding tasks and I won't be able to make any further changes.")"
                          Class="mt-4" />
