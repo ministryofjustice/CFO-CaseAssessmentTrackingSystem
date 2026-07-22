@@ -1,14 +1,5 @@
 serviceAccountName: ""
 
-# ---------------------------------------------------------------------------
-# Component toggles — every workload is off by default and each release opts in
-# via --set (see README). The shared values-<env>.yaml files are used by all
-# three releases, so enabling happens per release in CI, not in those files:
-#   app deploy : --set app.enabled=true worker.enabled=true rabbitmq.enabled=true
-#   migrate    : --set migrator.enabled=true
-#   seed       : --set seeder.enabled=true
-# ---------------------------------------------------------------------------
-
 connectionStrings:
   catsDb: &catsDb "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=False;Encrypt=True;"
   rabbit: &rabbit "amqp://$(RABBIT_USER):$(RABBIT_PASS)@rabbitmq-service:5672"
@@ -16,16 +7,13 @@ connectionStrings:
   # issued, so TLS (ssl=True) is required. Endpoint/token come from the elasticache-redis-instance-output secret.
   redis: &redis "$(REDIS_PRIMARY_ENDPOINT):6379,password=$(REDIS_AUTH_TOKEN),ssl=True,abortConnect=False"
 
-app:
-  enabled: true
+generic-service:
   nameOverride: cats
   fullnameOverride: cats
-
-  replicaCount: 3
-
+  
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
-    tag: ""  # set at deploy time via helm_additional_args (app.image.tag)
+    tag: ""  # set by the shared deploy_env.yml action itself (--set generic-service.image.tag)
     pullPolicy: IfNotPresent
     port: 8080
 
@@ -69,7 +57,7 @@ app:
       nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
       nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
       # The ingress path is "/", which would otherwise expose /metrics (Prometheus scrape
-      # endpoint, see app.custommetrics) to the public internet.
+      # endpoint, see generic-service.custommetrics) to the public internet.
       nginx.ingress.kubernetes.io/server-snippet: |
         location = /metrics {
           deny all;
@@ -143,77 +131,10 @@ app:
     Sentry__Release: "0.0.0"                    # overridden by CI
     AppConfigurationSettings__Version: "0.0.0"  # overridden by CI
 
-# ---------------------------------------------------------------------------
-# Background worker
-# ---------------------------------------------------------------------------
 worker:
-  enabled: true
-  nameOverride: cats-worker
-  fullnameOverride: cats-worker
-
-  replicaCount: 1
-
-  autoscaling:
-    enabled: false
-
-  strategy:
-    type: Recreate
-    rollingUpdate: null
-
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
-    tag: ""  # set at deploy time via helm_additional_args (worker.image.tag)
-    pullPolicy: IfNotPresent
-    port: 8080
-
-  # The combined image defaults to the UI; override the entrypoint to run the Worker.
-  containerCommand: ["dotnet", "/app/worker/Cfo.Cats.Worker.dll", "--contentRoot", "/app/worker"]
-
-  service:
-    enabled: true
-    type: ClusterIP
-    port: 8080
-
-  # Switch off out of hours
-  scheduledDowntime:
-    enabled: true
-    startupOverride: '10 6 * * 1-5' # Apps up at 06:10 UTC Monday-Friday
-    shutdown: '55 21 * * 1-5'  # Apps down at 21:55 UTC Monday-Friday
-    timeZone: Etc/UTC # Use UTC to avoid mismatch with RDS shutdown schedule (06:00-21:00 UTC Mon-Fri)
-    serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
-
-  # todo: enable prometheus metrics for the worker
-  # custommetrics:
-  #   enabled: true
-  #   scrapeInterval: 15s
-  #   metricsPath: /metrics
-  #   metricsPort: http
-
-  ingress:
-    enabled: false
-
-  poddisruptionbudget:
-    enabled: false
-
-  startupProbe:
-    httpGet:
-      path: /alive
-      port: http
-    failureThreshold: 30
-    periodSeconds: 5
-  readinessProbe:
-    httpGet:
-      path: /health
-      port: http
-    periodSeconds: 10
-    failureThreshold: 3
-  livenessProbe:
-    httpGet:
-      path: /alive
-      port: http
-    periodSeconds: 20
-    failureThreshold: 3
-
+    tag: ""
   resources:
     requests:
       cpu: 100m
@@ -221,12 +142,11 @@ worker:
     limits:
       cpu: 500m
       memory: 512Mi
-
+  env:
+    ConnectionStrings__rabbit: *rabbit
+  # Same shape/convention as generic-service's own `namespace_secrets` (secretName -> {envVar: secretKey}),
+  # rendered via the shared `cats.namespaceSecretsEnv` helper in templates/worker.yaml.
   namespace_secrets:
-    rds-mssql-instance-output:
-      DATABASE_ADDRESS: "rds_instance_address"
-      DATABASE_USERNAME: "database_username"
-      DATABASE_PASSWORD: "database_password"
     config:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
@@ -236,24 +156,16 @@ worker:
       HTTP_PROXY: "HTTP_PROXY"
       NO_PROXY: "NO_PROXY"
 
-  env:
-    ConnectionStrings__CatsDb: *catsDb
-    ConnectionStrings__rabbit: *rabbit
-    Sentry__Release: "0.0.0"
-    AppConfigurationSettings__Version: "0.0.0"
-
 rabbitmq:
-  enabled: true
   image: "rabbitmq:4.3-management-alpine@sha256:e6862a7d804c80fc72d2265aed3b725fd9a6afd330b735363eeecc4b6ec4dd3d"
 
 migrator:
-  enabled: true
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats  # combined image; runs the migrate-database file-based app
     tag: ""  # defaults to the chart appVersion (set by the shared deploy)
 
 seeder:
-  enabled: true  # runs in all environments (like the migrator)
+  # runs in all environments (like the migrator)
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""  # defaults to the chart appVersion (set by the shared deploy)

@@ -1,4 +1,3 @@
-{{- if .Values.rabbitmq.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,4 +86,3 @@ spec:
     - name: management
       port: 15672
       targetPort: 15672
-{{- end }}

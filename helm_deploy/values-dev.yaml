@@ -3,7 +3,7 @@
 # The IRSA-annotated service account (name == namespace) used by all workloads and hooks.
 serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
 
-app:
+generic-service:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
   autoscaling:
     enabled: true
@@ -29,8 +29,6 @@ app:
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-dev.svc.cluster.local:8080"
 
 worker:
-  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-dev
-  replicaCount: 1
   resources:
     requests:
       cpu: 100m

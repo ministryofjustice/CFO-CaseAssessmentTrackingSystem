@@ -1,6 +1,6 @@
 serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
 
-app:
+generic-service:
   serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
   autoscaling:
     enabled: true
@@ -27,8 +27,6 @@ app:
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-preprod.svc.cluster.local:8080"
 
 worker:
-  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-preprod
-  replicaCount: 1
   resources:
     requests:
       cpu: 150m

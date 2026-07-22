@@ -1,4 +1,3 @@
-{{- if .Values.migrator.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -40,4 +39,3 @@ spec:
                 - ALL
           env:
             {{- include "cats.databaseEnv" . | nindent 12 }}
-{{- end }}
