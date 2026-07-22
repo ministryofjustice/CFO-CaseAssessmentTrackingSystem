@@ -34,6 +34,14 @@ app:
     type: ClusterIP
     port: 8080
 
+  # Switch off out of hours
+  scheduledDowntime:
+    enabled: true
+    startupOverride: '10 6 * * 1-5' # Apps up at 06:10 UTC Monday-Friday
+    shutdown: '55 21 * * 1-5'  # Apps down at 21:55 UTC Monday-Friday
+    timeZone: Etc/UTC # Use UTC to avoid mismatch with RDS shutdown schedule (06:00-21:00 UTC Mon-Fri)
+    serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
+
   # Exposes the OpenTelemetry Prometheus exporter's /metrics endpoint (added via
   # Cats.ServiceDefaults) to the Cloud Platform Prometheus. This creates a ServiceMonitor and a
   # NetworkPolicy that allows scraping only from the "monitoring" namespace.
@@ -165,6 +173,14 @@ worker:
     enabled: true
     type: ClusterIP
     port: 8080
+
+  # Switch off out of hours
+  scheduledDowntime:
+    enabled: true
+    startupOverride: '10 6 * * 1-5' # Apps up at 06:10 UTC Monday-Friday
+    shutdown: '55 21 * * 1-5'  # Apps down at 21:55 UTC Monday-Friday
+    timeZone: Etc/UTC # Use UTC to avoid mismatch with RDS shutdown schedule (06:00-21:00 UTC Mon-Fri)
+    serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
 
   # todo: enable prometheus metrics for the worker
   # custommetrics:
