@@ -76,7 +76,7 @@ generic-service:
 
   # 2FA exclusions - these apply in all environments
   allowlist_envs:
-    AllowlistOptions__AllowedIPs:
+    AllowlistOptions__AllowedIPsFallback:
       groups:
         - prisons
         - private_prisons
