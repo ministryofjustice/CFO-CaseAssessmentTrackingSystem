@@ -87,7 +87,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
             return false;
         }
 
-        foreach (var allowedRange in allowlistOptions.Value.AllowedIPs)
+        foreach (var allowedRange in allowlistOptions.Value.GetAllowedIPs())
         {
             var ipRange = IPAddressRange.Parse(allowedRange);
             if (ipRange.Contains(userIp))
