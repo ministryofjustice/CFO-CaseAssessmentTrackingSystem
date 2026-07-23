@@ -55,11 +55,6 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal
 
-  # Combined image: Server.UI (default entrypoint) + Worker + DatabaseSeeding + migrate-database,
-  # plus the compiled CatsDb DACPAC. Pushed to ghcr.io/ministryofjustice/hmpps-cfo-cats:<version>, where
-  # <version> is the tag docker_build.yml self-generates (date.run_number.sha7) and reports as its
-  # output. One image, one build, one version for the whole release: app, worker, seeder and the
-  # migrator all run this same image (the last two as pre-deploy hook Jobs with a command override).
   build_app:
     name: Build docker image (UI + Worker + Seeder + Migrator) from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
@@ -89,23 +84,10 @@ jobs:
       helm_chart_name: 'cats'
       k8s_deployment_name: 'cats'
       slack_notification: 'false' # set 'true' once NONPROD_RELEASES_SLACK_CHANNEL is configured
-      # The shared deploy runs a single `helm upgrade cats` with --reset-values, so anything
-      # not in values.yaml / values-dev.yaml must be set here. All four image tags are the one
-      # build's version: app/worker (generic-service aliases) and the migrator/seeder hook Jobs,
-      # which all run the same hmpps-cfo-cats image.
       helm_additional_args: >-
-        --set app.image.tag=${{ needs.build_app.outputs.app_version }}
-        --set worker.image.tag=${{ needs.build_app.outputs.app_version }}
-        --set migrator.image.tag=${{ needs.build_app.outputs.app_version }}
-        --set seeder.image.tag=${{ needs.build_app.outputs.app_version }}
-        --set app.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
-        --set app.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
-        --set worker.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
-        --set worker.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
+        --set generic-service.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
+        --set generic-service.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
 
-  # Preprod/prod are scaffolded but intentionally left commented until those
-  # namespaces (and their GitHub Environments + KUBE_* secrets) exist. Uncomment to
-  # enable the dev -> preprod -> prod promotion of the same immutable image.
   # deploy_preprod:
   #   name: Deploy to the pre-production environment
   #   needs: [build_app, deploy_dev]
@@ -118,14 +100,9 @@ jobs:
   #     k8s_deployment_name: 'cats'
   #     slack_notification: 'false'
   #     helm_additional_args: >-
-  #       --set app.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set worker.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set migrator.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set seeder.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set app.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
-  #       --set app.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
-  #       --set worker.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
-  #       --set worker.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
+  #       --set generic-service.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
+  #       --set generic-service.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
+
   # deploy_prod:
   #   name: Deploy to the production environment
   #   needs: [build_app, deploy_preprod]
@@ -138,11 +115,5 @@ jobs:
   #     k8s_deployment_name: 'cats'
   #     slack_notification: 'false'
   #     helm_additional_args: >-
-  #       --set app.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set worker.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set migrator.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set seeder.image.tag=${{ needs.build_app.outputs.app_version }}
-  #       --set app.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
-  #       --set app.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
-  #       --set worker.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
-  #       --set worker.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
+  #       --set generic-service.env.Sentry__Release=${{ needs.build_app.outputs.app_version }}
+  #       --set generic-service.env.AppConfigurationSettings__Version=${{ needs.build_app.outputs.app_version }}
