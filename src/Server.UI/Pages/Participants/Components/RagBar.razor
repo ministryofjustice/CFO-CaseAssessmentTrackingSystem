@@ -6,6 +6,8 @@
 @if (Model is not null)
 {
     var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
+
+    <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="1">
     @foreach (var title in orderedTitles)
     {
         var pathway = Model.PathwayScore.FirstOrDefault(p => p.Pathway == title);
@@ -15,4 +17,6 @@
             <RagComponent Pathway="pathway"></RagComponent>
         }
     }
+    </MudStack>
+
 }

@@ -13,9 +13,9 @@
                                      ValueChanged="@(value => OnParticipantSelectionChanged.InvokeAsync((item.Id, value)))"
                                      @onclick:stopPropagation="true" />
                     }
-                    <MudText Typo="Typo.h5">@item.Id @item.ParticipantName</MudText>
+                    <MudText Typo="Typo.subtitle1">@item.Id @item.ParticipantName</MudText>
                     <MudSpacer />
-                    <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
+                    <MudText Typo="Typo.subtitle2">@item.CurrentLocation.Name</MudText>
                 </MudStack>
                 <MudStack Row="true">
                         @if(item.EnrolmentLocation is not null)
@@ -84,9 +84,8 @@
             <MudDivider Class="mt-4 mb-2" />
             <MudStack Row="true" Justify="Justify.FlexEnd" >
                 <MudButton 
-                    Variant="Variant.Filled" 
+                    Variant="Variant.Text" 
                     Color="Color.Primary" 
-                    StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
                     OnClick="@(() => OnViewParticipant.InvokeAsync(item))">
                     @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
                 </MudButton>
