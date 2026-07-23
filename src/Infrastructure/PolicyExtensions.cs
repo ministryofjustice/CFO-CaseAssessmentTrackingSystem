@@ -160,6 +160,14 @@ internal static class PolicyExtensions
 
         });
 
+        options.AddPolicy(SecurityPolicies.ServiceDeskSyncInformation, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.InternalStaff, "True");
+            policy.RequireAssertion(context => !context.User.IsInRole(RoleNames.QAOfficer));
+        });
+
         options.AddPolicy(SecurityPolicies.Initiatives, policy =>
         {
             policy.RequireAuthenticatedUser();
