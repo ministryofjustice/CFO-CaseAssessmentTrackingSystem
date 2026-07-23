@@ -12,7 +12,7 @@
             @if (HasPathwayBeenReviewed)
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Last Reviewed</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
                     <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
                         <MudText>
                             @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
@@ -23,7 +23,7 @@
             else
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Date Created</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
                     <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.Created.ToString("dd/MM/yyyy hh:mm")">
                         <MudText>
                             @ParticipantSummaryDto.PathwayPlan!.Created.Humanize()
@@ -35,14 +35,14 @@
             @if (HasPathwayBeenReviewed)
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Reviewed By</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
                     <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
                 </MudStack>
             }
             else
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Created By</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Created By</MudText>
                     <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
                 </MudStack>
             }

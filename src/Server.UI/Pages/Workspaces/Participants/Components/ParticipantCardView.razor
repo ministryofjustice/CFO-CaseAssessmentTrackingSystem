@@ -84,8 +84,10 @@
             <MudDivider Class="mt-4 mb-2" />
             <MudStack Row="true" Justify="Justify.FlexEnd" >
                 <MudButton 
-                    Variant="Variant.Text" 
-                    Color="Color.Primary" 
+                    Variant="Variant.Filled"
+                    StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
+                    Size="Size.Small"
+                    Color="Color.Secondary" 
                     OnClick="@(() => OnViewParticipant.InvokeAsync(item))">
                     @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
                 </MudButton>

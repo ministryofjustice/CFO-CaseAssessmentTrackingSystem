@@ -15,23 +15,23 @@
         else
         {
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Date Created</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Date Created</MudText>
                 <MudText>@_latestAssessment.AssessmentDate!.Value.ToString("dd/MM/yyyy")</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Created By</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Created By</MudText>
                 <MudText>@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
             </MudStack>
 
             @if (_latestAssessment.Completed.HasValue)
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Date Completed</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Date Completed</MudText>
                     <MudText>@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
                 </MudStack>
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Due</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Due</MudText>
                     <MudTooltip Text="@_assessmentDueTooltipText">
                         <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2" />
                         <MudText Typo="Typo.body2">
