@@ -69,6 +69,8 @@ public static class SecurityPolicies
 
     public const string ServiceDeskManagement = nameof(ServiceDeskManagement);
 
+    public const string ServiceDeskSyncInformation = nameof(ServiceDeskSyncInformation);
+
     /// <summary>
     /// Allows access to the Initiatives management page and list.
     /// </summary>
