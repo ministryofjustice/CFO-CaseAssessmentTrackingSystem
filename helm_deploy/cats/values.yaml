@@ -71,15 +71,14 @@ generic-service:
     groups:
       - digital_staff_and_mojo
       - moj_cloud_platform
+      - prisons # Daresbury MOJ network
 
   # 2FA exclusions - these apply in all environments
   allowlist_envs:
     AllowlistOptions__AllowedIPs:
       groups:
-        - digital_staff_and_mojo
         - prisons
         - private_prisons
-        - probation
 
   startupProbe:
     httpGet:
