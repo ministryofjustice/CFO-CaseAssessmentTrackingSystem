@@ -64,6 +64,22 @@ generic-service:
           return 404;
         }
 
+  # Restrict ingress to MoJ/HMPPS staff networks and Cloud Platform-internal traffic by default. 
+  # See: https://github.com/ministryofjustice/hmpps-ip-allowlists
+  # Note: the allowlist is disabled in production (see values-prod.yaml)
+  allowlist:
+    groups:
+      - digital_staff_and_mojo
+      - moj_cloud_platform
+      - prisons # Daresbury MOJ network
+
+  # 2FA exclusions - these apply in all environments
+  allowlist_envs:
+    AllowlistOptions__AllowedIPs:
+      groups:
+        - prisons
+        - private_prisons
+
   startupProbe:
     httpGet:
       path: /alive
