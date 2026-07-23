@@ -6,13 +6,9 @@
 
 @inherits OwningComponentBase<IMediator>
 
-<MudButton 
-    Variant="Variant.Filled" 
-    Color="Color.Secondary" 
-    StartIcon="@Icons.Material.Filled.Label"
-    OnClick="@(() => _showDialog = true)">
-    Add Label
-</MudButton>
+<MudTooltip Text="Add Label">
+    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@(() => _showDialog = true)" />
+</MudTooltip>
 
 <MudDialog Visible="_showDialog" Options="@(new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true })">
     <TitleContent>
