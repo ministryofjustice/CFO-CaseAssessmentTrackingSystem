@@ -17,7 +17,7 @@
                     </MudText>
                     @if(Env.IsProduction() is false)
                     {
-                        <MudChip T="string" Label="true" Color="Color.Warning" Style="font-weight: bold">@Env.EnvironmentName</MudChip>
+                        <MudChip T="string" Label="true" Color="Color.Secondary" Style="font-weight: bold">@Env.EnvironmentName</MudChip>
                     }
                 </MudAppBar>
                 <div class="mud-main-content">
