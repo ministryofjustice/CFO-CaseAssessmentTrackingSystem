@@ -75,7 +75,7 @@
                 <MudTd>
                     <MudStack Spacing="0">
                     <MudText>@($"{context.FirstName} {context.LastName}")</MudText>
-                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}")>
+                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=activities-my-feedback")>
                             @context.ParticipantId
                         </MudLink>
                     </MudStack>
