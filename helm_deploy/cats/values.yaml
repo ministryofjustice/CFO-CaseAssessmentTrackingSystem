@@ -72,6 +72,7 @@ generic-service:
       - digital_staff_and_mojo
       - moj_cloud_platform
       - prisons # Daresbury MOJ network
+      - creating_future_opportunities
 
   # 2FA exclusions - these apply in all environments
   allowlist_envs:
