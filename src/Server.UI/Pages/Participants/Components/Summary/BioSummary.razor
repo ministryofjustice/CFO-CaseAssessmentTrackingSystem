@@ -5,7 +5,7 @@
 <MudCard Style="Height: 100%;">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Bio Information</MudText>
+            <MudText Typo="Typo.subtitle1">Bio Information</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
@@ -18,15 +18,15 @@
         {
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Date Created</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Date Created</MudText>
                 <MudText>@_bio.BioDate!.Value.ToString("dd/MM/yyyy")</MudText>
             </MudStack>
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Created By</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Created By</MudText>
                 <MudText>@UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName</MudText>
             </MudStack>
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Status</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Status</MudText>
                 <MudText Typo="Typo.body2">@_bio.BioStatus!.Name.Humanize()</MudText>
             </MudStack>
         }
@@ -34,7 +34,7 @@
         @if (_bioInfo != string.Empty)
         {
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Due</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Due</MudText>
                 <MudTooltip Text="@_bioTooltipText">
                     <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
                     <MudText Typo="Typo.body2">

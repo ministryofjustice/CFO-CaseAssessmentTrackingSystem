@@ -9,7 +9,8 @@
                          Icon="@Cfo.Cats.Domain.Common.Enums.Pathway.FromName(Pathway.Pathway).Icon"
                          Label="true"
                          Color="@(Pathway.Score >= 0 ? GetColor(Pathway.Score) : Color.Primary)"
-                         Disabled="@(Pathway.Score < 0)">
+                         Disabled="@(Pathway.Score < 0)"
+                         Size="Size.Medium">
                     @Pathway.Pathway
                 </MudChip>
             </ChildContent>
@@ -24,7 +25,8 @@
                  Icon="@Cfo.Cats.Domain.Common.Enums.Pathway.FromName(Pathway.Pathway).Icon"
                  Label="true"
                  Color="@(Pathway.Score >= 0 ? GetColor(Pathway.Score) : Color.Primary)"
-                 Disabled="@(Pathway.Score < 0)">
+                 Disabled="@(Pathway.Score < 0)"
+                 Size="Size.Medium">
             @Pathway.Pathway
         </MudChip>
     }
