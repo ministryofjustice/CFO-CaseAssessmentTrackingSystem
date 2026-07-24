@@ -79,5 +79,9 @@ public enum IdentityActionType
     [Description("Account Activated")]
     AccountActivated,
     [Description("Account Deactivated")]
-    AccountDeactivated
+    AccountDeactivated,
+    [Description("Account Suspended")]
+    AccountSuspended,
+    [Description("Account Marked As Left")]
+    AccountMarkedAsLeft
 }

@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services;
@@ -267,7 +268,7 @@ public partial class Users
     {
         var applicationUser = Mapper.Map<ApplicationUser>(model);
         applicationUser.EmailConfirmed = true;
-        applicationUser.IsActive = true;
+        applicationUser.Status = UserStatus.PendingActivation;
         applicationUser.TwoFactorEnabled = true;
         applicationUser.PhoneNumberConfirmed = string.IsNullOrWhiteSpace(applicationUser.PhoneNumber) == false;
 
@@ -360,42 +361,49 @@ public partial class Users
         }
     }
 
-    private async Task OnSetActive(ApplicationUserDto item)
+    private Task OnReactivate(ApplicationUserDto item) =>
+        ChangeUserStatus(item, UserStatus.Active, lockoutEnd: null,
+            IdentityAuditNotification.ActivateAccount(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!),
+            "The user has been reactivated.");
+
+    private Task OnSuspend(ApplicationUserDto item) =>
+        ChangeUserStatus(item, UserStatus.Suspended, lockoutEnd: DateTimeOffset.MaxValue,
+            IdentityAuditNotification.SuspendAccount(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!),
+            "The user has been suspended.");
+
+    private Task OnMarkAsLeft(ApplicationUserDto item) =>
+        ChangeUserStatus(item, UserStatus.Left, lockoutEnd: DateTimeOffset.MaxValue,
+            IdentityAuditNotification.MarkAccountAsLeft(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!),
+            "The user has been marked as left.");
+
+    private async Task ChangeUserStatus(ApplicationUserDto item, UserStatus newStatus, DateTimeOffset? lockoutEnd,
+        IdentityAuditNotification audit, string successMessage)
     {
         var user = await _userManager.FindByIdAsync(item.Id) ??
                    throw new NotFoundException($"Application user not found {item.Id}.");
-        await ToggleUserActiveState(user, item);
-    }
 
-    private async Task ToggleUserActiveState(ApplicationUser user, ApplicationUserDto item)
-    {
-        var mediator = GetNewMediator();
-        if (user.IsActive)
-        {
-            await DeactivateUser(user, item);
-            await mediator.Publish(IdentityAuditNotification.DeactivateAccount(item.UserName,
-                NetworkIpProvider.IpAddress, _currentUser!.UserName!));
-        }
-        else
-        {
-            await ActivateUser(user, item);
-            await mediator.Publish(IdentityAuditNotification.ActivateAccount(item.UserName, NetworkIpProvider.IpAddress,
-                _currentUser!.UserName!));
-        }
-    }
+        user.Status = newStatus;
+        user.LockoutEnd = lockoutEnd;
 
-    private async Task ActivateUser(ApplicationUser user, ApplicationUserDto item)
-    {
-        user.IsActive = true;
-        user.EmailConfirmed = true;
-        user.LockoutEnd = null;
+        if (newStatus == UserStatus.Active)
+        {
+            user.EmailConfirmed = true;
+        }
+
         var identityResult = await _userManager.UpdateAsync(user);
 
         if (identityResult.Succeeded)
         {
-            item.IsActive = true;
-            item.LockoutEnd = null;
-            Snackbar.Add($"{L["The user has been activated."]}", Severity.Info);
+            item.Status = newStatus;
+            item.LockoutEnd = lockoutEnd;
+
+            var mediator = GetNewMediator();
+            await mediator.Publish(audit);
+
+            // Drop any cached claims so the status change takes effect immediately.
+            await Cache.RemoveAsync(ApplicationUserClaimsPrincipalFactory.GetCacheKey(user.Id));
+
+            Snackbar.Add($"{L[successMessage]}", Severity.Info);
         }
         else
         {
@@ -404,24 +412,23 @@ public partial class Users
         }
     }
 
-    private async Task DeactivateUser(ApplicationUser user, ApplicationUserDto item)
+    private static Color GetStatusColor(UserStatus status) => status.Name switch
     {
-        user.IsActive = false;
-        user.LockoutEnd = DateTimeOffset.MaxValue;
-        var identityResult = await _userManager.UpdateAsync(user);
+        nameof(UserStatus.Active) => Color.Success,
+        nameof(UserStatus.Suspended) => Color.Warning,
+        nameof(UserStatus.Left) => Color.Error,
+        nameof(UserStatus.PendingActivation) => Color.Info,
+        _ => Color.Surface
+    };
 
-        if (identityResult.Succeeded)
-        {
-            item.IsActive = false;
-            item.LockoutEnd = DateTimeOffset.MaxValue;
-            Snackbar.Add($"{L["The user has been deactivated."]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}",
-                Severity.Error);
-        }
-    }
+    private static string GetStatusIcon(UserStatus status) => status.Name switch
+    {
+        nameof(UserStatus.Active) => Icons.Material.Filled.CheckCircleOutline,
+        nameof(UserStatus.Suspended) => Icons.Material.Filled.PauseCircleOutline,
+        nameof(UserStatus.Left) => Icons.Material.Filled.ExitToApp,
+        nameof(UserStatus.PendingActivation) => Icons.Material.Filled.HourglassEmpty,
+        _ => Icons.Material.Filled.HighlightOff
+    };
 
     private async Task OnResetPassword(ApplicationUserDto item)
     {
