@@ -22,12 +22,19 @@ public static class GetLatestEngagementsByLocation
         public string? EngagementType { get; set; }
         public string? TenantId { get; set; }
         public LocationGroupingMode GroupBy { get; set; } = LocationGroupingMode.CurrentLocation;
+        public SplitMode Split { get; set; } = SplitMode.Recency;
     }
 
     public enum LocationGroupingMode
     {
         CurrentLocation,
         EngagedAtLocation
+    }
+
+    public enum SplitMode
+    {
+        Recency,
+        Category
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<LatestEngagementsByLocationDto>>
@@ -72,18 +79,41 @@ public static class GetLatestEngagementsByLocation
                 };
 #pragma warning restore CS8602, CS8604
 
-            // Aggregate the whole filtered set for the chart / headline totals.
-            var records = await query
-                .GroupBy(x => request.GroupBy == LocationGroupingMode.EngagedAtLocation ? (x.EngagedAtLocation ?? "Unknown Location") : x.CurrentLocationName)
-                .Select(g => new LocationEngagementSummaryDto(
-                    g.Key,
-                    g.Count(x => x.EngagedOn != null && x.EngagedOn >= threeMonthsAgo),
-                    g.Count(x => x.EngagedOn == null || x.EngagedOn < threeMonthsAgo)))
-                .ToArrayAsync(cancellationToken);
+            var ordered = Array.Empty<LocationEngagementSummaryDto>();
+            LocationCategoryCountDto[]? categoryRecords = null;
 
-            var ordered = records
-                .OrderBy(x => x.LocationName)
-                .ToArray();
+            if (request.Split == SplitMode.Category)
+            {
+                // Aggregate by location + category for the category-split chart.
+                var byCategory = await query
+                    .GroupBy(x => new
+                    {
+                        LocationName = request.GroupBy == LocationGroupingMode.EngagedAtLocation ? (x.EngagedAtLocation ?? "Unknown Location") : x.CurrentLocationName,
+                        Category = x.Category ?? "Uncategorised"
+                    })
+                    .Select(g => new LocationCategoryCountDto(g.Key.LocationName, g.Key.Category, g.Count()))
+                    .ToArrayAsync(cancellationToken);
+
+                categoryRecords = byCategory
+                    .OrderBy(x => x.LocationName)
+                    .ThenBy(x => x.Category)
+                    .ToArray();
+            }
+            else
+            {
+                // Aggregate the whole filtered set for the chart / headline totals, split by recency.
+                var records = await query
+                    .GroupBy(x => request.GroupBy == LocationGroupingMode.EngagedAtLocation ? (x.EngagedAtLocation ?? "Unknown Location") : x.CurrentLocationName)
+                    .Select(g => new LocationEngagementSummaryDto(
+                        g.Key,
+                        g.Count(x => x.EngagedOn != null && x.EngagedOn >= threeMonthsAgo),
+                        g.Count(x => x.EngagedOn == null || x.EngagedOn < threeMonthsAgo)))
+                    .ToArrayAsync(cancellationToken);
+
+                ordered = records
+                    .OrderBy(x => x.LocationName)
+                    .ToArray();
+            }
 
             // Page the detail rows for the table.
             var count = await query.CountAsync(cancellationToken);
@@ -108,7 +138,7 @@ public static class GetLatestEngagementsByLocation
 
             var details = new PaginatedData<ParticipantEngagementDto>(items, count, request.PageNumber, request.PageSize);
 
-            return Result<LatestEngagementsByLocationDto>.Success(new LatestEngagementsByLocationDto(ordered, details));
+            return Result<LatestEngagementsByLocationDto>.Success(new LatestEngagementsByLocationDto(ordered, details, categoryRecords));
         }
     }
 }

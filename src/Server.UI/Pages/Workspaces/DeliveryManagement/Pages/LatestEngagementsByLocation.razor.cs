@@ -41,6 +41,7 @@ public partial class LatestEngagementsByLocation
     private GetLatestEngagementsByLocation.Query Query { get; set; } = null!;
 
     private ApexChartOptions<LocationEngagementSummaryDto> _options = null!;
+    private ApexChartOptions<LocationCategoryCountDto> _categoryOptions = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +60,8 @@ public partial class LatestEngagementsByLocation
             JustMyCases = _isTenantLevel is false
         };
 
-        _options = BuildChartOptions();
+        _options = BuildChartOptions<LocationEngagementSummaryDto>();
+        _categoryOptions = BuildChartOptions<LocationCategoryCountDto>();
 
         var typesResult = await GetNewMediator().Send(new GetEngagementTypes.Query { CurrentUser = CurrentUser });
         if (typesResult is { Succeeded: true, Data: not null })
@@ -70,7 +72,7 @@ public partial class LatestEngagementsByLocation
         await OnRefresh();
     }
 
-    private ApexChartOptions<LocationEngagementSummaryDto> BuildChartOptions() => new()
+    private ApexChartOptions<TItem> BuildChartOptions<TItem>() where TItem : class => new()
     {
         Chart = new Chart { Stacked = true },
         Legend = new Legend { Show = true, ShowForSingleSeries = true },
@@ -170,6 +172,26 @@ public partial class LatestEngagementsByLocation
             : GetLatestEngagementsByLocation.LocationGroupingMode.CurrentLocation;
         await OnRefresh();
     }
+
+    private async Task OnSplitByCategoryChanged(bool value)
+    {
+        Query.Split = value
+            ? GetLatestEngagementsByLocation.SplitMode.Category
+            : GetLatestEngagementsByLocation.SplitMode.Recency;
+        await OnRefresh();
+    }
+
+    private IEnumerable<string> GetCategories() =>
+        _data?.CategoryRecords is null ? [] : _data.CategoryRecords.Select(r => r.Category).Distinct().OrderBy(c => c);
+
+    private IEnumerable<string> GetLocations() =>
+        _data?.CategoryRecords is null ? [] : _data.CategoryRecords.Select(r => r.LocationName).Distinct().OrderBy(l => l);
+
+    private LocationCategoryCountDto[] GetCategorySeriesItems(string category) =>
+        GetLocations()
+            .Select(location => _data!.CategoryRecords!.FirstOrDefault(r => r.Category == category && r.LocationName == location)
+                ?? new LocationCategoryCountDto(location, category, 0))
+            .ToArray();
 
     private async Task OnLocationChanged(int locationId)
     {

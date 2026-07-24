@@ -28,8 +28,16 @@
 
     <MudSwitch T="bool" @bind-Value="_visualMode" Color="Color.Info" Label="Visual Mode" />
 
-    <MudSwitch T="bool" Value="Query.GroupBy == GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation"
-               ValueChanged="OnGroupByEngagedAtLocationChanged" Color="Color.Info" Label="Group by Engagement Location" />
+    @if (_visualMode) {
+
+        <MudDivider Vertical="true" FlexItem="true"/>
+
+        <MudSwitch T="bool" Value="Query.GroupBy == GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation"
+                ValueChanged="OnGroupByEngagedAtLocationChanged" Color="Color.Info" Label="Group by Engagement Location" />
+
+        <MudSwitch T="bool" Value="Query.Split == GetLatestEngagementsByLocation.SplitMode.Category"
+               ValueChanged="OnSplitByCategoryChanged" Color="Color.Info" Label="Split by Category" />
+    }
 
     <MudSpacer />
 
@@ -82,37 +90,58 @@ else if (_data is null)
 {
     <MudAlert Severity="Severity.Warning">Unable to load the latest engagements breakdown.</MudAlert>
 }
-else if (_data.Records.Length == 0)
+else if (Query.Split == GetLatestEngagementsByLocation.SplitMode.Category ? (_data.CategoryRecords?.Length ?? 0) == 0 : _data.Records.Length == 0)
 {
     <MudAlert Severity="Severity.Info">No participants match the current filters.</MudAlert>
 }
 else
 {
-    <MudStack Row="true" Class="pb-2" Spacing="1">
-        <MudChip T="string" Color="Color.Success" Variant="Variant.Text">Last 3 months (@_data.TotalRecent)</MudChip>
-        <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">3+ Month Inactive (@_data.TotalInactive)</MudChip>
-    </MudStack>
+    @if (Query.Split == GetLatestEngagementsByLocation.SplitMode.Recency)
+    {
+        <MudStack Row="true" Class="pb-2" Spacing="1">
+            <MudChip T="string" Color="Color.Success" Variant="Variant.Text">Last 3 months (@_data.TotalRecent)</MudChip>
+            <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">3+ Month Inactive (@_data.TotalInactive)</MudChip>
+        </MudStack>
+    }
 
     @if (_visualMode)
     {
-        <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
-            <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                             Name="Last 3 months"
-                             Items="_data.Records"
-                             XValue="@(x => x.LocationName)"
-                             YValue="@(x => x.RecentCount)"
-                             SeriesType="SeriesType.Bar"
-                             ShowDataLabels
-                             Color="#2e7d32" />
-            <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                             Name="More than 3 months ago"
-                             Items="_data.Records"
-                             XValue="@(x => x.LocationName)"
-                             YValue="@(x => x.InactiveCount)"
-                             SeriesType="SeriesType.Bar"
-                             ShowDataLabels
-                             Color="#ed6c02" />
-        </ApexChart>
+        @if (Query.Split == GetLatestEngagementsByLocation.SplitMode.Category)
+        {
+            <ApexChart TItem="LocationCategoryCountDto" Options="_categoryOptions" Height="600">
+                @foreach (var category in GetCategories())
+                {
+                    <ApexPointSeries TItem="LocationCategoryCountDto"
+                                     Name="@category"
+                                     Items="GetCategorySeriesItems(category)"
+                                     XValue="@(x => x.LocationName)"
+                                     YValue="@(x => x.Count)"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                }
+            </ApexChart>
+        }
+        else
+        {
+            <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
+                <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                                 Name="Last 3 months"
+                                 Items="_data.Records"
+                                 XValue="@(x => x.LocationName)"
+                                 YValue="@(x => x.RecentCount)"
+                                 SeriesType="SeriesType.Bar"
+                                 ShowDataLabels
+                                 Color="#2e7d32" />
+                <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                                 Name="More than 3 months ago"
+                                 Items="_data.Records"
+                                 XValue="@(x => x.LocationName)"
+                                 YValue="@(x => x.InactiveCount)"
+                                 SeriesType="SeriesType.Bar"
+                                 ShowDataLabels
+                                 Color="#ed6c02" />
+            </ApexChart>
+        }
     }
     else
     {

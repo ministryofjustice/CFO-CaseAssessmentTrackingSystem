@@ -14,6 +14,14 @@ public record LocationEngagementSummaryDto(string LocationName, int RecentCount,
 }
 
 /// <summary>
+/// A location/category combination and how many participants' latest engagement falls into that category at that location.
+/// </summary>
+/// <param name="LocationName">The location (current or engaged-at, depending on the request).</param>
+/// <param name="Category">The engagement category.</param>
+/// <param name="Count">Participants whose latest engagement at this location falls into this category.</param>
+public record LocationCategoryCountDto(string LocationName, string Category, int Count);
+
+/// <summary>
 /// The location-level breakdown of latest engagements with headline totals, alongside a single
 /// page of participant detail rows. The per-location summary (used for the chart) is aggregated
 /// over the whole filtered result set, while <see cref="Details"/> carries only the current page,
@@ -21,7 +29,8 @@ public record LocationEngagementSummaryDto(string LocationName, int RecentCount,
 /// </summary>
 public record LatestEngagementsByLocationDto(
     LocationEngagementSummaryDto[] Records,
-    PaginatedData<ParticipantEngagementDto> Details)
+    PaginatedData<ParticipantEngagementDto> Details,
+    LocationCategoryCountDto[]? CategoryRecords = null)
 {
     public int TotalRecent => Records.Sum(r => r.RecentCount);
     public int TotalInactive => Records.Sum(r => r.InactiveCount);
