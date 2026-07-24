@@ -65,31 +65,86 @@ public static class Theme
                 ErrorContrastText = "#240008"
             },
             Typography = new Typography
-            {
-                Default = new DefaultTypography
                 {
-                    FontFamily = myFont,
-                    FontSize = "1rem" // 16px
-                },
+                    Default = new DefaultTypography
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        LineHeight = "1.5"
+                    },
 
-                H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700" }, // 26px
-                H2 = { FontFamily = myFont, FontSize = "1.45rem", FontWeight = "700" }, // 20px
-                H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600" }, // 18px
-                H4 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "600" }, // 16px
-                H5 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "500" }, // 16px
-                H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500" }, // 14px
+                        // Use these for real page structure only
+                        H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700", LineHeight = "1.25" },
+                        H2 = { FontFamily = myFont, FontSize = "1.45rem",  FontWeight = "700", LineHeight = "1.3" },
+                        H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600", LineHeight = "1.35" },
+                        H4 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "600", LineHeight = "1.4" },
+                        H5 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "500", LineHeight = "1.4" },
+                        H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500", LineHeight = "1.4" },
 
-                Subtitle1 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "400" }, // 16px
-                Subtitle2 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500" }, // 14px
+                        // Use these for visual emphasis inside cards, panels, summaries
+                        Subtitle1 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "1rem",
+                            FontWeight = "600",
+                            LineHeight = "1.35",
+                            LetterSpacing = "0.0025em",
+                            TextTransform = "uppercase"
+                        },
 
-                Body1 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "400" }, // 16px
-                Body2 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "400" }, // 14px
+                        Subtitle2 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "0.875rem",
+                            FontWeight = "600",
+                            LineHeight = "1.35",
+                            LetterSpacing = "0.0025em"
+                        },
 
-                Button = { FontFamily = myFont, FontSize = "1rem", FontWeight = "600" }, // 16px
+                        Body1 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "1rem",
+                            FontWeight = "400",
+                            LineHeight = "1.5"
+                        },
 
-                Caption = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "400" }, // 14px
-                Overline = { FontFamily = myFont, FontSize = "0.75rem", FontWeight = "500" }  // 12px
-            }
+                        Body2 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "0.875rem",
+                            FontWeight = "400",
+                            LineHeight = "1.45"
+                        },
+
+                        Button =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "1rem",
+                            FontWeight = "600",
+                            LineHeight = "1.25",
+                            LetterSpacing = "0.01em"
+                        },
+
+                        Caption =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "0.8125rem", // 13px, more distinct from body2
+                            FontWeight = "400",
+                            LineHeight = "1.35",
+                            LetterSpacing = "0.01em"
+                        },
+
+                        Overline =
+                        {
+                        FontFamily = myFont,
+                        FontSize = "0.75rem",
+                        FontWeight = "600",
+                        LineHeight = "1.3",
+                        LetterSpacing = "0.06em",
+                        TextTransform = "uppercase"
+                    }
+                }
         };
 
         return theme;
