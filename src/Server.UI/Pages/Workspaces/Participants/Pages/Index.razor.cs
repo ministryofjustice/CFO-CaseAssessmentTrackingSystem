@@ -14,7 +14,8 @@ public partial class Index
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = null!;
 
-    private bool _allowTransfers = false;
+    private bool _allowTransfers;
+    private bool _isInternalUser;
 
     private BreadcrumbLinkModel[] Links { get; set; } = [];
 
@@ -22,6 +23,7 @@ public partial class Index
     {
         var authState = await AuthState;
         _allowTransfers = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Transfers)).Succeeded;
+        _isInternalUser = (await AuthService.AuthorizeAsync(authState.User, SecurityPolicies.Internal)).Succeeded;
 
         List<BreadcrumbLinkModel> links =
         [

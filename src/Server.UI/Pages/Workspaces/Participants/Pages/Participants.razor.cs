@@ -52,12 +52,18 @@ public partial class Participants
 
     [Inject]
     public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
+    
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null!;
 
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
+    
+    [SupplyParameterFromQuery(Name = "keyword")]
+    public string? KeywordFromQuery { get; set; }
 
     private IDictionary<int, string> _locations = null!;
     private IDictionary<string, string> _users = null!;
@@ -126,36 +132,50 @@ public partial class Participants
             Query.OwnerId = UserProfile.UserId;
             _currentFilter = QuickFilter.MyParticipants;
         }
-                    
-        var cached = await SessionStorage.GetAsync<ParticipantsSessionData>();
-
-        if (cached is { Succeeded: true, Data: { } sd })
+        
+        // Check if keyword was provided via query parameter (e.g., from ParticipantById search)
+        if (!string.IsNullOrWhiteSpace(KeywordFromQuery))
         {
-            Query.Keyword = sd.Keyword;
-            Query.Label = sd.LabelId;
-            Query.ListView = sd.ListView;
-            Query.Locations = sd.Locations;
-            Query.OrderBy = string.IsNullOrWhiteSpace(sd.OrderBy) ? "Id" : sd.OrderBy;
-            Query.SortDirection = string.IsNullOrWhiteSpace(sd.SortDirection) ? "Ascending" : sd.SortDirection;
-            Query.PageNumber = sd.PageNumber;
-            Query.OwnerId = sd.OwnerId;
-            Query.TenantId = sd.TenantId;
-            Query.RiskDue = sd.RiskDue;
-            Query.RecentAction = sd.RecentlyAssigned;
-            Tabular = sd.Tabular;
+            Query.Keyword = KeywordFromQuery;
+            _currentFilter = QuickFilter.All;
+            Query.JustMyCases = false;
+            Query.OwnerId = null;
             
-            // Sync _currentFilter based on restored state
-            _currentFilter = sd.RecentlyAssigned switch
+            // Clear the query parameter from URL after applying it
+            NavigationManager.NavigateTo("/pages/workspace/participants/all", replace: true);
+        }
+        else
+        {
+            var cached = await SessionStorage.GetAsync<ParticipantsSessionData>();
+
+            if (cached is { Succeeded: true, Data: { } sd })
             {
-                RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
-                RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
-                RecentParticipantFilter.VisitedLast7Days => QuickFilter.VisitedLast7Days,
-                RecentParticipantFilter.ArchivedLast30Days => QuickFilter.ArchivedLast30Days,
-                RecentParticipantFilter.LicenceEndPeriod => QuickFilter.LicenceEndPeriod,
-                _ when sd.RiskDue.HasValue => QuickFilter.OverdueRisk,
-                _ when !string.IsNullOrEmpty(sd.OwnerId) => QuickFilter.MyParticipants,
-                _ => QuickFilter.All
-            };
+                Query.Keyword = sd.Keyword;
+                Query.Label = sd.LabelId;
+                Query.ListView = sd.ListView;
+                Query.Locations = sd.Locations;
+                Query.OrderBy = string.IsNullOrWhiteSpace(sd.OrderBy) ? "Id" : sd.OrderBy;
+                Query.SortDirection = string.IsNullOrWhiteSpace(sd.SortDirection) ? "Ascending" : sd.SortDirection;
+                Query.PageNumber = sd.PageNumber;
+                Query.OwnerId = sd.OwnerId;
+                Query.TenantId = sd.TenantId;
+                Query.RiskDue = sd.RiskDue;
+                Query.RecentAction = sd.RecentlyAssigned;
+                Tabular = sd.Tabular;
+                
+                // Sync _currentFilter based on restored state
+                _currentFilter = sd.RecentlyAssigned switch
+                {
+                    RecentParticipantFilter.AssignedLast10Days => QuickFilter.AssignedLast10Days,
+                    RecentParticipantFilter.AssignedLast30Days => QuickFilter.AssignedLast30Days,
+                    RecentParticipantFilter.VisitedLast7Days => QuickFilter.VisitedLast7Days,
+                    RecentParticipantFilter.ArchivedLast30Days => QuickFilter.ArchivedLast30Days,
+                    RecentParticipantFilter.LicenceEndPeriod => QuickFilter.LicenceEndPeriod,
+                    _ when sd.RiskDue.HasValue => QuickFilter.OverdueRisk,
+                    _ when !string.IsNullOrEmpty(sd.OwnerId) => QuickFilter.MyParticipants,
+                    _ => QuickFilter.All
+                };
+            }
         }
 
         await OnRefresh();

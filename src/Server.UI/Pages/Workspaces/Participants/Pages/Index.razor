@@ -11,11 +11,17 @@
         <WorkspaceMenu Links="@Links" />
     </MudItem>
     <MudItem xs="12" md="6">
+       
+        @if (_isInternalUser)
+        {
+            <ParticipantSearch/>
+        }
+        <MudDivider></MudDivider>
         <MudText Typo="Typo.h2">
             Participants
         </MudText>
         <MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
-            <MyParticipantsComponent />
+            <MyParticipantsComponent/>
         </MudStack>
     </MudItem>
 </MudGrid>

@@ -1,7 +1,4 @@
 @page "/"
-@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
-@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Sync.Components
 
 @inherits CatsComponentBase
 
@@ -10,10 +7,5 @@
 </MudText>
 
 <MudGrid Class="mt-2">
-
-    @if (_showSearchParticipant)
-    {
-        <ParticipantById/>
-    }
 
 </MudGrid>
