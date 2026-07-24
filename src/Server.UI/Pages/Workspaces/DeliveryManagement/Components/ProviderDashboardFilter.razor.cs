@@ -118,7 +118,7 @@ public partial class ProviderDashboardFilter
             AssignedRoles = CurrentUser.AssignedRoles,
             DefaultRole = CurrentUser.DefaultRole,
             Contracts = CurrentUser.Contracts,
-            IsActive = CurrentUser.IsActive,
+            Status = CurrentUser.Status,
             Provider = CurrentUser.Provider,
             SuperiorName = CurrentUser.SuperiorName,
             SuperiorId = CurrentUser.SuperiorId,

@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -57,6 +58,12 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         
         builder.Property(u => u.HomePage)
             .HasMaxLength(DatabaseConstants.FieldLengths.Fifty);
+
+        builder.Property(x => x.Status)
+            .HasColumnName("IsActive")
+            .HasConversion(
+                x => x.Value,
+                x => UserStatus.FromValue(x));
         
         // Each User can have many UserLogins
         builder.HasMany(e => e.Logins).WithOne().HasForeignKey(ul => ul.UserId).IsRequired();

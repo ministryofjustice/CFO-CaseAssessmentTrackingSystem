@@ -69,7 +69,7 @@ public class DocumentExportUsersIntegrationEventConsumer(
             {
                 { "Name", user => user.DisplayName },
                 { "Email", user => user.Email },
-                { "Status", user => user.IsActive ? "Active" : "Inactive" },
+                { "Status", user => user.Status.DisplayName },
                 { "Lockout Status", user => user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow ? "Locked Out" : "Not Locked" },
                 { "Lockout End Date", user => user.LockoutEnd },
                 { "Last Login", user => user.LastLogin },

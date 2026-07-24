@@ -115,18 +115,22 @@
 
                             @if (_canToggleActiveStatus)
                             {
-                                @if (context.Item.IsActive)
+                                @if (context.Item.Status == UserStatus.Active)
                                 {
-                                    <MudMenuItem OnClick="@(() => OnSetActive(context.Item))">@L["Deactivate"]</MudMenuItem>
+                                    <MudMenuItem OnClick="@(() => OnSuspend(context.Item))">@L["Suspend"]</MudMenuItem>
                                 }
-                                else
+                                @if (context.Item.Status == UserStatus.Suspended || context.Item.Status == UserStatus.Inactive)
                                 {
-                                    <MudMenuItem OnClick="@(() => OnSetActive(context.Item))">@L["Activate"]</MudMenuItem>
+                                    <MudMenuItem OnClick="@(() => OnReactivate(context.Item))">@L["Reactivate"]</MudMenuItem>
+                                }
+                                @if (context.Item.Status != UserStatus.Left)
+                                {
+                                    <MudMenuItem OnClick="@(() => OnMarkAsLeft(context.Item))">@L["Mark as Left"]</MudMenuItem>
                                 }
                             }
                             @if(CanResetPassword(context.Item.AssignedRoles))
                             {
-                                <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
+                                <MudMenuItem Disabled="@(context.Item.Status != UserStatus.Active)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
                             }
                             @if (_canUnlock)
                             {
@@ -201,17 +205,10 @@
                     }
                 </CellTemplate>
             </PropertyColumn>
-            <PropertyColumn Property="x => x.IsActive" Title="@L[_currentDto.GetMemberDescription(x => x.IsActive)]">
+            <PropertyColumn Property="x => x.Status" Title="@L[_currentDto.GetMemberDescription(x => x.Status)]">
                 <CellTemplate>                    
                     <div>
-                        @if (context.Item.IsActive)
-                        {
-                            <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>                        
-                        }
-                        else
-                        {
-                            <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
-                        }
+                        <MudChip Class="flex-grow-0" Color="@GetStatusColor(context.Item.Status)" Size="Size.Small" Icon="@GetStatusIcon(context.Item.Status)">@L[context.Item.Status.DisplayName]</MudChip>
                     </div>
 
                     @if (context.Item.LockoutEnd is not null)

@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Identity;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Identity;
 using Quartz;
 using System.Linq.Dynamic.Core;
 
@@ -37,7 +38,7 @@ public class DisableDormantAccountsJob(
 
             var usersToDeactivate = await unitOfWork.DbContext.Users
                 .IgnoreAutoIncludes()
-                .Where(user => user.IsActive)
+                .Where(user => user.Status == UserStatus.Active)
                 .Where(user => user.LastLogin < thirtyDaysAgo ||
                                (user.LastLogin == null && user.Created < thirtyDaysAgo))
                 .ToListAsync(context.CancellationToken);
@@ -48,7 +49,7 @@ public class DisableDormantAccountsJob(
 
                 foreach (var user in usersToDeactivate)
                 {
-                    user.IsActive = false;
+                    user.Status = UserStatus.Inactive;
 
                     var audit = IdentityAuditTrail.Create(
                         user.UserName,
