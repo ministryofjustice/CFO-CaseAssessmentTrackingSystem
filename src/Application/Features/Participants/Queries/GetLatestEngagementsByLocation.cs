@@ -21,6 +21,13 @@ public static class GetLatestEngagementsByLocation
         public int? LocationId { get; set; }
         public string? EngagementType { get; set; }
         public string? TenantId { get; set; }
+        public LocationGroupingMode GroupBy { get; set; } = LocationGroupingMode.CurrentLocation;
+    }
+
+    public enum LocationGroupingMode
+    {
+        CurrentLocation,
+        EngagedAtLocation
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<LatestEngagementsByLocationDto>>
@@ -67,7 +74,7 @@ public static class GetLatestEngagementsByLocation
 
             // Aggregate the whole filtered set for the chart / headline totals.
             var records = await query
-                .GroupBy(x => x.CurrentLocationName)
+                .GroupBy(x => request.GroupBy == LocationGroupingMode.EngagedAtLocation ? (x.EngagedAtLocation ?? "Unknown Location") : x.CurrentLocationName)
                 .Select(g => new LocationEngagementSummaryDto(
                     g.Key,
                     g.Count(x => x.EngagedOn != null && x.EngagedOn >= threeMonthsAgo),

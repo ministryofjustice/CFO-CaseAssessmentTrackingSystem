@@ -13,11 +13,12 @@
 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="my-4">
     <MudText Typo="Typo.body2">
         This dashboard groups @( _isTenantLevel ? "every participant in your tenant" : "the participants assigned to you" )
-        by their <strong>current location</strong> and shows, for each location, how recently they last engaged.
+        by their <strong>@(Query.GroupBy == GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation ? "location at which they last engaged" : "current location")</strong> 
+        and shows, for each location, how recently they last engaged.
     </MudText>
     <MudText Typo="Typo.body2" Class="mt-1">
         <strong>Last 3 months</strong> counts participants whose most recent engagement was on or after
-        @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).
+        @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).<br />
         <strong>More than 3 months ago</strong> counts participants who last engaged before that date, or who have never engaged.
         Use it to spot locations where engagement is lapsing.
     </MudText>
@@ -26,6 +27,10 @@
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
     <MudSwitch T="bool" @bind-Value="_visualMode" Color="Color.Info" Label="Visual Mode" />
+
+    <MudSwitch T="bool" Value="Query.GroupBy == GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation"
+               ValueChanged="OnGroupByEngagedAtLocationChanged" Color="Color.Info" Label="Group by Engagement Location" />
+
     <MudSpacer />
 
     <MudSwitch T="bool" Value="Query.HideRecentEngagements" Color="Color.Info"

@@ -163,6 +163,14 @@ public partial class LatestEngagementsByLocation
         await OnRefresh();
     }
 
+    private async Task OnGroupByEngagedAtLocationChanged(bool value)
+    {
+        Query.GroupBy = value
+            ? GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation
+            : GetLatestEngagementsByLocation.LocationGroupingMode.CurrentLocation;
+        await OnRefresh();
+    }
+
     private async Task OnLocationChanged(int locationId)
     {
         _selectedLocationId = locationId;
