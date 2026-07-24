@@ -1,0 +1,108 @@
+@inherits CatsComponentBase
+
+@using ApexCharts
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+
+@if (_loading)
+{
+    <MudItem xs="12" md="6" lg="3">
+        <LoadingCard Title="QA Pots" />
+    </MudItem>
+}
+else
+{
+    <MudItem xs="12" lg="3" md="6">
+        <MudCard style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">QA Pots</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string">
+                    <MudListSubheader>
+                        Enrolments
+                    </MudListSubheader>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">PQA</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentPqa == 0 ? Color.Success : Color.Secondary)">@_enrolmentPqa</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">First Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentQa1 == 0 ? Color.Success : Color.Secondary)">@_enrolmentQa1</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Second Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentQa2 == 0 ? Color.Success : Color.Secondary)">@_enrolmentQa2</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Escalation</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentEscalation == 0 ? Color.Success : Color.Secondary)">@_enrolmentEscalation</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudDivider/>
+                    <MudListSubheader>
+                        Activities
+                    </MudListSubheader>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">PQA</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityPqa == 0 ? Color.Success : Color.Secondary)">@_activityPqa</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">First Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityQa1 == 0 ? Color.Success : Color.Secondary)">@_activityQa1</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Second Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityQa2 == 0 ? Color.Success : Color.Secondary)">@_activityQa2</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Escalation</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityEscalation == 0 ? Color.Success : Color.Secondary)">@_activityEscalation</MudText>
+                        </div>
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" md="6" lg="3">
+        <MudCard Style="height:100%">
+            <MudCardHeader>
+                <MudText Typo="Typo.h5">QA Pots</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <ApexChart TItem="QueueData"
+                           Title="QA Pots Breakdown"
+                           Options="@Options">
+                    <ApexPointSeries TItem="QueueData"
+                                     Items="_enrolmentData"
+                                     Name="Enrolment"
+                                     SeriesType="SeriesType.Bar"
+                                     XValue="@(e => e.Stage)"
+                                     YValue="@(e => e.Count)" />
+
+                    <ApexPointSeries TItem="QueueData"
+                                     Items="_activityData"
+                                     Name="Activity"
+                                     SeriesType="SeriesType.Bar"
+                                     XValue="@(e => e.Stage)"
+                                     YValue="@(e => e.Count)" />
+                </ApexChart>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+}

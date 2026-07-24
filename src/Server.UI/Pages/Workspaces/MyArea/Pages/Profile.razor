@@ -1,0 +1,103 @@
+﻿@attribute [Authorize]
+
+@page "/pages/workspace/my-area/profile"
+
+@using Cfo.Cats.Infrastructure.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
+@using Cfo.Cats.Domain.Identity
+
+@inherits OwningComponentBase<UserManager<ApplicationUser>>
+@inject IValidationService Validator
+@inject IStringLocalizer<Profile> L
+@inject INetworkIpProvider NetworkIpProvider
+
+<MyAreaPageHeader />
+
+<ErrorBoundary>
+    <ChildContent>
+        @if (Model is null)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+        }
+        else
+        {
+            <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
+                <MudGrid Justify="Justify.Center" Style="max-width:600px;display:flex;">
+                    <MudItem sm="12" xs="12">
+                        <div class="d-flex justify-center">
+
+                            @if (string.IsNullOrEmpty(Model.ProfilePictureDataUrl))
+                            {
+                                <MudElement Class="d-flex flex-column  align-center">
+                                    <MudAvatar Style="height:128px; width:128px; font-size:2rem;">@Model.UserName.ToUpper().First()</MudAvatar>
+                                    <div class="d-flex">
+                                        @if (Model.AssignedRoles is not null)
+                                        {
+                                            @foreach (var role in Model.AssignedRoles)
+                                            {
+                                                <MudChip T="string" Size="Size.Small">@role</MudChip>
+                                            }
+                                        }
+                                    </div>
+
+                                </MudElement>
+                            }
+                            else
+                            {
+                                <MudElement Class="d-flex flex-column  align-center">
+                                    <MudAvatar Style="height:128px; width:128px; font-size:2rem;">
+                                        <MudImage Src="@Model.ProfilePictureDataUrl"></MudImage>
+                                    </MudAvatar>
+                                    <div class="d-flex">
+                                        @if (Model.AssignedRoles is not null)
+                                        {
+                                            @foreach (var role in Model.AssignedRoles)
+                                            {
+                                                <MudChip T="string" Size="Size.Small">@role</MudChip>
+                                            }
+                                        }
+                                    </div>
+                                </MudElement>
+                            }
+                        </div>
+                    </MudItem>
+                    <MudItem sm="6" xs="12">
+                        <MudTextField For="@(() => Model.TenantName)" @bind-Value="Model.TenantName" Label="@L["Tenant Name"]" Variant="Variant.Text" ReadOnly="true"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField For="@(() => Model.SuperiorName)" @bind-Value="Model.SuperiorName" Label="@L["Superior Name"]" Variant="Variant.Text" ReadOnly="true"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="6" xs="12">
+                        <MudTextField For="@(() => Model.UserName)" @bind-Value="Model.UserName" Label="@L["User Name"]" Variant="Variant.Text" ReadOnly="true"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="6" xs="12">
+                        <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["Email"]" Variant="Variant.Text" ReadOnly="true"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="6" xs="12">
+                        <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Display Name"]" Variant="Variant.Text"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="6" xs="12">
+                        <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" Variant="Variant.Text"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="12" xs="12" Class="d-flex justify-end">
+                        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" Loading="@_submitting" StartIcon="@Icons.Material.Filled.Save" Class="ml-auto" OnClick="@(async () => await Submit())">
+                            @if (_submitting)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                <MudText Class="ms-2">@ConstantString.Waiting </MudText>
+                            }
+                            else
+                            {
+                                <MudText>@ConstantString.Save</MudText>
+                            }
+                        </MudLoadingButton>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+        }
+    </ChildContent>
+    <ErrorContent>
+        <CustomError Exception="context"></CustomError>
+    </ErrorContent>
+</ErrorBoundary>

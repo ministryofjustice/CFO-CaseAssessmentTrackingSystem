@@ -28,9 +28,9 @@
     <EnrolmentContainer>
         <TitleContent>
             <MudContainer Class="d-flex px-0 gap-2 align-center">
-                <MudText Typo="Typo.h6">Enrolling @_participant.FirstName @_participant.LastName</MudText>
+                <MudText Typo="Typo.subtitle1">Enrolling @_participant.FirstName @_participant.LastName</MudText>
                 <MudText Typo="Typo.subtitle1">(DOB @_participant.DateOfBirth)</MudText>
-                <MudText Typo="Typo.h6">at @_participant.CurrentLocation.Name</MudText>
+                <MudText Typo="Typo.subtitle1">at @_participant.CurrentLocation.Name</MudText>
             </MudContainer>
         </TitleContent>
         <ChildContent>
@@ -66,7 +66,7 @@
                         <MudStepExtended IsResultStep="true">
                             <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
                                 <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
-                                <MudText Typo="Typo.h6">Enrolment Started!</MudText>
+                                <MudText Typo="Typo.subtitle1">Enrolment Started!</MudText>
                             </MudContainer>
                             <MudText Typo="Typo.caption">
                                 Further information is required to finalise this enrolment.
@@ -210,7 +210,7 @@
 
     private void BeginAssessment()
     {
-        Navigation.NavigateTo($"/pages/participants/{ParticipantId}");
+        Navigation.NavigateTo($"/pages/workspace/participants/{ParticipantId}");
     }
 
     private void ReturnToSearch()

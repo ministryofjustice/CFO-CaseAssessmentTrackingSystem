@@ -2,12 +2,7 @@
 
 public static class Theme
 {
-    /// <summary>
-    /// The default primary colour for the site.
-    /// </summary>
-    public const string DefaultPrimaryColour = "#6E3562";
-
-    public static MudTheme ApplicationTheme(string primaryColour)
+    public static MudTheme ApplicationTheme(string primaryColour, ThemeDarkColours primaryColourDark)
     {
 
         var myFont = new[] { "Arial", "Helvetica", "sans-serif" };
@@ -16,7 +11,7 @@ public static class Theme
         {
             PaletteLight = new PaletteLight
             {
-                Primary = primaryColour, // the default CFO Purple
+                Primary = primaryColour,
                 Secondary = "#34586E",
                 Success = "#62ae2f",
                 Info = "#34586E",
@@ -31,54 +26,125 @@ public static class Theme
 
             PaletteDark = new PaletteDark
             {
-                // keep your brand colors...
-                Primary = "#8A437A",
-                Secondary = "#34586E",
-                Success = "#76c043",
-                Info = "#1493A3",
-                Error = "#FF4D4D",
-                Tertiary = "#DFB160",
+                // Dark neutrals
+                Background = "#211B25",
+                Surface = "#2B2430",
+                DrawerBackground = "#1D1720",
 
-                // critical for dialog readability:
-                Background = "#121212",     // page background
-                Surface = "#1E1E1E",        // dialog/paper surfaces (slightly lighter than Background)
-                
-                TextPrimary = "#E6E6E6",
-                TextSecondary = "#B3B3B3",
+                // Text
+                TextPrimary = "#F7F2F6",
+                TextSecondary = "#D7CBD5",
 
-                Divider = "rgba(255,255,255,0.12)",
-                LinesDefault = "rgba(255,255,255,0.12)",
+                // Brand colours - lightened for dark backgrounds
+                Primary = primaryColourDark.Primary,
+                Secondary = "#9ECBE2",
+                Info = "#9ECBE2",
+                Tertiary = "#F1D08B",
 
-                OverlayDark = "rgba(0,0,0,0.60)",
+                // Semantic colours
+                Success = "#9BE06B",
+                Error = "#FF99AF",
 
-                // keep these sane
-                White = "#FFFFFF",
+                AppbarBackground = primaryColourDark.AppbarBackground,
+                AppbarText = "#FFFFFF",
+
+                // Lines / tables / dividers
+                TableLines = primaryColourDark.TableLines,
+                Divider = "#766370",
+                DividerLight = "#4A3B48",
+
+                // Base colours
                 Black = "#000000",
+                White = "#FFFFFF",
 
-                PrimaryContrastText = "#FFFFFF",
-            }
-,
+                PrimaryContrastText = "#1A1118",
+                SecondaryContrastText = "#071820",
+                TertiaryContrastText = "#211600",
+                SuccessContrastText = "#102000",
+                InfoContrastText = "#071820",
+                ErrorContrastText = "#240008"
+            },
             Typography = new Typography
-            {
-                Default = new DefaultTypography
                 {
-                    FontFamily = myFont,
-                    FontSize = ".875rem"
-                },
-                H1 = { FontFamily = myFont, FontSize = "2.5rem", FontWeight = "300" },
-                H2 = { FontFamily = myFont, FontSize = "2rem", FontWeight = "300" },
-                H3 = { FontFamily = myFont, FontSize = "1.75rem", FontWeight = "400" },
-                H4 = { FontFamily = myFont, FontSize = "1.5rem", FontWeight = "400" },
-                H5 = { FontFamily = myFont, FontSize = "1.25rem", FontWeight = "400" },
-                H6 = { FontFamily = myFont, FontSize = "1rem", FontWeight = "500" },
-                Subtitle1 = { FontFamily = myFont, FontSize = ".875rem", FontWeight = "400" },
-                Subtitle2 = { FontFamily = myFont, FontSize = ".8125rem", FontWeight = "500" },
-                Body1 = { FontFamily = myFont, FontSize = ".875rem", FontWeight = "400" },
-                Body2 = { FontFamily = myFont, FontSize = ".75rem", FontWeight = "400" },
-                Button = { FontFamily = myFont, FontSize = ".75rem", FontWeight = "500" },
-                Caption = { FontFamily = myFont, FontSize = ".6875rem", FontWeight = "400" },
-                Overline = { FontFamily = myFont, FontSize = ".625rem", FontWeight = "400" }
-            }
+                    Default = new DefaultTypography
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        LineHeight = "1.5"
+                    },
+
+                        // Use these for real page structure only
+                        H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700", LineHeight = "1.25" },
+                        H2 = { FontFamily = myFont, FontSize = "1.45rem",  FontWeight = "700", LineHeight = "1.3" },
+                        H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600", LineHeight = "1.35" },
+                        H4 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "600", LineHeight = "1.4" },
+                        H5 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "500", LineHeight = "1.4" },
+                        H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500", LineHeight = "1.4" },
+
+                        // Use these for visual emphasis inside cards, panels, summaries
+                        Subtitle1 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "1rem",
+                            FontWeight = "600",
+                            LineHeight = "1.35",
+                            LetterSpacing = "0.0025em",
+                            TextTransform = "uppercase"
+                        },
+
+                        Subtitle2 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "0.875rem",
+                            FontWeight = "600",
+                            LineHeight = "1.35",
+                            LetterSpacing = "0.0025em"
+                        },
+
+                        Body1 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "1rem",
+                            FontWeight = "400",
+                            LineHeight = "1.5"
+                        },
+
+                        Body2 =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "0.875rem",
+                            FontWeight = "400",
+                            LineHeight = "1.45"
+                        },
+
+                        Button =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "1rem",
+                            FontWeight = "600",
+                            LineHeight = "1.25",
+                            LetterSpacing = "0.01em"
+                        },
+
+                        Caption =
+                        {
+                            FontFamily = myFont,
+                            FontSize = "0.8125rem", // 13px, more distinct from body2
+                            FontWeight = "400",
+                            LineHeight = "1.35",
+                            LetterSpacing = "0.01em"
+                        },
+
+                        Overline =
+                        {
+                        FontFamily = myFont,
+                        FontSize = "0.75rem",
+                        FontWeight = "600",
+                        LineHeight = "1.3",
+                        LetterSpacing = "0.06em",
+                        TextTransform = "uppercase"
+                    }
+                }
         };
 
         return theme;

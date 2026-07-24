@@ -5,7 +5,6 @@
 
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
 <MudRTLProvider RightToLeft="false">
-    <MudThemeProvider />
     <MudPopoverProvider />
     <MudDialogProvider />
     <MudSnackbarProvider />
@@ -33,22 +32,27 @@
     private DateTime _lastActivity = DateTime.Now;
 
     [Inject]
-    protected IConfiguration Configuration { get; set; } = default!;
+    protected IApplicationSettings Settings { get; set;} = default!;
+
+    protected override void OnInitialized()
+        => _theme = Theme.ApplicationTheme(Settings.PrimaryColour, Settings.PrimaryColourDark);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            _theme = Theme.ApplicationTheme(Configuration["PrimaryColour"] 
-                                                      ?? Theme.DefaultPrimaryColour);
-            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
-            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
-            StateHasChanged();            
-            
-            int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
+            var isDark = await _mudThemeProvider.GetSystemDarkModeAsync();
 
-            _timer = new System.Timers.Timer(60000 * idleTimeOutMinutes); 
+            if(_isDarkMode != isDark)
+            {
+                _isDarkMode = isDark;
+                StateHasChanged();
+            }
+
+            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
+          
+            _timer = new System.Timers.Timer(60000 * Settings.IdleTimeOutMinutes); 
             _timer.Elapsed += UpdateTimer;
             _timer.AutoReset = false;
             _timer.Start();
@@ -58,6 +62,11 @@
 
     private Task OnSystemDarkModeChanged(bool arg)
     {
+        if (_isDarkMode == arg)
+        {
+            return Task.CompletedTask;
+        }
+
         _isDarkMode = arg;
         StateHasChanged();
         return Task.CompletedTask;
@@ -66,8 +75,7 @@
     [JSInvokable]  
     public void TimerInterval()  
     {  
-        int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
-        DateTime maximumAge = _lastActivity.AddMinutes(idleTimeOutMinutes);
+        DateTime maximumAge = _lastActivity.AddMinutes(Settings.IdleTimeOutMinutes);
         if (maximumAge < DateTime.Now)
         {
             Logout();
@@ -76,7 +84,6 @@
         {
             _lastActivity = DateTime.Now;
         }
-
 
         _timer!.Stop();  
         _timer!.Start();  

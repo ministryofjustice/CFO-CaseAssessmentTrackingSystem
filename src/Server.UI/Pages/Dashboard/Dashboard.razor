@@ -1,6 +1,7 @@
-﻿@page "/"
+@page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-@using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Sync.Components
 
 @inherits CatsComponentBase
 
@@ -10,91 +11,9 @@
 
 <MudGrid Class="mt-2">
 
-    @if (_showMyTeamsParticipants)
-    {
-        <MyTeamsParticipantsComponent/>
-    }
-    else
-    {
-        <MyParticipantsComponent/>
-    }
-    
     @if (_showSearchParticipant)
     {
         <ParticipantById/>
     }
-    
-    <MyNotifications/>
 
-    @if (_showCaseWorkload)
-    {
-        <CaseWorkload/>
-    }
-
-    @if (_showRiskDueAggregate)
-    {
-        <RiskDueAggregateComponent/>
-    }
-    else
-    {
-        <MyRiskDueComponent/>
-    }
-
-    @if (_showMyTeamsParticipants)
-    {
-        <MyTeamsParticipantsLatestEngagementComponent/>
-    }
-    else
-    {
-        <MyParticipantsLatestEngagementComponent/>
-    }
-
-    @if (_showQaPots)
-    {
-        <QaPots/>
-    }
-
-    @if (_showMyTeamsActivitiesInQAPots)
-    {
-        <MyTeamsActivitiesInQaPots/>
-    }
-    else
-    {
-        <MyActivitiesInQaPots/>
-    }
-
-    @if (_showSyncComponent)
-    {
-        <SyncComponent/>
-    }
-
-    @if (_showJobManagement)
-    {
-        <CacheControl/>
-        <JobManagement/>
-    }
-
-    
-    <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>
-    
-    <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false"/>
-
-    @if (_showMyTeamsParticipants)
-    {
-        <MyTeamsParticipantsInLicenceEndPeriod/>
-    }
-    else
-    {
-        <MyParticipantsInLicenceEndPeriod/>
-    }
-
-    @if (_showMyTeamsParticipants)
-    {
-        <MyTeamsArchivedCases/>
-    }
-    else
-    {
-        <MyArchivedCases/>
-    }
-    
 </MudGrid>

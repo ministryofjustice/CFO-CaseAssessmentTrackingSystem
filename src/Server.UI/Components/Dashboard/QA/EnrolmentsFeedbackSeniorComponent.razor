@@ -18,7 +18,7 @@
 
 @if (Data is not null && Data.ChartData.Any())
 {
-    if (VisualMode)
+    @if (VisualMode)
     {
             <ApexCharts.ApexChart  TItem="GetEnrolmentsFeedback.EnrolmentsFeedbackChartData"
                                   Title="Team Feedback by Reason"
@@ -77,7 +77,7 @@
                 <MudTd>
                     <MudStack Spacing="0">
                     <MudText>@($"{context.FirstName} {context.LastName}")</MudText>
-                        <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=enrolments-team-feedback")>
                             @context.ParticipantId
                         </MudLink>
                     </MudStack>

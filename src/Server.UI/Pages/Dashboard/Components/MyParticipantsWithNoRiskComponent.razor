@@ -32,7 +32,7 @@
 						  Filter="new Func<ParticipantsWithNoRiskDto, bool>(FilterFunc)">
 					<ToolBarContent>
 
-						<MudText Typo="Typo.h6">Details</MudText>
+						<MudText Typo="Typo.subtitle1">Details</MudText>
 						<MudSpacer />
 						<MudStack>			
 							@if (_canSearch)
@@ -64,7 +64,7 @@
 						<MudTd DataLabel="Participant">
 							<MudStack>
 								<MudText>@($"{context.ParticipantName}")</MudText>
-								<MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+								<MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}")>
 									@context.ParticipantId
 								</MudLink>
 							</MudStack>

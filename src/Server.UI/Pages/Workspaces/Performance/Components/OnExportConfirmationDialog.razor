@@ -1,0 +1,71 @@
+﻿@inherits CatsComponentBase
+
+@using BlazorDownloadFile
+@using Cfo.Cats.Application.Features.Documents.Queries
+
+@inject IBlazorDownloadFileService BlazorDownloadFileService
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer>
+            <ul>
+                <li><MudText>Sensitive data must be stored in full compliance with HMPPS SyOPS and your organisation’s data security policies.</MudText></li>
+                <li><MudText>Exercise due care with any personal data contained in the export.</MudText></li>
+                <li><MudText>Ensure appropriate protective measures are in place when storing, accessing, or transmitting this data (e.g., encrypted storage, secure sharing methods and secure email).</MudText></li>
+                <li><MudText>Do not store data on unapproved devices, locations, or services.</MudText></li>
+                <li><MudText>If you are unsure, speak to your local infosec manager.</MudText></li>
+            </ul>
+            <MudCheckBox @bind-Value="acknowledged" Label="I understand and accept my responsibility to store this data securely." />
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CloudDownload" Loading="downloading" OnClick="Download" Disabled="acknowledged is false">
+            @(downloading ? ConstantString.Downloading : ConstantString.Download)
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    bool downloading;
+    bool acknowledged;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired] public required Guid DocumentId { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Download()
+    {
+        try
+        {
+            downloading = true;
+
+            var result = await GetNewMediator().Send(new GetDocumentById.Query() { Id = DocumentId }); ;
+
+            if (result is not { Succeeded: true, Data: not null })
+            {
+                Snackbar.Add(string.Join(", ", result.Errors), Severity.Error);
+                return;
+            }
+            
+            using (var memoryStream = new MemoryStream())
+            {
+                await result.Data!.FileStream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                await BlazorDownloadFileService.DownloadFile(result.Data.FileName, bytes, "application/octet-stream");
+            }
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        finally
+        {
+            downloading = false;
+        }
+    }
+}

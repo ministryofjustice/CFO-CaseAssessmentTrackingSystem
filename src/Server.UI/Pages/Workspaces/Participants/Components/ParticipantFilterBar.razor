@@ -1,0 +1,160 @@
+@using Cfo.Cats.Application.Features.Participants.Specifications
+
+<MudStack>
+    <!-- Header/Filter row -->
+    <MudStack Row="true" Justify="Justify.FlexEnd">
+        <MudMenu Label="@($"Filters: {GetCurrentFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnClearQuickFilter.InvokeAsync())">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnMyParticipants.InvokeAsync())">My Participants</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnOverdueRisk.InvokeAsync())">Overdue risk</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.AssignedLast10Days))">Assigned (Last 10 Days)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.AssignedLast30Days))">Assigned (Last 30 Days)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnRecentlyVisited.InvokeAsync())">Visited (Last 7 Days)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.ArchivedLast30Days))">Archived (Last 30 Days)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnRecentlyAssigned.InvokeAsync(RecentParticipantFilter.LicenceEndPeriod))">In Licence End Period</MudMenuItem>
+        </MudMenu>
+        <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
+                      ValueChanged="@OnSearchChanged" Clearable="true" ShrinkLabel="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                      AdornmentColor="Color.Secondary">
+        </MudTextField>
+        <MudSpacer />
+        @if (CanReassign)
+        {
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => OnReassignSelected.InvokeAsync())"
+                       Disabled="@(SelectedCount == 0)">
+                Reassign Selected (@SelectedCount)
+            </MudButton>
+            <MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.Deselect" OnClick="@(() => OnClearSelection.InvokeAsync())"
+                       Disabled="@(SelectedCount == 0)">
+                Clear Selection
+            </MudButton>
+        }
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                   StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(() => OnRefresh.InvokeAsync())">
+            @ConstantString.Refresh
+        </MudButton>
+        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@IsDownloading" OnClick="@(() => OnExport.InvokeAsync())"
+                          StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
+            @ConstantString.Export
+        </MudLoadingButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="@(() => OnEnrol.InvokeAsync())">
+            Enrol
+        </MudButton>
+    </MudStack>
+
+    <!-- Additional filters row -->
+    <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+
+        <MudPagination 
+            @bind-Selected="Query.PageNumber"
+            @bind-Selected:after="@(() => OnRefresh.InvokeAsync())"
+            Count="@TotalPages"
+            MiddleCount="2"
+            BoundaryCount="1"
+            Size="Size.Small">
+        </MudPagination>
+
+        <MudText>
+            @TotalItems records
+        </MudText>
+
+        @if (CanReassign)
+        {
+            <MudText>
+                @SelectedCount selected
+            </MudText>
+        }
+
+        <!-- Tabular Switch -->
+        <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@OnTabularChanged" T="bool?" />
+
+        <MudSpacer />
+
+        <!-- Enrolment Status -->
+        <MudMenu Size="Size.Small" Label="@Query.ListView.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Default" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Default))" />
+            <MudMenuItem Label="Identified" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Identified))" />
+            <MudMenuItem Label="Enrolling" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Enrolling))" />
+            <MudMenuItem Label="PQA" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.SubmittedToProvider))" />
+            <MudMenuItem Label="CFO QA" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.SubmittedToQa))" />
+            <MudMenuItem Label="Any QA" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.SubmittedToAny))" />
+            <MudMenuItem Label="Approved" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Approved))" />
+            <MudMenuItem Label="Dormant" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Dormant))" />
+            <MudMenuItem Label="Archived" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Archived))" />
+            <MudMenuItem Label="All" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.All))" />
+        </MudMenu>
+         <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowAssigneeDialog.InvokeAsync())" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(string.IsNullOrEmpty(Query.OwnerId))
+            {
+                @("All Assignees")
+            }
+            else
+            {
+                @Users[Query.OwnerId]
+            }
+        </MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowTenantDialog.InvokeAsync())" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(string.IsNullOrEmpty(Query.TenantId))
+            {
+                @("All Tenants")
+            }
+            else
+            {
+                @Tenants[Query.TenantId]
+            }
+        </MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowLocationDialog.InvokeAsync())" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(Query.Locations is [])
+            {
+                @("All Locations")
+            }
+            else
+            {
+                @Locations[Query.Locations[0]]
+            }
+        </MudButton>
+
+        <MudMenu Size="Size.Small" Label="@(Query.Label is null ? "All Labels" : Labels[(Guid)Query.Label!.Value].Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="All" OnClick="@(() => OnLabelChanged.InvokeAsync(null))" />
+            @foreach(var l in Labels.Values.OrderBy(l => l.Name))
+            {
+                <MudMenuItem Label="@l.Name" Icon="@l.AppIcon.AsMudIcon()" IconColor="@l.Colour.AsMudColour()" OnClick="@(() => OnLabelChanged.InvokeAsync(l))"></MudMenuItem>
+            }
+        </MudMenu>
+
+        <MudMenu Size="Size.Small" Label="@($"Sort: {Query.OrderBy}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Id" OnClick="@(() => OnSortBy.InvokeAsync("Id"))"/>
+            <MudMenuItem Label="First Name" OnClick="@(() => OnSortBy.InvokeAsync("FirstName"))"/>
+            <MudMenuItem Label="Last Name" OnClick="@(() => OnSortBy.InvokeAsync("LastName"))"></MudMenuItem>
+            <MudMenuItem Label="Assignee" OnClick="@(() => OnSortBy.InvokeAsync("Owner"))"/>
+            <MudMenuItem Label="Tenant" OnClick="@(() => OnSortBy.InvokeAsync("Tenant"))"/>
+            <MudMenuItem Label="Risk Due" OnClick="@(() => OnSortBy.InvokeAsync("RiskDue"))"/>
+            @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
+            {
+                <MudMenuItem Label="Assigned On" OnClick="@(() => OnSortBy.InvokeAsync("AssignedOn"))"/>
+            }
+            @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
+            {
+                <MudMenuItem Label="Accessed On" OnClick="@(() => OnSortBy.InvokeAsync("AccessedOn"))"/>
+            }
+            @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days)
+            {
+                <MudMenuItem Label="Archived On" OnClick="@(() => OnSortBy.InvokeAsync("ArchivedOn"))"/>
+            }
+            @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod)
+            {
+                <MudMenuItem Label="Deactivated In Feed" OnClick="@(() => OnSortBy.InvokeAsync("DeactivatedInFeed"))"/>
+            }
+            <MudMenuItem Label="Current Location" OnClick="@(() => OnSortBy.InvokeAsync("CurrentLocation"))"/>
+            <MudMenuItem Label="Enrolment Location" OnClick="@(() => OnSortBy.InvokeAsync("EnrolmentLocation"))"/>
+            <MudMenuItem Label="Enrolment Status" OnClick="@(() => OnSortBy.InvokeAsync("EnrolmentStatus"))"/>
+        </MudMenu>
+        <MudTooltip Text="Clear search parameters">
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => OnClearSearch.InvokeAsync())" />
+        </MudTooltip>
+    </MudStack>
+</MudStack>

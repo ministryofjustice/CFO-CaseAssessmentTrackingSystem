@@ -1,0 +1,176 @@
+@page "/pages/workspace/deliverymanagement/latest-engagements"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using ApexCharts
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+<DeliveryManagementPageHeader />
+
+<MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="my-4">
+    <MudText Typo="Typo.body2">
+        This dashboard groups @( _isTenantLevel ? "every participant in your tenant" : "the participants assigned to you" )
+        by their <strong>current location</strong> and shows, for each location, how recently they last engaged.
+    </MudText>
+    <MudText Typo="Typo.body2" Class="mt-1">
+        <strong>Last 3 months</strong> counts participants whose most recent engagement was on or after
+        @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).
+        <strong>More than 3 months ago</strong> counts participants who last engaged before that date, or who have never engaged.
+        Use it to spot locations where engagement is lapsing.
+    </MudText>
+</MudAlert>
+
+<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+
+    <MudSwitch T="bool" @bind-Value="_visualMode" Color="Color.Info" Label="Visual Mode" />
+    <MudSpacer />
+
+    <MudSwitch T="bool" Value="Query.HideRecentEngagements" Color="Color.Info"
+               ValueChanged="OnHideRecentChanged" Label="3+ Month Inactive" />
+
+    <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="ShowLocationDialog"
+               EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @(_selectedLocationId == 0 ? "All Locations" : _locations[_selectedLocationId])
+    </MudButton>
+
+    <MudMenu Size="MudBlazor.Size.Small" Variant="Variant.Text"
+             Label="@(_selectedEngagementType == string.Empty ? "All Types" : _selectedEngagementType)"
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenuItem OnClick="@(() => OnEngagementTypeChanged(string.Empty))">All Types</MudMenuItem>
+        @foreach (var type in _engagementTypes)
+        {
+            <MudMenuItem OnClick="@(() => OnEngagementTypeChanged(type))">@type</MudMenuItem>
+        }
+    </MudMenu>
+
+    @if (_canFilterTenant)
+    {
+        <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog"
+                   EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @(_selectedTenantName ?? "All Tenants")
+        </MudButton>
+    }
+
+    <MudTooltip Text="Clear search parameters">
+        <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" />
+    </MudTooltip>
+
+    <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Filled" Color="Color.Info"
+               StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
+        @ConstantString.Refresh
+    </MudButton>
+
+    <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@_downloading"
+                      OnClick="OnExport" StartIcon="@Icons.Material.Filled.CloudDownload" Size="MudBlazor.Size.Small">
+        @ConstantString.Export
+    </MudLoadingButton>
+</MudStack>
+
+@if (_loading)
+{
+    <LoadingCard Title="Latest Engagements by Location" />
+}
+else if (_data is null)
+{
+    <MudAlert Severity="Severity.Warning">Unable to load the latest engagements breakdown.</MudAlert>
+}
+else if (_data.Records.Length == 0)
+{
+    <MudAlert Severity="Severity.Info">No participants match the current filters.</MudAlert>
+}
+else
+{
+    <MudStack Row="true" Class="pb-2" Spacing="1">
+        <MudChip T="string" Color="Color.Success" Variant="Variant.Text">Last 3 months (@_data.TotalRecent)</MudChip>
+        <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">3+ Month Inactive (@_data.TotalInactive)</MudChip>
+    </MudStack>
+
+    @if (_visualMode)
+    {
+        <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
+            <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                             Name="Last 3 months"
+                             Items="_data.Records"
+                             XValue="@(x => x.LocationName)"
+                             YValue="@(x => x.RecentCount)"
+                             SeriesType="SeriesType.Bar"
+                             ShowDataLabels
+                             Color="#2e7d32" />
+            <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                             Name="More than 3 months ago"
+                             Items="_data.Records"
+                             XValue="@(x => x.LocationName)"
+                             YValue="@(x => x.InactiveCount)"
+                             SeriesType="SeriesType.Bar"
+                             ShowDataLabels
+                             Color="#ed6c02" />
+        </ApexChart>
+    }
+    else
+    {
+        <MudTable @ref="_table" ServerData="ServerReload" Hover="true" Striped="true"
+                    Class="mt-4" Dense="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.subtitle1">Participant details</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Location</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="Category">Category</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedWith">Engaged With</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedOn">Engaged On</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Participant">
+                    <MudStack Spacing="0">
+                        <MudText>@context.FullName</MudText>
+                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=latest-engagements")>
+                            @context.ParticipantId
+                        </MudLink>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Location">@context.CurrentLocationName</MudTd>
+                <MudTd DataLabel="Category">
+                    @if (context.HasEngaged)
+                    {
+                        <MudTooltip Text="@context.Description">
+                            <MudChip T="string" Size="MudBlazor.Size.Small">@context.Category</MudChip>
+                        </MudTooltip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Engaged With">@context.EngagedWithDisplayName</MudTd>
+                <MudTd DataLabel="Engaged On">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        @if(context.HasEngaged)
+                        {
+                            <MudText>@context.EngagedOn?.ToString("d")</MudText>
+                            @if (context.HasEngagedRecently is false)
+                            {
+                                <MudTooltip Text="This participant has not engaged in the last 3 months.">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="MudBlazor.Size.Small" />
+                                </MudTooltip>
+                            }
+                        }
+                        else
+                        {
+                            <MudText>Never</MudText>
+                            <MudTooltip Text="This participant has never engaged.">
+                                <MudIcon Icon="@Icons.Material.Rounded.Error" Color="Color.Error" Size="MudBlazor.Size.Small" />
+                            </MudTooltip>
+                        }
+                    </MudStack>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>@ConstantString.NoRecords</MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new[] { 10, 25, 50 }" />
+            </PagerContent>
+        </MudTable>
+    }
+
+}

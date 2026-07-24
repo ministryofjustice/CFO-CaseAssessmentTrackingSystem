@@ -1,0 +1,36 @@
+@using Cfo.Cats.Server.UI.Models.Breadcrumb
+
+<MudText Typo="Typo.h2">
+    Workspace Links
+</MudText>
+<MudStack Class="ma-2" Justify="Justify.SpaceBetween" Row="true" StretchItems="StretchItems.All" >
+    
+    @foreach(var grp in Links.GroupBy(x => x.Group).Where(g => g.Count() > 0))
+    {
+        <MudStack AlignItems="AlignItems.Stretch">
+            @if(string.IsNullOrWhiteSpace(grp.Key) == false)
+            {
+                <MudText Typo="Typo.h3" Color="Color.Secondary">
+                    @grp.Key
+                </MudText>
+            }
+            @foreach(var link in grp.OrderBy(x => x.Order))
+            {
+                var id = Guid.NewGuid();
+                <MudStack Spacing="0">
+                    <MudLink Href="@link.Href" aria-describedby="@id" Underline="Underline.Always">
+                        @link.Title
+                    </MudLink>
+                    <MudText id="@id" Typo="Typo.caption">
+                        @link.Description
+                    </MudText>
+                </MudStack>
+            }
+        </MudStack>
+    }    
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BreadcrumbLinkModel[] Links { get; set; }
+}

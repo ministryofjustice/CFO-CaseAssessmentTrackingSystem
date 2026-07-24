@@ -1,0 +1,84 @@
+﻿@inherits CatsComponentBase
+
+@using Cfo.Cats.Application.Features.Participants.DTOs
+
+@* 
+    Show warning if no right to work has been provided 
+    and the participants' nationality is not exempt
+*@
+@if (ShowRightToWorkWarning)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@ConstantString.RightToWorkIsRequiredMessage</MudAlert>
+}
+
+<MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
+    
+    <MudTable Items="@ParticipantDto.RightToWorks" Hover="true" Striped="true" Dense="true" Class="ma-3" Style="width: 100%">
+        <HeaderContent>
+            <MudTh>View</MudTh>
+            <MudTh>File Name</MudTh>
+            <MudTh>Valid From</MudTh>
+            <MudTh>Valid To</MudTh>
+            <MudTh>Upload Date</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudRadio T="Guid" Color="Color.Primary" Value="@context.DocumentId!.Value" />
+            </MudTd>
+            <MudTd DataLabel="File Name">
+                @context.FileName
+            </MudTd>
+            <MudTd DataLabel="Valid From">
+                @context.ValidFrom.ToShortDateString()
+            </MudTd>
+            <MudTd DataLabel="Valid To">
+                @if (context.ValidTo == DateTime.MaxValue)
+                {
+                    <MudText>
+                        Indefinite 
+                    </MudText>   
+                }
+                else
+                {
+                    @context.ValidTo.ToShortDateString()    
+                }
+            </MudTd>
+            <MudTd>
+                @context.Created
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudRadioGroup>
+
+@if (_selectedDocument != Guid.Empty)
+{
+    <DocumentDisplay DocumentId="_selectedDocument" />
+}
+
+@code{
+
+    private Guid _selectedDocument = Guid.Empty;
+
+    [CascadingParameter]
+    public UserProfile UserProfile { get; set; } = default!;
+
+    [Parameter] [EditorRequired]
+    public ParticipantDto ParticipantDto { get; set; } = default!;
+    //public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
+    [Parameter]
+    public bool ShowRightToWorkWarning { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        if (_selectedDocument == Guid.Empty)
+        {
+            var latest = ParticipantDto.RightToWorks.MaxBy(c => c.ValidTo);
+            if (latest is not null)
+            {
+                _selectedDocument = latest.DocumentId.GetValueOrDefault();
+            }
+        }
+
+    }
+    
+}

@@ -1,0 +1,20 @@
+﻿<MudItem xs="12" md="3">
+    <MudCard style="height:100%">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText>Clears the cache</MudText>            
+            <MudText Typo="Typo.body2">
+                This will clear all cache entries. Only click if the user cache needs clearing due to a users' rights being revoked/added, and we can't wait the four hours
+                the cache lasts.
+            </MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="@ClearCache" >Clear Cache</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudItem>

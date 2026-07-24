@@ -1,0 +1,45 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages
+
+@inherits CatsComponentBase
+
+@inject IStringLocalizer<Dictionaries> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudEnumSelect Label="@L[Model.GetMemberDescription(x => x.Name)]" @bind-Value="Model.Name"
+                                   For="@(() => Model.Name)"
+                                   Required="true"
+                                   RequiredError="@L["Name is required!"]">
+                    </MudEnumSelect>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Description)]" @bind-Value="Model.Description"
+                                  For="@(() => Model.Description)">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Value)]" @bind-Value="Model.Value"
+                                  For="@(() => Model.Value)"
+                                  Required="true"
+                                  RequiredError="@L["Value is required!"]">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Text)]" @bind-Value="Model.Text"
+                                  For="@(() => Model.Text)"
+                                  Required="true"
+                                  RequiredError="@L["Text is required!"]">
+                    </MudTextField>
+                </MudItem>
+
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>

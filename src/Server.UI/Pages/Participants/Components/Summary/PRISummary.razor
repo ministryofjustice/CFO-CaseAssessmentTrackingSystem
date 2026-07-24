@@ -4,7 +4,7 @@
 <MudCard Style="Height: 100%;">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Latest Pre-Release Inventory (PRI)</MudText>
+            <MudText Typo="Typo.subtitle1">Latest Pre-Release Inventory (PRI)</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
@@ -15,12 +15,12 @@
         else
         {
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Date Created</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Date Created</MudText>
                 <MudText>@_latestPri.Created.ToString("dd/MM/yyyy")</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Actual Release Date</strong></MudText>
+                <MudText Typo="Typo.subtitle2">Actual Release Date</MudText>
 
                 @if (_latestPri.ActualReleaseDate != null)
                 {
@@ -35,14 +35,14 @@
             @if (_latestPri.Status == PriStatus.Completed || _latestPri.Status == PriStatus.Abandoned)
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Date @_latestPri.Status.Name</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">Date @_latestPri.Status.Name</MudText>
                     <MudText Typo="Typo.body2">@_latestPri.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
                 </MudStack>
 
                 if (_latestPri.Status == PriStatus.Abandoned)
                 {
                     <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                        <MudText><strong>@_latestPri.Status.Name Reason</strong></MudText>
+                        <MudText Typo="Typo.subtitle2">@_latestPri.Status.Name Reason</MudText>
                         <MudText Typo="Typo.body2">@_latestPri.AbandonReason</MudText>
                     </MudStack>
                 }
@@ -51,7 +51,7 @@
             @if (_showTtgDue)
             {
                 <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>TTG Due</strong></MudText>
+                    <MudText Typo="Typo.subtitle2">TTG Due</MudText>
                     <MudTooltip Text="@_priDueTooltipText">
                         <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
                         <MudText>

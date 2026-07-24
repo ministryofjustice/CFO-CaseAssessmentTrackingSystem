@@ -1,0 +1,36 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services
+
+@inject IStringLocalizer<MyAreaPageHeader> L
+
+<PageHeader Title="@L["My Account"]" Items="@_breadcrumbs" />
+
+@code {
+
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet() =>
+        _breadcrumbs = BuildBreadcrumbs();
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = MyAreaLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = MyAreaLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        var normalizedSegment = segment.ToLowerInvariant();
+
+        return normalizedSegment switch {
+            "" => [home],
+            "profile" => [home, MyAreaLinks.EditProfile.AsMudBreadcrumb()],
+            "passwordreset" => [home, MyAreaLinks.PasswordReset.AsMudBreadcrumb()],
+            "notifications" => [home, MyAreaLinks.Notifications.AsMudBreadcrumb()],
+            "my-documents" => [home, MyAreaLinks.MyDocuments.AsMudBreadcrumb()],
+            _ => throw new NotImplementedException("Unable to workout where we are in the My Area page tree")
+        };
+    }
+}

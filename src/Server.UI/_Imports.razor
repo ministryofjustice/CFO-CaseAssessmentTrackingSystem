@@ -22,6 +22,8 @@
 @using AutoMapper
 @using FluentValidation;
 @using Cfo.Cats.Domain
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Domain.Labels
 @using Cfo.Cats.Application.Common.Exceptions
 @using Cfo.Cats.Application.Common.Extensions
 @using Cfo.Cats.Application.Common.Interfaces
@@ -37,6 +39,7 @@
 @using Cfo.Cats.Server.UI.Components.Dialogs
 @using Cfo.Cats.Server.UI.Components.Identity
 @using Cfo.Cats.Server.UI.Pages.Identity.Authentication
+@using Cfo.Cats.Server.UI.Components.Labels
 @using Cfo.Cats.Server.UI.Components.Localization
 @using Cfo.Cats.Server.UI.Components.OptionSelect
 @using Cfo.Cats.Server.UI.Components.Redirections
@@ -58,4 +61,4 @@
 @inject IJSRuntime JSRuntime
 @inject IMapper Mapper
 @inject NavigationManager Navigation
-@inject DialogServiceHelper DialogServiceHelper
+@inject Cfo.Cats.Server.UI.Services.DialogServiceHelper DialogServiceHelper

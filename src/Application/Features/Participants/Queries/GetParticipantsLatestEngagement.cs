@@ -6,12 +6,27 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantsLatestEngagement
 {
+    /// <summary>
+    /// The date on or after which an engagement is considered recent. Engagements before this
+    /// date (or the absence of any engagement) are considered inactive.
+    /// </summary>
+    public static DateOnly RecencyThreshold => DateOnly.FromDateTime(DateTime.Today).AddMonths(-3);
+
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : PaginationFilter, IQuery<Result<PaginatedData<ParticipantEngagementDto>>>
     {
         public required UserProfile CurrentUser { get; init; }
         public bool JustMyCases { get; init; }
         public bool HideRecentEngagements { get; set; }
+
+        /// <summary>Optional filter to a specific current location (by location id).</summary>
+        public int? LocationId { get; set; }
+
+        /// <summary>Optional filter to a specific engagement type (the engagement category).</summary>
+        public string? EngagementType { get; set; }
+
+        /// <summary>Optional narrowing to a sub-tenant within the current user's visible hierarchy.</summary>
+        public string? TenantId { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantEngagementDto>>>
@@ -19,12 +34,13 @@ public static class GetParticipantsLatestEngagement
         public async Task<Result<PaginatedData<ParticipantEngagementDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
-            var threeMonthsAgo = DateOnly.FromDateTime(DateTime.Today).AddMonths(-3);
+            var threeMonthsAgo = RecencyThreshold;
 
 #pragma warning disable CS8602, CS8604
             var query =
                 from participant in db.Participants
                 where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
+                where string.IsNullOrWhiteSpace(request.TenantId) || participant.Owner.TenantId.StartsWith(request.TenantId)
                 where request.JustMyCases == false || participant.Owner.Id == request.CurrentUser.UserId
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 join engagement in db.ParticipantEngagements
@@ -36,6 +52,8 @@ public static class GetParticipantsLatestEngagement
                     .DefaultIfEmpty()
                 join owner in db.Users on participant.OwnerId equals owner.Id
                 join currentLocation in db.Locations on participant.CurrentLocation.Id equals currentLocation.Id
+                where request.LocationId == null || currentLocation.Id == request.LocationId
+                where string.IsNullOrWhiteSpace(request.EngagementType) || (engagement != null && engagement.Category == request.EngagementType)
                 where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < threeMonthsAgo)
                 where string.IsNullOrWhiteSpace(request.Keyword)
                       || participant.FirstName.Contains(request.Keyword)

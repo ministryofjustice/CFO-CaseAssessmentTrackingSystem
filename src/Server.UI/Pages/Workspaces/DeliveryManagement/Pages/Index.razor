@@ -1,0 +1,13 @@
+@page "/pages/workspace/deliverymanagement"
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using Cfo.Cats.Server.UI.Components.Shared.Workspace
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+<DeliveryManagementPageHeader />
+
+<MudGrid>
+    <MudItem xs="12" md="6" lg="4">
+        <WorkspaceMenu Links="@Links" />
+    </MudItem>
+</MudGrid>

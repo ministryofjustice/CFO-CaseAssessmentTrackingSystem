@@ -63,6 +63,12 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.QA2);
         });
 
+        options.AddPolicy(SecurityPolicies.ServiceDesk, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireRole(RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport);
+        });
+
         options.AddPolicy(SecurityPolicies.UserHasAdditionalRoles, policy =>
         {
             policy.RequireAuthenticatedUser();
@@ -152,6 +158,14 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
             policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.ServiceDeskManagement);  
 
+        });
+
+        options.AddPolicy(SecurityPolicies.ServiceDeskSyncInformation, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.InternalStaff, "True");
+            policy.RequireAssertion(context => !context.User.IsInRole(RoleNames.QAOfficer));
         });
 
         options.AddPolicy(SecurityPolicies.Initiatives, policy =>

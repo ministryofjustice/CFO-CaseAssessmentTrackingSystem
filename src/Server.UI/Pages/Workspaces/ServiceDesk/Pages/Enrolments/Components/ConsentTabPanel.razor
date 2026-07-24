@@ -1,0 +1,65 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+
+    @if(ParticipantDto.ConsentStatus == ConsentStatus.GrantedStatus)
+    {
+        <MudAlert Severity="Severity.Info">
+            Consent has already been granted for this participant.
+        </MudAlert>
+    }
+
+    <MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
+        <MudTable Items="@ParticipantDto.Consents.OrderByDescending(x => x.Created)" Hover="true" Striped="true" Dense="true" Class="ma-3" Style="width: 100%">
+            <HeaderContent>
+                <MudTh>View</MudTh>
+                <MudTh>File Name</MudTh>
+                <MudTh>Version</MudTh>
+                <MudTh>Consent Date</MudTh>
+                <MudTh>Upload Date</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudRadio Value="@context.DocumentId!.Value" Color="Color.Primary"/>
+                </MudTd>
+                <MudTd DataLabel="File Name">@context.FileName</MudTd>
+                <MudTd DataLabel="Version">@context.Version</MudTd>
+                <MudTd DataLabel="Consent">@context.ConsentDate.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Uploaded By">@context.Created</MudTd>
+                <MudTd>
+                    @if (ParticipantDto.Consents.OrderByDescending(x => x.Created).First() == context)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Star"></MudIcon>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Cancel"></MudIcon>
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudRadioGroup>
+    
+    @if (_selectedDocument != Guid.Empty)
+    {
+        <DocumentDisplay DocumentId="_selectedDocument" />
+    }
+
+@code {
+
+    private Guid _selectedDocument = Guid.Empty;
+    
+    [Parameter] [EditorRequired]
+    public ParticipantDto ParticipantDto { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        if (_selectedDocument == Guid.Empty)
+        {
+            var latest = ParticipantDto.Consents.MaxBy(c => c.ConsentDate);
+            if (latest is not null)
+            {
+                _selectedDocument = latest.DocumentId.GetValueOrDefault();
+            }
+        }
+    }
+}

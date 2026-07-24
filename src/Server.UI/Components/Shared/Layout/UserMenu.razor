@@ -64,6 +64,28 @@
                         </MudText>
                     </MudStack>
                 </MudMenuItem>
+                <MudMenuItem Href="/">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Notifications"
+                                 Color="Color.Info">
+
+                        </MudIcon>
+                        <MudText>
+                            @L["Notifications"]
+                        </MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem Href="/pages/analytics/my-documents">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.DocumentScanner"
+                                 Color="Color.Info">
+
+                        </MudIcon>
+                        <MudText>
+                            @L["My Documents"]
+                        </MudText>
+                    </MudStack>
+                </MudMenuItem>
                 <div class="mt-4 mx-4">
                     <form action="@IdentityComponentsEndpointRouteBuilderExtensions.Logout" method="post">
                         <AntiforgeryToken />

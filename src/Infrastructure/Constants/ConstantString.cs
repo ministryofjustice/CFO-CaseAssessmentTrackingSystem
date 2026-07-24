@@ -66,7 +66,7 @@ public static class ConstantString
 
     public static string ArchiveSuccess => Localize("Archive successfully");
     public static string ArchiveFail => Localize("Archive fail");
-    public static string UpdateSuccess => Localize("AddOrUpdate successfully");
+    public static string UpdateSuccess => Localize("Update succeeded");
     public static string CreateSuccess => Localize("Create successfully");
     public static string LoginSuccess => Localize("Login successfully");
     public static string LogoutSuccess => Localize("Logout successfully");
@@ -227,8 +227,6 @@ public static class ConstantString
     public static string LicenceEndedWarning => Localize("Participants licence has ended. This 30-day period should be used to complete activities and submit any associated claims. New activity should not be started during this period. Archive date: {0}.");
 
     public static string EditParticipant => Localize("Edit Participant");
-
-    public static string EditAchievement => Localize("Edit Achievement");
 
     public static string AbandonActivity => Localize("Abandon Activity");
     public static string AbandonSuccess => Localize("Abandoned successfully");

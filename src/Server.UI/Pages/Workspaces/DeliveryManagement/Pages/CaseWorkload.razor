@@ -1,0 +1,89 @@
+﻿@page "/pages/workspace/deliverymanagement/case-workload"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+<DeliveryManagementPageHeader />
+
+@if (Result is null)
+{
+    <LoadingCard Title="Case Workload"/>
+}
+
+@if (Result is { Succeeded: true, Data: { Length: >= 0 } })
+{
+    <MudTable Items="@Result.Data"
+                Hover="true"
+                Striped="true"
+                Filter="new Func<CaseSummaryDto,bool>(FilterFunc)">
+        <ToolBarContent>
+            <MudText Typo="Typo.subtitle1">Case Workload</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mr-2" />
+            <MudLoadingButton Loading="@_downloading"
+                        Variant="Variant.Filled"
+                        Color="Color.Secondary"
+                        StartIcon="@Icons.Material.Filled.CloudDownload"
+                        Size="Size.Small"
+                        OnClick="OnExport">
+                @ConstantString.Export
+            </MudLoadingButton>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<CaseSummaryDto, object>(x => x.TenantName)">
+                    Tenant
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<CaseSummaryDto, object>(x => x.LocationName)">
+                    Location
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<CaseSummaryDto, object>(x => x.EnrolmentStatusId)">
+                    Status
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<CaseSummaryDto, object>(x => x.UserName)">
+                    User
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<CaseSummaryDto, object>(x => x.Count)">
+                    Count
+                </MudTableSortLabel>
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Tenant">
+                @context.TenantName
+            </MudTd>
+            <MudTd DataLabel="Location">
+                @context.LocationName
+            </MudTd>
+            <MudTd DataLabel="Status">
+                @context.GetEnrolmentStatus()
+            </MudTd>
+            <MudTd DataLabel="User">
+                @context.UserName
+            </MudTd>
+            <MudTd DataLabel="Count">
+                @context.Count
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+else if (Result is { Succeeded: false })
+{
+    <MudAlert Severity="Severity.Warning">
+        @Result.ErrorMessage
+    </MudAlert>
+}

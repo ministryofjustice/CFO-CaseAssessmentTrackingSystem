@@ -2,21 +2,17 @@
 @using Cfo.Cats.Application.Features.ParticipantLabels.AddParticipantLabel
 @using Cfo.Cats.Domain.Labels
 @using Cfo.Cats.Domain.Participants
-@using Cfo.Cats.Server.UI.Components.Labels
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels
 
 @inherits OwningComponentBase<IMediator>
 
-<MudButton 
-    Variant="Variant.Filled" 
-    Color="Color.Secondary" 
-    StartIcon="@Icons.Material.Filled.Label"
-    OnClick="@(() => _showDialog = true)">
-    Add Label
-</MudButton>
+<MudTooltip Text="Add Label">
+    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@(() => _showDialog = true)" />
+</MudTooltip>
 
 <MudDialog Visible="_showDialog" Options="@(new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true })">
     <TitleContent>
-        <MudText Typo="Typo.h6">
+        <MudText Typo="Typo.subtitle1">
             Add a label
         </MudText>
     </TitleContent>
@@ -30,7 +26,7 @@
             RowClassFunc="@SelectedRowClassFunc"
             Filter="new Func<LabelDto,bool>(FilterFunc1)">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Labels</MudText>
+            <MudText Typo="Typo.subtitle1">Labels</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="_searchText" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>

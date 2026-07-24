@@ -1,0 +1,10 @@
+@page "/pages/workspace/servicedesk/qapots"
+@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
+
+<ServiceDeskPageHeader />
+
+<MudGrid>
+    <QaPots />
+</MudGrid>

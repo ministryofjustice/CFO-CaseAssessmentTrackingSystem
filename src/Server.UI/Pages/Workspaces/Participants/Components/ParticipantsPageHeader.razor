@@ -1,0 +1,126 @@
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
+@using Microsoft.AspNetCore.WebUtilities
+
+<PageHeader Title="Participants" 
+            Items="@_breadcrumbs" />
+
+@code
+{
+    private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = BuildBreadcrumbs();
+    }
+
+    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    {
+        var home = ParticipantLinks.Home.AsMudBreadcrumb();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var homeUrl = ParticipantLinks.Home.Href;
+
+        var segment = uri.AbsolutePath.Length > homeUrl.Length
+            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
+            : string.Empty;
+
+        var normalizedSegment = segment.ToLowerInvariant();
+        return normalizedSegment switch
+        {
+            "" => [home],
+            "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],
+            "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb()],
+            "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb()],
+            "pre-release-inventory" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb()],
+            "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb()],
+            _ => BuildParticipantBreadcrumbs(home, segment, uri)
+        };
+    }
+
+    private static IReadOnlyList<BreadcrumbItem> BuildParticipantBreadcrumbs(BreadcrumbItem home, string id, Uri uri)
+    {
+        var participant = ParticipantLinks.Participant(id).AsMudBreadcrumb();
+        var parsedQuery = QueryHelpers.ParseQuery(uri.Query);
+
+        if (parsedQuery.TryGetValue("from", out var from))
+        {
+            return from.ToString().ToLowerInvariant() switch
+            {
+                "all" => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant],
+                "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
+                "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
+                "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
+                "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb(), participant],
+                "activities-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],
+                "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
+                "activities-my-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(), participant],
+                "activities-team-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(), participant],
+                "enrolments-my-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(), participant],
+                "enrolments-team-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(), participant],
+                "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
+                "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
+                "activities-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
+                "enrolments-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
+                "recent-approved-activities" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.RecentApprovedActivities.AsMudBreadcrumb(), participant],
+                "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
+                "dipsample-review-list" => BuildDipSampleParticipantBreadcrumbs(parsedQuery, participant),
+                "pathway-plan-reviews" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.PathwayPlanReviews.AsMudBreadcrumb(), participant],
+                "unassigned-cases" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb(), participant],
+                "initiatives" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.Initiatives.AsMudBreadcrumb(), participant],
+                "riskdue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.RiskDue.AsMudBreadcrumb(), participant],
+                "qa-enrolment-results" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.QaEnrolmentResults.AsMudBreadcrumb(), participant],
+                "latest-engagements" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.LatestEngagements.AsMudBreadcrumb(), participant],
+                _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
+            };
+        }
+
+        return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
+    }
+
+    private static BreadcrumbItem BuildProcessingBreadcrumb(string title, string queueType, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
+    {
+        var stage = parsedQuery.TryGetValue("stage", out var stageValue)
+            ? stageValue.ToString().ToLowerInvariant()
+            : "qa1";
+
+        if (stage == "escalation"
+            && parsedQuery.TryGetValue("id", out var escalationId)
+            && Guid.TryParse(escalationId.ToString(), out var parsedEscalationId))
+        {
+            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/escalation/{parsedEscalationId}");
+        }
+
+        if (parsedQuery.TryGetValue("queueEntryId", out var queueEntryId)
+            && Guid.TryParse(queueEntryId.ToString(), out var parsedQueueEntryId))
+        {
+            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/{stage}?queueEntryId={parsedQueueEntryId}");
+        }
+
+        return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/{stage}");
+    }
+
+    private static IReadOnlyList<BreadcrumbItem> BuildDipSampleParticipantBreadcrumbs(
+        Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery,
+        BreadcrumbItem participant)
+    {
+        var home = PerformanceLinks.Home.AsMudBreadcrumb();
+        var outcomeQuality = PerformanceLinks.OutcomeQualityDipSamples.AsMudBreadcrumb();
+
+        if (parsedQuery.TryGetValue("sampleId", out var sampleIdRaw)
+            && Guid.TryParse(sampleIdRaw.ToString(), out var sampleId))
+        {
+            var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
+            var sampleTitle = parsedQuery.TryGetValue("sampleLabel", out var sampleLabel)
+                && !string.IsNullOrWhiteSpace(sampleLabel.ToString())
+                ? sampleLabel.ToString()
+                : sample.Title;
+
+            return [home, outcomeQuality, new BreadcrumbItem(sampleTitle, sample.Href), participant];
+        }
+
+        return [home, outcomeQuality, participant];
+    }
+}

@@ -15,7 +15,7 @@ else
                 <MudCard Style="Height: 100%">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Personal Details</MudText>
+                            <MudText Typo="Typo.subtitle1">Personal Details</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
                             @if (ParticipantIsActive)
@@ -46,7 +46,7 @@ else
                 <MudCard Style="Height: 100%">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Address Book</MudText>
+                            <MudText Typo="Typo.subtitle1">Address Book</MudText>
                         </CardHeaderContent>
                         <CardHeaderAvatar>
                             <MudAvatar Color="Color.Tertiary">
@@ -104,10 +104,9 @@ else
                     <MudCardActions>
                         @if (ParticipantIsActive)
                         {
-                           <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="AddContact">
-                            Add
-                           </MudButton>
-                           
+                            <MudTooltip Text="Add Label">
+                                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="AddContact" />
+                            </MudTooltip>
                         }
                     </MudCardActions>
                 </MudCard>

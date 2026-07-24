@@ -1,0 +1,59 @@
+﻿@page "/pages/workspace/administration/users/useraudit"
+
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.Features.Identity.Specifications
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Humanizer
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy= SecurityPolicies.SystemFunctionsRead)]
+
+<PageTitle>@Title</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudDataGrid
+    ServerData="@(ServerReload)"
+    T="IdentityAuditTrailDto"
+    FixedHeader="true"
+    FixedFooter="true"
+    Virtualize="true"
+    @bind-RowsPerPage="_defaultPageSize"
+    Height="calc(100vh - 300px)"
+    Loading="@_loading"
+    Hover="true"
+    @ref="_table"
+    BreakPoint="Breakpoint.Sm">
+    <ToolBarContent>
+        <MudEnumSelect Style="min-width:120px" TEnum="IdentityAuditTrailListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+        </MudEnumSelect>
+        <MudSpacer />
+        <MudStack Row="true" AlignItems="AlignItems.Stretch">
+            <MudEnumSelect TEnum="IdentityActionType?" Placeholder="Search for audit type" Value="@Query.IdentityActionType" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="min-width:140px" FullWidth="true"> </MudEnumSelect>
+        </MudStack>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.DateTime" Title="@_currentDto.GetMemberDescription(x => x.DateTime)" />
+        <PropertyColumn Property="x => x.ActionType" Title="@_currentDto.GetMemberDescription(x => x.ActionType)">
+            <CellTemplate>
+                @if (context.Item.ActionType is not null)
+                {
+                    @context.Item.ActionType.Value.Humanize()    
+                }
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.UserName" Title="@_currentDto.GetMemberDescription(x => x.UserName)" />
+        <PropertyColumn Property="x => x.PerformedBy" Title="@_currentDto.GetMemberDescription(x => x.PerformedBy)" />
+        <PropertyColumn Property="x => x.IpAddress" Title="@_currentDto.GetMemberDescription(x => x.IpAddress)" />
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@([10, 15, 30, 50])"/>
+    </PagerContent>
+</MudDataGrid>

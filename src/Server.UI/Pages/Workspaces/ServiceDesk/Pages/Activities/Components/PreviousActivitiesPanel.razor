@@ -1,0 +1,153 @@
+﻿@inherits CatsComponentBase
+
+@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Application.Features.Activities.Queries
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Pages.Activities.Components
+
+<MudForm>
+    <MudTable Items="@previousActivities" Striped="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingPreviousActivities" LoadingProgressColor="Color.Info" Class="mb-8 pa-4">
+        <HeaderContent>      
+            <MudTh />      
+            <MudTh>Activity</MudTh>
+            <MudTh>Location</MudTh>
+            <MudTh>Participant at location</MudTh>
+            <MudTh>Date activity took place</MudTh>
+            
+        </HeaderContent>
+        <RowTemplate>   
+            <MudTd>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Display(context)">Display</MudButton>
+            </MudTd>   
+            <MudTd DataLabel="Activity">
+                @context.Definition!.Name
+            </MudTd>
+            <MudTd DataLabel="Location">
+                @context.Location!.Name (@context.Location.LocationType.Name)                
+            </MudTd>
+
+            <MudTd DataLabel="Participant at location">
+                @if (context.ActivityId is Guid id && participantLocationCheckResults.TryGetValue(id, out var wasAtLocation))
+                {
+                    <MudIcon Icon="@(
+                                     wasAtLocation
+                                         ? Icons.Material.Filled.Check
+                                                 : Icons.Material.Filled.Close
+                                    )"
+                     Color="@(wasAtLocation ? Color.Success : Color.Error)" />
+                }
+                else
+                {
+                    <MudProgressCircular Indeterminate Size="Size.Small" Color="Color.Info" />
+                }
+            </MudTd>
+
+            <MudTd DataLabel="Date activity took place">                
+                <MudText Typo="Typo.body2">@context.CommencedOn</MudText>
+            </MudTd>            
+           
+        </RowTemplate>
+    </MudTable>
+    
+
+
+    <MudDialog Visible="@(_activityQaDetailsDto is not null)">
+        <TitleContent>
+            <MudText Typo="Typo.subtitle1">
+                @_activityQaDetailsDto!.Definition.Name
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudStack>
+                <MudText>
+                    Additional Information
+                </MudText>
+                <MudText>
+                    @_activityQaDetailsDto!.AdditionalInformation
+                </MudText>
+                
+                @if (@_activityQaDetailsDto!.Definition.Classification == ClassificationType.Employment)
+                {
+                    <Employment Model="_activityQaDetailsDto.EmploymentTemplate" ReadOnly="true" />
+                }
+                else if (@_activityQaDetailsDto!.Definition.Classification == ClassificationType.EducationAndTraining)
+                {
+                    <EducationTraining Model="_activityQaDetailsDto.EducationTrainingTemplate" ReadOnly="true"/>
+                }
+                else if (@_activityQaDetailsDto!.Definition.Classification == ClassificationType.ISWActivity)
+                {
+                    <Isw Model="_activityQaDetailsDto.ISWTemplate" ReadOnly="true" />
+                }
+            </MudStack>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => _activityQaDetailsDto = null)" Class="px-10">Close</MudButton>
+        </DialogActions>
+    </MudDialog>
+   
+    
+</MudForm>        
+
+@code{
+    [Parameter, EditorRequired]
+    public Guid? ActivityId { get; set; }
+    private List<ActivityQaDetailsDto> previousActivities = [];
+    private bool isLoadingPreviousActivities = true;
+
+    private ActivityQaDetailsDto? _activityQaDetailsDto ;
+
+    private Dictionary<Guid, bool> participantLocationCheckResults = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        previousActivities = await GetPreviousActivities();            
+        await base.OnInitializedAsync();
+    }      
+
+    private async Task<List<ActivityQaDetailsDto>> GetPreviousActivities()
+    {
+        isLoadingPreviousActivities = true;
+        var result = await GetNewMediator().Send(new GetPreviousSameTypeActivitiesById.Query()
+            {
+                Id = ActivityId
+            });
+
+        var activities = result.ToList() ?? [];
+
+        // Precompute participant-location checks
+        participantLocationCheckResults.Clear();
+
+        var checks = await Task.WhenAll(
+            activities
+                .Where(a => a.ActivityId.HasValue)
+                .Select(async a =>
+                {
+                    var result = await CheckParticipantBeenAtThisLocationOnDate(a);
+                    return (a.ActivityId!.Value, result);
+                }
+                )
+        );
+
+        participantLocationCheckResults = checks.ToDictionary(x => x.Item1, x => x.result);
+
+
+        isLoadingPreviousActivities = false;
+        return activities;
+    }
+
+    async Task Display(ActivityQaDetailsDto previousActivity)
+    {
+        _activityQaDetailsDto = previousActivity;      
+        await Task.CompletedTask;  
+    }    
+
+    private async Task<bool> CheckParticipantBeenAtThisLocationOnDate(ActivityQaDetailsDto? activityQaDetailsDto)
+    {
+        return await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
+        {
+            ParticipantId = activityQaDetailsDto!.ParticipantId,
+            LocationId = activityQaDetailsDto.Location!.Id,
+            DateAtLocation = activityQaDetailsDto.CommencedOn
+        });
+    }
+}

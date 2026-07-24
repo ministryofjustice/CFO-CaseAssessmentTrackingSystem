@@ -1,0 +1,33 @@
+@page "/pages/workspace/deliverymanagement/recent-approved-activities"
+@inherits ProviderDashboardBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+<DeliveryManagementPageHeader />
+
+<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    <MudSwitch Label="Visual Mode" Color="Color.Info" Value="VisualMode" ValueChanged="OnVisualModeChanged" T="bool" />
+    <MudSpacer />
+    @if (CanFilter)
+    {
+        <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 SelectedTenantId="@SelectedTenantId"
+                                 SelectedUserId="@SelectedUserId"
+                                 TenantSelected="OnTenantSelectedWithSave"
+                                 UserSelected="OnUserSelectedWithSave"
+                                 ClearRequested="OnClearFilterWithSave" />
+    }
+</MudStack>
+
+<div style="max-width: 640px;">
+    <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" DateRange="_dateRange" DateRangeChanged="OnDateRangeChanged" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+        <PickerActions>
+            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
+</div>
+
+<RecentlyApprovedActivitiesComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />

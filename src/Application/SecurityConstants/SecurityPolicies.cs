@@ -10,6 +10,8 @@ public static class SecurityPolicies
 
     public const string Internal = nameof(Internal);
 
+    public const string ServiceDesk = nameof(ServiceDesk);
+
     public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
@@ -66,6 +68,8 @@ public static class SecurityPolicies
     public const string Finance = nameof(Finance);
 
     public const string ServiceDeskManagement = nameof(ServiceDeskManagement);
+
+    public const string ServiceDeskSyncInformation = nameof(ServiceDeskSyncInformation);
 
     /// <summary>
     /// Allows access to the Initiatives management page and list.

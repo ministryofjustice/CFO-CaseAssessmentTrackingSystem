@@ -1,0 +1,18 @@
+
+
+<MudStack>
+    <CatsBreadcrumbs Items="@Items" />
+    @* <MudText Typo="Typo.h2" Color="Color.Secondary" Class="pb-2">
+        @Title
+    </MudText> *@
+</MudStack>
+
+@code{
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; }
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<BreadcrumbItem> Items { get;set; }
+
+}

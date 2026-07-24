@@ -1,0 +1,70 @@
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Specifications
+
+<MudTable T="ParticipantPaginationDto" Items="@Items" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
+    <HeaderContent>
+        @if (CanReassign)
+        {
+            <MudTh>Select</MudTh>
+        }
+        <MudTh>Id</MudTh>
+        <MudTh>Participant</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh>Location</MudTh>
+        <MudTh>Enrolled At</MudTh>
+        <MudTh>Assignee</MudTh>
+        @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
+        {
+            <MudTh>Assigned On</MudTh>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
+        {
+            <MudTh>Accessed On</MudTh>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days)
+        {
+            <MudTh>Archived On</MudTh>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod)
+        {
+            <MudTh>Licence End Date</MudTh>
+        }
+        <MudTh>Risk Due</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        @if (CanReassign)
+        {
+            <MudTd>
+                <MudCheckBox T="bool"
+                             Value="@IsParticipantSelected(context.Id)"
+                             ValueChanged="@(value => OnParticipantSelectionChanged.InvokeAsync((context.Id, value)))"
+                             @onclick:stopPropagation="true" />
+            </MudTd>
+        }
+        <MudTd>@context.Id</MudTd>
+        <MudTd>@context.ParticipantName</MudTd>
+        <MudTd>@context.EnrolmentStatus.Name</MudTd>
+        <MudTd>@context.CurrentLocation.Name</MudTd>
+        <MudTd>@context.EnrolmentLocation?.Name</MudTd>
+        <MudTd>@context.Owner</MudTd>
+        @if (Query.RecentAction == RecentParticipantFilter.AssignedLast10Days || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days)
+        {
+            <MudTd>@context.AssignedOn?.ToShortDateString()</MudTd>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days)
+        {
+            <MudTd>@context.AccessedOn?.ToShortDateString()</MudTd>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days)
+        {
+            <MudTd>@context.ArchivedOn?.ToShortDateString()</MudTd>
+        }
+        @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod)
+        {
+            <MudTd>@context.PostLicenceCaseClosureEnd?.ToShortDateString()</MudTd>
+        }
+        <MudTd>
+            @context.RiskDue.ToShortDateOrEmptyString()
+        </MudTd>
+    </RowTemplate>
+</MudTable>

@@ -1,0 +1,42 @@
+﻿@page "/pages/workspace/participants/moved"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Humanizer
+
+<ParticipantsPageHeader />
+
+<MudSimpleTable Class="pa-4">
+
+    <tbody>
+        @foreach (var access in _participantAccess.OrderBy(p => p.HasAccessTo))
+        {
+            <tr>
+                <td>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@access.FullName</MudText>
+                        <MudText Typo="Typo.body2">@access.ParticipantId</MudText>
+                    </div>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @access.HasAccessTo.ToLocalTime().ToShortDateString() (@access.HasAccessTo.Humanize())
+                    </MudText>
+                </td>
+                <td>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@(()=> View(access.ParticipantId))">View</MudButton>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="6">
+                <div class="d-flex justify-center">
+                    <MudText Typo="Typo.caption">
+                        @_participantAccess.Count() participant(s)
+                    </MudText>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</MudSimpleTable>

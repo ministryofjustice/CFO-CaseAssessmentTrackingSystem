@@ -1,0 +1,87 @@
+@inherits CatsComponentBase
+
+@using Humanizer
+
+    <MudPaper Class="pa-2">
+
+        @if(FirstPassUser is not null)
+        {
+            <MudAlert Variant="Variant.Filled" Severity="Severity.Success" Class="ma-2">
+                QA1 submitted by @FirstPassUser
+            </MudAlert>
+        }
+
+        @if(_notes is { Length: 0 })
+        {
+            <MudText Typo="Typo.subtitle1">
+                No notes recorded
+            </MudText>
+        }
+
+        @if (_notes is { Length: > 0 })
+        {
+            <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
+
+                @foreach (var note in _notes.OrderByDescending(n => n.Created))
+                {   
+                    <MudTimelineItem Size="Size.Medium" Color="Color.Success" Elevation="25">
+                            <MudCard Outlined="false" Elevation="25">
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudAvatar Color="Color.Secondary">
+                                            @if (_hideUser && _cfoTenantNames.Contains(note.TenantName))
+                                            {
+                                                <MudImage Src="cats.ico"></MudImage>
+                                            }
+                                            else
+                                            {
+                                                @note.CreatedBy[0]
+                                            }
+                                        </MudAvatar>
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        @if (_hideUser && _cfoTenantNames.Contains(note.TenantName))
+                                        {
+                                            <MudText Typo="Typo.body1">
+                                                CFO User
+                                            </MudText>
+                                            <MudText Typo="Typo.body2">
+                                                @note.TenantName
+                                            </MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.body1">
+                                                @note.CreatedBy
+                                            </MudText>
+                                            <MudText Typo="Typo.body2">
+                                                @note.TenantName
+                                            </MudText>
+                                        }
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudText Typo="Typo.subtitle1">
+                                        @note.Message
+                                    </MudText>
+
+                                    @if (!string.IsNullOrWhiteSpace(note.ReturnReason))
+                                    {
+                                        <MudText Typo="Typo.body2" Class="mt-2">
+                                            <strong>Return Reason:</strong> @note.ReturnReason
+                                        </MudText>
+                                    }
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                        <MudText Typo="Typo.caption">
+                                            Added @note.Created.Humanize()
+                                        </MudText>
+                                    </MudTooltip>
+                                </MudCardActions>
+                            </MudCard>
+                    </MudTimelineItem>
+                }
+            </MudTimeline>
+        }
+    </MudPaper>

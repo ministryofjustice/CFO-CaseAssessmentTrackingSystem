@@ -1,0 +1,97 @@
+@using Cfo.Cats.Application.Features.Participants.Specifications
+
+<MudStack class="mt-4">
+    @foreach (var item in Items)
+    {
+        <MudPaper Outlined="true" Class="pa-4">
+            <MudStack>
+                <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                    @if (CanReassign)
+                    {
+                        <MudCheckBox T="bool"
+                                     Value="@IsParticipantSelected(item.Id)"
+                                     ValueChanged="@(value => OnParticipantSelectionChanged.InvokeAsync((item.Id, value)))"
+                                     @onclick:stopPropagation="true" />
+                    }
+                    <MudText Typo="Typo.subtitle1">@item.Id @item.ParticipantName</MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.subtitle2">@item.CurrentLocation.Name</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                        @if(item.EnrolmentLocation is not null)
+                        {
+                            <MudText Typo="Typo.body2">
+                                Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
+                                @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
+                                {
+                                    @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
+                                }
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2">
+                                Not Enrolled
+                            </MudText>
+                        }
+                    <MudSpacer />
+                    <MudText Typo="Typo.body2">
+                        Assigned to @item.Owner 
+                        (@item.Tenant)@if ((Query.RecentAction == RecentParticipantFilter.AssignedLast10Days 
+                        || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days) 
+                        && item.AssignedOn.HasValue)
+                        {
+                            @($" on {item.AssignedOn.Value.ToShortDateString()}")
+                        }
+                        @if (Query.RecentAction == RecentParticipantFilter.VisitedLast7Days 
+                        && item.AccessedOn.HasValue)
+                        {
+                            @($" last accessed on {item.AccessedOn.Value.ToShortDateString()}")
+                        }
+                        @if (Query.RecentAction == RecentParticipantFilter.ArchivedLast30Days 
+                        && item.ArchivedOn.HasValue)
+                        {
+                            @($" archived on {item.ArchivedOn.Value.ToShortDateString()}")
+                        }
+                        @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod 
+                        && item.PostLicenceCaseClosureEnd.HasValue)
+                        {
+                            @($" licence ends {item.PostLicenceCaseClosureEnd.Value.ToShortDateString()}")
+                        }
+                    </MudText>
+                </MudStack>
+                <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                    @if (item.RiskDue.HasValue)
+                    {
+                        <MudChip Size="Size.Small"
+                                    T="string"
+                                    Color="@( item.RiskDue < DateTime.Today ? Color.Error : Color.Info )"
+                                    Variant="Variant.Outlined">
+                            Risk Due @item.RiskDue.Value.ToShortDateString() @item.RiskDueReason
+                        </MudChip>
+                    }
+                    <MudSpacer />
+                    @if (item.Labels.Length > 0)
+                    {
+                        @foreach (var l in item.Labels)
+                        {                
+                            <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
+                                        Label="@l.Name" ShowDelete="false" />
+                        }
+                    }
+                </MudStack>
+            </MudStack>
+            <MudDivider Class="mt-4 mb-2" />
+            <MudStack Row="true" Justify="Justify.FlexEnd" >
+                <MudButton 
+                    Variant="Variant.Filled"
+                    StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
+                    Size="Size.Small"
+                    Color="Color.Secondary" 
+                    OnClick="@(() => OnViewParticipant.InvokeAsync(item))">
+                    @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    }
+</MudStack>

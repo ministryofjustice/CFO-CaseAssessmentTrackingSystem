@@ -1,0 +1,22 @@
+@page "/pages/workspace/administration"
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Cfo.Cats.Server.UI.Components.Shared.Workspace
+
+@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
+<PageTitle>Administration</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <WorkspaceMenu Links="@Links" />
+    </MudItem>
+    <MudItem xs="12" md="6">
+        <MudText Typo="Typo.h2">
+        </MudText>
+        <MudStack Spacing="2" Class="mt-2" AlignItems="AlignItems.Stretch">
+            
+        </MudStack>
+    </MudItem>
+</MudGrid>

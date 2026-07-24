@@ -1,0 +1,68 @@
+@page "/pages/workspace/participants/all"
+@inherits OwningComponentBase<IMediator>
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+
+    <ParticipantsPageHeader />
+
+<ParticipantFilterBar 
+    Query="@Query"
+    CanReassign="@_canReassign"
+    SelectedCount="@_selectedParticipantIds.Count"
+    TotalPages="@_totalPages"
+    TotalItems="@_totalItems"
+    Tabular="@Tabular"
+    IsDownloading="@_downloading"
+    Users="@_users"
+    Tenants="@_tenants"
+    Locations="@_locations"
+    Labels="@_labels"
+    CurrentFilterLabel="@GetCurrentFilterLabel()"
+    OnClearQuickFilter="@ClearQuickFilter"
+    OnMyParticipants="@ApplyMyParticipantsFilter"
+    OnOverdueRisk="@ApplyOverdueRiskFilter"
+    OnRecentlyAssigned="@RecentlyAssignedFilterChanged"
+    OnRecentlyVisited="@RecentlyVisitedFilterChanged"
+    OnSearchChanged="@OnSearch"
+    OnReassignSelected="@ReassignSelectedItems"
+    OnClearSelection="@ClearSelectedParticipants"
+    OnRefresh="@OnRefreshClicked"
+    OnExport="@OnExport"
+    OnEnrol="@OnEnrol"
+    OnTabularChanged="@TabularChanged"
+    OnListViewChanged="@ListViewChanged"
+    OnShowAssigneeDialog="@ShowAssigneeDialog"
+    OnShowTenantDialog="@ShowTenantDialog"
+    OnShowLocationDialog="@ShowSelectLocationDialog"
+    OnLabelChanged="@LabelsValueChanged"
+    OnSortBy="@(new EventCallback<string>(this, SortBy))"
+    OnClearSearch="@ClearSearch" />
+
+@if (_data is { Length: > 0 })
+{
+    @if(Tabular)
+    {
+        <ParticipantTableView 
+            Items="@_data"
+            Query="@Query"
+            CanReassign="@_canReassign"
+            SelectedParticipantIds="@_selectedParticipantIds"
+            OnRowClick="@OnRowClick"
+            OnParticipantSelectionChanged="@HandleParticipantSelectionChanged" />
+    }
+    else
+    {
+        <ParticipantCardView 
+            Items="@_data"
+            Query="@Query"
+            CanReassign="@_canReassign"
+            SelectedParticipantIds="@_selectedParticipantIds"
+            OnViewParticipant="@ViewParticipant"
+            OnParticipantSelectionChanged="@HandleParticipantSelectionChanged" />
+    }
+}
+else
+{
+    <MudAlert Severity="Severity.Info" Class="mt-4">No participants match the current filters.</MudAlert>
+}

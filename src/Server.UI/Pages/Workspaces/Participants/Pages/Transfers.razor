@@ -1,0 +1,166 @@
+@page "/pages/workspace/participants/transfers"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Humanizer
+
+<ParticipantsPageHeader />
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4">Incoming Transfers</MudText>
+    <MudSpacer />
+    <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+</MudStack>
+
+<MudTable Items="@_incomingTransfers" 
+          Hover="true" 
+          Breakpoint="Breakpoint.Sm" 
+          Loading="@_isLoadingIncomingTransfers" 
+          LoadingProgressColor="Color.Info" 
+          Class="mb-8 pa-4"
+          Filter="FilterIncoming1">
+    <HeaderContent>
+            <MudTh>@ConstantString.Actions</MudTh>
+            <MudTh>Participant</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Occurred</MudTh>
+            <MudTh>From</MudTh>
+            <MudTh>To</MudTh>
+            <MudTh>Type</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@ConstantString.Actions">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                <MudMenuItem OnClick="async() => await Process(context)">Process and Assign</MudMenuItem>
+                <AuthorizeView Policy="@SecurityPolicies.SeniorInternal" Context="ctx">
+                    @if (context.EnrolmentStatus == EnrolmentStatus.ArchivedStatus)
+                    {
+                        <MudMenuItem OnClick="async () => await Dismiss(context)">Dismiss</MudMenuItem>
+                    }
+                </AuthorizeView>
+                <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
+                <MudMenuItem OnClick="async () => await ViewOffenderManagerSummary(context.ParticipantId)">View Offender Manager Summary</MudMenuItem>
+            </MudMenu>            
+        </MudTd>    
+        <MudTd DataLabel="Participant">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            @if (context.EnrolmentStatus is not null)
+            {
+                <MudChip T="string" Size="Size.Small" Style="@($"background-color: {context.EnrolmentStatus.Colour}; color: white;")">@context.EnrolmentStatus.Name</MudChip>
+            }
+        </MudTd>
+        <MudTd DataLabel="Occurred">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">@context.MoveOccured.Humanize()</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="From">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.FromLocation.Name</MudText>
+                @if(context.FromContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.FromContract</MudText>
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="To">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ToLocation.Name</MudText>
+                @if(context.ToContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.ToContract</MudText>
+                }
+            </div>
+        </MudTd>
+        <MudTd>
+            @context.TransferType.Name
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
+
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4">Outgoing Transfers</MudText>
+    <MudSpacer />
+    <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+</MudStack>
+
+<MudTable Items="@_outgoingTransfers" 
+          Hover="true" 
+          Breakpoint="Breakpoint.Sm" 
+          Loading="@_isLoadingOutgoingTransfers" 
+          LoadingProgressColor="Color.Info" 
+          Class="mb-8 pa-4"
+          Filter="FilterOutgoing1">
+    <HeaderContent>
+            <MudTh>Actions</MudTh>
+            <MudTh>Participant</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Occurred</MudTh>
+            <MudTh>From</MudTh>
+            <MudTh>To</MudTh>
+            <MudTh>Type</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@ConstantString.Actions">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
+            </MudMenu>
+        </MudTd>
+        <MudTd DataLabel="Participant">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            @if (context.EnrolmentStatus is not null)
+            {
+                <MudChip T="string" Size="Size.Small" Style="@($"background-color: {context.EnrolmentStatus.Colour}; color: white;")">@context.EnrolmentStatus.Name</MudChip>
+            }
+        </MudTd>
+        <MudTd DataLabel="Occurred">
+            <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+            <MudText Typo="Typo.body2">@context.MoveOccured.Humanize()</MudText>
+        </MudTd>
+        <MudTd DataLabel="From">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.FromLocation.Name</MudText>
+                @if(context.FromContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.FromContract</MudText>
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="To">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ToLocation.Name</MudText>
+                @if(context.ToContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.ToContract</MudText>
+                }
+            </div>
+        </MudTd>
+        <MudTd>
+            @context.TransferType.Name
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
+
+
+

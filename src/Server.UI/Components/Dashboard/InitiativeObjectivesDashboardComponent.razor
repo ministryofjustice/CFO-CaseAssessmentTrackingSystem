@@ -18,31 +18,29 @@
 @if (Data is not null && Data.Any())
 {
     <MudGrid Spacing="2" Class="mb-3">
-        <MudItem xs="12" Class="d-flex justify-space-between align-center">
-            <MudText Typo="Typo.h6">Initiative Objectives</MudText>
-            <div class="d-flex align-center gap-3">
-                @if (!VisualMode)
-                {
-                    <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
-                                           ActiveOnly="false"
-                                           Style="max-width: 260px;" 
-                                           Label="Initiative" />
-                }
-                <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show open objectives only" />
-                <MudLoadingButton Variant="Variant.Filled"
-                                  Size="MudBlazor.Size.Small"
-                                  Loading="@_downloading"
-                                  Disabled="@Loading"
-                                  OnClick="@OnExport"
-                                  StartIcon="@Icons.Material.Filled.Download"
-                                  Color="Color.Secondary">
-                    @ConstantString.Export
-                </MudLoadingButton>
-            </div>
-        </MudItem>
-        <MudItem xs="12">
+        <!-- This is the left column -->
+        <MudItem xs="12" sm="6">
             <MudChip T="string">Active (@TotalActive)</MudChip>
             <MudChip T="string">Completed (@TotalCompleted)</MudChip>
+        </MudItem>
+        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center gap-3">
+            @if (!VisualMode)
+            {
+                <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="OnInitiativeFilterChanged"
+                                        ActiveOnly="false"
+                                        Style="max-width: 260px;" 
+                                        Label="Initiative" />
+            }
+            <MudSwitch T="bool" Value="ShowActiveOnly" ValueChanged="OnShowActiveOnlyChanged" Color="Color.Primary" Label="Show open objectives only" />
+            <MudLoadingButton Variant="Variant.Filled"
+                                Size="MudBlazor.Size.Small"
+                                Loading="@_downloading"
+                                Disabled="@Loading"
+                                OnClick="@OnExport"
+                                StartIcon="@Icons.Material.Filled.Download"
+                                Color="Color.Secondary">
+                @ConstantString.Export
+            </MudLoadingButton>
         </MudItem>
     </MudGrid>
 
@@ -122,7 +120,7 @@
             <RowTemplate>
                 <MudTd DataLabel="Participant">
                     <MudStack AlignItems="AlignItems.Start" Spacing="0">
-                        <MudLink Href="@($"/pages/participants/{context.ParticipantId}")">
+                        <MudLink Href="@($"/pages/workspace/participants/{context.ParticipantId}?from=initiatives")">
                             @context.ParticipantName
                         </MudLink>
                         <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>

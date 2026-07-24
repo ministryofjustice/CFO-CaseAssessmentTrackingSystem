@@ -7,10 +7,10 @@
 
 @inherits CatsComponentBase
 
-<MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
-    <ActivatorContent>
-        <MudChip T="string" Icon="@Icons.Material.Filled.CallToAction">@ConstantString.Actions</MudChip>
-    </ActivatorContent>
+<MudMenu 
+        AnchorOrigin="Origin.BottomLeft" 
+        Label="@ConstantString.Actions" 
+        EndIcon="@Icons.Material.Filled.ArrowDropDown">
     <ChildContent>
 
         @if (Participant.EnrolmentStatus.AllowArchive()

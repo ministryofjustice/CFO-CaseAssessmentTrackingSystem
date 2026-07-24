@@ -1,0 +1,79 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+
+@inherits CatsComponent<RiskDueAggregateDto[]>
+
+    @if (Loading)
+    {
+        <LoadingCard Title="Risk due" />
+    }
+    else
+    {
+        @if (Data is not null)
+        {
+            <MudSwitch T="bool" Value="_byPerson"  ValueChanged="OnByPersonChanged" Color="Color.Info">
+                By Person 
+            </MudSwitch>
+
+            <MudTable
+                Items="Data"
+                Hover="true"
+                Striped="true"
+                Filter="new Func<RiskDueAggregateDto,bool>(FilterFunc)">
+                <ToolBarContent>
+                    <MudText Typo="Typo.subtitle1">Details</MudText>
+                    <MudSpacer />
+                    <MudStack>
+                        <MudStack>
+                            <MudLoadingButton Loading="@_downloading"
+                                        Variant="Variant.Filled"
+                                        Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.CloudDownload"
+                                        Size="Size.Small"
+                                        OnClick="OnExport">
+                                    @ConstantString.Export
+                            </MudLoadingButton>
+                        </MudStack>
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </MudStack>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RiskDueAggregateDto, object>(x => x.Description)">
+                            Description
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RiskDueAggregateDto, object>(x => x.Overdue)">
+                            Overdue
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RiskDueAggregateDto, object>(x => x.Upcoming)">
+                            Upcoming
+                        </MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Description">
+                        @context.Description
+                    </MudTd>
+                    <MudTd DataLabel="Description">
+                        @context.Overdue
+                    </MudTd>
+                    <MudTd DataLabel="Description">
+                        @context.Upcoming
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 5, 10, 50 }"/>
+                </PagerContent>
+            </MudTable>
+
+        }
+    }
+    
+    
+
+
+

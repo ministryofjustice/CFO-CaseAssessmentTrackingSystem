@@ -1,0 +1,70 @@
+using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
+using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Common.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
+
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
+public partial class SubmitFinalResponseComponent
+{
+    private MudForm _form = new();
+    private bool ReadOnly { get; set; } = true;
+    private bool _showCpmComments = false;
+
+    [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    [Parameter, EditorRequired] public required DipSampleStatus Status { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    [Parameter][EditorRequired] public required EventCallback<SubmitFinalResponse.Command> OnFormSubmit { get; set; }
+    [Parameter][EditorRequired] public required SubmitFinalResponse.Command Command { get; set; }
+    [Parameter] public string? CpmComments { get; set; }
+
+    private async Task CopyFromVerification()
+    {
+        if (!string.IsNullOrWhiteSpace(Command.Comments))
+        {
+            bool? result = await DialogService.ShowMessageBoxAsync(
+                "Confirm Copy",
+                "This will replace your current comments. Do you want to continue?",
+                yesText: "Yes, Replace",
+                cancelText: "Cancel");
+            
+            if (result != true)
+            {
+                return;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(CpmComments))
+        {
+            Command.Comments = CpmComments;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Status == DipSampleStatus.Verified)
+        {
+            var state = await AuthState;
+            var result = await AuthorizationService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipFinalise);
+            ReadOnly = result is not { Succeeded: true };
+        }
+        else
+        {
+            ReadOnly = true;
+        }
+    }
+
+    private async Task OnSubmit()
+    {
+        await _form.ValidateAsync();
+
+        if (_form.IsValid)
+        {
+            await OnFormSubmit.InvokeAsync(Command);
+        }
+    }
+
+}

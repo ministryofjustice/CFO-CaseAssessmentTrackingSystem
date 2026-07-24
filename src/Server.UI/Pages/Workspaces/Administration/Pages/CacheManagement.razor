@@ -1,0 +1,13 @@
+@page "/pages/workspace/administration/cachemanagement"
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.SystemSupportFunctions)]
+
+<PageTitle>Cache Management</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudGrid>
+    <CacheControl />
+</MudGrid>

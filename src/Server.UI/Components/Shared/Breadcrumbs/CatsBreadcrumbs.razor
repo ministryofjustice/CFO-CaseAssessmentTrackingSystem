@@ -1,5 +1,6 @@
-﻿<MudBreadcrumbs Items="Items">
+﻿
+<MudBreadcrumbs Items="Items">
     <ItemTemplate Context="item">
-        <MudLink Href="@item.Href" Typo="@Typo" Disabled="@item.Disabled">@item.Text</MudLink>
+        <MudLink Href="@item.Href" Disabled="@item.Disabled" StartIcon="@item.Icon" Color="Color.Secondary" Typo="Typo.subtitle2" Style="font-size:1.5rem">@item.Text</MudLink>
     </ItemTemplate>
 </MudBreadcrumbs>

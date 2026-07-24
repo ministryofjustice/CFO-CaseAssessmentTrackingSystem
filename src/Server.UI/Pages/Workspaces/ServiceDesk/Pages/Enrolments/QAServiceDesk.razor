@@ -1,0 +1,25 @@
+@page "/pages/workspace/servicedesk/enrolments/queue"
+@page "/pages/qa/servicedesk/enrolments"
+@attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components
+
+<ServiceDeskPageHeader />
+
+<MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
+    <MudTabs @bind-ActivePanelIndex="_activePanelIndex" Elevation="1" Border="false" ApplyEffectsToContainer="true" TabPanelsClass="pa-6">
+        <MudTabPanel Text="First Pass">
+            <QA1List />
+        </MudTabPanel>
+
+        <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
+            <MudTabPanel Text="Second Pass">
+                <QA2List />
+            </MudTabPanel>
+            <MudTabPanel Text="Escalation">
+                <EscalationList />
+            </MudTabPanel>
+        </AuthorizeView>
+    </MudTabs>
+</MudContainer>
