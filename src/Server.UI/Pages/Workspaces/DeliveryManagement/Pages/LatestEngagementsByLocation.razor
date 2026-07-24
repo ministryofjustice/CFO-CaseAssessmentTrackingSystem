@@ -118,7 +118,8 @@ else
             </ToolBarContent>
             <HeaderContent>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Location</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Current Location</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedAtLocationName">Engaged at Location</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="Category">Category</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedWith">Engaged With</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedOn">Engaged On</MudTableSortLabel></MudTh>
@@ -132,7 +133,8 @@ else
                         </MudLink>
                     </MudStack>
                 </MudTd>
-                <MudTd DataLabel="Location">@context.CurrentLocationName</MudTd>
+                <MudTd DataLabel="Current Location">@context.CurrentLocationName</MudTd>
+                <MudTd DataLabel="Engaged at Location">@context.EngagedAtLocationName</MudTd>
                 <MudTd DataLabel="Category">
                     @if (context.HasEngaged)
                     {
