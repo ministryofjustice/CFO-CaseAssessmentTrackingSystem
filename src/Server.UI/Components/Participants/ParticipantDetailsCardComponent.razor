@@ -9,7 +9,7 @@
 <MudCard Style="height: 100%">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Details</MudText>
+            <MudText Typo="Typo.subtitle1">Details</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
@@ -30,8 +30,8 @@
         {
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText>
-                    <strong>DOB</strong>
+                <MudText Typo="Typo.subtitle2">
+                    DOB
                 </MudText>
                 <MudText>
                     @Data.DateOfBirth
@@ -39,8 +39,8 @@
             </MudStack>
             
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText>
-                    <strong>Age</strong>
+                <MudText Typo="Typo.subtitle2">
+                    Age
                 </MudText>
                 <MudText>
                     @Data.DateOfBirth.CalculateAge()
@@ -48,29 +48,29 @@
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText>
-                    <strong>Enrolment Location</strong>
+                <MudText Typo="Typo.subtitle2">
+                    Enrolment Location
                 </MudText>
                 <MudText>@Data.EnrolmentLocation</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText>
-                    <strong>Nationality</strong>
+                <MudText Typo="Typo.subtitle2">
+                    Nationality
                 </MudText>
                 <MudText>@(Data.Nationality ?? "Not Set")</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText>
-                    <strong>Consent Date</strong>
+                <MudText Typo="Typo.subtitle2">
+                    Consent Date
                 </MudText>
                 <MudText>@Data.DateOfFirstConsent</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText>
-                    <strong>Last Data Sync</strong>
+                <MudText Typo="Typo.subtitle2">
+                    Last Data Sync
                 </MudText>
                 <MudTooltip Text="@Data.LastSync.ToString(CultureInfo.CurrentCulture)">
                     <MudText>

@@ -19,7 +19,8 @@
 
     @if (ShowEnrolments)
     {
-        <MudText Typo="Typo.h6" Class="pt-2 px-2">Enrolments</MudText>
+
+        <MudText Typo="Typo.subtitle1" Class="pt-2 px-2">Enrolments</MudText>
         <MudList T="string" ReadOnly="false" Class="pa-2">
             @if (CanViewFirstPass)
             {
@@ -28,7 +29,7 @@
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">First Pass</MudText>
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentQa1Count)">@_enrolmentQa1Count</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="@GetCountColor(_enrolmentQa1Count)">@_activityQa1Count</MudText>
                         </MudStack>
                     </MudStack>
                 </MudListItem>
@@ -42,7 +43,7 @@
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Second Pass</MudText>
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentQa2Count)">@_enrolmentQa2Count</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="@GetCountColor(_enrolmentQa2Count)">@_enrolmentQa2Count</MudText>
                         </MudStack>
                     </MudStack>
                 </MudListItem>
@@ -55,7 +56,7 @@
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Escalation</MudText>
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_enrolmentEscalationCount)">@_enrolmentEscalationCount</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="@GetCountColor(_enrolmentEscalationCount)">@_enrolmentEscalationCount</MudText>
                         </MudStack>
                     </MudStack>
                 </MudListItem>
@@ -65,7 +66,7 @@
         
     @if (ShowActivities)
     {
-        <MudText Typo="Typo.h6" Class="pt-2 px-2">Activities</MudText>
+        <MudText Typo="Typo.subtitle1" Class="pt-2 px-2">Activities</MudText>
         <MudList T="string" ReadOnly="false" Class="pa-2">
             @if (CanViewFirstPass)
             {
@@ -74,7 +75,7 @@
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">First Pass</MudText>
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_activityQa1Count)">@_activityQa1Count</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="@GetCountColor(_activityQa1Count)">@_activityQa1Count</MudText>
                         </MudStack>
                     </MudStack>
                 </MudListItem>
@@ -88,7 +89,7 @@
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Second Pass</MudText>
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_activityQa2Count)">@_activityQa2Count</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="@GetCountColor(_activityQa2Count)">@_activityQa2Count</MudText>
                         </MudStack>
                     </MudStack>
                 </MudListItem>
@@ -101,7 +102,7 @@
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width:100%">
                         <MudStack Spacing="0">
                             <MudText Typo="Typo.body1">Escalation</MudText>
-                            <MudText Typo="Typo.h6" Color="@GetCountColor(_activityEscalationCount)">@_activityEscalationCount</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="@GetCountColor(_activityEscalationCount)">@_activityEscalationCount</MudText>
                         </MudStack>
                     </MudStack>
                 </MudListItem>
