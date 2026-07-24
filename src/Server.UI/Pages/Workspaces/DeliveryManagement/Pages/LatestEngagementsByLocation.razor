@@ -13,11 +13,12 @@
 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="my-4">
     <MudText Typo="Typo.body2">
         This dashboard groups @( _isTenantLevel ? "every participant in your tenant" : "the participants assigned to you" )
-        by their <strong>current location</strong> and shows, for each location, how recently they last engaged.
+        by their <strong>@(Query.GroupBy == GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation ? "location at which they last engaged" : "current location")</strong> 
+        and shows, for each location, how recently they last engaged.
     </MudText>
     <MudText Typo="Typo.body2" Class="mt-1">
         <strong>Last 3 months</strong> counts participants whose most recent engagement was on or after
-        @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).
+        @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).<br />
         <strong>More than 3 months ago</strong> counts participants who last engaged before that date, or who have never engaged.
         Use it to spot locations where engagement is lapsing.
     </MudText>
@@ -26,6 +27,18 @@
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
     <MudSwitch T="bool" @bind-Value="_visualMode" Color="Color.Info" Label="Visual Mode" />
+
+    @if (_visualMode) {
+
+        <MudDivider Vertical="true" FlexItem="true"/>
+
+        <MudSwitch T="bool" Value="Query.GroupBy == GetLatestEngagementsByLocation.LocationGroupingMode.EngagedAtLocation"
+                ValueChanged="OnGroupByEngagedAtLocationChanged" Color="Color.Info" Label="Group by Engagement Location" />
+
+        <MudSwitch T="bool" Value="Query.Split == GetLatestEngagementsByLocation.SplitMode.Category"
+               ValueChanged="OnSplitByCategoryChanged" Color="Color.Info" Label="Split by Category" />
+    }
+
     <MudSpacer />
 
     <MudSwitch T="bool" Value="Query.HideRecentEngagements" Color="Color.Info"
@@ -77,37 +90,58 @@ else if (_data is null)
 {
     <MudAlert Severity="Severity.Warning">Unable to load the latest engagements breakdown.</MudAlert>
 }
-else if (_data.Records.Length == 0)
+else if (Query.Split == GetLatestEngagementsByLocation.SplitMode.Category ? (_data.CategoryRecords?.Length ?? 0) == 0 : _data.Records.Length == 0)
 {
     <MudAlert Severity="Severity.Info">No participants match the current filters.</MudAlert>
 }
 else
 {
-    <MudStack Row="true" Class="pb-2" Spacing="1">
-        <MudChip T="string" Color="Color.Success" Variant="Variant.Text">Last 3 months (@_data.TotalRecent)</MudChip>
-        <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">3+ Month Inactive (@_data.TotalInactive)</MudChip>
-    </MudStack>
+    @if (Query.Split == GetLatestEngagementsByLocation.SplitMode.Recency)
+    {
+        <MudStack Row="true" Class="pb-2" Spacing="1">
+            <MudChip T="string" Color="Color.Success" Variant="Variant.Text">Last 3 months (@_data.TotalRecent)</MudChip>
+            <MudChip T="string" Color="Color.Warning" Variant="Variant.Text">3+ Month Inactive (@_data.TotalInactive)</MudChip>
+        </MudStack>
+    }
 
     @if (_visualMode)
     {
-        <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
-            <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                             Name="Last 3 months"
-                             Items="_data.Records"
-                             XValue="@(x => x.LocationName)"
-                             YValue="@(x => x.RecentCount)"
-                             SeriesType="SeriesType.Bar"
-                             ShowDataLabels
-                             Color="#2e7d32" />
-            <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                             Name="More than 3 months ago"
-                             Items="_data.Records"
-                             XValue="@(x => x.LocationName)"
-                             YValue="@(x => x.InactiveCount)"
-                             SeriesType="SeriesType.Bar"
-                             ShowDataLabels
-                             Color="#ed6c02" />
-        </ApexChart>
+        @if (Query.Split == GetLatestEngagementsByLocation.SplitMode.Category)
+        {
+            <ApexChart TItem="LocationCategoryCountDto" Options="_categoryOptions" Height="600">
+                @foreach (var category in GetCategories())
+                {
+                    <ApexPointSeries TItem="LocationCategoryCountDto"
+                                     Name="@category"
+                                     Items="GetCategorySeriesItems(category)"
+                                     XValue="@(x => x.LocationName)"
+                                     YValue="@(x => x.Count)"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                }
+            </ApexChart>
+        }
+        else
+        {
+            <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
+                <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                                 Name="Last 3 months"
+                                 Items="_data.Records"
+                                 XValue="@(x => x.LocationName)"
+                                 YValue="@(x => x.RecentCount)"
+                                 SeriesType="SeriesType.Bar"
+                                 ShowDataLabels
+                                 Color="#2e7d32" />
+                <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                                 Name="More than 3 months ago"
+                                 Items="_data.Records"
+                                 XValue="@(x => x.LocationName)"
+                                 YValue="@(x => x.InactiveCount)"
+                                 SeriesType="SeriesType.Bar"
+                                 ShowDataLabels
+                                 Color="#ed6c02" />
+            </ApexChart>
+        }
     }
     else
     {
@@ -117,11 +151,12 @@ else
                 <MudText Typo="Typo.subtitle1">Participant details</MudText>
             </ToolBarContent>
             <HeaderContent>
-                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Location</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="Category">Category</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedWith">Engaged With</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedOn">Engaged On</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName"><strong>Participant</strong></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName"><strong>Current Location</strong></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedAtLocationName"><strong>Engaged at Location</strong></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="Category"><strong>Category</strong></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedWith"><strong>Engaged With</strong></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedOn"><strong>Engaged On</strong></MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Participant">
@@ -132,7 +167,8 @@ else
                         </MudLink>
                     </MudStack>
                 </MudTd>
-                <MudTd DataLabel="Location">@context.CurrentLocationName</MudTd>
+                <MudTd DataLabel="Current Location">@context.CurrentLocationName</MudTd>
+                <MudTd DataLabel="Engaged at Location">@context.EngagedAtLocationName</MudTd>
                 <MudTd DataLabel="Category">
                     @if (context.HasEngaged)
                     {
