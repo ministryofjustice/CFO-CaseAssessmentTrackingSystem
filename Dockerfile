@@ -44,6 +44,16 @@ RUN update-ca-certificates
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.10-noble-chiseled-extra@sha256:f9bd6be9b5ab75b8196bff0f0972580edaea7fa8ca04e6ef530950e33caee5b0 AS final
 WORKDIR /app
 
+# the shared hmpps-github-actions build_docker action always passes GIT_REF/GIT_BRANCH/BUILD_NUMBER as
+# build args (see .github/workflows/pipeline.yml / build_app job)
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
+
+ENV BUILD_NUMBER=$BUILD_NUMBER
+ENV GIT_REF=$GIT_REF
+ENV GIT_BRANCH=$GIT_BRANCH
+
 COPY --from=build /app/ui ./ui
 COPY --from=build /app/worker ./worker
 COPY --from=build /app/seeder ./seeder

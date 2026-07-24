@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -148,6 +150,14 @@ public static class Extensions
             Predicate = r => r.Tags.Contains("live")
         });
 
+        // HMPPS SRE standard /info endpoint (https://tech-docs.hmpps.service.justice.gov.uk/service-standard/service-endpoint/#info).
+        // Used by the Developer Portal (e.g. the Drift Radiator) to show what version of the
+        // app is deployed to each environment, and which git branch/commit it was built from.
+        if (app.Configuration.GetValue<bool>("Features:EnableInfoEndpoint"))
+        {
+            healthChecks.MapGet("/info", () => Results.Json(BuildInfo(app.Configuration)));
+        }
+
         if (app.Configuration.GetValue<bool>("Features:EnablePrometheusScrapingEndpoint"))
         {
             app.MapPrometheusScrapingEndpoint();
@@ -155,4 +165,21 @@ public static class Extensions
 
         return app;
     }
+
+    private static object BuildInfo(IConfiguration configuration) => new
+    {
+        git = new
+        {
+            branch = configuration.GetValue<string>("GIT_BRANCH"),
+            commit = new { id = configuration.GetValue<string>("GIT_REF") }
+        },
+        build = new
+        {
+            artifact = "hmpps-cfo-cats",
+            name = "hmpps-cfo-cats",
+            version = configuration.GetValue<string>("BUILD_NUMBER")
+        },
+        productId = configuration.GetValue<string>("PRODUCT_ID"),
+        uptime = (long)(DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime()).TotalSeconds
+    };
 }
