@@ -49,7 +49,7 @@ jobs:
       app_version: ${{ inputs.version }}
       helm_chart_name: 'cats'
       k8s_deployment_name: 'cats'
-      slack_notification: 'false' # set 'true' once (NON)PROD_RELEASES_SLACK_CHANNEL is configured
+      slack_notification: 'true'
       helm_additional_args: >-
         --set generic-service.env.Sentry__Release=${{ inputs.version }}
         --set generic-service.env.AppConfigurationSettings__Version=${{ inputs.version }}
