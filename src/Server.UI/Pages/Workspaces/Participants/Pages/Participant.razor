@@ -12,7 +12,7 @@
     .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}
 </style>
 
-<ParticipantsPageHeader />
+    <ParticipantsPageHeader />
 
   @if (_participantCascading is not null && _participant is not null)
     {
@@ -26,32 +26,34 @@
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
                     <MudItem xs="12">
 
-                        <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"  >
-                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Participant</strong></MudText>
-                            <MudText Typo="Typo.subtitle1">@_participant.ParticipantName</MudText>
+                        <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"   >
+                            <MudText Typo="Typo.subtitle2" >Participant</MudText>
+                            <MudText Typo="Typo.body2">@_participant.ParticipantName</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Ref</strong></MudText>
-                            <MudText Typo="Typo.subtitle1">@_participant.Id</MudText>
+                            <MudText Typo="Typo.subtitle2" >Ref</MudText>
+                            <MudText Typo="Typo.body2">@_participant.Id</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Status</strong></MudText>
-                            <MudText Typo="Typo.subtitle1">@_participant.EnrolmentStatus.Name</MudText>
+                            <MudText Typo="Typo.subtitle2" >Status</MudText>
+                            <MudText Typo="Typo.body2">@_participant.EnrolmentStatus.Name</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Assigned To</strong></MudText>
-                            <MudText Typo="Typo.subtitle1">@($"{_participant.OwnerName} ({_participant.TenantName}) ")</MudText>
+                            <MudText Typo="Typo.subtitle2" >Assigned To</MudText>
+                            <MudText Typo="Typo.body2">@($"{_participant.OwnerName} ({_participant.TenantName}) ")</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Location</strong></MudText>
-                            <MudText Typo="Typo.subtitle1">@_participant.Location</MudText>
+                            <MudText Typo="Typo.subtitle2" >Location</MudText>
+                            <MudText Typo="Typo.body2">@_participant.Location</MudText>
                         </MudStack>
-
                     </MudItem>
-      
                 </MudGrid>
 
                 @if (_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
                 {
-                    <RagBar Model="@_latestParticipantAssessment" />
-       
-                    <ParticipantActionMenu OnUpdate="() => Refresh()"/>
+                    <MudStack Row="true" Justify="Justify.FlexStart">
+                        <ParticipantActionMenu OnUpdate="() => Refresh()"/>
+                        <MudDivider Vertical="true" FlexItem="true" />
+                        <RagBar Model="@_latestParticipantAssessment" />
+                    </MudStack>
+                    
+                   
                     @if (_showRightToWorkWarning)
                     {
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
