@@ -67,10 +67,7 @@
                 </MudMenu>
             </MudStack>
         </MudStack>
-
-        <MudText Typo="Typo.h3" Class="mt-4">
-            Notifications
-        </MudText>
+        
         <MudStack class="mt-4">
             @foreach (var item in Data.Items)
             {
@@ -97,7 +94,7 @@
                             @if (item.ReadDate is null)
                             {
                                 <MudButton 
-                                    Variant="Variant.Outlined" 
+                                    Variant="Variant.Filled" 
                                     Color="Color.Info" 
                                     StartIcon="@Icons.Material.Filled.DoneAll"
                                     OnClick="@(() => DismissNotification(item.Id))" 
@@ -108,7 +105,7 @@
                             else
                             {
                                 <MudButton 
-                                    Variant="Variant.Outlined" 
+                                    Variant="Variant.Filled" 
                                     Color="Color.Default" 
                                     StartIcon="@Icons.Material.Filled.MarkAsUnread"
                                     OnClick="@(() => UnreadNotification(item.Id))" 
