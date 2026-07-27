@@ -85,17 +85,17 @@ public static class Theme
                         Subtitle1 =
                         {
                             FontFamily = myFont,
-                            FontSize = "1rem",
+                            FontSize = "1.2rem",
                             FontWeight = "600",
                             LineHeight = "1.35",
                             LetterSpacing = "0.0025em",
-                            TextTransform = "uppercase"
+                            //TextTransform = "uppercase"
                         },
 
                         Subtitle2 =
                         {
                             FontFamily = myFont,
-                            FontSize = "0.875rem",
+                            FontSize = "1rem",
                             FontWeight = "600",
                             LineHeight = "1.35",
                             LetterSpacing = "0.0025em"
