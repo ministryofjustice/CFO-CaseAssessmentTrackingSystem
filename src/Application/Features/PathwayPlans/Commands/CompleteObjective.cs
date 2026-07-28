@@ -71,6 +71,11 @@ public static class CompleteObjective
                 .WithMessage($"Maximum length of justification is {ValidationConstants.NotesLength}")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+
+            RuleFor(x => x.InitiativeEndDate)
+                .LessThan(DateTime.Today.AddDays(1).Date)
+                .When(x => x.InitiativeEndDate.HasValue)
+                .WithMessage("The participant's last day on the initiative cannot be in the future");
             
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
@@ -86,6 +91,10 @@ public static class CompleteObjective
                         return !hasInitiative || endDate.HasValue;
                     })
                     .WithMessage("You must provide the participant's last day on the initiative when the objective has a linked initiative");
+
+                RuleFor(x => x.ObjectiveId)
+                    .MustAsync(HaveAnInitiativeStartDate)
+                    .WithMessage("The participant's first day on the initiative must be recorded before this objective can be completed. Please edit the objective to add it.");
 
                 RuleFor(x => x.InitiativeEndDate)
                     .MustAsync((command, endDate, token) => BeWithinInitiativeLifetime(command.ObjectiveId, endDate, token))
@@ -113,9 +122,20 @@ public static class CompleteObjective
             return participantId != null;
         }
 
-        private async Task<bool> BeWithinInitiativeLifetime(Guid objectiveId, DateTime? endDate, CancellationToken cancellationToken)
+        private async Task<bool> HaveAnInitiativeStartDate(Guid objectiveId, CancellationToken cancellationToken)
         {
-            if (!endDate.HasValue)
+            var link = await _unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ObjectiveId == objectiveId)
+                .Select(io => new { io.StartDate })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // No linked initiative — nothing to enforce
+            return link is null || link.StartDate.HasValue;
+        }
+
+        private async Task<bool> BeWithinInitiativeLifetime(Guid objectiveId, DateTime? date, CancellationToken cancellationToken)
+        {
+            if (!date.HasValue)
             {
                 return true;
             }
@@ -132,7 +152,7 @@ public static class CompleteObjective
                 return true;
             }
 
-            return endDate.Value >= lifetime.StartDate && endDate.Value <= lifetime.EndDate;
+            return date.Value >= lifetime.StartDate && date.Value <= lifetime.EndDate;
         }
 
         private async Task<bool> BeOnOrAfterInitiativeStartDate(Guid objectiveId, DateTime? endDate, CancellationToken cancellationToken)
@@ -147,7 +167,7 @@ public static class CompleteObjective
                 .Select(io => io.StartDate)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return endDate.Value >= startDate.ToDateTime(TimeOnly.MinValue);
+            return !startDate.HasValue || endDate.Value >= startDate.Value.ToDateTime(TimeOnly.MinValue);
         }
     }
 }

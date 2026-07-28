@@ -75,6 +75,8 @@ public class DocumentExportInitiativeObjectivesDashboardIntegrationEventConsumer
                     { "Created By", item => item.InitiativeObjectiveCreatedBy },
                     { "Initiative", item => item.InitiativeCode },
                     { "Initiative Description", item => item.InitiativeDescription },
+                    { "Start Date", item => item.ParticipantStartDate?.ToDateTime(TimeOnly.MinValue) },
+                    { "End Date", item => item.ParticipantEndDate?.ToDateTime(TimeOnly.MinValue) },
                     { "Objective Status", item => item.CompletedStatus?.Name ?? "Active" },
                     { "Justification", item => item.Justification },
                     { "Completed Tasks", item => item.CompletedTasks },
