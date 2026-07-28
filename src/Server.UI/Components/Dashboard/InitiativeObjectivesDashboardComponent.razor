@@ -102,6 +102,16 @@
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantStartDate ?? DateOnly.MinValue)">
+                        Start Date
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantEndDate ?? DateOnly.MinValue)">
+                        End Date
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.IsObjectiveCompleted)">
                         Objective Status
                     </MudTableSortLabel>
@@ -142,6 +152,12 @@
                     <MudTooltip Text="@context.InitiativeDescription">
                         <MudChip T="string" Color="Color.Info" Size="MudBlazor.Size.Small">@context.InitiativeCode</MudChip>
                     </MudTooltip>
+                </MudTd>
+                <MudTd DataLabel="Start Date">
+                    <MudText Typo="Typo.body2">@(context.ParticipantStartDate?.ToString("dd/MM/yyyy") ?? "-")</MudText>
+                </MudTd>
+                <MudTd DataLabel="End Date">
+                    <MudText Typo="Typo.body2">@(context.ParticipantEndDate?.ToString("dd/MM/yyyy") ?? "-")</MudText>
                 </MudTd>
                 <MudTd DataLabel="Objective Status">
                     @if (context.IsObjectiveCompleted)

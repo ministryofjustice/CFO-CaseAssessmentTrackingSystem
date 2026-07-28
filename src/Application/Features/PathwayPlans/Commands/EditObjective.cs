@@ -86,7 +86,12 @@ public static class EditObjective
                 .NotNull()
                 .When(x => x.InitiativeId.HasValue)
                 .WithMessage("You must provide the participant's first day on the initiative when linking an initiative");
-             
+
+            RuleFor(x => x.InitiativeStartDate)
+                .LessThan(DateTime.Today.AddDays(1).Date)
+                .When(x => x.InitiativeStartDate.HasValue)
+                .WithMessage("The participant's first day on the initiative cannot be in the future");
+
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.PathwayPlanId)                    
@@ -106,6 +111,11 @@ public static class EditObjective
                     .MustAsync((command, startDate, token) => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token))
                     .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
                     .WithMessage("The participant's first day on the initiative must fall within the initiative's lifetime");
+
+                RuleFor(x => x.InitiativeStartDate)
+                    .MustAsync((command, startDate, token) => BeOnOrBeforeInitiativeEndDate(command.ObjectiveId, startDate, token))
+                    .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
+                    .WithMessage("The participant's first day on the initiative must be on or before their last day on the initiative");
             });
         }
 
@@ -182,6 +192,21 @@ public static class EditObjective
             }
 
             return date.Value >= lifetime.StartDate && date.Value <= lifetime.EndDate;
+        }
+
+        private async Task<bool> BeOnOrBeforeInitiativeEndDate(Guid objectiveId, DateTime? startDate, CancellationToken cancellationToken)
+        {
+            if (!startDate.HasValue)
+            {
+                return true;
+            }
+
+            var endDate = await _unitOfWork.DbContext.InitiativeObjectives
+                .Where(io => io.ObjectiveId == objectiveId)
+                .Select(io => io.EndDate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return !endDate.HasValue || startDate.Value <= endDate.Value.ToDateTime(TimeOnly.MinValue);
         }
     }
 }
