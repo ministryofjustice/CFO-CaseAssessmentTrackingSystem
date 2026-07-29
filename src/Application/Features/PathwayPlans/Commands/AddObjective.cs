@@ -82,6 +82,11 @@ public static class AddObjective
                 .When(x => x.InitiativeId.HasValue)
                 .WithMessage("You must provide the participant's first day on the initiative when linking an initiative");
 
+            RuleFor(x => x.InitiativeStartDate)
+                .LessThan(DateTime.Today.AddDays(1).Date)
+                .When(x => x.InitiativeStartDate.HasValue)
+                .WithMessage("The participant's first day on the initiative cannot be in the future");
+
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.PathwayPlanId)

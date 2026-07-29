@@ -60,6 +60,8 @@ public static class GetInitiativeObjectivesDashboard
                                   InitiativeCode = data.i.Code,
                                   InitiativeDescription = data.i.Description,
                                   InitiativeStartDate = data.i.Lifetime.StartDate,
+                                  ParticipantStartDate = data.io.StartDate,
+                                  ParticipantEndDate = data.io.EndDate,
                                   InitiativeObjectiveCreatedBy = data.creator != null ? data.creator.DisplayName : null,
                                   TotalTasks = data.o.Tasks.Count(),
                                   CompletedTasks = data.o.Tasks.Count(t => t.Completed != null),
@@ -92,6 +94,8 @@ public static class GetInitiativeObjectivesDashboard
         public required string InitiativeCode { get; init; }
         public required string InitiativeDescription { get; init; }
         public DateTime InitiativeStartDate { get; init; }
+        public DateOnly? ParticipantStartDate { get; init; }
+        public DateOnly? ParticipantEndDate { get; init; }
         public string? InitiativeObjectiveCreatedBy { get; init; }
         public int TotalTasks { get; init; }
         public int CompletedTasks { get; init; }
