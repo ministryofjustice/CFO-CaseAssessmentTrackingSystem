@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 
 namespace Cfo.Cats.Infrastructure.Extensions;
@@ -28,7 +29,7 @@ public static class ClaimsPrincipalExtensions
             profile.AssignedRoles = claimsPrincipal.GetRoles();
             profile.DefaultRole = profile.AssignedRoles.Any() ? profile.AssignedRoles.First() : "";
             profile.ProfilePictureDataUrl = claimsPrincipal.GetProfilePictureDataUrl();
-            profile.IsActive = true;
+            profile.Status = UserStatus.Active;
             profile.Contracts = claimsPrincipal.GetContracts();
         }
 
