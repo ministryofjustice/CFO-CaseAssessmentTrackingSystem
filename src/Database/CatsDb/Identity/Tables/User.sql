@@ -5,7 +5,7 @@ CREATE TABLE [Identity].[User] (
     [TenantId]               NVARCHAR (50)      NOT NULL,
     [TenantName]             NVARCHAR (50)      NOT NULL,
     [ProfilePictureDataUrl]  TEXT               NULL,
-    [IsActive]               BIT                NOT NULL,
+    [IsActive]               INT                NOT NULL,
     [IsLive]                 BIT                NOT NULL,
     [MemorablePlace]         NVARCHAR (50)      NOT NULL,
     [MemorableDate]          NVARCHAR (50)      NOT NULL,

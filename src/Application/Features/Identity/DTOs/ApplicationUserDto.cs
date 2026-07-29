@@ -37,7 +37,7 @@ public class ApplicationUserDto
 
     [Description("Memorable Place")] public string MemorablePlace { get; set; } = string.Empty;
 
-    [Description("Is Active")] public bool IsActive { get; set; }
+    [Description("Account Status")] public UserStatus Status { get; set; } = UserStatus.PendingActivation;
 
     [Description("Is Live")] public bool IsLive { get; set; }
 
