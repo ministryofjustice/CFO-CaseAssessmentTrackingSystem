@@ -19,6 +19,8 @@ public class AllowlistOptions
             return AllowedIPs;
         }
 
-        return AllowedIPsFallback.Split(',').Select(ip => ip.Trim()).ToList() ?? [];
+        return string.IsNullOrWhiteSpace(AllowedIPsFallback) 
+            ? [] 
+            : AllowedIPsFallback.Split(',').Select(ip => ip.Trim()).ToList() ?? [];
     }
 }
