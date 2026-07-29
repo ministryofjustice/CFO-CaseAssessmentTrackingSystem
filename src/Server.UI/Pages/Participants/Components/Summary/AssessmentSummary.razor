@@ -3,9 +3,11 @@
 
 <MudCard Style="height: 100%">
     <MudCardHeader>
-        <MudText>
-            Latest Assessment
-        </MudText>
+        <CardHeaderContent>
+            <MudText>
+                Latest Assessment
+            </MudText>
+        </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
         @if(_latestAssessment is null)
@@ -36,13 +38,14 @@
                         </DataListItem>
                         <DataListItem Label="Due Date" HelperText="@_assessmentDueInfo">
                             <MudStack Row="true" StretchItems="StretchItems.Start">
-                                @(_latestAssessment.Completed.HasValue ? _latestAssessment.Completed.Value.AddMonths(3).ToShortDateString() : "")
+                                <MudText>
+                                    @(_latestAssessment.Completed.HasValue ? _latestAssessment.Completed.Value.AddMonths(3).ToShortDateString() : "")
+                                </MudText>
                                 @if (_assessmentDueInfo is not "")
                                 {
                                     <MudIcon Size="Size.Small" Icon="@_assessmentDueIcon" Color="_assessmentDueIconColor" />
                                 }
                             </MudStack>
-                            
                         </DataListItem>
                     }
                     else
@@ -68,21 +71,21 @@
     <MudCardActions>
         @if (CanBeginAssessment())
         {
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="BeginAssessment">
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" OnClick="BeginAssessment">
                 Add Assessment
             </MudButton>
         }
 
         @if (CanContinueAssessment())
         {
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ContinueAssessment">
+            <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ContinueAssessment">
                 Resume
             </MudButton>            
         }
 
         @if (CanReassess())
         {
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="BeginAssessment">
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" OnClick="BeginAssessment">
                 Reassess
             </MudButton>
         }

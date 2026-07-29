@@ -1,70 +1,74 @@
 ﻿@using Humanizer
 @inherits CatsComponentBase
 
-<MudPaper Class="pa-3" Height="100%">
-    <MudStack Justify="Justify.Center" StretchItems="StretchItems.Middle" Spacing="2" Style="height: 100%;">
-        <MudText Align="Align.Center" Class="title-text">
-            Risk Information
-        </MudText>
 
-        <MudForm ReadOnly="true" Spacing="2" Class="mt-2">
-            <MudText>Some content</MudText>
-        </MudForm>
-
-
+<MudCard Style="height: 100%">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText>
+                Risk Information
+            </MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton OnClick="@ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <DataList>
+            <ChildContent>
+                @if (ParticipantSummaryDto.LatestRisk is not null)
+                {
+                    <DataListItem Label="Last Reviewed" HelperText="@ParticipantSummaryDto.LatestRisk!.Created.Humanize()">
+                        @ParticipantSummaryDto.LatestRisk.Created.ToShortDateString() 
+                    </DataListItem>
+                    <DataListItem Label="Reviewed By">
+                        @UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName
+                    </DataListItem>
+                }
+                <DataListItem Label="Risk Due" HelperText="@(ParticipantSummaryDto.RiskDue.HasValue ? ParticipantSummaryDto.RiskDue.Value.Humanize() : "")">
+                    <MudStack Row="true" StretchItems="StretchItems.Start">
+                        <MudText>
+                            @ParticipantSummaryDto.RiskDue.ToShortDateOrEmptyString()
+                        </MudText>
+                        <MudIcon Size="Size.Small" 
+                            Icon="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Icons.Material.Filled.Error : Icons.Material.Filled.Info)"
+                            Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)"></MudIcon>
+                    </MudStack>
+                </DataListItem>
+                <DataListItem Label="Reason" HelperText="">
+                    <MudText>
+                        @ParticipantSummaryDto.RiskDueReason
+                    </MudText>
+                </DataListItem>
+            </ChildContent>
+        </DataList>
+    </MudCardContent>
+    <MudCardActions>
         @if (CanAddRiskInformation())
         {
-            <MudTooltip Text="Add Risk Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnClickAddRiskInformation" />
-            </MudTooltip>
+            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnClickAddRiskInformation">
+                Add Risk
+            </MudButton>
         }
         @if (CanReviewRiskInformation())
         {
-            <MudTooltip Text="Review Risk Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="@ReviewRiskInformation" />
-            </MudTooltip>
-        }
-
-    </MudStack>
-
-</MudPaper>
-
+            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="@ReviewRiskInformation">
+                Review Risk
+            </MudButton>
+        }        
+    </MudCardActions>
+</MudCard>
 
 @* 
-<MudCard Style="Height: 100%;">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <div class="d-flex justify-space-between align-center">
-                <MudText Typo="Typo.subtitle1">
-                    Risk Information
-                </MudText>
-                <MudTooltip Text="Expand">
-                    <MudIconButton OnClick="@ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
-                </MudTooltip>
-            </div>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
 
-        @if (ParticipantSummaryDto.LatestRisk is not null)
-        {
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
-                <MudText>
-                    @ParticipantSummaryDto.LatestRisk.Created.ToShortDateString() (@ParticipantSummaryDto.LatestRisk!.Created.Humanize())
-                </MudText>
-            </MudStack>
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
-                <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
-            </MudStack>
-        }
+
+
 
         <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
             <MudText Typo="Typo.subtitle2">Next Review Due</MudText>
             @if (ParticipantSummaryDto.RiskDue.HasValue)
             {
-                <MudText>@ParticipantSummaryDto.RiskDue.ToShortDateOrEmptyString() (@ParticipantSummaryDto.RiskDue.Value.Humanize())</MudText>
+                <MudText> ()</MudText>
             }
         </MudStack>
         <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
@@ -78,17 +82,6 @@
     </MudCardContent>
 
     <MudCardActions>
-        @if (CanAddRiskInformation())
-        {
-            <MudTooltip Text="Add Risk Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnClickAddRiskInformation" />
-            </MudTooltip>
-        }
-        @if (CanReviewRiskInformation())
-        {
-            <MudTooltip Text="Review Risk Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="@ReviewRiskInformation" />
-            </MudTooltip>
-        }
+
     </MudCardActions>
 </MudCard> *@

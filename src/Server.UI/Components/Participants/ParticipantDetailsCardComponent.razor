@@ -50,20 +50,6 @@
                     </DataListItem>
                 </ChildContent>
             </DataList>
-
-           
-            @* <MudForm ReadOnly="true" Spacing="2">
-            <MudTextField 
-                T="DateOnly" 
-                Label="Date of Birth" 
-                Value="@Data.DateOfBirth"
-                HelperText="@($"Age {Data.DateOfBirth.CalculateAge()}")" />
-            <MudTextField Label="Enrolment Location" Value="@Data.EnrolmentLocation"  />
-            <MudTextField Label="Nationality" Value="@(Data.Nationality ?? "Not Set")"/>
-            <MudTextField Label="Consent Date" Value="@Data.DateOfFirstConsent"
-                HelperText="@Data.GetConsentDateHelperText()" /> 
-            <MudTextField Label="Last Data Sync" Value="@Data.LastSync.ToShortDateString()" HelperText="@Data.LastSync.Humanize()" />
-        </MudForm> *@
         </MudCardContent>
         <MudCardActions>
 
