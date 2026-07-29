@@ -105,7 +105,7 @@ public static class ReassignParticipants
         private async Task<bool> ValidAssignee(Command c, CancellationToken cancellationToken) =>
             await _unitOfWork.DbContext.Users.Where(x => x.TenantId!.StartsWith(c.CurrentUser!.TenantId!)
                                                          && x.Id == c.CurrentUser.UserId
-                                                         && x.IsActive == true
+                                                         && x.Status == UserStatus.Active
             ).AnyAsync(cancellationToken);
     }
 

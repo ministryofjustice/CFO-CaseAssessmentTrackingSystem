@@ -125,7 +125,7 @@ public static class AssignUnassignedCase
             }
 
             var assignee = await _unitOfWork.DbContext.Users
-                .Where(x => x.Id == c.AssigneeId && x.IsActive == true)
+                .Where(x => x.Id == c.AssigneeId && x.Status == UserStatus.Active)
                 .Select(x => new { x.Id, x.TenantId })
                 .FirstOrDefaultAsync(cancellationToken);
 
