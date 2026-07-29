@@ -13,14 +13,14 @@
                                      ValueChanged="@(value => OnParticipantSelectionChanged.InvokeAsync((item.Id, value)))"
                                      @onclick:stopPropagation="true" />
                     }
-                    <MudText Typo="Typo.subtitle1">@item.Id @item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body2">@item.Id @item.ParticipantName</MudText>
                     <MudSpacer />
-                    <MudText Typo="Typo.subtitle2">@item.CurrentLocation.Name</MudText>
+                    <MudText Typo="Typo.body2">@item.CurrentLocation.Name</MudText>
                 </MudStack>
                 <MudStack Row="true">
                         @if(item.EnrolmentLocation is not null)
                         {
-                            <MudText Typo="Typo.body2">
+                            <MudText Typo="Typo.body1">
                                 Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
                                 @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
                                 {
@@ -30,12 +30,12 @@
                         }
                         else
                         {
-                            <MudText Typo="Typo.body2">
+                            <MudText Typo="Typo.body1">
                                 Not Enrolled
                             </MudText>
                         }
                     <MudSpacer />
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         Assigned to @item.Owner 
                         (@item.Tenant)@if ((Query.RecentAction == RecentParticipantFilter.AssignedLast10Days 
                         || Query.RecentAction == RecentParticipantFilter.AssignedLast30Days) 

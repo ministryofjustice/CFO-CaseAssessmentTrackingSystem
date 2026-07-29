@@ -13,4 +13,16 @@ public static class DateExtensions
         }
         return dateTime.Value.ToShortDateString();
     }
+
+    public static string ToShortDateOrEmptyString(this DateOnly date)
+        => ToShortDateOrDefault(date, string.Empty);
+
+    public static string ToShortDateOrDefault(this DateOnly? dateTime, string defaultText)
+    {
+        if(dateTime.HasValue is false)
+        {
+            return defaultText;
+        }
+        return dateTime.Value.ToShortDateString();
+    }
 }
