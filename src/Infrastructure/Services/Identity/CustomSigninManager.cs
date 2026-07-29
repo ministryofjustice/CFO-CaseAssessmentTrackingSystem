@@ -1,5 +1,6 @@
 using System.Net;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +27,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
             return passwordCheckResult;
         }
 
-        if (user.IsActive is false)
+        if (user.Status.CanSignIn is false)
         {
             return CustomSignInResult.Inactive;
         }
@@ -42,6 +43,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         {
             await SignInAsync(user, isPersistent);
             await UserManager.ResetAccessFailedCountAsync(user);
+            await ActivateIfPendingAsync(user);
             await sessionService.StartSessionAsync(user.Id);
             return passwordCheckResult;
         }        
@@ -54,6 +56,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         SignInResult result = await  base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         if (result.Succeeded)
         {
+            await ActivateIfPendingAsync(user);
             await sessionService.StartSessionAsync(user.Id);
         }
         return result;
@@ -68,6 +71,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
             var info = await GetTwoFactorAuthenticationUserAsync();
             if (info != null)
             {
+                await ActivateIfPendingAsync(info);
                 await sessionService.StartSessionAsync(info.Id);
             }
         }
@@ -100,6 +104,15 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
     }
 
     private static bool PasswordChecksOutAndRequiresPasswordReset(SignInResult passwordCheckResult, ApplicationUser user) => passwordCheckResult.Succeeded && user.RequiresPasswordReset;
+
+    private async Task ActivateIfPendingAsync(ApplicationUser user)
+    {
+        if (user.Status == UserStatus.PendingActivation)
+        {
+            user.Status = UserStatus.Active;
+            await UserManager.UpdateAsync(user);
+        }
+    }
 
     public class CustomSignInResult : SignInResult
     {

@@ -182,5 +182,10 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.ManageInitiatives);
         });
         
+        options.AddPolicy(SecurityPolicies.MarkUserInReview, policy => {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
+        });
     }
 }
