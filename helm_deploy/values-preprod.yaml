@@ -47,7 +47,7 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
-# todo: enable prometheus alerts
+# todo: enable prometheus alerts (CCPM-41)
 # generic-prometheus-alerts:
 #   businessHoursOnly: true
-#   alertSeverity: cfo-alerts-nonprod
+#   alertSeverity: <to-be-determined>

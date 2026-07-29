@@ -45,7 +45,11 @@ rdsPortForward:
 redisPortForward:
   enabled: true
 
-# todo: enable prometheus alerts
-# generic-prometheus-alerts:
-#   businessHoursOnly: true
-#   alertSeverity: cfo-alerts-nonprod
+generic-prometheus-alerts:
+  businessHoursOnly: true
+  alertSeverity: hmpps-cfo-case-assessment-tracking-system-dev
+  rdsAlertsDatabases:
+    hmpps-cfo-case-assessment-tracking-system-db-development: dev sql server
+  elastiCacheAlertsClusterIds:
+    cp-20b02f1c5ace00c5-001: dev redis cluster node 1 (primary)
+    cp-20b02f1c5ace00c5-002: dev redis cluster node 2 (replica)
