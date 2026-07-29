@@ -21,7 +21,7 @@ public class UserProfile
     public string[] Contracts { get; set; } = [];
 
     public required string UserId { get; set; } = Guid.CreateVersion7().ToString();
-    public bool IsActive { get; set; }
+    public UserStatus Status { get; set; } = UserStatus.Active;
     public string? TenantId { get; set; }
     public string? TenantName { get; set; }
 
