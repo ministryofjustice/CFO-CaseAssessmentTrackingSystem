@@ -12,59 +12,69 @@
 
         @if (_bio is null)
         {
-            <MudText>No Bio has been created.</MudText>
-        }
-        else
-        {
-
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">Date Created</MudText>
-                <MudText>@_bio.BioDate!.Value.ToString("dd/MM/yyyy")</MudText>
-            </MudStack>
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">Created By</MudText>
-                <MudText>@UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName</MudText>
-            </MudStack>
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">Status</MudText>
-                <MudText Typo="Typo.body2">@_bio.BioStatus!.Name.Humanize()</MudText>
-            </MudStack>
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                No Bio has been created.
+            </MudAlert>
         }
 
-        @if (_bioInfo != string.Empty)
-        {
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">Due</MudText>
-                <MudTooltip Text="@_bioTooltipText">
-                    <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
-                    <MudText Typo="Typo.body2">
-                        @String.Format(_bioInfo)
-                    </MudText>
-                </MudTooltip>
-            </MudStack>
-        }
+        <DataList>
+            <ChildContent>
+                @if(_bio is not null)
+                {
+                    <DataListItem Label="Date Created" HelperText="@_bio.BioDate!.Value.Humanize()">
+                        <MudText>
+                            @_bio.BioDate!.Value.ToShortDateString()
+                        </MudText>
+                    </DataListItem>
+                    <DataListItem Label="Created By">
+                        <MudText>
+                            @UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName
+                        </MudText>
+                    </DataListItem>
+                    <DataListItem Label="Status">
+                            @_bio.BioStatus!.Name.Humanize()
+                    </DataListItem>
+                }
+
+                @if(ParticipantSummaryDto.BioDue is not null)
+                {
+                    <DataListItem Label="Bio Due" HelperText="@ParticipantSummaryDto.BioDue.Value.Date.Humanize()">
+                        <MudStack Row="true" StretchItems="StretchItems.Start">
+                            <MudText>
+                                @ParticipantSummaryDto.BioDue.Value.Date.ToShortDateString()
+                            </MudText>
+                            <MudIcon Size="Size.Small" Icon="@_bioIcon" Color="@_bioIconColor"></MudIcon>
+                        </MudStack>
+
+                    </DataListItem>
+                }
+
+            </ChildContent>
+        </DataList>
 
     </MudCardContent>
 
     <MudCardActions>
         @if (CanBeginBio())
         {
-            <MudTooltip Text="Create Bio">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="BeginBio" />
-            </MudTooltip>
+            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="BeginBio">
+                Add Bio
+            </MudButton>
         }
 
         @if (CanContinueBio())
         {
-            <MudTooltip Text="Continue Bio">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Filled" OnClick="ContinueBio" />
-            </MudTooltip>
+            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Filled" OnClick="ContinueBio">
+                Resume Bio
+            </MudButton>
         }
 
         @if (CanRestartBio())
         {
             <MudTooltip Text="Restart Bio">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="BeginBio" />
+                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="BeginBio">
+                    Restart Bio
+                </MudButton>
             </MudTooltip>
         }
     </MudCardActions>
