@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Cfo.Cats.Domain.Common.Contracts;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.ValueObjects;
 
@@ -26,7 +27,7 @@ public class ApplicationUser : IdentityUser, IAuditable
     public string? TenantName { get; set; }
     [Column(TypeName = "text")]
     public string? ProfilePictureDataUrl { get; set; }
-    public bool IsActive { get; set; }
+    public UserStatus Status { get; set; } = UserStatus.PendingActivation;
     public bool IsLive { get; set; }
     public string? MemorablePlace { get; set; }
     public string? MemorableDate { get; set; }

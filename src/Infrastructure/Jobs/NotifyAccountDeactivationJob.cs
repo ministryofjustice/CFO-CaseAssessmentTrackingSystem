@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Features.Identity.MessageBus;
+using Cfo.Cats.Domain.Common.Enums;
 using Quartz;
 using Rebus.Bus;
 
@@ -36,7 +37,7 @@ public class NotifyAccountDeactivationJob(
 
             var users = await unitOfWork.DbContext.Users
                 .IgnoreAutoIncludes()
-                .Where(user => user.IsActive)
+                .Where(user => user.Status == UserStatus.Active)
                 .Where(user =>
                        user.LastLogin.HasValue
                      ? user.LastLogin.Value.Date == sevenDaysFromDeactivationDate
