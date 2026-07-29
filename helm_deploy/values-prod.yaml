@@ -51,6 +51,6 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
-# todo: enable prometheus alerts
+# todo: enable prometheus alerts (CCPM-41)
 # generic-prometheus-alerts:
-#   alertSeverity: cfo-alerts
+#   alertSeverity: <to-be-determined>

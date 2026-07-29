@@ -209,8 +209,6 @@ redisPortForward:
   localPort: 16379   # port the pod listens on (your LOCAL_PORT)
   remotePort: 6379   # Redis port in the cloud
 
-# todo: enable prometheus alerts
-# generic-prometheus-alerts:
-#   targetApplication: cats
-#   businessUnit: hmpps
-#   alertSeverity: cfo-alerts
+generic-prometheus-alerts:
+  targetApplication: cats
+  businessUnit: hmpps
