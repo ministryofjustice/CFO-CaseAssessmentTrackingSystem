@@ -49,6 +49,7 @@ public partial class Users
     private bool _canManageRoles;
     private bool _canResetPassword;
     private bool _canManagePermissions;
+    private bool _canMarkUserInReview;
     private bool _loading;
     private bool _downloading;
     private List<ApplicationRoleDto> _roles = new();
@@ -73,6 +74,10 @@ public partial class Users
             {
                 SecurityPolicies.SystemFunctionsWrite,
                 (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded
+            },
+            {
+                SecurityPolicies.MarkUserInReview,
+                (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.MarkUserInReview)).Succeeded
             }
         };
 
@@ -85,6 +90,7 @@ public partial class Users
         _canManageRoles = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canResetPassword = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManagePermissions = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canMarkUserInReview = _policies.GetValueOrDefault(SecurityPolicies.MarkUserInReview);
 
         _roles = await _roleManager.Roles
             .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
@@ -366,10 +372,10 @@ public partial class Users
             IdentityAuditNotification.ActivateAccount(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!),
             "The user has been reactivated.");
 
-    private Task OnSuspend(ApplicationUserDto item) =>
-        ChangeUserStatus(item, UserStatus.Suspended, lockoutEnd: DateTimeOffset.MaxValue,
-            IdentityAuditNotification.SuspendAccount(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!),
-            "The user has been suspended.");
+    private Task OnMarkAsInReview(ApplicationUserDto item) =>
+        ChangeUserStatus(item, UserStatus.MarkAsInReview, lockoutEnd: DateTimeOffset.MaxValue,
+            IdentityAuditNotification.MarkAccountAsInReview(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!),
+            "The user has been marked as In-Review.");
 
     private Task OnMarkAsLeft(ApplicationUserDto item) =>
         ChangeUserStatus(item, UserStatus.Left, lockoutEnd: DateTimeOffset.MaxValue,
@@ -415,7 +421,7 @@ public partial class Users
     private static Color GetStatusColor(UserStatus status) => status.Name switch
     {
         nameof(UserStatus.Active) => Color.Success,
-        nameof(UserStatus.Suspended) => Color.Warning,
+        nameof(UserStatus.MarkAsInReview) => Color.Warning,
         nameof(UserStatus.Left) => Color.Error,
         nameof(UserStatus.PendingActivation) => Color.Info,
         _ => Color.Surface
@@ -424,7 +430,7 @@ public partial class Users
     private static string GetStatusIcon(UserStatus status) => status.Name switch
     {
         nameof(UserStatus.Active) => Icons.Material.Filled.CheckCircleOutline,
-        nameof(UserStatus.Suspended) => Icons.Material.Filled.PauseCircleOutline,
+        nameof(UserStatus.MarkAsInReview) => Icons.Material.Filled.PauseCircleOutline,
         nameof(UserStatus.Left) => Icons.Material.Filled.ExitToApp,
         nameof(UserStatus.PendingActivation) => Icons.Material.Filled.HourglassEmpty,
         _ => Icons.Material.Filled.HighlightOff

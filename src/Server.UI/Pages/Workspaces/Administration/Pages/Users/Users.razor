@@ -115,13 +115,16 @@
 
                             @if (_canToggleActiveStatus)
                             {
-                                @if (context.Item.Status == UserStatus.Active)
+                                @if (_canMarkUserInReview)
                                 {
-                                    <MudMenuItem OnClick="@(() => OnSuspend(context.Item))">@L["Suspend"]</MudMenuItem>
-                                }
-                                @if (context.Item.Status == UserStatus.Suspended || context.Item.Status == UserStatus.Inactive)
-                                {
-                                    <MudMenuItem OnClick="@(() => OnReactivate(context.Item))">@L["Reactivate"]</MudMenuItem>
+                                    @if (context.Item.Status == UserStatus.Active)
+                                    {
+                                        <MudMenuItem OnClick="@(() => OnMarkAsInReview(context.Item))">@L["Mark as In-Review"]</MudMenuItem>
+                                    }
+                                    @if (context.Item.Status == UserStatus.MarkAsInReview || context.Item.Status == UserStatus.Inactive || context.Item.Status == UserStatus.Left)
+                                    {
+                                        <MudMenuItem OnClick="@(() => OnReactivate(context.Item))">@L["Reactivate"]</MudMenuItem>
+                                    }
                                 }
                                 @if (context.Item.Status != UserStatus.Left)
                                 {
@@ -130,11 +133,11 @@
                             }
                             @if(CanResetPassword(context.Item.AssignedRoles))
                             {
-                                <MudMenuItem Disabled="@(context.Item.Status != UserStatus.Active)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
+                                <MudMenuItem Disabled="@(context.Item.Status != UserStatus.Active && context.Item.Status != UserStatus.PendingActivation)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
                             }
                             @if (_canUnlock)
                             {
-                                @if (context.Item.LockoutEnd is not null)
+                                @if (context.Item.LockoutEnd is not null && context.Item.Status != UserStatus.MarkAsInReview && context.Item.Status != UserStatus.Left)
                                 {
                                     <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
                                 }                          
