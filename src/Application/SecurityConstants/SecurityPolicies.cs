@@ -81,5 +81,10 @@ public static class SecurityPolicies
     /// </summary>
     public const string ManageInitiatives = nameof(ManageInitiatives);
 
+    /// <summary>
+    /// Allows marking a user as In-Review. Aligns with System Support, SMT, and QA Manager roles.
+    /// </summary>
+    public const string MarkUserInReview = nameof(MarkUserInReview);
+
     public const string UserManagement = nameof(UserManagement);
 }
