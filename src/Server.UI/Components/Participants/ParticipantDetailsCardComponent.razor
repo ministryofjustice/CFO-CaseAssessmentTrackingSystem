@@ -1,83 +1,74 @@
 ﻿
-
 @using System.Globalization
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
 @inherits ParticipantComponent<ParticipantHeaderDetailsDto>
 
-<MudCard Style="height: 100%">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.subtitle1">Details</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-        
-        @if (Loading)
-        {
-            <MudLoading Text="Loading"/>
-        }
+@if (Loading)
+{
+    <MudLoading Text="Loading"/>
+}
 
-        @if (ErrorMessage is not null)
-        {
-            <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
-                @ErrorMessage
-            </MudAlert>
-        }
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
 
-        @if (Data is not null)
-        {
-
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">
-                    DOB
-                </MudText>
+@if (Data is not null)
+{
+    <MudCard Style="height: 100%;">
+        <MudCardHeader>
+            <CardHeaderContent>
                 <MudText>
-                    @Data.DateOfBirth
+                    Participant Details
                 </MudText>
-            </MudStack>
+            </CardHeaderContent>
             
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">
-                    Age
-                </MudText>
-                <MudText>
-                    @Data.DateOfBirth.CalculateAge()
-                </MudText>
-            </MudStack>
+        </MudCardHeader>
+     
+        <MudCardContent>
 
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">
-                    Enrolment Location
-                </MudText>
-                <MudText>@Data.EnrolmentLocation</MudText>
-            </MudStack>
+            <DataList>
+                <ChildContent>
+                    <DataListItem Label="Date Of Birth" HelperText="@($"Age {@Data.DateOfBirth.CalculateAge()}")">
+                        @Data.DateOfBirth.ToShortDateString()
+                    </DataListItem>
+                    <DataListItem Label="Enrolled at">
+                        @Data.EnrolmentLocation
+                    </DataListItem>
+                    <DataListItem Label="Nationality">
+                        @(Data.Nationality ?? "Not Set")
+                    </DataListItem>
+                    <DataListItem Label="Consent Date" HelperText="@Data.GetConsentDateHelperText()">
+                        @Data.DateOfFirstConsent
+                    </DataListItem>
+                    <DataListItem Label="Last Data Sync" HelperText="@Data.LastSync.Humanize()" >
+                        @Data.LastSync.ToShortDateString()
+                    </DataListItem>
+                </ChildContent>
+            </DataList>
 
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">
-                    Nationality
-                </MudText>
-                <MudText>@(Data.Nationality ?? "Not Set")</MudText>
-            </MudStack>
+           
+            @* <MudForm ReadOnly="true" Spacing="2">
+            <MudTextField 
+                T="DateOnly" 
+                Label="Date of Birth" 
+                Value="@Data.DateOfBirth"
+                HelperText="@($"Age {Data.DateOfBirth.CalculateAge()}")" />
+            <MudTextField Label="Enrolment Location" Value="@Data.EnrolmentLocation"  />
+            <MudTextField Label="Nationality" Value="@(Data.Nationality ?? "Not Set")"/>
+            <MudTextField Label="Consent Date" Value="@Data.DateOfFirstConsent"
+                HelperText="@Data.GetConsentDateHelperText()" /> 
+            <MudTextField Label="Last Data Sync" Value="@Data.LastSync.ToShortDateString()" HelperText="@Data.LastSync.Humanize()" />
+        </MudForm> *@
+        </MudCardContent>
+        <MudCardActions>
 
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">
-                    Consent Date
-                </MudText>
-                <MudText>@Data.DateOfFirstConsent</MudText>
-            </MudStack>
+        </MudCardActions>
+    </MudCard>
 
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText Typo="Typo.subtitle2">
-                    Last Data Sync
-                </MudText>
-                <MudTooltip Text="@Data.LastSync.ToString(CultureInfo.CurrentCulture)">
-                    <MudText>
-                        @Data.LastSync.Humanize()
-                    </MudText>
-                </MudTooltip>
-            </MudStack>
-        }
-    </MudCardContent>
-</MudCard>
+    
+}

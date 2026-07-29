@@ -4,40 +4,40 @@
 
 @inherits CatsComponentBase
 
-<MudGrid Class="pa-3" Spacing="4">
+<MudGrid Class="pa-3" Spacing="4" Justify="Justify.SpaceEvenly">
     <!-- Details -->
-    <MudItem xs="12" md="4">
+    <MudItem xs="12" md="6" lg="4" xl="3">
         <!-- This will need moving out from here when the rest of the components are done. -->
         <ParticipantDetailsCardComponent ParticipantId="@ParticipantSummaryDto!.Id"/>
     </MudItem>
 
     <!-- Assessment -->
-    <MudItem xs="12" md="4">
+    <MudItem xs="12" md="6" lg="4" xl="3">
         <AssessmentSummary />
     </MudItem>
 
     <!-- Risk -->
-    <MudItem xs="12" md="4">
+    <MudItem xs="12" md="6" lg="4" xl="3">
         <RiskSummary ReloadParticipant="Reload" />
     </MudItem>
 
     <!-- Bio -->
-    <MudItem xs="12" md="4">
+    <MudItem xs="12" md="6" lg="4" xl="3">
         <BioSummary />
     </MudItem>
 
     <!-- Pathway Plan -->
-    <MudItem xs="12" md="4">
+    <MudItem xs="12" md="6" lg="4" xl="3">
         <PathwayPlanSummary />
     </MudItem>
 
         <!-- PRI -->
-        <MudItem xs="12" md="4">
+        <MudItem xs="12" md="6" lg="4" xl="3">
             <PRISummary />
         </MudItem>
 
         <!-- Labels -->
-        <MudItem xs="12" md="4">
+        <MudItem xs="12" md="6" lg="4" xl="3">
             <ParticipantLabelsCard ParticipantId="@ParticipantSummaryDto!.Id" />
         </MudItem>
 

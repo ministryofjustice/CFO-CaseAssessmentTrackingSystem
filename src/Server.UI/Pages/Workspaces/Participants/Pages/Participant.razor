@@ -27,20 +27,20 @@
                     <MudItem xs="12">
 
                         <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"   >
-                            <MudText Typo="Typo.subtitle2" >Participant</MudText>
-                            <MudText Typo="Typo.body2">@_participant.ParticipantName</MudText>
+                            <MudText Typo="Typo.body2" >Participant</MudText>
+                            <MudText Typo="Typo.body1">@_participant.ParticipantName</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle2" >Ref</MudText>
-                            <MudText Typo="Typo.body2">@_participant.Id</MudText>
+                            <MudText Typo="Typo.body2" >Ref</MudText>
+                            <MudText Typo="Typo.body1">@_participant.Id</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle2" >Status</MudText>
-                            <MudText Typo="Typo.body2">@_participant.EnrolmentStatus.Name</MudText>
+                            <MudText Typo="Typo.body2" >Status</MudText>
+                            <MudText Typo="Typo.body1">@_participant.EnrolmentStatus.Name</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle2" >Assigned To</MudText>
-                            <MudText Typo="Typo.body2">@($"{_participant.OwnerName} ({_participant.TenantName}) ")</MudText>
+                            <MudText Typo="Typo.body2" >Assigned To</MudText>
+                            <MudText Typo="Typo.body1">@($"{_participant.OwnerName} ({_participant.TenantName}) ")</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.subtitle2" >Location</MudText>
-                            <MudText Typo="Typo.body2">@_participant.Location</MudText>
+                            <MudText Typo="Typo.body2" >Location</MudText>
+                            <MudText Typo="Typo.body1">@_participant.Location</MudText>
                         </MudStack>
                     </MudItem>
                 </MudGrid>

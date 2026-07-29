@@ -15,15 +15,11 @@
                     <MudText Color="Color.Default" Typo="Typo.h1" Class="mr-2">
                         HMPPS Case Assessment and Tracking System (CATS)
                     </MudText>
-                    @if(Env.IsProduction() is false)
-                    {
-                        <MudChip T="string" Label="true" Color="Color.Secondary" Style="font-weight: bold">@Env.EnvironmentName</MudChip>
-                    }
                 </MudAppBar>
                 <div class="mud-main-content">
                     @if(string.IsNullOrEmpty(Settings.PreLoginMessage) == false)
                     {
-                        <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Square="true" 
+                        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" 
                             ContentAlignment="HorizontalAlignment.Center"
                             Icon="@Icons.Material.Filled.EventNote">
                             @Settings.PreLoginMessage

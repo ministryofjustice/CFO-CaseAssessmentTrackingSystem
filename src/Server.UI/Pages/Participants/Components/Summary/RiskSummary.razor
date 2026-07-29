@@ -1,6 +1,36 @@
 ﻿@using Humanizer
 @inherits CatsComponentBase
 
+<MudPaper Class="pa-3" Height="100%">
+    <MudStack Justify="Justify.Center" StretchItems="StretchItems.Middle" Spacing="2" Style="height: 100%;">
+        <MudText Align="Align.Center" Class="title-text">
+            Risk Information
+        </MudText>
+
+        <MudForm ReadOnly="true" Spacing="2" Class="mt-2">
+            <MudText>Some content</MudText>
+        </MudForm>
+
+
+        @if (CanAddRiskInformation())
+        {
+            <MudTooltip Text="Add Risk Information">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnClickAddRiskInformation" />
+            </MudTooltip>
+        }
+        @if (CanReviewRiskInformation())
+        {
+            <MudTooltip Text="Review Risk Information">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="@ReviewRiskInformation" />
+            </MudTooltip>
+        }
+
+    </MudStack>
+
+</MudPaper>
+
+
+@* 
 <MudCard Style="Height: 100%;">
     <MudCardHeader>
         <CardHeaderContent>
@@ -61,4 +91,4 @@
             </MudTooltip>
         }
     </MudCardActions>
-</MudCard>
+</MudCard> *@
