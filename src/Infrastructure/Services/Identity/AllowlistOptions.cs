@@ -14,9 +14,9 @@ public class AllowlistOptions
 
     public IEnumerable<string> GetAllowedIPs()
     {
-        if(AllowedIPs.Count > 0)
+        if(AllowedIPs.Count > 0 || string.IsNullOrWhiteSpace(AllowedIPsFallback))
         {
-            return AllowedIPs;
+            return [];
         }
 
         return AllowedIPsFallback.Split(',').Select(ip => ip.Trim()).ToList() ?? [];
