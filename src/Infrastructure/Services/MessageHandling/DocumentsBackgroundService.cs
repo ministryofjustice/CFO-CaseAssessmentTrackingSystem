@@ -41,7 +41,8 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportInitiativeObjectivesDashboardIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInitiativesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportUsersIntegrationEventConsumer>(provider);
-       
+       _activator.Handle<DocumentExportActivePrisIntegrationEventConsumer>(provider);
+
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.DocumentService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
