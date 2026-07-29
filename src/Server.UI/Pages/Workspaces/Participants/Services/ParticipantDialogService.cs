@@ -58,7 +58,7 @@ public class ParticipantDialogService : IParticipantDialogService
         };
 
         var dialog = await _dialogService.ShowAsync<SelectUserDialog>(
-            "Select an assingee", 
+            "Select an assignee", 
             parameters, 
             options);
 
