@@ -1,192 +1,275 @@
 @page "/pages/workspace/participants/pre-release-inventory"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.PRIs.DTOs
 @using Humanizer
 
 @inject ICurrentUserService CurrentUser
 @inject IUserService UserService
 
-@inherits CatsComponentBase
-
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
-
 <ParticipantsPageHeader />
 
-<MudStack Row="true" Justify="Justify.SpaceBetween">
-    <MudText Typo="Typo.h4">@Title</MudText>
+<!-- Toolbar with filters and search -->
+<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-4">
+    <!-- PRI Type Toggle -->
+    <MudMenu Label="@($"Filters: {GetPriTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenuItem OnClick="@(() => SetPriType(PriTypeFilter.All))">All</MudMenuItem>
+        <MudMenuItem OnClick="@(() => SetPriType(PriTypeFilter.Outgoing))">Outgoing Only</MudMenuItem>
+        <MudMenuItem OnClick="@(() => SetPriType(PriTypeFilter.Incoming))">Incoming Only</MudMenuItem>
+    </MudMenu>
+    
+    <!-- Search Bar -->
+    <MudTextField T="string" Value="@Query!.Keyword" Placeholder="@ConstantString.Search"
+                  ValueChanged="@OnSearch" Clearable="true" ShrinkLabel="true"
+                  AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                  AdornmentColor="Color.Secondary">
+    </MudTextField>
+    
+    <MudSpacer />
+    
+    <!-- Action Buttons -->
+    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+               StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefresh"
+               Disabled="@_loading">
+        @ConstantString.Refresh
+    </MudButton>
+    
+    <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@_downloading" 
+                      OnClick="@OnExport" StartIcon="@Icons.Material.Filled.CloudDownload" 
+                      Size="Size.Small" Disabled="@_loading">
+        @ConstantString.Export
+    </MudLoadingButton>
+    
+    <MudButton Variant="Variant.Filled"
+               Size="Size.Small"
+               Disabled="@_loading"
+               OnClick="@CreatePriCode"
+               StartIcon="@Icons.Material.Filled.Add"
+               Color="Color.Primary">
+        Generate PRI code
+    </MudButton>
+</MudStack>
+
+<!-- Pagination and record count -->
+<MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    <MudPagination Selected="@_currentPage"
+                   Count="@_totalPages"
+                   MiddleCount="2"
+                   BoundaryCount="1"
+                   SelectedChanged="@PageChanged"
+                   Size="Size.Small"
+                   Disabled="@_loading" />
+    
+    <MudText>@_totalItems records</MudText>
+    
+    <!-- Tabular Switch -->
+    <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@TabularChanged" T="bool?" />
+    
     <MudSpacer />
 </MudStack>
 
-<MudDataGrid ServerData="@(ServerReload)"
-                 FixedHeader="true"
-                 FixedFooter="true"
-                 Virtualize="true"
-                 @bind-RowsPerPage="_defaultPageSize"
-                 Height="calc(100vh - 260px)"
-                 Loading="@_loading"
-                 MultiSelection="true"
-                 @bind-SelectedItems="_selectedItems"
-                 Hover="true"
-                 @ref="_table"
-                 Breakpoint="Breakpoint.Sm">
-    <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1">                                     
-            <div class="d-flex flex-column">                
-                <MudSwitch Class="mt-10" @bind-Value="@Query!.IncludeOutgoing" @bind-Value:after="OnOutgoingChange" Label="@Query?.GetMemberDescription(q => q.IncludeOutgoing)" Color="Color.Primary"></MudSwitch>
-            </div>
-
-            <div class="d-flex flex-column">
-                <MudSwitch Class="mt-10" @bind-Value="@Query!.IncludeIncoming" @bind-Value:after="OnIncomingChange" Label="@Query?.GetMemberDescription(q => q.IncludeIncoming)" Color="Color.Primary"></MudSwitch>
-            </div>
-
-            <div class="flex-grow-1"></div>
-            <div class="d-flex flex-column justify-end">
-                <div class="d-flex">
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                         <MudButton Variant="Variant.Filled"
-                                   Size="Size.Small"
-                                   Disabled="@_loading"
-                                   OnClick="@OnRefresh"
-                                   StartIcon="@Icons.Material.Filled.Refresh"
-                                   Color="Color.Secondary">
-                            @ConstantString.Refresh
-                        </MudButton>      
-                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            <MudButton Variant="Variant.Filled"
-                                       Size="Size.Small"
-                                       Disabled="@_loading"
-                                       OnClick="@CreatePriCode"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       Color="Color.Primary">
-                                Generate PRI code
-                            </MudButton>
-                        </MudHidden>       
-                    </MudHidden>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-
-                    </MudHidden>
-                </div>
-                <MudTextField T="string" ValueChanged="@(OnSearch!)" Value="@Query!.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                </MudTextField>               
-            </div>            
-        </div>
-    </ToolBarContent>
-    <Columns>
-        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
+@if (Tabular)
+{
+    <MudTable T="PRIPaginationDto" Items="@_data" Hover="true" Striped="true" Loading="@_loading">
+        <HeaderContent>
+            <MudTh>Actions</MudTh>
+            <MudTh>Participant</MudTh>
+            <MudTh>Active</MudTh>
+            <MudTh>Custody Support Worker</MudTh>
+            <MudTh>Community Support Worker</MudTh>
+            <MudTh>Expected Release Region</MudTh>
+            <MudTh>Expected Release Date</MudTh>
+            <MudTh>Actual Release Date</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">              
-
-                    <MudMenuItem OnClick="@(()=> ViewParticipant(context.Item))">
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(()=> ViewParticipant(context))">
                         @ConstantString.ViewParticipant
                     </MudMenuItem>
 
-                    @if(context.Item.ParticipantIsActive)
+                    @if(context.ParticipantIsActive)
                     {
-                        @if (context.Item.ActualReleaseDate == null)
+                        @if (context.ActualReleaseDate == null)
                         {
-                            <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context.Item))">
+                            <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context))">
                                 @ConstantString.AddActualReleaseDate
                             </MudMenuItem>
                         }
                         else
                         {
-                            if (CurrentUser.UserId == context.Item.AssignedTo)
+                            if (CurrentUser.UserId == context.AssignedTo)
                             {
-                                <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
+                                <MudMenuItem OnClick="@(()=> CompletePri(context))">
                                     @ConstantString.CompletePRI
                                 </MudMenuItem>
                             }
                         }
-                        <MudMenuItem OnClick="@(()=> AbandonPri(context.Item))">
+                        <MudMenuItem OnClick="@(()=> AbandonPri(context))">
                             @ConstantString.AbandonPRI
                         </MudMenuItem>
                     }
                 </MudMenu>
-            </CellTemplate>
-        </TemplateColumn>
-
-        <PropertyColumn Property="x => x.ParticipantName" Title="@ConstantString.Participant">
-            <CellTemplate>
+            </MudTd>
+            <MudTd>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                    <MudText Typo="Typo.body2">@context.ParticipantName</MudText>
+                    <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-
-        <PropertyColumn Property="x => x.ParticipantIsActive" Title="@ConstantString.Active">
-            <CellTemplate>
+            </MudTd>
+            <MudTd>
+                @if(context.ParticipantIsActive)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
+                }
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.body2">@UserService.GetDisplayName(context.CreatedBy!)</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.body2">@UserService.GetDisplayName(context.AssignedTo!)</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Typo="Typo.body2">@context.ExpectedReleaseRegion?.Name</MudText>
+            </MudTd>
+            <MudTd>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantIsActive</MudText>                    
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-
-        <PropertyColumn Property="x => x.CreatedBy" Title="@ConstantString.CustodySupportWorker">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.AssignedTo" Title="@ConstantString.CommunitySupportWorker">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.AssignedTo!)</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.ExpectedReleaseRegion" Title="@ConstantString.ExpectedReleaseRegion">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2"> @context.Item.ExpectedReleaseRegion!.Name</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-
-        <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@ConstantString.ExpectedDateOfRelease">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">
-                        @context.Item.ExpectedReleaseDate
-                    </MudText>
-                    <MudText Typo="Typo.body2">
-                        @(context.Item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.Item.ExpectedReleaseDate.Humanize())
+                    <MudText Typo="Typo.body2">@context.ExpectedReleaseDate</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                        @(context.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.ExpectedReleaseDate.Humanize())
                     </MudText>
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.ActualReleaseDate" Title="@ConstantString.ActualReleaseDate">
-            <CellTemplate>
+            </MudTd>
+            <MudTd>
                 <div class="d-flex flex-column">
-                    @if(context.Item.ActualReleaseDate is not null)
+                    @if(context.ActualReleaseDate is not null)
                     {
-                        <MudText Typo="Typo.body2">
-                            @context.Item.ActualReleaseDate
-                        </MudText>
-                        <MudText Typo="Typo.body2">
-                            @(context.Item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.Item.ActualReleaseDate.Humanize())
+                        <MudText Typo="Typo.body2">@context.ActualReleaseDate</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            @(context.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.ActualReleaseDate.Humanize())
                         </MudText>
                     }
                     else
                     {
-                        <MudText Typo="Typo.body2">Not set</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">Not set</MudText>
                     }
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-    </Columns>
-    <NoRecordsContent>
-        <MudText>@ConstantString.NoRecords</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>@ConstantString.Loading</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
-    </PagerContent>
-</MudDataGrid>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    @if (_data is { Length: > 0 })
+    {
+        <MudStack Class="mt-4">
+            @foreach (var item in _data)
+            {
+                <MudPaper Outlined="true" Class="pa-4">
+                    <MudStack>
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h6">@item.ParticipantName</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.ParticipantId</MudText>
+                            <MudSpacer />
+                            @if(item.ParticipantIsActive)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
+                            }
+                        </MudStack>
+                        
+                        <MudDivider Class="my-2" />
+                        
+                        <MudStack Row="true" Spacing="4">
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.CustodySupportWorker</MudText>
+                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
+                            </MudStack>
+                            
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.CommunitySupportWorker</MudText>
+                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
+                            </MudStack>
+                        </MudStack>
+                        
+                        <MudStack Row="true" Spacing="4">
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.ExpectedReleaseRegion</MudText>
+                                <MudText Typo="Typo.body2">@item.ExpectedReleaseRegion!.Name</MudText>
+                            </MudStack>
+                            
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.ExpectedDateOfRelease</MudText>
+                                <MudText Typo="Typo.body2">@item.ExpectedReleaseDate</MudText>
+                                <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                    @(item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ExpectedReleaseDate.Humanize())
+                                </MudText>
+                            </MudStack>
+                            
+                            @if(item.ActualReleaseDate is not null)
+                            {
+                                <MudStack Spacing="1">
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.ActualReleaseDate</MudText>
+                                    <MudText Typo="Typo.body2">@item.ActualReleaseDate</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                        @(item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ActualReleaseDate.Humanize())
+                                    </MudText>
+                                </MudStack>
+                            }
+                        </MudStack>
+                        
+                        <MudDivider Class="mt-4 mb-2" />
+                        
+                        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                            <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Visibility" OnClick="@(()=> ViewParticipant(item))">
+                                @ConstantString.ViewParticipant
+                            </MudButton>
+                            
+                            @if(item.ParticipantIsActive)
+                            {
+                                @if (item.ActualReleaseDate == null)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                               StartIcon="@Icons.Material.Filled.CalendarToday" OnClick="@(()=> AddActualReleaseDate(item))">
+                                        @ConstantString.AddActualReleaseDate
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    @if (CurrentUser.UserId == item.AssignedTo)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small"
+                                                   StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(()=> CompletePri(item))">
+                                            @ConstantString.CompletePRI
+                                        </MudButton>
+                                    }
+                                }
+                                <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"
+                                           StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(()=> AbandonPri(item))">
+                                    @ConstantString.AbandonPRI
+                                </MudButton>
+                            }
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            }
+        </MudStack>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info" Class="mt-4">No PRIs match the current filters.</MudAlert>
+    }
+}

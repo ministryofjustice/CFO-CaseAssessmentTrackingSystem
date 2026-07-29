@@ -18,11 +18,17 @@ public partial class ActivePRIs
 
     private string? Title { get; set; }
     private int _defaultPageSize = 15;
-    private HashSet<PRIPaginationDto> _selectedItems = new();
-    private MudDataGrid<PRIPaginationDto> _table = null!;
+    private HashSet<PRIPaginationDto> _selectedItems = [];
     private bool _loading;
+    private bool _downloading;
+    private int _totalItems;
+    private int _totalPages;
+    private int _currentPage = 1;
+    private PRIPaginationDto[] _data = [];
+    private bool Tabular { get; set; } = true;
 
     private GetActivePRIsByUserId.Query? Query { get; set; }
+    private PriTypeFilter _priTypeFilter = PriTypeFilter.All;
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,79 +36,142 @@ public partial class ActivePRIs
 
         Query = new GetActivePRIsByUserId.Query
         {
-            CurrentUser = UserProfile
+            CurrentUser = UserProfile,
+            IncludeOutgoing = true,
+            IncludeIncoming = true,
+            PageNumber = 1,
+            PageSize = _defaultPageSize,
+            OrderBy = "Id",
+            SortDirection = "Descending"
         };
 
+        await OnRefresh();
         await base.OnInitializedAsync();
     }
-
-    private async Task<GridData<PRIPaginationDto>> ServerReload(GridState<PRIPaginationDto> state, CancellationToken cancellationToken)
+    
+    private async Task OnRefresh()
     {
+        _loading = true;
         try
         {
-            _loading = true;
             Query!.CurrentUser = UserProfile;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : nameof(SortDirection.Ascending);
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-            var result = await GetNewMediator().Send(Query, cancellationToken);
+            var result = await GetNewMediator().Send(Query);
 
-            if (result.Succeeded)
+            if (result is { Succeeded: true, Data: not null })
             {
-                return new GridData<PRIPaginationDto>
-                    { TotalItems = result.Data!.TotalItems, Items = result.Data.Items };
+                _data = result.Data.Items.ToArray();
+                _totalPages = result.Data.TotalPages;
+                _totalItems = result.Data.TotalItems;
+                _currentPage = Query.PageNumber;
             }
-
-            Snackbar.Add(result.ErrorMessage, Severity.Error);
-            return new GridData<PRIPaginationDto> { TotalItems = 0, Items = [] };
+            else
+            {
+                _data = [];
+                _totalPages = 0;
+                _totalItems = 0;
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
+            }
         }
         finally
         {
             _loading = false;
         }
     }
-
-    private async Task OnRefresh()
+    
+    private async Task TabularChanged(bool? tabular)
     {
-        _selectedItems = [];
-        Query!.Keyword = string.Empty;
-        await _table.ReloadServerData();
+        Tabular = tabular ?? true;
+        // Data is already loaded, just switching views
+        await Task.CompletedTask;
+    }
+    
+    private async Task PageChanged(int page)
+    {
+        Query!.PageNumber = page;
+        await OnRefresh();
+    }
+    
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var result = await GetNewMediator().Send(new ExportActivePRIs.Command
+            {
+                Request = new ExportActivePRIs.ActivePRIsExportRequest
+                {
+                    UserId = UserProfile?.UserId,
+                    Keyword = Query!.Keyword,
+                    IncludeOutgoing = Query.IncludeOutgoing,
+                    IncludeIncoming = Query.IncludeIncoming,
+                    OrderBy = Query.OrderBy,
+                    SortDirection = Query.SortDirection
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("An error has occurred while generating the PRIs export.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 
-    private async Task OnSearch(string text)
+    private async Task OnSearch(string? text)
     {
         if (_loading)
         {
             return;
         }
         
-        _selectedItems = new HashSet<PRIPaginationDto>();
-        Query!.Keyword = text;
-        await _table.ReloadServerData();
+        _selectedItems = [];
+        Query!.Keyword = text ?? string.Empty;
+        Query.PageNumber = 1; // Reset to first page on search
+        await OnRefresh();
     }
 
-    private async Task OnOutgoingChange()
-    {
-        if (Query!.IncludeOutgoing) // Only toggle the other off if this one is turned on
+    private string GetPriTypeLabel() =>
+        _priTypeFilter switch
         {
-            Query!.IncludeIncoming = false;
-        }
+            PriTypeFilter.Outgoing => "Outgoing Only",
+            PriTypeFilter.Incoming => "Incoming Only",
+            _ => "All"
+        };
 
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnIncomingChange()
+    private async Task SetPriType(PriTypeFilter filter)
     {
-        if (Query!.IncludeIncoming) // Only toggle the other off if this one is turned on
-        {
-            Query!.IncludeOutgoing = false;
-        }
-
-        await _table.ReloadServerData();
+        _priTypeFilter = filter;
+        
+        Query!.IncludeOutgoing = filter is PriTypeFilter.All or PriTypeFilter.Outgoing;
+        Query!.IncludeIncoming = filter is PriTypeFilter.All or PriTypeFilter.Incoming;
+        Query.PageNumber = 1; // Reset to first page on filter change
+        
+        await OnRefresh();
     }
 
-    private void ViewParticipant(PRIPaginationDto PRI) => Navigation.NavigateTo($"/pages/workspace/participants/{PRI.ParticipantId}?from=activepri");
+    private enum PriTypeFilter
+    {
+        All,
+        Outgoing,
+        Incoming
+    }
+
+    private void ViewParticipant(PRIPaginationDto pri) => Navigation.NavigateTo($"/pages/workspace/participants/{pri.ParticipantId}?from=activepri");
 
     private async Task CreatePriCode()
     {
@@ -126,14 +195,14 @@ public partial class ActivePRIs
         }
     }
 
-    private async Task AddActualReleaseDate(PRIPaginationDto PRI)
+    private async Task AddActualReleaseDate(PRIPaginationDto pri)
     {
         var parameters = new DialogParameters<AddActualReleaseDateDialog>()
         {
             {
                 x => x.Model, new  AddActualReleaseDate.Command()
                 {
-                    ParticipantId = PRI.ParticipantId
+                    ParticipantId = pri.ParticipantId
                 }
             }
         };
@@ -150,11 +219,11 @@ public partial class ActivePRIs
         }
     }
 
-    private async Task CompletePRI(PRIPaginationDto PRI)
+    private async Task CompletePri(PRIPaginationDto pri)
     {
         var completePriCommand = new CompletePRI.Command()
         {
-            ParticipantId = PRI.ParticipantId,
+            ParticipantId = pri.ParticipantId,
             CompletedBy = CurrentUser.UserId
         };
 
@@ -171,13 +240,13 @@ public partial class ActivePRIs
         }
     }
 
-    private async Task AbandonPri(PRIPaginationDto PRI)
+    private async Task AbandonPri(PRIPaginationDto pri)
     {
         var parameters = new DialogParameters<AbandonPriDialog>()
         {
             { x => x.Model, new AbandonPRI.Command()
             {
-                ParticipantId = PRI.ParticipantId,
+                ParticipantId = pri.ParticipantId,
                 AbandonJustification="",
                 AbandonReason=PriAbandonReason.Other,
                 AbandonedBy=CurrentUser.UserId!
@@ -195,4 +264,5 @@ public partial class ActivePRIs
             await OnRefresh();
         }
     }
+
 }
