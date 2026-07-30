@@ -3,12 +3,26 @@
 public static class DateExtensions
 {
     public static string ToShortDateOrEmptyString(this DateTime? datetime)
-    {
-        if (datetime.HasValue is false)
-        {
-            return string.Empty;
-        }
+        => ToShortDateOrDefault(datetime, string.Empty);
 
-        return datetime.Value.ToShortDateString();
+    public static string ToShortDateOrDefault(this DateTime? dateTime, string defaultText)
+    {
+        if(dateTime.HasValue is false)
+        {
+            return defaultText;
+        }
+        return dateTime.Value.ToShortDateString();
+    }
+
+    public static string ToShortDateOrEmptyString(this DateOnly date)
+        => ToShortDateOrDefault(date, string.Empty);
+
+    public static string ToShortDateOrDefault(this DateOnly? dateTime, string defaultText)
+    {
+        if(dateTime.HasValue is false)
+        {
+            return defaultText;
+        }
+        return dateTime.Value.ToShortDateString();
     }
 }
