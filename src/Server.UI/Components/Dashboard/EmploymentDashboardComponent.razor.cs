@@ -1,10 +1,12 @@
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Application.Features.Workspaces.Performance.Commands;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
+
 public partial class EmploymentDashboardComponent
 {
-
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
 
@@ -20,6 +22,8 @@ public partial class EmploymentDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
+    private bool _downloading;
+    
     protected override IQuery<Result<GetEmployments.EmploymentsDto>> CreateQuery()
      => new GetEmployments.Query()
      {
@@ -30,23 +34,23 @@ public partial class EmploymentDashboardComponent
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
 
-    private ApexCharts.ApexChartOptions<GetEmployments.LocationDetail> Options => new()
+    private ApexChartOptions<GetEmployments.LocationDetail> Options => new()
     {
-        Chart = new ApexCharts.Chart
+        Chart = new Chart
         {
             Stacked = true
         },
-        PlotOptions = new ApexCharts.PlotOptions
+        PlotOptions = new PlotOptions
         {
-            Bar = new ApexCharts.PlotOptionsBar
+            Bar = new PlotOptionsBar
             {
                 Horizontal = false,
-                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                DataLabels = new PlotOptionsBarDataLabels
                 {
-                    Total = new ApexCharts.BarTotalDataLabels
+                    Total = new BarTotalDataLabels
                     {
                         Enabled = true,
-                        Style = new ApexCharts.BarDataLabelsStyle
+                        Style = new BarDataLabelsStyle
                         {
                             FontWeight = "800",
                             Color = IsDarkMode ? "#FFFFFF" : "#000000",
@@ -55,19 +59,52 @@ public partial class EmploymentDashboardComponent
                 },
             },
         },
-        Yaxis = new List<YAxis>
-        {
+        Yaxis =
+        [
             new YAxis
             {
                 Min = 0,
                 ForceNiceScale = true
             }
-        },
-        Theme = new ApexCharts.Theme
+        ],
+        Theme = new Theme
         {
-            Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
-        Colors = new List<string> { "#5cb85c", "#d9534f" }
+        Colors = ["#5cb85c", "#d9534f"]
     };
+    
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await Service.Send(new ExportEmployments.Command()
+            {
+                Request = new ExportEmployments.EmploymentExportRequest
+                {
+                    StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
+                    EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
+                    TenantId = TenantId,
+                    UserId = UserId
+                }
+            });
 
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }
