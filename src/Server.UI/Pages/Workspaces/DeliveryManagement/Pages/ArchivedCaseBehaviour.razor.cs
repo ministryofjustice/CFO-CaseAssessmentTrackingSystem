@@ -6,7 +6,7 @@ using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
 
 public partial class ArchivedCaseBehaviour
 {
@@ -53,9 +53,9 @@ public partial class ArchivedCaseBehaviour
             var startDate = _dateRange.Start ?? throw new InvalidOperationException("Start date not set");
             var endDate = _dateRange.End ?? throw new InvalidOperationException("End date not set");
 
-            var exportResult = await GetNewMediator().Send(new ExportPerformanceDashboard.Command
+            var exportResult = await GetNewMediator().Send(new ExportArchivedCasesBehaviour.Command
             {
-                Request = new ExportPerformanceDashboard.PerformanceDashboardExportRequest
+                Request = new ExportArchivedCasesBehaviour.ArchivedCasesBehaviourExportRequest
                 {
                     StartDate = startDate,
                     EndDate = endDate,
