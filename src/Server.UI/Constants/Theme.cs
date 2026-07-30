@@ -70,79 +70,77 @@ public static class Theme
                     {
                         FontFamily = myFont,
                         FontSize = "1rem",
+                        LineHeight = "1.5",
+                        FontWeight = "400"
+                    },
+
+                    // Use these for real page structure only
+                    H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700", LineHeight = "1.25" },
+                    H2 = { FontFamily = myFont, FontSize = "1.45rem",  FontWeight = "700", LineHeight = "1.3" },
+                    H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600", LineHeight = "1.35" },
+                    H4 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "600", LineHeight = "1.4" },
+                    H5 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "500", LineHeight = "1.4" },
+                    H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500", LineHeight = "1.4" },
+
+                    // Use these for visual emphasis inside cards, panels, summaries
+                    Subtitle1 =
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        FontWeight = "500",
+                        LineHeight = "1.5"
+                    },
+                    Subtitle2 =
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        FontWeight = "500",
+                        LineHeight = "1.35",
+                        LetterSpacing = "0.0025em"
+                    },
+                    // for general text.
+                    Body1 =
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        FontWeight = "400",
+                        LineHeight = "1.5"
+                    },
+                    // for bold text (eg labels)
+                    Body2 =
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        FontWeight = "600",
                         LineHeight = "1.5"
                     },
 
-                        // Use these for real page structure only
-                        H1 = { FontFamily = myFont, FontSize = "1.625rem", FontWeight = "700", LineHeight = "1.25" },
-                        H2 = { FontFamily = myFont, FontSize = "1.45rem",  FontWeight = "700", LineHeight = "1.3" },
-                        H3 = { FontFamily = myFont, FontSize = "1.125rem", FontWeight = "600", LineHeight = "1.35" },
-                        H4 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "600", LineHeight = "1.4" },
-                        H5 = { FontFamily = myFont, FontSize = "1rem",     FontWeight = "500", LineHeight = "1.4" },
-                        H6 = { FontFamily = myFont, FontSize = "0.875rem", FontWeight = "500", LineHeight = "1.4" },
+                    Button =
+                    {
+                        FontFamily = myFont,
+                        FontSize = "1rem",
+                        FontWeight = "600",
+                        LineHeight = "1.25",
+                        LetterSpacing = "0.01em",
+                        TextTransform = ""
+                    },
 
-                        // Use these for visual emphasis inside cards, panels, summaries
-                        Subtitle1 =
-                        {
-                            FontFamily = myFont,
-                            FontSize = "1.2rem",
-                            FontWeight = "600",
-                            LineHeight = "1.35",
-                            LetterSpacing = "0.0025em",
-                            //TextTransform = "uppercase"
-                        },
+                    Caption =
+                    {
+                        FontFamily = myFont,
+                        FontSize = "0.8125rem", // 13px, more distinct from body2
+                        FontWeight = "400",
+                        LineHeight = "1.35",
+                        LetterSpacing = "0.01em"
+                    },
 
-                        Subtitle2 =
-                        {
-                            FontFamily = myFont,
-                            FontSize = "1rem",
-                            FontWeight = "600",
-                            LineHeight = "1.35",
-                            LetterSpacing = "0.0025em"
-                        },
-
-                        Body1 =
-                        {
-                            FontFamily = myFont,
-                            FontSize = "1rem",
-                            FontWeight = "400",
-                            LineHeight = "1.5"
-                        },
-
-                        Body2 =
-                        {
-                            FontFamily = myFont,
-                            FontSize = "0.875rem",
-                            FontWeight = "400",
-                            LineHeight = "1.45"
-                        },
-
-                        Button =
-                        {
-                            FontFamily = myFont,
-                            FontSize = "1rem",
-                            FontWeight = "600",
-                            LineHeight = "1.25",
-                            LetterSpacing = "0.01em"
-                        },
-
-                        Caption =
-                        {
-                            FontFamily = myFont,
-                            FontSize = "0.8125rem", // 13px, more distinct from body2
-                            FontWeight = "400",
-                            LineHeight = "1.35",
-                            LetterSpacing = "0.01em"
-                        },
-
-                        Overline =
-                        {
+                    Overline =
+                    {
                         FontFamily = myFont,
                         FontSize = "0.75rem",
                         FontWeight = "600",
                         LineHeight = "1.3",
-                        LetterSpacing = "0.06em",
-                        TextTransform = "uppercase"
+                        LetterSpacing = "0.06em"
                     }
                 }
         };

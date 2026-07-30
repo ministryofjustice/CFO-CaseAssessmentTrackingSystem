@@ -38,8 +38,6 @@
             @if(Data is not null)
             {
 
-       
-
                 <MudStack Row="true" Wrap="Wrap.Wrap">
                     @foreach(ParticipantLabelDto label in Data.Labels.Where(x =>  IncludeClosed || x.LifetimeEnd > DateTime.UtcNow)
                     .OrderByDescending(pl => pl.Name))
@@ -83,8 +81,6 @@
                             </TooltipContent>
                         </MudTooltip>
                         
-                        
-                      
                     }
                 </MudStack>
             }
