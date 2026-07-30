@@ -41,7 +41,7 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportInitiativesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportUsersIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportActivePrisIntegrationEventConsumer>(provider);
-
+       _activator.Handle<DocumentExportEngagementsByLocationIntegrationEventConsumer>(provider);
        
        _activator.Handle<DocumentExportPerformanceActivitiesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportPerformanceEducationAndTrainingIntegrationEventConsumer>(provider);
