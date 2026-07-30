@@ -8,16 +8,16 @@ using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
-public class DocumentExportPerformanceDashboardIntegrationEventConsumer(
+public class DocumentExportArchivedCasesBehaviourIntegrationEventConsumer(
     IUnitOfWork unitOfWork,
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ILogger<DocumentExportPerformanceDashboardIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportArchivedCasesBehaviourIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
     {
-        if (context.Key != DocumentTemplate.PerformanceDashboard.Name)
+        if (context.Key != DocumentTemplate.ArchivedCasesBehaviour.Name)
         {
             logger.LogDebug("Export document not supported by this handler");
             return;
@@ -27,13 +27,13 @@ public class DocumentExportPerformanceDashboardIntegrationEventConsumer(
 
         if (document is null)
         {
-            logger.LogError("Performance dashboard export event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
+            logger.LogError("Archived cases behaviour export event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
         try
         {
-            var request = JsonConvert.DeserializeObject<ExportPerformanceDashboard.PerformanceDashboardExportRequest>(context.SearchCriteria!)
+            var request = JsonConvert.DeserializeObject<ExportArchivedCasesBehaviour.ArchivedCasesBehaviourExportRequest>(context.SearchCriteria!)
                 ?? throw new Exception("Failed to deserialise export request.");
 
             // TenantId must be set so the query's CurrentUser tenant scope filter works correctly.
@@ -55,7 +55,7 @@ public class DocumentExportPerformanceDashboardIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload performance dashboard document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload archived cases behaviour document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -64,14 +64,14 @@ public class DocumentExportPerformanceDashboardIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting performance dashboard document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
+            logger.LogError(ex, "Error exporting archived cases behaviour document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }
     }
 
     private async Task<(string SheetName, byte[] Data)> BuildArchivedCasesSheet(
-        ExportPerformanceDashboard.PerformanceDashboardExportRequest request, UserProfile stubUser)
+        ExportArchivedCasesBehaviour.ArchivedCasesBehaviourExportRequest request, UserProfile stubUser)
     {
         var query = new GetArchivedCasesByTenantAndReason.Query
         {
