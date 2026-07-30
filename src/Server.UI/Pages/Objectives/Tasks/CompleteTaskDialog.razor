@@ -1,5 +1,3 @@
-@using Cfo.Cats.Domain.Common.Enums
-
 @inherits CatsComponentBase
 
 <MudDialog>
@@ -24,13 +22,13 @@
                           />
         </MudForm>
         <MudAlert Class="mt-4" Severity="Severity.Warning">
-            No further Activities, ETE's, or PSF's can be added for this task once completed. 
+            No further Activities or ETE's can be added for this task once completed. 
             You may still record them under other tasks.
         </MudAlert>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="Submit">
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="@Submit">
             @($"{ConstantString.Complete} Task")
         </MudLoadingButton>
     </DialogActions>
