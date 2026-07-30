@@ -1,11 +1,11 @@
-@page "/pages/workspace/performance/archived-case-behaviour"
+@page "/pages/workspace/deliverymanagement/archived-case-behaviour"
 @inherits CatsComponentBase
-@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 
-<PerformancePageHeader />
+<DeliveryManagementPageHeader />
 
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
     <MudStack Row="true" AlignItems="AlignItems.Center">

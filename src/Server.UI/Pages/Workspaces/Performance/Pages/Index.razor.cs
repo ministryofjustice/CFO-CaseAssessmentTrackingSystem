@@ -17,8 +17,7 @@ public partial class Index
     private BreadcrumbLinkModel[] Links { get; set; } = [];
     
     private bool _showOutcomeQualityDipChecks;
-    private bool _showArchivedCaseBehaviour;
-
+    
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
@@ -26,18 +25,12 @@ public partial class Index
         var isOutcomeQualityDipChecks = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.OutcomeQualityDipChecks)).Succeeded;
       
         _showOutcomeQualityDipChecks = isOutcomeQualityDipChecks;
-        _showArchivedCaseBehaviour = isOutcomeQualityDipChecks;
         
         List<BreadcrumbLinkModel> links = [];
 
         if (_showOutcomeQualityDipChecks)
         {
             links.Add(PerformanceLinks.OutcomeQualityDipSamples);
-        }
-        
-        if (_showArchivedCaseBehaviour)
-        {
-            links.Add(PerformanceLinks.ArchivedCaseBehaviour);
         }
         
         Links = links.ToArray();

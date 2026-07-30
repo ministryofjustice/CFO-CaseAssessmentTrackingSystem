@@ -47,6 +47,7 @@
             "riskdue" => [home, DeliveryManagementLinks.RiskDue.AsMudBreadcrumb()],
             "activities-in-qa-pots" => [home, DeliveryManagementLinks.ActivitiesInQaPots.AsMudBreadcrumb()],
             "qa-enrolment-results" => [home, DeliveryManagementLinks.QaEnrolmentResults.AsMudBreadcrumb()],
+            "archived-case-behaviour" => [home, DeliveryManagementLinks.ArchivedCaseBehaviour.AsMudBreadcrumb()],
             _ => throw new Exception($"Unknown page: {segment}")
         };
     }
