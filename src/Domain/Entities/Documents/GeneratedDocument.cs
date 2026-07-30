@@ -80,6 +80,7 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate Users = new(nameof(Users), 1400);
     public static readonly DocumentTemplate Activities = new(nameof(Activities), 18);
     public static readonly DocumentTemplate ActivePRIs = new(nameof(ActivePRIs), 19);
+    public static readonly DocumentTemplate EngagementsByLocation = new(nameof(EngagementsByLocation), 20);
     public static readonly DocumentTemplate PerformanceEnrolments = new(nameof(PerformanceEnrolments), 1800);
     public static readonly DocumentTemplate PerformanceInductions= new(nameof(PerformanceInductions), 1900);
     public static readonly DocumentTemplate PerformanceSupportAndReferral = new(nameof(PerformanceSupportAndReferral), 2000);
