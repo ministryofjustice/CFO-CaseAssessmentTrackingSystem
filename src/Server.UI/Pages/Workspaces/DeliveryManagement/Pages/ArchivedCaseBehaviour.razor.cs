@@ -6,7 +6,7 @@ using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
 
 public partial class ArchivedCaseBehaviour
 {

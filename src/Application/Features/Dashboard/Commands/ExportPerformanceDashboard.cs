@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Commands;
 
 public static class ExportPerformanceDashboard
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
     public class Command : ICommand<Result>
     {
         public required PerformanceDashboardExportRequest Request { get; set; }

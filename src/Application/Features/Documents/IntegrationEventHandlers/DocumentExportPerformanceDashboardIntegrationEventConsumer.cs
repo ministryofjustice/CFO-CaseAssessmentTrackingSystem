@@ -101,6 +101,7 @@ public class DocumentExportPerformanceDashboardIntegrationEventConsumer(
                 { "From",        r => r.From.ToShortDateString() },
                 { "To",          r => r.To?.ToShortDateString() },
                 { "Created By",  r => r.CreatedBy },
+                { "Additional Info", r => r.AdditionalInformation }
             });
 
         return ("Archived Cases", sheet);
