@@ -18,6 +18,7 @@ public partial class Index
     
     private bool _showCaseWorkload;
     private bool _showUnassignedCases;
+    private bool _showArchivedCaseBehaviour;
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,6 +32,7 @@ public partial class Index
 
         _showCaseWorkload = hasAdditionalRoles;
         _showUnassignedCases = hasAdditionalRoles;
+        _showArchivedCaseBehaviour = hasAdditionalRoles;
 
         // Case Management and Performance are available to every authorised user: support
         // workers see their own data, senior staff can drill down by tenant and user.
@@ -55,6 +57,11 @@ public partial class Index
         if (_showUnassignedCases)
         {
             links.Add(DeliveryManagementLinks.UnassignedCases);
+        }
+
+        if(_showArchivedCaseBehaviour)
+        {
+            links.Add(DeliveryManagementLinks.ArchivedCaseBehaviour);
         }
 
         if (canViewCumulatives)

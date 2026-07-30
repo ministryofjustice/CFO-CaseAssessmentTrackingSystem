@@ -24,6 +24,8 @@ public static class DeliveryManagementLinks
 
     public static BreadcrumbLinkModel RiskDue => new ("Risk Due", "View and manage upcoming risk", $"{Home.Href}/riskdue" ,Group: Insights);
 
+    public static BreadcrumbLinkModel ArchivedCaseBehaviour => new ("Archived Case Behaviour", "View participants moving into and out of archiving" , $"{Home.Href}/archived-case-behaviour", Group: Insights);
+
     private static string Insights = "Insights";
     private static string QA = "QA Functions";
 

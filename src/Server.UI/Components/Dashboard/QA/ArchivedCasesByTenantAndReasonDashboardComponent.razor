@@ -93,7 +93,12 @@
 
             <RowTemplate>
                 <MudTd DataLabel="Tenant">@context.Tenant</MudTd>
-                <MudTd DataLabel="Reason">@context.Reason</MudTd>
+                <MudTd DataLabel="Reason">
+                    <MudStack>
+                        @context.Reason
+                        <MudText Typo="Typo.caption">@context.AdditionalInformation</MudText>
+                    </MudStack>
+                </MudTd>
                 <MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
                 <MudTd DataLabel="Location">@context.Location</MudTd>
                 <MudTd DataLabel="Created">@context.Created.ToShortDateString()</MudTd>

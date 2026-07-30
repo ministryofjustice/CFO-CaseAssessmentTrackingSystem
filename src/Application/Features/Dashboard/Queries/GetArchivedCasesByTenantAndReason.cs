@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
 public static class GetArchivedCasesByTenantAndReason
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
     public class Query : IQuery<Result<ArchivedCasesByTenantAndReasonDto>>
     {
         public string? TenantId { get; init; }
@@ -47,6 +47,7 @@ public static class GetArchivedCasesByTenantAndReason
                     FirstName = x.ac.FirstName,
                     LastName = x.ac.LastName,
                     Reason = x.ac.ArchiveReason ?? "Unknown",
+                    AdditionalInformation = x.ac.AdditionalInfo,
 
                     Location = x.l.Name,
 
@@ -99,6 +100,7 @@ public static class GetArchivedCasesByTenantAndReason
         public required string Tenant { get; set;}
 
         public required string Reason { get; init; }
+        public string? AdditionalInformation { get; init; }
 
         public required string Location { get; init; }
 
