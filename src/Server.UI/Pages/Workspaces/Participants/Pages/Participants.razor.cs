@@ -13,6 +13,7 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -58,6 +59,8 @@ public partial class Participants
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
+
+    private bool Loading { get; set; } = true;
 
     private IDictionary<int, string> _locations = null!;
     private IDictionary<string, string> _users = null!;
@@ -233,26 +236,35 @@ public partial class Participants
 
     private async Task OnRefresh()
     {
-        Query.CurrentUser = UserProfile;
-        var results = await Service.Send(Query);
-        if (results is { Succeeded: true, Data: not null })
+        try
         {
-            _data = results.Data.Items.ToArray();
-            _totalPages = results.Data.TotalPages;
-            _totalItems = results.Data.TotalItems;
-        }
-        else
-        {
-            _data = [];
-            _totalPages = 0;
-            _totalItems = 0;
-            
-            if (results?.ErrorMessage is not null)
+            Loading = true;
+
+            Query.CurrentUser = UserProfile;
+            var results = await Service.Send(Query);
+            if (results is { Succeeded: true, Data: not null })
             {
-                Snackbar.Add(results.ErrorMessage, Severity.Error);
+                _data = results.Data.Items.ToArray();
+                _totalPages = results.Data.TotalPages;
+                _totalItems = results.Data.TotalItems;
             }
+            else
+            {
+                _data = [];
+                _totalPages = 0;
+                _totalItems = 0;
+                
+                if (results?.ErrorMessage is not null)
+                {
+                    Snackbar.Add(results.ErrorMessage, Severity.Error);
+                }
+            }
+            await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
         }
-        await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
+        finally
+        {
+            Loading = false;
+        }
     }
 
     private void SetParticipantSelection(string participantId, bool isSelected)

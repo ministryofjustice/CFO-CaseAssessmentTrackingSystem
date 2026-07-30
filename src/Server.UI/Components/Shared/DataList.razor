@@ -1,0 +1,12 @@
+<MudStack Spacing="3">
+
+    @ChildContent
+
+</MudStack>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get;set;}
+
+}

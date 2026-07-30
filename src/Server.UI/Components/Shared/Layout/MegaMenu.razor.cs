@@ -10,41 +10,22 @@ namespace Cfo.Cats.Server.UI.Components.Shared.Layout;
 public partial class MegaMenu
 {
     [Inject] private IAsyncMenuService MenuService { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private IWorkspacePreferenceService WorkspacePreferenceService { get; set; } = null!;
     [Inject] private ILogger<MegaMenu> Logger { get; set; } = null!;
     [Inject] private IApplicationSettings Settings { get; set; } = default!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
-    [Parameter] public bool Open { get; set; }
-    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
-
     private NavigationMenuModel _menuModel = null!;
     private string? _defaultWorkspace;
     private string? _currentUserId;
-    private bool _previousOpenState;
     
     private bool _loaded;
 
-    protected override void OnInitialized() => NavigationManager.LocationChanged += OnLocationChanged;
-
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        // Detect when menu is newly opened (transition from closed to open), so we only
-        // hit the database on open rather than on every render while the menu stays open.
-        var justOpened = Open && !_previousOpenState;
-        _previousOpenState = Open;
-        
-        if (Open)
-        {
-            await LoadMenuIfNeededAsync();
-            
-            if (justOpened)
-            {
-                await RefreshWorkspacePreferenceAsync();
-            }
-        }
+        await LoadMenuIfNeededAsync();
+        await RefreshWorkspacePreferenceAsync();
     }
 
     private async Task LoadMenuIfNeededAsync()
@@ -78,22 +59,6 @@ public partial class MegaMenu
             Logger.LogError(ex, "Failed to refresh workspace preference");
         }
     }
-
-    private async Task CloseAsync()
-    {
-        Open = false;
-        await OpenChanged.InvokeAsync(false);
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        if (Open)
-        {
-            Open = false;
-            _ = OpenChanged.InvokeAsync(false);
-            InvokeAsync(StateHasChanged);
-        }
-    }
     
     private async Task ToggleWorkspaceBookmark(string workspaceUrl)
     {
@@ -123,12 +88,4 @@ public partial class MegaMenu
         }
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            NavigationManager.LocationChanged -= OnLocationChanged;
-        }
-        base.Dispose(disposing);
-    }
 }

@@ -5,15 +5,6 @@
 
 @inherits CatsComponentBase
 
-<MudText Typo="Typo.h3">
-    @_title
-</MudText>
+<PageHeader Items="[]" Title="Home" />
 
-<MudGrid Class="mt-2">
-
-    @if (_showSearchParticipant)
-    {
-        <ParticipantById/>
-    }
-
-</MudGrid>
+<MegaMenu />
