@@ -155,7 +155,7 @@
                     <MudChip T="string" Color="StatusColour(context.Status)" Size="Size.Small">@context.Status.Name</MudChip>
                 </MudTd>
                 <MudTd DataLabel="Took Place At">@context.TookPlaceAtLocationName</MudTd>
-                <MudTd DataLabel="Last Updated">@context.LastModified?.ToString("g")</MudTd>
+                <MudTd DataLabel="Last Updated">@context.LastModified?.ToLocalTime().ToString("g")</MudTd>
                 <MudTd>
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AnchorOrigin="Origin.BottomLeft">
                         @if (context.Status.AllowsChanges)
@@ -211,10 +211,10 @@
                             <MudSpacer />
                             <MudText Typo="Typo.body2">
                                 @(item.Status == ActivityStatus.ApprovedStatus
-                                    ? $"Approved On: {item.ApprovedOn?.ToString("g")}"
+                                    ? $"Approved On: {item.ApprovedOn?.ToLocalTime().ToString("g")}"
                                     : item.Status == ActivityStatus.AbandonedStatus
-                                        ? $"Abandoned On: {item.ApprovedOn?.ToString("g")}"
-                                        : $"Last updated on: {item.LastModified?.ToString("g")}")
+                                        ? $"Abandoned On: {item.ApprovedOn?.ToLocalTime().ToString("g")}"
+                                        : $"Last updated on: {item.LastModified?.ToLocalTime().ToString("g")}")
                             </MudText>
                         </MudStack>
                         <MudStack Row="true">
