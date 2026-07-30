@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Commands;
 
-public static class ExportPerformanceDashboard
+public static class ExportArchivedCasesBehaviour
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
     public class Command : ICommand<Result>
     {
-        public required PerformanceDashboardExportRequest Request { get; set; }
+        public required ArchivedCasesBehaviourExportRequest Request { get; set; }
     }
 
     public class Handler(
@@ -24,9 +24,9 @@ public static class ExportPerformanceDashboard
             var json = JsonConvert.SerializeObject(request.Request);
 
             var document = GeneratedDocument.Create(
-                DocumentTemplate.PerformanceDashboard,
-                "PerformanceDashboard.xlsx",
-                "Performance Dashboard Export",
+                DocumentTemplate.ArchivedCasesBehaviour,
+                "ArchivedCasesBehaviour.xlsx",
+                "Archived Cases Behaviour Export",
                 currentUser.UserId!,
                 currentUser.TenantId!,
                 json);
@@ -67,7 +67,7 @@ public static class ExportPerformanceDashboard
         }
     }
 
-    public class PerformanceDashboardExportRequest
+    public class ArchivedCasesBehaviourExportRequest
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }

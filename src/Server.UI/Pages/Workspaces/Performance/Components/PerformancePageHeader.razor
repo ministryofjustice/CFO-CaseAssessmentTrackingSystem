@@ -16,7 +16,6 @@
     private static class RouteSegments
     {
         public const string OutcomeQualityDipSampling = "outcome-quality-dip-sampling";
-        public const string ArchivedCaseBehaviour = "archived-case-behaviour";
     }
     
     protected override void OnParametersSet()
@@ -64,11 +63,7 @@
                 }
             }
         }
-        else if (segments[0].Equals(RouteSegments.ArchivedCaseBehaviour, StringComparison.OrdinalIgnoreCase))
-        {
-            crumbs.Add(PerformanceLinks.ArchivedCaseBehaviour.AsMudBreadcrumb());
-        }
-
+        
         return crumbs;
     }
 }
