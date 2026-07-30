@@ -11,7 +11,6 @@ namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
 
 internal class DocumentsBackgroundService(IServiceProvider provider, IConfiguration configuration, IOptions<RabbitSettings> options) : BackgroundService
 {
-
     private BuiltinHandlerActivator? _activator;
     private IBus? _bus;
 
@@ -43,6 +42,16 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportUsersIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportActivePrisIntegrationEventConsumer>(provider);
 
+       
+       _activator.Handle<DocumentExportPerformanceActivitiesIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceEducationAndTrainingIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceEmploymentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceEnrolmentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceInductionsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceReassessmentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceRecentApprovedActivitiesIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceSupportAndReferralIntegrationEventConsumer>(provider);
+       
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.DocumentService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
