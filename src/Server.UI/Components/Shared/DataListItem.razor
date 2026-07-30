@@ -1,0 +1,25 @@
+
+<MudStack Spacing="1" Row="false" StretchItems="StretchItems.Start">
+    <MudText Typo="Typo.body2" Style="font-size: 0.8rem;">
+        @Label
+    </MudText>
+    @ChildContent
+
+    <MudText Class="mud-input-helper-text">
+        @HelperText
+    </MudText>
+    
+    
+</MudStack>
+
+@code {
+    
+    [Parameter, EditorRequired]
+    public string Label { get; set; }
+
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set;}
+
+    [Parameter]
+    public string? HelperText { get;set; }
+}

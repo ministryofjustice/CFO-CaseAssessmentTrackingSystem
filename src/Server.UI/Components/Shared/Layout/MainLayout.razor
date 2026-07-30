@@ -4,19 +4,17 @@
 @inject NavigationManager NavigationManager
 
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
-<MudRTLProvider RightToLeft="false">
-    <MudPopoverProvider />
-    <MudDialogProvider />
-    <MudSnackbarProvider />
-    <MudThemeProvider 
-        @ref="_mudThemeProvider"
-        Theme="@_theme" 
-        @bind-IsDarkMode="_isDarkMode"/>
-    <CascadingValue Value="@_isDarkMode" Name="IsDarkMode">
-        @Body
-    </CascadingValue>
-    
-</MudRTLProvider>
+
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudThemeProvider 
+    @ref="_mudThemeProvider"
+    Theme="@_theme" 
+    @bind-IsDarkMode="_isDarkMode"/>
+<CascadingValue Value="@_isDarkMode" Name="IsDarkMode">
+    @Body
+</CascadingValue>
 
 @code
 {
