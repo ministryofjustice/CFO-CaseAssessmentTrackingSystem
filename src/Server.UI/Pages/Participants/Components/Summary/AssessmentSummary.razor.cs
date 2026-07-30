@@ -22,7 +22,7 @@ public partial class AssessmentSummary
 
     private AssessmentSummaryDto? _latestAssessment;
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
         _latestAssessment = ParticipantSummaryDto.Assessments is []
             ? null
@@ -59,9 +59,8 @@ public partial class AssessmentSummary
             _assessmentDueIconColor = Color.Warning;
             _AssessmentNotCompletedInfo = "Assessment not completed.";
         }
-
     }
-    
+
     public async Task BeginAssessment()
     {
         var parameters = new DialogParameters<AddAssessmentDialog>()

@@ -1,3 +1,5 @@
+using Humanizer;
+
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
 /// <summary>
@@ -29,4 +31,10 @@ public record ParticipantHeaderDetailsDto
     /// The date the record was last updated via the DMS feed.
     /// </summary>
     public required DateTime LastSync { get; init; }
+
+    public string GetConsentDateHelperText() => DateOfFirstConsent switch
+    {
+        null => "Consent has not been confirmed",
+        _ => $"Consent granted {DateOfFirstConsent.Humanize()}, participant was {DateOfBirth.CalculateAge(DateOfFirstConsent.Value)} years old"
+    };
 }
