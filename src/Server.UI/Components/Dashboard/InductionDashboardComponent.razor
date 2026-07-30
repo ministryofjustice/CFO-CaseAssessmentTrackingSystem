@@ -1,5 +1,6 @@
-﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
-@inherits CatsComponent<GetInductions.InductionsDto>
+﻿@inherits CatsComponent<GetInductions.InductionsDto>
+
+@using Cfo.Cats.Application.Features.Dashboard.Queries
 
 @if (Loading)
 {
@@ -15,12 +16,21 @@
 
 @if (Data is not null && Data.Details.Any())
 {
-    <MudGrid Spacing="2">
-        <MudItem>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
             <MudChip T="string">Wing (@Data.Custody)</MudChip>
             <MudChip T="string">Hub (@Data.Community)</MudChip>
-        </MudItem>
-    </MudGrid>
+        </MudStack>
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          OnClick="@OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
+    
     @if (VisualMode)
     {
         <ApexCharts.ApexChart TItem="GetInductions.LocationDetail" Options="Options" Height="650" Width="@("100%")">
@@ -60,12 +70,12 @@
                 <MudTd DataLabel="Payable">@context.Payable</MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+                <MudTablePager PageSizeOptions="[10, 20]" />
             </PagerContent>
         </MudTable>
     }
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }
