@@ -2,6 +2,7 @@
 @inherits OwningComponentBase<IMediator>
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 
     <ParticipantsPageHeader />
@@ -39,6 +40,7 @@
     OnSortBy="@(new EventCallback<string>(this, SortBy))"
     OnClearSearch="@ClearSearch" />
 
+
 @if (_data is { Length: > 0 })
 {
     @if(Tabular)
@@ -64,5 +66,13 @@
 }
 else
 {
-    <MudAlert Severity="Severity.Info" Class="mt-4">No participants match the current filters.</MudAlert>
+    @if(Loading)
+    {
+        <MudLoading Text="Loading..." />
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info" Class="mt-4">No participants match the current filters.</MudAlert>
+    }
+    
 }

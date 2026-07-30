@@ -94,3 +94,27 @@
     background: var(--mud-palette-background-gray) !important;
     border-bottom: 1px solid var(--mud-palette-lines-default) !important;
 }
+
+.mud-card-header p {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+/* 
+Override for table cells
+The must be kept in sync with Theme.cs
+ */
+
+.mud-table-body .mud-table-cell {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+}
+
+.mud-table-head .mud-table-cell { 
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+
+}

@@ -1,7 +1,7 @@
 ﻿@layout MainLayout
 @inherits LayoutComponentBase
 
-@inject IWebHostEnvironment Env
+@inject IWebHostEnvironment Environment
 @inject IConfiguration Configuration
 
 <MudLayout>
@@ -10,28 +10,33 @@
             <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
-            <PresenceConnector />
-            <HeaderMenu OpenSearch="ToggleSearchMenu"
-                        MenuOpen="_megaMenuOpen"
-                        OnMenuClick="ToggleMegaMenu"
-                        OnMenuOpenChanged="OnMegaMenuOpenChanged"
-                        SearchOpen="_searchMenuOpen"
-                        OnSearchOpenChanged="OnSearchMenuOpenChanged" />
-            <MudMainContent>
-                <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mb-4 mt-4">
-                    <ErrorBoundary @ref="ErrorBoundary">
-                        <ChildContent>
-                            <CascadingValue Value="@_userProfile">
-                                @Body
-                            </CascadingValue>
-                        </ChildContent>
-                        <ErrorContent Context="exception">
-                            <CustomError Exception="exception"></CustomError>
-                        </ErrorContent>
-                    </ErrorBoundary>
-                </MudContainer>
-            </MudMainContent>
-
+            <CascadingValue Value="@_userProfile">
+                <PresenceConnector />
+                <HeaderMenu />
+                <MudMainContent>
+                    @if(Environment.IsProduction() is false && _showEnvironment)
+                    {
+                         <MudAlert 
+                            Severity="Severity.Warning" 
+                            Variant="Variant.Filled" 
+                            ShowCloseIcon="true" 
+                            ContentAlignment="HorizontalAlignment.Center"
+                            CloseIconClicked="@(() => _showEnvironment = false)">
+                            @Environment.EnvironmentName Environment
+                        </MudAlert>
+                    }
+                    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" >
+                        <ErrorBoundary @ref="ErrorBoundary">
+                            <ChildContent>                        
+                                    @Body              
+                            </ChildContent>
+                            <ErrorContent Context="exception">
+                                <CustomError Exception="exception"></CustomError>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </MudContainer>
+                </MudMainContent>
+            </CascadingValue>
 
         </Authorized>
     </AuthorizeView>
@@ -40,33 +45,12 @@
 
 @code
 {
-    private bool _megaMenuOpen;
-    private bool _searchMenuOpen;
+
+    private bool _showEnvironment = true;
+
     private UserProfile? _userProfile;
     private ErrorBoundary? ErrorBoundary { set; get; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    private void ToggleMegaMenu()
-    {
-        _megaMenuOpen = !_megaMenuOpen;
-        if (_megaMenuOpen)
-        {
-            _searchMenuOpen = false;
-        }
-    }
-
-    private void OnMegaMenuOpenChanged(bool open) => _megaMenuOpen = open;
-
-    private void ToggleSearchMenu()
-    {
-        _searchMenuOpen = !_searchMenuOpen;
-        if (_searchMenuOpen)
-        {
-            _megaMenuOpen = false;
-        }
-    }
-
-    private void OnSearchMenuOpenChanged(bool open) => _searchMenuOpen = open;
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,9 +63,6 @@
         ResetBoundary();
     }
 
-    private void ResetBoundary()
-    {
-        // On each page navigation, reset any error state
+    private void ResetBoundary() =>
         ErrorBoundary?.Recover();
-    }
 }

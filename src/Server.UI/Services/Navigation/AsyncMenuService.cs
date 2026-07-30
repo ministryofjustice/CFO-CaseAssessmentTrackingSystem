@@ -17,7 +17,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
         NavigationMenuSectionModel[] sections = [
             await CreateWorkspaceMenu(principal),
             await CreateExternalLinksMenu(),
-            await CreateProfileMenu(),            
+            //await CreateProfileMenu(),            
         ];     
 
         return new NavigationMenuModel(sections);
