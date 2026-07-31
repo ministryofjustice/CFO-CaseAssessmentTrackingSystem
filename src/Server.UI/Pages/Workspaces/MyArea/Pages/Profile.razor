@@ -4,6 +4,7 @@
 
 @using Cfo.Cats.Infrastructure.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services
 @using Cfo.Cats.Domain.Identity
 
 @inherits OwningComponentBase<UserManager<ApplicationUser>>
@@ -29,7 +30,9 @@
                             @if (string.IsNullOrEmpty(Model.ProfilePictureDataUrl))
                             {
                                 <MudElement Class="d-flex flex-column  align-center">
-                                    <MudAvatar Style="height:128px; width:128px; font-size:2rem;">@Model.UserName.ToUpper().First()</MudAvatar>
+                                    <MudAvatar Style="height:128px; width:128px; font-size:2rem;">
+                                        @Model.Initials
+                                    </MudAvatar>
                                     <div class="d-flex">
                                         @if (Model.AssignedRoles is not null)
                                         {
@@ -39,7 +42,6 @@
                                             }
                                         }
                                     </div>
-
                                 </MudElement>
                             }
                             else
@@ -74,12 +76,15 @@
                         <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["Email"]" Variant="Variant.Text" ReadOnly="true"></MudTextField>
                     </MudItem>
                     <MudItem sm="6" xs="12">
-                        <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Display Name"]" Variant="Variant.Text"></MudTextField>
+                        <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Display Name"]" Variant="Variant.Text" Required="true"></MudTextField>
                     </MudItem>
                     <MudItem sm="6" xs="12">
                         <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" Variant="Variant.Text"></MudTextField>
                     </MudItem>
                     <MudItem sm="12" xs="12" Class="d-flex justify-end">
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Href=@MyAreaLinks.PasswordReset.Href>
+                            <MudText>Reset Password</MudText>
+                        </MudButton>
                         <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" Loading="@_submitting" StartIcon="@Icons.Material.Filled.Save" Class="ml-auto" OnClick="@(async () => await Submit())">
                             @if (_submitting)
                             {

@@ -1,4 +1,5 @@
-﻿@inherits CatsComponentBase
+﻿@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services
+@inherits CatsComponentBase
 @inject IStringLocalizer<HeaderMenu> L
 
 
@@ -28,20 +29,24 @@
             <HeaderSearch />
             <SessionTimeoutDisplay />
 
-            <MudAvatar>
-                CS
-            </MudAvatar>
-
-
-            @* <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                <MudTooltip Arrow="true" Text="@L["Notifications"]">
-                    <div @onclick="GotoNotifiations" style="cursor: pointer;" class="d-flex align-center">
-                        <MudBadge Content="@_notifications" Color="Color.Warning" Overlap="true">
-                            <MudIcon Icon="@Icons.Material.Filled.Notifications" />
-                        </MudBadge>
-                    </div>
-                </MudTooltip>
-            </MudStack> *@
+            <MudMenu>
+                <ActivatorContent>
+                    <MudTooltip Arrow="true" Text="@L["User Menu"]">
+                            <MudBadge Content="@_notifications" Color="Color.Warning" Overlap="true" Visible="@(_notifications > 0)">
+                                <MudAvatar @onclick="@context.ToggleAsync">
+                                    @CurrentUser.Initials
+                                </MudAvatar>
+                            </MudBadge>
+                    </MudTooltip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href=@MyAreaLinks.EditProfile.Href Label="Profile"/>
+                    <MudMenuItem Href=@MyAreaLinks.MyDocuments.Href Label="My Documents"/>
+                    <MudMenuItem Href=@MyAreaLinks.Notifications.Href Label="Notifications"/>
+                    <MudDivider />
+                    <MudMenuItem Href=@IdentityComponentsEndpointRouteBuilderExtensions.Logout Label="Logout"/>
+                </ChildContent>
+            </MudMenu>
         </MudStack>
     </MudStack>
 
