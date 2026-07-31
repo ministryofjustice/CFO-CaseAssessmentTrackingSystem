@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Contracts;
+﻿using ApexCharts;
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Commands;
@@ -8,10 +9,11 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
 
 public partial class Cumulatives
 {
+
     private bool _noAccessToContracts;
 
     [CascadingParameter]
-    public UserProfile? CurrentUser { get; set; }
+    public UserProfile CurrentUser { get; set; } = default!;
 
     private bool _downloading = false;
     
@@ -22,6 +24,11 @@ public partial class Cumulatives
     [Inject] private IContractService ContractService { get; set; } = default!;
 
     protected override void OnInitialized() => _noAccessToContracts = CurrentUser?.Contracts is [];
+
+    private void OnYearChanged(int year) => Year = year;
+    private void OnMonthChanged(int month) => Month = month;
+
+    private void OnContractChanged(ContractDto c) => SelectedContract = c;
 
     private async Task OnExport()
     {
@@ -51,6 +58,13 @@ public partial class Cumulatives
         {
             _downloading = false;
         }
+    }
+
+    private void ClearSearch()
+    {
+        Month = DateTime.Now.Month;
+        Year = DateTime.Now.Year;
+        SelectedContract = null;
     }
 
 }
