@@ -174,7 +174,7 @@ worker:
       NO_PROXY: "NO_PROXY"
 
 rabbitmq:
-  image: "rabbitmq:4.3-management-alpine@sha256:e6862a7d804c80fc72d2265aed3b725fd9a6afd330b735363eeecc4b6ec4dd3d"
+  image: "rabbitmq:4.3-management-alpine@sha256:09b39ca8a3e884e91cab8842cd41264de21aab0625e1f1d016a9a3135ba590ef"
 
 migrator:
   image:
