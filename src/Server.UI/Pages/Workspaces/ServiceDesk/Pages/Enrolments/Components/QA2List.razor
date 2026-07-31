@@ -66,47 +66,47 @@
         <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.ParticipantId</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.SupportWorker</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.TenantId" Title="@L["Tenant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
-                    <MudText Typo="Typo.body2">@context.Item.TenantId</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.TenantName</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.TenantId</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.Qa1CompletedBy" Title="@L["First Pass User"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.Qa1CompletedBy</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.Qa1CompletedBy</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.AssignedTo" Title="@L["Assigned To"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.AssignedTo</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         @context.Item.Created.Date.ToString("d")                        
                     </MudText>
-                    <MudText Typo="Typo.body2">                        
+                    <MudText Typo="Typo.body1">                        
                         @context.Item.Created.Humanize()
                     </MudText>
                 </div>
