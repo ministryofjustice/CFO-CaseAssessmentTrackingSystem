@@ -35,19 +35,16 @@
       "label": "docker: stop containers",
       "type": "shell",
       "command": "[[ $(docker ps -q) ]] && docker stop $(docker ps -q) || true",
-      "presentation": { "reveal": "silent" }
     },
     {
       "label": "docker: remove containers",
       "type": "shell",
-      "command": "[[ $(docker ps -q) ]] && docker rm -f $(docker ps -a -q) || true",
-      "presentation": { "reveal": "silent" }
+      "command": "[[ $(docker ps -a -q) ]] && docker rm -f $(docker ps -a -q) || true",
     },
     {
       "label": "docker: remove volumes",
       "type": "shell",
-      "command": "[[ $(docker volume ls -q ]] && docker volume rm $(docker volume ls -q) || true",
-      "presentation": { "reveal": "silent" }
+      "command": "[[ $(docker volume ls -q) ]] && docker volume rm $(docker volume ls -q) || true",
     },
     {
       "label": "Nuke Docker Environment",
