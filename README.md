@@ -8,6 +8,7 @@
 
 - [About this project](#about-this-project)
   - [External dependencies](#external-dependencies)
+  - [Infrastructure](#infrastructure)
 
 - [Get started](#get-started)
   - [Prerequisites](#prerequisites)
@@ -31,6 +32,10 @@ It is built using [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (for
 ### External dependencies
 This solution is dependent on:
 - [CFO Data Management System (DMS)](https://github.com/ministryofjustice/CFO-DataManagementSystem) for information sourced from the National Offender Management Information System (NOMIS) via Offloc, and nDelius via the cfoextract. DMS aggregates this information and exposes it to CATS via the DMS API.
+
+### Infrastructure
+
+This service is deployed to the [MoJ Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk) using the shared [generic-service Helm chart](https://github.com/ministryofjustice/hmpps-helm-charts/tree/main/charts/generic-service), see [`helm_deploy`](helm_deploy/) for configuration.
 
 ## Get started
 
