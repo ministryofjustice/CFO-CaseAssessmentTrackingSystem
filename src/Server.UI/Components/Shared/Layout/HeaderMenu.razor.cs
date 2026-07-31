@@ -27,7 +27,22 @@ public partial class HeaderMenu
         await base.OnInitializedAsync();
     }
 
-    private async void OnNotificationsRefreshed() => await InvokeAsync(StateHasChanged);
+    private async void OnNotificationsRefreshed() =>
+        await InvokeAsync(async () =>
+        {
+            _notifications = await NotificationService.GetNotificationCount(CurrentUser.UserId);
+            StateHasChanged();
+        });
 
     protected void GotoNotifiations() => NavigationManager.NavigateTo(MyAreaLinks.Notifications.Href, false);
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            NotificationService.OnRefreshed -= OnNotificationsRefreshed;
+        }
+
+        base.Dispose(disposing);
+    }
 }
