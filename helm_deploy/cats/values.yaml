@@ -136,6 +136,10 @@ generic-service:
       HTTPS_PROXY: "HTTPS_PROXY"
       HTTP_PROXY: "HTTP_PROXY"
       NO_PROXY: "NO_PROXY"
+    hmpps-external-api-credentials:
+      HmppsExternalApi__ClientCertBase64: "client-pfx-base64"
+      HmppsExternalApi__ClientCertPassword: "pfx-password"
+      HmppsExternalApi__ApiKey: "api-key"
 
   env:
     ConnectionStrings__CatsDb: *catsDb
