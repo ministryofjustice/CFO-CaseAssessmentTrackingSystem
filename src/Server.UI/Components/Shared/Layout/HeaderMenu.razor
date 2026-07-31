@@ -25,16 +25,7 @@
                 </MudLink>
             </MudHidden>
             <MudSpacer/>
-            <div style="--mud-palette-text-primary: #FFFFFF; --mud-palette-text-secondary: #CCCCCC; --mud-palette-action-default: #FFFFFF;">
-                <MudAutocomplete 
-                    T="string" 
-                    Adornment="Adornment.Start" 
-                    AdornmentIcon="@Icons.Material.Filled.Search"
-                    Clearable="true"
-                    Placeholder="CTRL + K to search..."
-                    @ref="_searchBox">
-                </MudAutocomplete>
-            </div>
+            <HeaderSearch />
             <SessionTimeoutDisplay />
 
             <MudAvatar>
