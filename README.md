@@ -1,66 +1,55 @@
-
-[![Run Tests](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml)
+# CFO Case Assessment Tracking System (CATS)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/CFO-CaseAssessmentTrackingSystem/badge?style=flat)](https://github-community.service.justice.gov.uk/repository-standards/CFO-CaseAssessmentTrackingSystem)
+[![Docker Repository on ghcr](https://img.shields.io/badge/ghcr.io-repository-2496ED.svg?logo=docker)](https://ghcr.io/ministryofjustice/hmpps-cfo-cats)
+[![Pipeline](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/pipeline.yml/badge.svg?branch=main)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/pipeline.yml)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Issues](https://img.shields.io/github/issues/ministryofjustice/CFO-CaseAssessmentTrackingSystem)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/issues)
-[![GitHub Repo stars](https://img.shields.io/github/stars/ministryofjustice/CFO-CaseAssessmentTrackingSystem?color=594ae2&style=flat-square&logo=github)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/stargazers)
-[![Contributors](https://img.shields.io/github/contributors/ministryofjustice/CFO-CaseAssessmentTrackingSystem?color=594ae2&style=flat-square&logo=github)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/graphs/contributors)
-[![Pull Requests](https://img.shields.io/github/issues-pr/ministryofjustice/CFO-CaseAssessmentTrackingSystem)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/pulls)
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/CFO-CaseAssessmentTrackingSystem/badge)](https://github-community.service.justice.gov.uk/repository-standards/CFO-CaseAssessmentTrackingSystem)
 
+## Contents
 
-# Overview
+- [About this project](#about-this-project)
+  - [External dependencies](#external-dependencies)
 
-HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracking System (CATS) to support delivery of [CFO Evolution](https://www.CreatingFutureOpportunities.gov.uk) . The programme utilises external funding to perform rehabilitative services with offenders in custody and the community. Approx. 600 users from non-government organisations use CATS to record work performed with offenders creating an evidence base that supports performance management, payments to providers, ongoing research and audits from external bodies.
+- [Get started](#get-started)
+  - [Prerequisites](#prerequisites)
 
-# Interfaces/Systems (Backend interface for surfacing the data to the front end)
+- [Usage](#usage)
+  - [Running the application locally](#running-the-application-locally)
+  - [Build automation with Cake](#build-automation-with-cake)
 
-* [.NET 10](https://dotnet.microsoft.com/en-us/download)
-* [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet)
+## About this project
 
-# Mechanism (How does it communicate with other systems? Frequency of data pull/push, reporting, events etc) 
+HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracking System (CATS) to support delivery of [CFO Evolution](https://www.CreatingFutureOpportunities.gov.uk). The programme utilises external funding to perform rehabilitative services with offenders in custody and the community. Approx. 600 users (100 concurrent) from non-government organisations use CATS to record work performed with offenders creating an evidence base that supports performance management, payments to providers, ongoing research and audits from external bodies.
 
-CATS relies on the external data from Nomis and Delius. This is aggregated and managed by the [CFO Data Management System](https://github.com/ministryofjustice/CFO-DataManagementSystem).
-
-
-# Technology (What's the technology that drives the product? i.e. Azure, java script etc) 
-
-* ASP.NET Core (Blazor)
+It is built using [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (for cross-platform development), and relies on the following technologies & languages:
 * C#
-* LINQ
-* Entity Framework (runtime ORM)
-* SQL Project (database schema management)
-* SQL Server
+* LINQ & Entity Framework (runtime ORM)
+* Microsoft SQL Server & [SQL Project](https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/sql-database-projects) (database + schema management)
 * HTML, CSS, Javascript
-* Dotnet Aspire
 
-# No. of users 
+### External dependencies
+This solution is dependent on:
+- [CFO Data Management System (DMS)](https://github.com/ministryofjustice/CFO-DataManagementSystem) for information sourced by National Offender Management Information System (NOMIS) via Offloc, and nDelius via the cfoextract. This information is aggregated by DMS, and ingested into CATS via the DMS API.
 
-600 (approx. 100 concurrent)
+## Get started
 
-# Development Setup and Execution Guide
-## Prerequisites
+### Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [Docker](https://docs.docker.com/engine/install/)
 - **Visual Studio Code users**:
     - [C# Dev Kit Extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
     - [Aspire Extension (& CLI)](https://marketplace.visualstudio.com/items?itemName=microsoft-aspire.aspire-vscode)
 
-## Running the apps
+
+## Usage
+
+### Running the application locally
 The recommended way to run and debug these apps is using .NET Aspire.
 - **Using Visual Studio Code**: open the project and press `F5`, selecting the *Default Configuration*.
 - **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Cats.AppHost` and start the application.
 
-On startup, Aspire automatically applies the SQL Project schema to the local SQL Server container before starting the application. The `DatabaseSeeding` project then runs to seed any required reference data. No manual migration steps are needed for local development.
+On startup, Aspire automatically applies the [CatsDb SQL Project](src/Database/CatsDb/) schema to the local SQL Server container before starting the application. The [Database Seeding](src/DatabaseSeeding/) project seeds any required reference data.
 
-## Database schema
-
-The database schema is managed via a SQL Project at `src/Database/CatsDb/CatsDb.sqlproj` (using the `Microsoft.Build.Sql` SDK). Schema is defined as `.sql` files organised by SQL schema (e.g. `Activities/`, `Enrolment/`, `Identity/`).
-
-When running locally via Aspire, the `CatsSqlProj` resource deploys the SQL Project to the local SQL Server container automatically. EF Core is used as the runtime ORM only — it no longer manages migrations.
-
-> **Note:** The SQL Project deployment is skipped when publishing to Kubernetes (`WithSkipWhenDeployed()`). The schema must be applied to the target database separately before deploying a new release.
-
-## Build automation with Cake
+### Build automation with Cake
 
 This repository includes a file-based Cake script at `cake.cs`. Run it from the repository root with:
 
@@ -98,54 +87,3 @@ The `Publish` target writes output to:
 - `artifacts/Server.UI`
 - `artifacts/DatabaseSeeding`
 - `artifacts/CatsDb.dacpac`
-
----
-
-## Publishing (preview)
-
-This repository uses [Aspire]("https://github.com/dotnet/aspire") for service composition (dependency injection, service discovery, and configuration management). 
-
-Aspire is also used to provide a Kubernetes publishing workflow that is currently in preview: container image build & push, and generation/packaging of Kubernetes manifests & Helm charts.
-
-Prerequisites
-- Docker (for image builds)
-- Access to a container registry (credentials configured)
-- kubectl and a valid kubeconfig with cluster access
-- Helm (for chart-based deployments)
-
-### Build and publish image
-```
-IMAGE_NAME=hmpps-cfo/cats
-TAG=latest
-REGISTRY=registry.mycorp.com:1234
-
-# Locally
-dotnet publish src/Server.UI/Server.UI.csproj \
-    --configuration Release \
-    --os linux \
-    --arch x64 \
-    --target:PublishContainer \
-    --property:ContainerRepository=$IMAGE_NAME \
-    --property:ContainerImageTag=$TAG
-
-# or to a remote registry (with the ContainerRegistry property)
-dotnet publish src/Server.UI/Server.UI.csproj \
-    --configuration Release \
-    --os linux \
-    --arch x64 \
-    --target:PublishContainer \
-    --property:ContainerRegistry=$REGISTRY \
-    --property:ContainerRepository=$IMAGE_NAME \
-    --property:ContainerImageTag=$TAG
-```
-
-### Generate Kubernetes manifests & Helm charts
-```
-dotnet aspire publish -o aspire-output
-```
-
-### Deploy (using Helm upgrade)
-```
-helm upgrade --install aspire ./aspire-output --namespace default \
-    --set parameters.cats.cats_image=$IMAGE
-```
