@@ -45,8 +45,8 @@
         </MudTd>    
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
-                <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
+                <MudText Typo="Typo.body1">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
             </div>
         </MudTd>
         <MudTd DataLabel="Status">
@@ -57,25 +57,25 @@
         </MudTd>
         <MudTd DataLabel="Occurred">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                <MudText Typo="Typo.body2">@context.MoveOccured.Humanize()</MudText>
+                <MudText Typo="Typo.body1">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body1">@context.MoveOccured.Humanize()</MudText>
             </div>
         </MudTd>
         <MudTd DataLabel="From">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.FromLocation.Name</MudText>
+                <MudText Typo="Typo.body1">@context.FromLocation.Name</MudText>
                 @if(context.FromContract is not null)
                 {
-                    <MudText Typo="Typo.body2">@context.FromContract</MudText>
+                    <MudText Typo="Typo.body1">@context.FromContract</MudText>
                 }
             </div>
         </MudTd>
         <MudTd DataLabel="To">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.ToLocation.Name</MudText>
+                <MudText Typo="Typo.body1">@context.ToLocation.Name</MudText>
                 @if(context.ToContract is not null)
                 {
-                    <MudText Typo="Typo.body2">@context.ToContract</MudText>
+                    <MudText Typo="Typo.body1">@context.ToContract</MudText>
                 }
             </div>
         </MudTd>
@@ -120,8 +120,8 @@
         </MudTd>
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
-                <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
+                <MudText Typo="Typo.body1">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
             </div>
         </MudTd>
         <MudTd DataLabel="Status">
@@ -131,24 +131,24 @@
             }
         </MudTd>
         <MudTd DataLabel="Occurred">
-            <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-            <MudText Typo="Typo.body2">@context.MoveOccured.Humanize()</MudText>
+            <MudText Typo="Typo.body1">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+            <MudText Typo="Typo.body1">@context.MoveOccured.Humanize()</MudText>
         </MudTd>
         <MudTd DataLabel="From">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.FromLocation.Name</MudText>
+                <MudText Typo="Typo.body1">@context.FromLocation.Name</MudText>
                 @if(context.FromContract is not null)
                 {
-                    <MudText Typo="Typo.body2">@context.FromContract</MudText>
+                    <MudText Typo="Typo.body1">@context.FromContract</MudText>
                 }
             </div>
         </MudTd>
         <MudTd DataLabel="To">
             <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.ToLocation.Name</MudText>
+                <MudText Typo="Typo.body1">@context.ToLocation.Name</MudText>
                 @if(context.ToContract is not null)
                 {
-                    <MudText Typo="Typo.body2">@context.ToContract</MudText>
+                    <MudText Typo="Typo.body1">@context.ToContract</MudText>
                 }
             </div>
         </MudTd>

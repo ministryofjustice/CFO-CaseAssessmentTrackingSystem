@@ -118,8 +118,8 @@
             </MudTd>
             <MudTd>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.ParticipantName</MudText>
-                    <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
+                    <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
+                    <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
                 </div>
             </MudTd>
             <MudTd>
@@ -133,18 +133,18 @@
                 }
             </MudTd>
             <MudTd>
-                <MudText Typo="Typo.body2">@UserService.GetDisplayName(context.CreatedBy!)</MudText>
+                <MudText Typo="Typo.body1">@UserService.GetDisplayName(context.CreatedBy!)</MudText>
             </MudTd>
             <MudTd>
-                <MudText Typo="Typo.body2">@UserService.GetDisplayName(context.AssignedTo!)</MudText>
+                <MudText Typo="Typo.body1">@UserService.GetDisplayName(context.AssignedTo!)</MudText>
             </MudTd>
             <MudTd>
-                <MudText Typo="Typo.body2">@context.ExpectedReleaseRegion?.Name</MudText>
+                <MudText Typo="Typo.body1">@context.ExpectedReleaseRegion?.Name</MudText>
             </MudTd>
             <MudTd>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.ExpectedReleaseDate</MudText>
-                    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                    <MudText Typo="Typo.body1">@context.ExpectedReleaseDate</MudText>
+                    <MudText Typo="Typo.body1" Class="mud-text-secondary">
                         @(context.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.ExpectedReleaseDate.Humanize())
                     </MudText>
                 </div>
@@ -153,14 +153,14 @@
                 <div class="d-flex flex-column">
                     @if(context.ActualReleaseDate is not null)
                     {
-                        <MudText Typo="Typo.body2">@context.ActualReleaseDate</MudText>
-                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                        <MudText Typo="Typo.body1">@context.ActualReleaseDate</MudText>
+                        <MudText Typo="Typo.body1" Class="mud-text-secondary">
                             @(context.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.ActualReleaseDate.Humanize())
                         </MudText>
                     }
                     else
                     {
-                        <MudText Typo="Typo.body2" Class="mud-text-secondary">Not set</MudText>
+                        <MudText Typo="Typo.body1" Class="mud-text-secondary">Not set</MudText>
                     }
                 </div>
             </MudTd>
@@ -178,7 +178,7 @@ else
                     <MudStack>
                         <MudStack Row="true" AlignItems="AlignItems.Center">
                             <MudText Typo="Typo.h6">@item.ParticipantName</MudText>
-                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.ParticipantId</MudText>
+                            <MudText Typo="Typo.body1" Class="mud-text-secondary">@item.ParticipantId</MudText>
                             <MudSpacer />
                             @if(item.ParticipantIsActive)
                             {
@@ -195,25 +195,25 @@ else
                         <MudStack Row="true" Spacing="4">
                             <MudStack Spacing="1">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.CustodySupportWorker</MudText>
-                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
+                                <MudText Typo="Typo.body1">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
                             </MudStack>
                             
                             <MudStack Spacing="1">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.CommunitySupportWorker</MudText>
-                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
+                                <MudText Typo="Typo.body1">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
                             </MudStack>
                         </MudStack>
                         
                         <MudStack Row="true" Spacing="4">
                             <MudStack Spacing="1">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.ExpectedReleaseRegion</MudText>
-                                <MudText Typo="Typo.body2">@item.ExpectedReleaseRegion!.Name</MudText>
+                                <MudText Typo="Typo.body1">@item.ExpectedReleaseRegion!.Name</MudText>
                             </MudStack>
                             
                             <MudStack Spacing="1">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.ExpectedDateOfRelease</MudText>
-                                <MudText Typo="Typo.body2">@item.ExpectedReleaseDate</MudText>
-                                <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                <MudText Typo="Typo.body1">@item.ExpectedReleaseDate</MudText>
+                                <MudText Typo="Typo.body1" Class="mud-text-secondary">
                                     @(item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ExpectedReleaseDate.Humanize())
                                 </MudText>
                             </MudStack>
@@ -222,8 +222,8 @@ else
                             {
                                 <MudStack Spacing="1">
                                     <MudText Typo="Typo.caption" Class="mud-text-secondary">@ConstantString.ActualReleaseDate</MudText>
-                                    <MudText Typo="Typo.body2">@item.ActualReleaseDate</MudText>
-                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                    <MudText Typo="Typo.body1">@item.ActualReleaseDate</MudText>
+                                    <MudText Typo="Typo.body1" Class="mud-text-secondary">
                                         @(item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ActualReleaseDate.Humanize())
                                     </MudText>
                                 </MudStack>

@@ -28,13 +28,22 @@ public static class GetServiceDeskQueueSummary
                 {
                     EnrolmentQa1Count = await unitOfWork.DbContext.EnrolmentQa1Queue
                         .AsNoTracking()
-                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false, cancellationToken),
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId == null, cancellationToken),
                     EnrolmentQa2Count = await unitOfWork.DbContext.EnrolmentQa2Queue
                         .AsNoTracking()
-                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false, cancellationToken),
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId == null, cancellationToken),
                     EnrolmentEscalationCount = await unitOfWork.DbContext.EnrolmentEscalationQueue
                         .AsNoTracking()
-                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false, cancellationToken)
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId == null, cancellationToken),
+                    EnrolmentQa1InProgress = await unitOfWork.DbContext.EnrolmentQa1Queue
+                        .AsNoTracking()
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId != null, cancellationToken),
+                    EnrolmentQa2InProgress = await unitOfWork.DbContext.EnrolmentQa2Queue
+                        .AsNoTracking()
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId != null, cancellationToken),
+                    EnrolmentEscalationInProgress = await unitOfWork.DbContext.EnrolmentEscalationQueue
+                        .AsNoTracking()
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId != null, cancellationToken),
                 };
             }
 
@@ -44,13 +53,22 @@ public static class GetServiceDeskQueueSummary
                 {
                     ActivityQa1Count = await unitOfWork.DbContext.ActivityQa1Queue
                         .AsNoTracking()
-                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false, cancellationToken),
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId == null, cancellationToken),
                     ActivityQa2Count = await unitOfWork.DbContext.ActivityQa2Queue
                         .AsNoTracking()
-                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false, cancellationToken),
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId == null, cancellationToken),
                     ActivityEscalationCount = await unitOfWork.DbContext.ActivityEscalationQueue
                         .AsNoTracking()
-                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false, cancellationToken)
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId == null, cancellationToken),
+                    ActivityQa1InProgress = await unitOfWork.DbContext.ActivityQa1Queue
+                        .AsNoTracking()
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId != null, cancellationToken),
+                    ActivityQa2InProgress = await unitOfWork.DbContext.ActivityQa2Queue
+                        .AsNoTracking()
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId != null, cancellationToken),
+                    ActivityEscalationInProgress = await unitOfWork.DbContext.ActivityEscalationQueue
+                        .AsNoTracking()
+                        .CountAsync(x => x.TenantId.StartsWith(tenantId) && x.IsCompleted == false && x.OwnerId != null, cancellationToken)
                 };
             }
 

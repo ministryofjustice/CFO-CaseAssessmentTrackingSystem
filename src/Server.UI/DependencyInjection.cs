@@ -49,7 +49,7 @@ public static class DependencyInjection
                 mudServicesConfiguration.SnackbarConfiguration.PositionClass = Defaults
                     .Classes
                     .Position
-                    .TopCenter;
+                    .BottomRight;
                 mudServicesConfiguration.SnackbarConfiguration.PreventDuplicates = false;
                 mudServicesConfiguration.SnackbarConfiguration.NewestOnTop = true;
                 mudServicesConfiguration.SnackbarConfiguration.ShowCloseIcon = true;
@@ -57,7 +57,6 @@ public static class DependencyInjection
                 mudServicesConfiguration.SnackbarConfiguration.HideTransitionDuration = 500;
                 mudServicesConfiguration.SnackbarConfiguration.ShowTransitionDuration = 500;
                 mudServicesConfiguration.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-                mudServicesConfiguration.SnackbarConfiguration.PreventDuplicates = false;
             });
 
         services.AddMudPopoverService(options => {

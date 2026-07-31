@@ -159,20 +159,20 @@
             </MudTd>
             <MudTd>
                 <MudStack>
-                    <MudText Typo="Typo.body2">
+                    <MudText>
                         @context.CommencedOn.Date.ToString("d")
                     </MudText>
-                    <MudText Typo="Typo.body2">
+                    <MudText>
                         @context.CommencedOn.Date.Humanize()
                     </MudText>
                 </MudStack>
             </MudTd>
             <MudTd>
                 <MudStack>
-                    <MudText Typo="Typo.body2">
+                    <MudText>
                         @context.Created.Date.ToString("d")
                     </MudText>
-                    <MudText Typo="Typo.body2">
+                    <MudText>
                         @context.Created.Humanize()
                     </MudText>
                 </MudStack>
@@ -181,15 +181,15 @@
                 <MudTooltip Text="Must be processed up to 3 months after completion">
                     @if (context.Expiry < DateTime.Today)
                     {
-                        <MudText Typo="Typo.body2">Expired</MudText>
+                        <MudText>Expired</MudText>
                     }
                     else
                     {
                         <MudStack>
-                            <MudText Typo="Typo.body2">
+                            <MudText >
                                 @context.Expiry.Date.ToString("d")
                             </MudText>
-                            <MudText Typo="Typo.body2">
+                            <MudText>
                                 @if (context.Expiry == DateTime.Today)
                                 {
                                     @("Today")

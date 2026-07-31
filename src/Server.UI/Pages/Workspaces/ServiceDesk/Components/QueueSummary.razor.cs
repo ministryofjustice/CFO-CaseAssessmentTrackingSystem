@@ -22,44 +22,10 @@ public partial class QueueSummary
     public EventCallback<string> OnViewQueueNavigate { get; set; }
 
     private bool _grabbing;
-    private int _enrolmentQa1Count;
-    private int _enrolmentQa2Count;
-    private int _enrolmentEscalationCount;
-    private int _activityQa1Count;
-    private int _activityQa2Count;
-    private int _activityEscalationCount;
-    private string? _lastTenantId;
-    private string? _lastUserId;
-    private bool _lastShowEnrolments = true;
-    private bool _lastShowActivities = true;
-    private bool _hasLoadedOnce;
 
     private bool CanViewFirstPass => HasAnyRole(RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
     private bool CanViewSecondPass => HasAnyRole(RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
     private bool CanViewEscalation => HasAnyRole(RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.SystemSupport);
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (CurrentUser is null)
-        {
-            return;
-        }
-
-        var hasChanged = _lastTenantId != TenantId
-            || _lastUserId != CurrentUser.UserId
-            || _lastShowEnrolments != ShowEnrolments
-            || _lastShowActivities != ShowActivities;
-
-        _lastTenantId = TenantId;
-        _lastUserId = CurrentUser.UserId;
-        _lastShowEnrolments = ShowEnrolments;
-        _lastShowActivities = ShowActivities;
-
-        if (_hasLoadedOnce && hasChanged)
-        {
-            await RefreshAsync();
-        }
-    }
 
     protected override IQuery<Result<ServiceDeskQueueSummaryDto>> CreateQuery() =>
         new GetServiceDeskQueueSummary.Query
@@ -68,21 +34,6 @@ public partial class QueueSummary
             ShowEnrolments = ShowEnrolments,
             ShowActivities = ShowActivities
         };
-
-    protected override void OnDataLoaded(ServiceDeskQueueSummaryDto data)
-    {
-        _enrolmentQa1Count = data.EnrolmentQa1Count;
-        _enrolmentQa2Count = data.EnrolmentQa2Count;
-        _enrolmentEscalationCount = data.EnrolmentEscalationCount;
-        _activityQa1Count = data.ActivityQa1Count;
-        _activityQa2Count = data.ActivityQa2Count;
-        _activityEscalationCount = data.ActivityEscalationCount;
-        _hasLoadedOnce = true;
-        base.OnDataLoaded(data);
-    }
-
-    private static Color GetCountColor(int _) => Color.Default;
-
     private async Task GrabEnrolmentQa1()
     {
         if (_grabbing)
@@ -206,11 +157,6 @@ public partial class QueueSummary
             _grabbing = false;
         }
     }
-
-    private Task ViewQueue(string target) =>
-        OnViewQueueNavigate.HasDelegate
-            ? OnViewQueueNavigate.InvokeAsync(target)
-            : Task.CompletedTask;
 
     private bool HasAnyRole(params string[] roles) =>
         CurrentUser.AssignedRoles.Any(userRole => roles.Contains(userRole));

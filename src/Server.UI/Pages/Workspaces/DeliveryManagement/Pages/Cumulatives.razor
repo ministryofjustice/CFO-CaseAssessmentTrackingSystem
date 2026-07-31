@@ -16,39 +16,53 @@
 }
 else
 {
-    <MudGrid Class="mt-2">
-        <MudItem xs="12" md="2">
-            <MudSelect T="int" Label="Month" @bind-Value="Month">
-                @foreach (var month in Enumerable.Range(1, 12))
-                {
-                    <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" md="1">
-            <MudSelect T="int" Label="Year" @bind-Value="Year">
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+
+         <MudMenu Size="MudBlazor.Size.Small" 
+             Variant="Variant.Text" 
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+             Label="@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month)">
+            @foreach (var month in Enumerable.Range(1, 12))
+            {
+                <MudMenuItem OnClick="@(() => OnMonthChanged(month))">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudMenuItem>
+            }
+        </MudMenu>
+
+        <MudMenu Size="MudBlazor.Size.Small" 
+            Variant="Variant.Text" 
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+            Label="@Year.ToString()">
                 @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
                 {
-                    <MudSelectItem Value="year">@year</MudSelectItem>
+                    <MudMenuItem Label="@year.ToString()" OnClick="@(() => OnYearChanged(year))" />
                 }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" md="3">
-            <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
-        </MudItem>
-        <MudSpacer />
-        <MudItem xs="12" md="2">
-            <MudLoadingButton 
-                        Loading="@_downloading"
-                       Variant="Variant.Filled"
-                       Color="Color.Secondary"
-                       StartIcon="@Icons.Material.Filled.CloudDownload"
-                       Size="Size.Small"
-                       OnClick="OnExport">
-                       @ConstantString.Export
-            </MudLoadingButton>
-        </MudItem>
-    </MudGrid>
+        </MudMenu>
+
+        <MudMenu Size="MudBlazor.Size.Small"
+            Variant="Variant.Text"
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+            Label="@(SelectedContract is null ? "Contract" : SelectedContract.Name )">
+                @foreach(var c in ContractService.GetVisibleContracts(CurrentUser.TenantId!))
+                {
+                    <MudMenuItem Label="@c.Name" OnClick="@(() => OnContractChanged(c))" />
+                }
+        </MudMenu>
+
+        <MudTooltip Text="Clear search parameters">
+            <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" />
+        </MudTooltip>
+
+        <MudLoadingButton 
+            Loading="@_downloading"
+            Variant="Variant.Filled"
+            Color="Color.Secondary"
+            StartIcon="@Icons.Material.Filled.CloudDownload"
+            Size="Size.Small"
+            OnClick="OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
 
     <CumulativeDetailsComponent @key="@($"{Month}-{Year}-{SelectedContract?.Id}-LastMonth")" 
                                 EndDate="new DateOnly(Year, Month, 1).AddDays(-1)" 
