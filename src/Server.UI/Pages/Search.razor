@@ -1,0 +1,169 @@
+@page "/pages/search/{Keyword}"
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Models.NavigationMenu
+@using Cfo.Cats.Server.UI.Services.Navigation
+@inherits OwningComponentBase<IMediator>
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+@inject IAsyncMenuService MenuService
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+}
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
+    <MudText Typo="Typo.h2" Class="mb-4">Search</MudText>
+
+    <MudTextField T="string"
+                  Value="@Keyword"
+                  ValueChanged="SearchChanged"
+                  Immediate="true"
+                  Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Search"
+                  Clearable="true"
+                  OnKeyDown="OnKeyDown"
+                  Placeholder="Search for pages or participants by name or identifier..."
+                  Class="mb-6" />
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_results.Count == 0 && !string.IsNullOrWhiteSpace(_searchedKeyword))
+    {
+        <MudAlert Severity="Severity.Warning">No results match "@_searchedKeyword".</MudAlert>
+    }
+    else if (_results.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info">Enter a search term..</MudAlert>
+    }
+    else
+    {
+        <MudList T="string">
+            @foreach (var result in _results)
+            {
+                @switch (result)
+                {
+                    case PageResult page:
+                        <MudListItem T="string"
+                                     Icon="@Icons.Material.Filled.Description"
+                                     Href="@(page.Href)">
+                            <MudText Typo="Typo.body1">
+                                <MudHighlighter HighlightedText="@_searchedKeyword" Text="@(page.DisplayText)" />
+                            </MudText>
+                            <MudText Typo="Typo.caption">Page</MudText>
+                        </MudListItem>
+                        break;
+                    case ParticipantResult participant:
+                        <MudListItem T="string"
+                                     Icon="@Icons.Material.Filled.Person"
+                                     Href="@($"/pages/workspace/participants/{participant.Participant.Id}")">
+                            <MudText Typo="Typo.body1">
+                                <MudHighlighter HighlightedText="@_searchedKeyword" Text="@participant.Participant.FullName" />
+                            </MudText>
+                            <MudText Typo="Typo.caption">
+                                @participant.Participant.Id@(string.IsNullOrWhiteSpace(participant.Participant.CurrentLocation) ? "" : $" - {participant.Participant.CurrentLocation}")
+                            </MudText>
+                        </MudListItem>
+                        break;
+                }
+            }
+        </MudList>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public string Keyword { get; set; } = string.Empty;
+
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = default!;
+
+    private readonly List<PageResult> _pages = [];
+    private List<SearchResult> _results = [];
+    private string _search = string.Empty;
+    private string _searchedKeyword = string.Empty;
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState;
+        var menu = await MenuService.GetFeaturesAsync(state.User);
+
+        foreach (var section in menu.Sections)
+        {
+            foreach (var item in section.Links)
+            {
+                switch (item)
+                {
+                    case NavigationMenuItemLinkModel { Href: { Length: > 0 } href } link:
+                        _pages.Add(new PageResult(link.DisplayText, href));
+                        break;
+                    case NavigationMenuItemButtonModel { Href: { Length: > 0 } href } button:
+                        _pages.Add(new PageResult(button.DisplayText, href));
+                        break;
+                }
+            }
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _search = Keyword;
+        await SearchAsync(Keyword);
+    }
+
+    private async Task SearchAsync(string keyword)
+    {
+        try
+        {
+            _searchedKeyword = keyword;
+            _loading = true;
+
+            if(string.IsNullOrWhiteSpace(keyword))
+            {
+                _results = [];
+            }
+            else
+            {
+                var result = await Service.Send(new SearchParticipants.Query
+                {
+                    Keyword = keyword,
+                    CurrentUser = CurrentUser
+                });
+
+                var participants = result.Succeeded && result.Data is not null
+                    ? result.Data.Select(participant => new ParticipantResult(participant))
+                    : [];
+
+                _results = _pages
+                    .Where(page => page.DisplayText.Contains(keyword, StringComparison.InvariantCultureIgnoreCase))
+                    .Cast<SearchResult>()
+                    .Concat(participants)
+                    .OrderBy(searchResult => searchResult.DisplayText)
+                    .ToList();
+            }
+
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void SearchChanged(string value) => _search = value;
+
+    private async Task OnKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key != "Enter")
+        {
+            return;
+        }
+
+        await SearchAsync(_search.Trim());
+    }
+
+    private abstract record SearchResult(string DisplayText);
+    private sealed record PageResult(string DisplayText, string Href) : SearchResult(DisplayText);
+    private sealed record ParticipantResult(ParticipantSearchResultDto Participant)
+        : SearchResult(Participant.FullName);
+}
