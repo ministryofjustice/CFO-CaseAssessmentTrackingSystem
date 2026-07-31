@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Cake Clean",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "cake.cs",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Cake Publish",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "cake.cs",
+        "--target",
+        "publish"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "docker: stop containers",
+      "type": "shell",
+      "command": "[[ $(docker ps -q) ]] && docker stop $(docker ps -q) || true",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "docker: remove containers",
+      "type": "shell",
+      "command": "[[ $(docker ps -q) ]] && docker rm -f $(docker ps -a -q) || true",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "docker: remove volumes",
+      "type": "shell",
+      "command": "[[ $(docker volume ls -q ]] && docker volume rm $(docker volume ls -q) || true",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "Nuke Docker Environment",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "docker: stop containers",
+        "docker: remove containers",
+        "docker: remove volumes"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
