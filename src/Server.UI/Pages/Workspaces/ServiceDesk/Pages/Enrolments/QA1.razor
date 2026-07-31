@@ -1,5 +1,6 @@
-@page "/pages/qa/enrolments/qa1/"
 @page "/pages/workspace/servicedesk/enrolments/qa1"
+@page "/pages/workspace/servicedesk/enrolments/qa1/{QueueEntryId:guid}"
+@page "/pages/workspace/servicedesk/enrolments/qa1/{Action}"
 @inherits CatsComponentBase
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 

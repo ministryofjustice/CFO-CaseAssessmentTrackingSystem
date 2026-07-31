@@ -19,23 +19,29 @@
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
     <MudSwitch T="bool" @bind-Value="_visualMode" Color="Color.Info" Label="Visual Mode" />
+
+    <MudSpacer />
     
-    <MudSelect T="int" Label="Month" @bind-Value="_selectedMonth" @bind-Value:after="OnMonthOrYearChanged">
+    <MudMenu Size="MudBlazor.Size.Small" 
+             Variant="Variant.Text" 
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+             Label="@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Query.Month)">
         @foreach (var month in Enumerable.Range(1, 12))
         {
-            <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
+            <MudMenuItem OnClick="@(() => OnMonthChanged(month))">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudMenuItem>
         }
-    </MudSelect>
+    </MudMenu>
 
-    <MudSelect T="int" Label="Year" @bind-Value="_selectedYear" @bind-Value:after="OnMonthOrYearChanged">
+    <MudMenu Size="MudBlazor.Size.Small" 
+             Variant="Variant.Text" 
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+             Label="@Query.Year.ToString()">
         @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
         {
-            <MudSelectItem Value="year">@year</MudSelectItem>
+            <MudMenuItem Label="@year.ToString()" OnClick="@(() => OnYearChanged(year))">@year</MudMenuItem>
         }
-    </MudSelect>
+    </MudMenu>
     
-    <MudSpacer />
-
     <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="ShowLocationDialog"
                EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
         @(_selectedLocationId == 0 ? "All Locations" : _locations[_selectedLocationId])
@@ -109,9 +115,6 @@ else
     {
         <MudTable @ref="_table" ServerData="ServerReload" Hover="true" Striped="true"
                     Class="mt-4" Dense="true">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Participant details</MudText>
-            </ToolBarContent>
             <HeaderContent>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Current Location</MudTableSortLabel></MudTh>
