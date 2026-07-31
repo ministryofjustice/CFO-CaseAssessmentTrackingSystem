@@ -1,0 +1,47 @@
+@using Toolbelt.Blazor.HotKeys2
+@implements IAsyncDisposable
+
+<div style="--mud-palette-text-primary: #FFFFFF; --mud-palette-text-secondary: #CCCCCC; --mud-palette-action-default: #FFFFFF;">
+    <MudTextField T="string"
+                  @bind-Value="_search"
+                  Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Search"
+                  Clearable="true"
+                  Immediate="true"
+                  OnKeyDown="OnKeyDown"
+                  Placeholder="CTRL + K to search..."
+                  @ref="_searchBox" />
+</div>
+
+@code {
+    [Inject] private HotKeys HotKeys { get; set; } = null!;
+
+    private MudTextField<string>? _searchBox;
+    private HotKeysContext? _hotKeysContext;
+    private string? _search;
+
+    protected override void OnInitialized()
+    {
+        _hotKeysContext = HotKeys.CreateContext()
+            .Add(ModCode.Ctrl, Code.K, () => _searchBox?.FocusAsync());
+    }
+
+    private void OnKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key != "Enter" || string.IsNullOrWhiteSpace(_search))
+        {
+            return;
+        }
+
+        Navigation.NavigateTo($"/pages/search/{Uri.EscapeDataString(_search.Trim())}");
+        _search = null;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hotKeysContext is not null)
+        {
+            await _hotKeysContext.DisposeAsync();
+        }
+    }
+}
