@@ -34,4 +34,16 @@ public class UserProfile
 
     public bool HasInternalRole()
         => AssignedRoles.Any(a => RoleNames.InternalRoles.Contains(a));
+
+    public string Initials
+    {
+        get
+        {
+            var parts = DisplayName!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            return parts.Length == 1
+                ? parts[0][..1].ToUpperInvariant()
+                : $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
+        }
+    }
 }
