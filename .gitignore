@@ -485,3 +485,6 @@ aspire-output/
 # Helm
 helm_deploy/*/charts/
 helm_deploy/*/Chart.lock
+
+# zed files
+.zed/
