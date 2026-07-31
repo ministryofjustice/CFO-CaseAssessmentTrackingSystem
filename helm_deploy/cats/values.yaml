@@ -152,6 +152,7 @@ generic-service:
     Features__UseSignalRBackplane: "true"
     Features__DmsHardLinkApiEnabled: "true"
     Features__EnablePrometheusScrapingEndpoint: "true"
+    Features__HmppsExternalApi__Enabled: "true"
     WorkerOptions__BaseUrl: "http://cats-worker:8080"
     Sentry__Release: "0.0.0"                    # overridden by CI
     AppConfigurationSettings__Version: "0.0.0"  # overridden by CI
