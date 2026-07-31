@@ -27,8 +27,6 @@ public partial class EngagementsByLocation
     // Sentinel-backed filter selections: 0 / empty string represent "All".
     private int _selectedLocationId;
     private string _selectedEngagementType = string.Empty;
-    private int _selectedMonth = DateTime.Now.Month;
-    private int _selectedYear = DateTime.Now.Year;
 
     private EngagementsByLocationDto? _data;
     private MudTable<ParticipantEngagementDto> _table = null!;
@@ -59,8 +57,8 @@ public partial class EngagementsByLocation
         {
             CurrentUser = CurrentUser,
             JustMyCases = _isTenantLevel is false,
-            Month = _selectedMonth,
-            Year = _selectedYear
+            Month = DateTime.Now.Month,
+            Year = DateTime.Now.Year
         };
 
         _options = BuildChartOptions();
@@ -173,10 +171,15 @@ public partial class EngagementsByLocation
                 ?? new EngagementLocationCategoryCountDto(location, category, 0))
             .ToArray();
 
-    private async Task OnMonthOrYearChanged()
+    private async Task OnMonthChanged(int month)
     {
-        Query.Month = _selectedMonth;
-        Query.Year = _selectedYear;
+        Query.Month = month;
+        await OnRefresh();
+    }
+
+    private async Task OnYearChanged(int year)
+    {
+        Query.Year = year;
         await OnRefresh();
     }
 
@@ -264,14 +267,12 @@ public partial class EngagementsByLocation
         _selectedEngagementType = string.Empty;
         _selectedLocationId = 0;
         _selectedTenantName = null;
-        _selectedMonth = DateTime.Now.Month;
-        _selectedYear = DateTime.Now.Year;
 
         Query.TenantId = null;
         Query.LocationId = null;
         Query.EngagementType = null;
-        Query.Month = _selectedMonth;
-        Query.Year = _selectedYear;
+        Query.Month = DateTime.Now.Month;
+        Query.Year = DateTime.Now.Year;
 
         await OnRefresh();
     }
