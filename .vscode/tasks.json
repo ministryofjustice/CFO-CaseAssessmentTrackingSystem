@@ -16,6 +16,21 @@
         "isDefault": false
       }
     },
+        {
+      "label": "Cake Test",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "cake.cs",
+        "--target",
+        "Test"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
     {
       "label": "Cake Publish",
       "type": "process",
