@@ -11,11 +11,11 @@
 <DeliveryManagementPageHeader />
 
 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="my-4">
-    <MudText Typo="Typo.body2">
+    <MudText Typo="Typo.body1">
         This dashboard groups @( _isTenantLevel ? "every participant in your tenant" : "the participants assigned to you" )
         by their <strong>current location</strong> and shows, for each location, how recently they last engaged.
     </MudText>
-    <MudText Typo="Typo.body2" Class="mt-1">
+    <MudText Typo="Typo.body1" Class="mt-1">
         <strong>Last 3 months</strong> counts participants whose most recent engagement was on or after
         @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).
         <strong>More than 3 months ago</strong> counts participants who last engaged before that date, or who have never engaged.
@@ -127,7 +127,7 @@ else
                 <MudTd DataLabel="Participant">
                     <MudStack Spacing="0">
                         <MudText>@context.FullName</MudText>
-                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=latest-engagements")>
+                        <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=latest-engagements")>
                             @context.ParticipantId
                         </MudLink>
                     </MudStack>

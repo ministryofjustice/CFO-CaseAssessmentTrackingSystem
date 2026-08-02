@@ -79,7 +79,7 @@
                 <MudTd>
                     <MudStack Spacing="0">
                     <MudText>@($"{context.FirstName} {context.LastName}")</MudText>
-                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=activities-team-feedback")>
+                        <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=activities-team-feedback")>
                             @context.ParticipantId
                         </MudLink>
                     </MudStack>
@@ -155,7 +155,7 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">
         No data available
     </MudText>
 }
