@@ -22,11 +22,11 @@ else
             <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
                 <MudCard Outlined="false" Elevation="2" Class="mb-2">
                     <MudCardContent>
-                        <MudText Typo="Typo.body2">@note.Message</MudText>
+                        <MudText Typo="Typo.body1">@note.Message</MudText>
                         
                         @if (!string.IsNullOrWhiteSpace(note.ReturnReason))
                         {
-                            <MudText Typo="Typo.body2" Class="mt-2">
+                            <MudText Typo="Typo.body1" Class="mt-2">
                                 <strong>Return Reason:</strong> @note.ReturnReason
                             </MudText>
                         }

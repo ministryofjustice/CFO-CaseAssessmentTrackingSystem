@@ -16,7 +16,7 @@
                         </dt>
                         <dd>
                             <MudTooltip Text="@Model.Created.ToString("dd/MM/yyyy hh:mm")">
-                                <MudText Typo="Typo.body2">
+                                <MudText Typo="Typo.body1">
                                     @Model.Created.Humanize()
                                 </MudText>
                             </MudTooltip>
@@ -27,7 +27,7 @@
                             <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
                         </dt>
                         <dd>
-                            <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == Model.CreatedBy).DisplayName</MudText>
+                            <MudText Typo="Typo.body1">@UserService.DataSource.First(u => u.Id == Model.CreatedBy).DisplayName</MudText>
                         </dd>
                     </div>
                     <div class="description-pair">
@@ -45,7 +45,7 @@
                                 <MudText Typo="Typo.subtitle2">@Model.GetMemberDescription(x => x.ReferredOn)</MudText>
                             </dt>
                             <dd>
-                                <MudText Typo="Typo.body2">@Model.ReferredOn.Value.ToString("dd/MM/yyyy")</MudText>
+                                <MudText Typo="Typo.body1">@Model.ReferredOn.Value.ToString("dd/MM/yyyy")</MudText>
                             </dd>
                         </div>
                     }

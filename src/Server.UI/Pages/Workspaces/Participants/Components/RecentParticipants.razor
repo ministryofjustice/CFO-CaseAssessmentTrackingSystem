@@ -25,7 +25,7 @@
             <MudListItem T="string"
                             Icon="@Icons.Material.Filled.Person"
                             OnClick="@(() => NavigateToParticipant(participant.Id))">
-                <MudText Typo="Typo.body2">@participant.FullName</MudText>
+                <MudText Typo="Typo.body1">@participant.FullName</MudText>
                 <MudText Typo="Typo.caption" Class="mud-text-secondary d-block">
                     @participant.Id@(string.IsNullOrWhiteSpace(participant.CurrentLocation) ? "" : $" · {participant.CurrentLocation}")
                 </MudText>

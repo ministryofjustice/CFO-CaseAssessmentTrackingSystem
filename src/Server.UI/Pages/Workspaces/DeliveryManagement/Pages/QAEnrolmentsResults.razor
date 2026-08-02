@@ -58,22 +58,22 @@
                     <div class="d-flex justify-space-between align-center ml-2">
                         <div class="d-flex align-center">                            
                             <div class="pr-2">
-                                <MudText Typo="Typo.body2">
+                                <MudText Typo="Typo.body1">
                                     Participant: @enrolment.Participant @enrolment.ParticipantId
                                 </MudText>
 
                                 <div class="d-flex gap-2 align-center">
-                                    <MudText Typo="Typo.body2">
+                                    <MudText Typo="Typo.body1">
                                         Submitted by: @UserService.GetDisplayName(@enrolment.SubmittedBy) on @enrolment.SubmittedOn.
                                     </MudText>
 
-                                <MudText Typo="Typo.body2">
+                                <MudText Typo="Typo.body1">
                                     @(enrolment.Status == EnrolmentStatus.ApprovedStatus
                                                         ? $"Approved On: {enrolment.CompletedOn?.ToString("g")}"
                                                         : $"Returned On: {enrolment.CompletedOn?.ToString("g")}")
                                 </MudText>
                                     
-                                <MudText Typo="Typo.body2">
+                                <MudText Typo="Typo.body1">
                                     Originally submitted on @created.ToShortDateOrEmptyString() (@created.Humanize()) at @enrolment.TookPlaceAtLocationName.
                                 </MudText>                             
                                 
