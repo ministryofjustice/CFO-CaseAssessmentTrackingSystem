@@ -69,7 +69,7 @@
             <MudTd DataLabel="Participant">
                 <MudStack>
                     <MudText>@($"{context.FirstName} {context.LastName}")</MudText>
-                    <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=riskdue")>
+                    <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=riskdue")>
                         @context.ParticipantId
                     </MudLink>
                 </MudStack>
@@ -82,11 +82,11 @@
                     <MudText>@context.DueDate.ToShortDateString()</MudText>
                     @if (context.DueDate == DateTime.Today)
                     {
-                        <MudText Typo="Typo.body2">Today</MudText>
+                        <MudText Typo="Typo.body1">Today</MudText>
                     }
                     else
                     {
-                        <MudText Typo="Typo.body2">@context.DueDate.Humanize()</MudText>
+                        <MudText Typo="Typo.body1">@context.DueDate.Humanize()</MudText>
                     }
                 </MudStack>
             </MudTd>
@@ -102,7 +102,7 @@
                 {
                     <MudStack>
                         <MudText>@context.LastRiskUpdate.Value.ToShortDateString()</MudText>
-                        <MudText Typo="Typo.body2">@context.LastRiskUpdate.Value.Humanize()</MudText>
+                        <MudText Typo="Typo.body1">@context.LastRiskUpdate.Value.Humanize()</MudText>
                     </MudStack>
                 }
             </MudTd>

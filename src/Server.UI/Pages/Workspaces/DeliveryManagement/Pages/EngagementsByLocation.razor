@@ -10,7 +10,7 @@
 <DeliveryManagementPageHeader />
 
 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="my-4">
-    <MudText Typo="Typo.body2">
+    <MudText Typo="Typo.body1">
         This dashboard groups @( _isTenantLevel ? "every participant in your tenant" : "the participants assigned to you" )
         by the <strong>location at which they last engaged</strong>, split by engagement category.
     </MudText>
@@ -127,7 +127,7 @@ else
                 <MudTd DataLabel="Participant">
                     <MudStack Spacing="0">
                         <MudText>@context.FullName</MudText>
-                        <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=engagements")>
+                        <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=engagements")>
                             @context.ParticipantId
                         </MudLink>
                     </MudStack>

@@ -64,7 +64,7 @@
 						<MudTd DataLabel="Participant">
 							<MudStack>
 								<MudText>@($"{context.ParticipantName}")</MudText>
-								<MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}")>
+								<MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}")>
 									@context.ParticipantId
 								</MudLink>
 							</MudStack>
@@ -95,11 +95,11 @@
 								<MudText>@context.CaseCreatedDate</MudText>
 								@if (context.CaseCreatedDate == DateTime.Today)
 								{
-									<MudText Typo="Typo.body2">Today</MudText>
+									<MudText Typo="Typo.body1">Today</MudText>
 								}
 								else
 								{
-									<MudText Typo="Typo.body2">@context.CaseCreatedDate.Humanize()</MudText>
+									<MudText Typo="Typo.body1">@context.CaseCreatedDate.Humanize()</MudText>
 								}
 							</MudStack>			
 						</MudTd>
