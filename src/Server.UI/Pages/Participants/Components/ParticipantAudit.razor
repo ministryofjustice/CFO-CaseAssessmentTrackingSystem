@@ -9,7 +9,7 @@
 
 @inject IStringLocalizer<ParticipantAudit> L
 
-<MudDataGrid ServerData="@(ServerReload)"
+<MudDataGrid Striped="true" Dense="true" ServerData="@(ServerReload)"
              T="AuditTrailDto"
              FixedHeader="true"
              FixedFooter="true"
@@ -84,7 +84,7 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent Class="py-3">
-                <MudSimpleTable Hover="true" Bordered="true">
+                <MudSimpleTable Striped="true" Dense="true" Hover="true" Bordered="true">
                     <thead>
                         <tr>
                             <th>@L["Field Name"]</th>

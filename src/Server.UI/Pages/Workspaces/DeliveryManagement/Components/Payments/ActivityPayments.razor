@@ -20,7 +20,7 @@
     @if (DataView)
     {
         <MudItem xs="12">
-            <MudTable Items="@Payments"
+            <MudTable Dense="true" Striped="true" Items="@Payments"
             Hover="true"
             Breakpoint="Breakpoint.Sm"
             Loading="@_loading"
@@ -149,7 +149,7 @@
     {
 
         <MudItem xs="12">
-            <MudTable Items="@SummaryData" 
+            <MudTable Dense="true" Items="@SummaryData" 
             Hover="true" 
             Breakpoint="Breakpoint.Sm" 
             Loading="_loading" 

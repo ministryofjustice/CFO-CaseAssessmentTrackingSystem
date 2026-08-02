@@ -7,7 +7,7 @@
 
 <ParticipantsPageHeader />
 
-<MudSimpleTable Class="pa-4">
+<MudSimpleTable Hover="true" Striped="true" Dense="true" Class="pa-4">
 
     <tbody>
         @foreach (var access in _participantAccess.OrderBy(p => p.HasAccessTo))
