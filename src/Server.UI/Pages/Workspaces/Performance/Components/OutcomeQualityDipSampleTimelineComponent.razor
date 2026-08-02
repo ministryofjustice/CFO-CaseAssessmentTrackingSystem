@@ -16,13 +16,13 @@
 
                 @if (date.Date == DateTime.Now.Date)
                 {
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         Today
                     </MudText>
                 }
                 else if (date.Date > consentDate.Date)
                 {
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         @((date - consentDate).Humanize()) after consent
                     </MudText>
                 }
@@ -53,15 +53,15 @@
                             </MudCardContent>
                             <MudCardActions>
                                 <MudStack AlignItems="AlignItems.End" Justify="Justify.FlexEnd" Style="width: 100%">
-                                    <MudText Typo="Typo.body2">
+                                    <MudText Typo="Typo.body1">
                                         @item.ActionedBy
                                     </MudText>
-                                    <MudText Typo="Typo.body2">
+                                    <MudText Typo="Typo.body1">
                                         @item.RecordedOn
                                     </MudText>
                                     @if (item.RecordedOn.Date != item.OccurredOn.Date || _hideDetails)
                                     {
-                                        <MudText Typo="Typo.body2">
+                                        <MudText Typo="Typo.body1">
                                             (Occurred on @item.OccurredOn.ToShortDateString())
                                         </MudText>
                                     }

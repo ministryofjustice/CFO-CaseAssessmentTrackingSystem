@@ -60,8 +60,8 @@
         <PropertyColumn Property="x => x.UserId" Title="@L[_currentDto.GetMemberDescription(x => x.UserId)]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.Owner?.UserName</MudText>
-                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.UserId</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.Owner?.UserName</MudText>
+                    <MudText Typo="Typo.body1" Class="mud-text-secondary">@context.Item.UserId</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
