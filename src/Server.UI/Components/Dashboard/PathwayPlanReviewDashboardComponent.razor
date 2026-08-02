@@ -90,7 +90,7 @@
 
             <RowTemplate>
                 <MudTd DataLabel="Participant Location">
-                    <MudText Typo="Typo.body2">@context.ParticipantCurrentLocation</MudText>
+                    <MudText Typo="Typo.body1">@context.ParticipantCurrentLocation</MudText>
                 </MudTd>
                 <MudTd DataLabel="Review Location">
                     <MudText>@context.ReviewLocation</MudText>
@@ -104,7 +104,7 @@
                                     @context.EnrolmentStatus
                                 </MudChip>
                             </MudStack>                    
-                            <MudLink Typo="Typo.body2" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=pathway-plan-reviews")>
+                            <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=pathway-plan-reviews")>
                                 @context.ParticipantId
                             </MudLink>
                         </MudStack>
@@ -153,6 +153,6 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }
 
