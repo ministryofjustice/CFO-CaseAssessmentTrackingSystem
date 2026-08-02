@@ -34,7 +34,7 @@
                     <MudListItem>
                         <ChildContent>
                             <MudText Typo="Typo.body1">@i.HubName</MudText>
-                            <MudText Typo="Typo.body2">@i.InductedBy</MudText>
+                            <MudText Typo="Typo.body1">@i.InductedBy</MudText>
                             <MudTooltip Text="@i.InductionDate.ToShortDateString()">
                                 @if(i.InductionDate.Date == DateTime.Today)
                                 {
@@ -113,7 +113,7 @@
                                     </MudTd>
                                 </FooterContent>
                             </MudTable>
-                            <MudText Typo="Typo.body2">@i.InductedBy</MudText>
+                            <MudText Typo="Typo.body1">@i.InductedBy</MudText>
                             <MudTooltip Text="@i.InductionDate.ToShortDateString()">
                                 @if (i.InductionDate.Date == DateTime.Today)
                                 {

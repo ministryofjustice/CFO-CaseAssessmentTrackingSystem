@@ -92,7 +92,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.Circle"
                                  Size="MudBlazor.Size.Small"
                                  Style="@($"color:{context.ActivityType.Colour};")" />
-                        <MudText Typo="Typo.body2" Class="ml-2">
+                        <MudText Typo="Typo.body1" Class="ml-2">
                             @context.ActivityType.Name
                         </MudText>
                     </div>
@@ -109,7 +109,7 @@ else
 {
     <MudGrid Spacing="6">
         <MudItem>
-            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Payable - No data available</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary" Align="MudBlazor.Align.Center">Payable - No data available</MudText>
         </MudItem>
     </MudGrid>
 }

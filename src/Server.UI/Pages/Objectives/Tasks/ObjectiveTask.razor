@@ -65,11 +65,11 @@
                 </div>
                 @if (Model.IsCompleted)
                 {
-                    <MudText Typo="Typo.body2">Completed @Model.Completed.Humanize()</MudText>
+                    <MudText Typo="Typo.body1">Completed @Model.Completed.Humanize()</MudText>
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2">Due @Model.Due.ToString("MMM, yyyy")</MudText>
+                    <MudText Typo="Typo.body1">Due @Model.Due.ToString("MMM, yyyy")</MudText>
                 }
             </div>            
             <div class="d-flex gap-2 align-center mr-4">

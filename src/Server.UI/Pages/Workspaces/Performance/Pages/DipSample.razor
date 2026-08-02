@@ -105,8 +105,8 @@
             <PropertyColumn Property="x => x.ParticipantFullName" Title="Participant" Sortable="false">
                 <CellTemplate>
                     <MudStack>
-                        <MudText Typo="Typo.body2">@context.Item.ParticipantFullName</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.ParticipantFullName</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.ParticipantId</MudText>
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
@@ -125,8 +125,8 @@
             <PropertyColumn Property="x => x.ReviewedBy" Title="Reviewed by" Sortable="false">
                 <CellTemplate>
                     <MudStack>
-                        <MudText Typo="Typo.body2">@context.Item.ReviewedBy</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.ReviewedOn?.ToLocalTime()</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.ReviewedBy</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.ReviewedOn?.ToLocalTime()</MudText>
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>

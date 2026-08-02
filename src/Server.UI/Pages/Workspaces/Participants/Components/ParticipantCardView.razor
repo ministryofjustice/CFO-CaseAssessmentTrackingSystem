@@ -13,9 +13,9 @@
                                      ValueChanged="@(value => OnParticipantSelectionChanged.InvokeAsync((item.Id, value)))"
                                      @onclick:stopPropagation="true" />
                     }
-                    <MudText Typo="Typo.body2">@item.Id @item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body1">@item.Id @item.ParticipantName</MudText>
                     <MudSpacer />
-                    <MudText Typo="Typo.body2">@item.CurrentLocation.Name</MudText>
+                    <MudText Typo="Typo.body1">@item.CurrentLocation.Name</MudText>
                 </MudStack>
                 <MudStack Row="true">
                         @if(item.EnrolmentLocation is not null)
