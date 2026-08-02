@@ -5,7 +5,7 @@
 
 @if (ParticipantAssessments.Any() == true)
 {
-    <MudDataGrid Items="@ParticipantAssessments" Striped="true" >
+    <MudDataGrid Hover="true" Dense="true" Items="@ParticipantAssessments" Striped="true" >
         <Columns>
 
             <TemplateColumn Title="Completed" Sortable="true" SortBy="x => x.Completed">
