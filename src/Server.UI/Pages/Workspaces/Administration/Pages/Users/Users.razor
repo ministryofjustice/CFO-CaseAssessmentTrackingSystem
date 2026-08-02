@@ -157,8 +157,8 @@
             <PropertyColumn Property="x => x.TenantId" Title="@L[_currentDto.GetMemberDescription(x => x.TenantName)]">
                 <CellTemplate>
                     <div>
-                        <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
-                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.TenantId</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.TenantName</MudText>
+                        <MudText Typo="Typo.body1" Class="mud-text-secondary">@context.Item.TenantId</MudText>
                     </div>
                 </CellTemplate>
             </PropertyColumn>
@@ -179,7 +179,7 @@
                         </MudBadge>
                         <div class="pl-3">
                             <MudText Class="ml-2 align-self-center">@context.Item.UserName</MudText>
-                            <MudText Typo="Typo.body2" Class="ml-2 align-self-center mud-text-secondary">@context.Item.Email</MudText>
+                            <MudText Typo="Typo.body1" Class="ml-2 align-self-center mud-text-secondary">@context.Item.Email</MudText>
                         </div>
                     </div>
                 </CellTemplate>
@@ -187,8 +187,8 @@
             <PropertyColumn Property="x => x.Email" Title="@L["Display Name / PhoneNumber"]">
                 <CellTemplate>
                     <div class="d-flex flex-column">
-                        <MudText Typo="Typo.body2">@context.Item.DisplayName</MudText>
-                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.PhoneNumber</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.DisplayName</MudText>
+                        <MudText Typo="Typo.body1" Class="mud-text-secondary">@context.Item.PhoneNumber</MudText>
                     </div>
                 </CellTemplate>
             </PropertyColumn>

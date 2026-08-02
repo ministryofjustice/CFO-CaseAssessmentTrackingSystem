@@ -69,12 +69,12 @@
                                 <MudText Typo="Typo.body1">
                                     @label.Description
                                 </MudText>
-                                <MudText Typo="Typo.body2">
+                                <MudText Typo="Typo.body1">
                                     Added by @label.AddedBy (@label.LifetimeStart.ToShortDateString())
                                 </MudText>
                                 @if (label.LifetimeEnd <= DateTime.UtcNow)
                                 {
-                                    <MudText Typo="Typo.body2">
+                                    <MudText Typo="Typo.body1">
                                         Closed by @label.ClosedBy (@label.LifetimeEnd.ToShortDateString())
                                     </MudText>     
                                 }

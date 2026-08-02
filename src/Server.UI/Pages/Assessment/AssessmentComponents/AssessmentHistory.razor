@@ -13,10 +13,10 @@
                         <MudStack>
                             @if(context.Item.Completed.HasValue)
                             {
-                                <MudText Typo="Typo.body2">@context.Item.Completed.Value.ToShortDateString()</MudText>
+                                <MudText Typo="Typo.body1">@context.Item.Completed.Value.ToShortDateString()</MudText>
                                 if (ConsentDate.HasValue)
                                 {
-                                    <MudText Typo="Typo.body2">@($"{(context.Item.Completed.Value - ConsentDate.Value.ToDateTime(TimeOnly.MinValue)).Humanize()} (since consent)")</MudText>
+                                    <MudText Typo="Typo.body1">@($"{(context.Item.Completed.Value - ConsentDate.Value.ToDateTime(TimeOnly.MinValue)).Humanize()} (since consent)")</MudText>
                                 }
                             }
                         </MudStack>

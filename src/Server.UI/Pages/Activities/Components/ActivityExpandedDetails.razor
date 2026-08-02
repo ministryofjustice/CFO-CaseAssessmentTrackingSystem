@@ -19,7 +19,7 @@
                 <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
                     <MudCard Outlined="true" Elevation="0" Class="mb-1">
                         <MudCardContent Class="py-2">
-                            <MudText Typo="Typo.body2">@note.Message</MudText>
+                            <MudText Typo="Typo.body1">@note.Message</MudText>
                             <MudText Typo="Typo.caption">
                                 @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
                             </MudText>
@@ -30,7 +30,7 @@
         }
         else
         {
-            <MudText Typo="Typo.body2" Class="mud-text-secondary">No notes.</MudText>
+            <MudText Typo="Typo.body1" Class="mud-text-secondary">No notes.</MudText>
         }
         <MudTextField Label="@Activity.GetMemberDescription(x => x.AdditionalInformation)"
                       Value="@Activity.AdditionalInformation"
