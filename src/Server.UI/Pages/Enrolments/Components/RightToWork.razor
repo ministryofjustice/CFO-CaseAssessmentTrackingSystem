@@ -9,7 +9,7 @@
 {
     if (RightToWorkDtos is not null && RightToWorkDtos.Length > 0)
     {
-        <MudText Typo="Typo.body2">
+        <MudText Typo="Typo.body1">
             Right To Work supporting documentation already updated
         </MudText>
 
@@ -17,7 +17,7 @@
             @foreach (var c in RightToWorkDtos)
             {
                 <MudListItem T="string">
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         @c.FileName
                     </MudText>
                 </MudListItem>
