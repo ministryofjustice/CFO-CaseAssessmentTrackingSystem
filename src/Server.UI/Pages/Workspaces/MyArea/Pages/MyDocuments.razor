@@ -49,7 +49,7 @@
             </MudTd>
             <MudTd DataLabel="Status">
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         @{
                             Color color = context.Status switch
                             {
@@ -65,24 +65,24 @@
             </MudTd>
             <MudTd DataLabel="File Name">
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Title</MudText>
+                    <MudText Typo="Typo.body1">@context.Title</MudText>
                 </div>
             </MudTd>
             <MudTd DataLabel="Description">
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Description</MudText>
+                    <MudText Typo="Typo.body1">@context.Description</MudText>
                 </div>
             </MudTd>
             <MudTd DataLabel="Requested on">
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Created.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                    <MudText Typo="Typo.body2">(@context.Created.Humanize())</MudText>
+                    <MudText Typo="Typo.body1">@context.Created.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                    <MudText Typo="Typo.body1">(@context.Created.Humanize())</MudText>
                 </div>
             </MudTd>
             <MudTd DataLabel="Available until">
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.ExpiresOn.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                    <MudText Typo="Typo.body2">(@context.ExpiresOn.Humanize())</MudText>
+                    <MudText Typo="Typo.body1">@context.ExpiresOn.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                    <MudText Typo="Typo.body1">(@context.ExpiresOn.Humanize())</MudText>
                 </div>
             </MudTd>
         </RowTemplate>
