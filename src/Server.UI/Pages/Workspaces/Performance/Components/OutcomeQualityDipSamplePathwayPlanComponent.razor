@@ -133,7 +133,7 @@ else
                                     <MudText Class="ma-2">Due @task.Due.ToString("MMM, yyyy")</MudText>
                                     @if(task.Activities is { Length: > 0})
                                     {
-                                        <MudTable Items="@task.Activities" Context="a" Hover="true" Striped="true"
+                                        <MudTable Dense="true" Items="@task.Activities" Context="a" Hover="true" Striped="true"
                                                                                     Breakpoint="Breakpoint.Sm" Elevation="0">
                                             <ToolBarContent>
                                                 <MudText Typo="Typo.subtitle1">
