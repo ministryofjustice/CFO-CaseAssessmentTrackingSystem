@@ -13,7 +13,7 @@
     <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 </MudStack>
 
-<MudTable Items="@_incomingTransfers" 
+<MudTable Dense="true" Striped="true" Items="@_incomingTransfers" 
           Hover="true" 
           Breakpoint="Breakpoint.Sm" 
           Loading="@_isLoadingIncomingTransfers" 
@@ -96,7 +96,7 @@
     <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 </MudStack>
 
-<MudTable Items="@_outgoingTransfers" 
+<MudTable Dense="true" Striped="true" Items="@_outgoingTransfers" 
           Hover="true" 
           Breakpoint="Breakpoint.Sm" 
           Loading="@_isLoadingOutgoingTransfers" 

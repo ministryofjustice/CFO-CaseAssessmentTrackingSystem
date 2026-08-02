@@ -16,7 +16,7 @@
 
 <AdministrationPageHeader />
 
-<MudDataGrid ServerData="@(ServerReload)"
+<MudDataGrid Striped="true" Dense="true" ServerData="@(ServerReload)"
              T="OutboxMessageDto"
              FixedHeader="true"
              FixedFooter="true"
@@ -109,7 +109,7 @@
                 @{
                     var jsonRows = ParseJsonToKeyValuePairs(context.Item.Content);
                 }
-                <MudTable Items="jsonRows" Dense="true" Context="sub">
+                <MudTable Striped="true" Hover="true" Items="jsonRows" Dense="true" Context="sub">
                     <HeaderContent>
                         <MudTh>Key</MudTh>
                         <MudTh>Value</MudTh>

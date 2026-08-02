@@ -19,7 +19,7 @@
 
 @if (Data is not null)
 {
-    <MudDataGrid Items="@Data" Striped="true" ExpandSingleRow="true">
+    <MudDataGrid Hover="true" Dense="true" Items="@Data" Striped="true" ExpandSingleRow="true">
         <Columns>
             <HierarchyColumn T="RiskHistoryDto" ButtonDisabledFunc="@(x => x.RiskReviewReason == RiskReviewReason.NoChange || x.RiskReviewReason == RiskReviewReason.NoRiskInformationAvailable)" />
             <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.CreatedDate">

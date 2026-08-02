@@ -79,7 +79,7 @@
         else
         {
             <MudItem xs="12" Style="height: calc(100vh - 150px);">
-                <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+                <MudTable Dense="true" Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
                     <HeaderContent>
                         <MudTh>
                             <MudTableSortLabel SortBy="new Func<GetSupportReferrals.LocationDetail, object>(x => x.LocationName)">

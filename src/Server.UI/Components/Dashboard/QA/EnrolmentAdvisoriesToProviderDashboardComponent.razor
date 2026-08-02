@@ -43,7 +43,7 @@
 	}
 	else
 	{
-		<MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
+		<MudTable Dense="true" Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
 			<HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.ContractName!)">

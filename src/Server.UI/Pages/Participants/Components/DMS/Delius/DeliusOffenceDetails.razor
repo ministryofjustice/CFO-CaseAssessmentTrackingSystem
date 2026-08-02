@@ -25,7 +25,7 @@ else
 
     if (OffenceResult is { Succeeded: true, Data: not null })
     {
-        <MudTable
+        <MudTable Dense="true" Hover="true"
             T="MainOffenceDto" Items="OffenceResult.Data.MainOffences"
             Striped="true">
             <ColGroup>
