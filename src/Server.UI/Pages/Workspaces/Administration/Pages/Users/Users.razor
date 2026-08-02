@@ -27,7 +27,7 @@
 
 @if(_initialised)
 {
-    <MudDataGrid @ref="_table"
+    <MudDataGrid Striped="true" Dense="true" @ref="_table"
     T="ApplicationUserDto"
     FixedHeader="true"
     FixedFooter="false"
@@ -238,7 +238,7 @@
                         {
                             var notes = context.Item.Notes;
 
-                            <MudSimpleTable Hover="true" Bordered="true" Striped>
+                            <MudSimpleTable Dense="true" Hover="true" Bordered="true" Striped>
                                 <thead>
                                     <tr>
                                         <th>@L["Call Reference"]</th>

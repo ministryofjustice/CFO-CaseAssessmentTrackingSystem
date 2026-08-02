@@ -46,7 +46,7 @@
     }
     else
     {
-        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+        <MudTable Dense="true" Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetReassessments.LocationDetails, object>(x => x.LocationName)">
