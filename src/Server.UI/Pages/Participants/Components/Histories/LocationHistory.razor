@@ -8,7 +8,7 @@
 }
 else
 {
-    <MudDataGrid Items="@ParticipantLocationHistory" Striped="true">
+    <MudDataGrid Hover="true" Dense="true" Items="@ParticipantLocationHistory" Striped="true">
         <Columns>
             <PropertyColumn Property="x => x.MoveDate.ToShortDateOrEmptyString()" SortBy="x => x.MoveDate" Title="Date"
                         CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

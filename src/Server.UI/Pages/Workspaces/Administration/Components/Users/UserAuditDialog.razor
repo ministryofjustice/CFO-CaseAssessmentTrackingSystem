@@ -3,7 +3,7 @@
 @using Humanizer
 @inherits CatsComponentBase
 
-<MudDataGrid ServerData="@(ServerReload)"
+<MudDataGrid Striped="true" Dense="true" ServerData="@(ServerReload)"
     T="IdentityAuditTrailDto"
     FixedHeader="true"
     FixedFooter="true"

@@ -15,7 +15,7 @@
 
 @if (Result is { Succeeded: true, Data: { Length: >= 0 } })
 {
-    <MudTable Items="@Result.Data"
+    <MudTable Dense="true" Items="@Result.Data"
                 Hover="true"
                 Striped="true"
                 Filter="new Func<CaseSummaryDto,bool>(FilterFunc)">
