@@ -2,7 +2,7 @@ namespace Cfo.Cats.Application.Features.Participants.Specifications;
 
 public enum ParticipantListView
 {
-    [Description("Default")] Default,
+    [Description("Default Cases")] Default,
     [Description("Identified")] Identified,
     [Description("Enrolling")] Enrolling,
     [Description("Submitted To Provider")] SubmittedToProvider,
@@ -19,7 +19,7 @@ public static class ParticipantListViewExtensions
     public static string GetDescription(this ParticipantListView e)
         => e switch
         {
-            ParticipantListView.Default => "Default",
+            ParticipantListView.Default => "Default Cases",
             ParticipantListView.Identified => "Identified",
             ParticipantListView.Enrolling => "Enrolling",
             ParticipantListView.SubmittedToProvider => "PQA",

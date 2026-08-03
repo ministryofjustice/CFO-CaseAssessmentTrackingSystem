@@ -76,14 +76,13 @@
 
         <!-- Enrolment Status -->
         <MudMenu Size="Size.Small" Label="@Query.ListView.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem Label="Default" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Default))" />
+            <MudMenuItem Label="Default Cases" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Default))" />
             <MudMenuItem Label="Identified" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Identified))" />
             <MudMenuItem Label="Enrolling" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Enrolling))" />
             <MudMenuItem Label="PQA" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.SubmittedToProvider))" />
             <MudMenuItem Label="CFO QA" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.SubmittedToQa))" />
             <MudMenuItem Label="Any QA" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.SubmittedToAny))" />
             <MudMenuItem Label="Approved" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Approved))" />
-            <MudMenuItem Label="Dormant" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Dormant))" />
             <MudMenuItem Label="Archived" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.Archived))" />
             <MudMenuItem Label="All" OnClick="@(() => OnListViewChanged.InvokeAsync(ParticipantListView.All))" />
         </MudMenu>
