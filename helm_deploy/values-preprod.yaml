@@ -25,6 +25,7 @@ generic-service:
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-preprod.svc.cluster.local:8080"
+    DMS__ApplicationUrl: "https://preprod-dms-api.co-financing.org"
 
 worker:
   resources:
