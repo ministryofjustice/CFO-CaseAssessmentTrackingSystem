@@ -57,23 +57,27 @@
     <MudCardActions>
         @if (CanBeginBio())
         {
-            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="BeginBio">
-                Add Bio
-            </MudButton>
+            <MudTooltip Text=@ConstantString.AddBio>
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@BeginBio">
+                    @ConstantString.AddBio
+                </MudButton>
+            </MudTooltip>
         }
 
         @if (CanContinueBio())
         {
-            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Filled" OnClick="ContinueBio">
-                Resume Bio
-            </MudButton>
+            <MudTooltip Text=@ConstantString.ResumeBio>
+                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Filled" OnClick="@ContinueBio">
+                    @ConstantString.ResumeBio
+                </MudButton>
+            </MudTooltip>
         }
 
         @if (CanRestartBio())
         {
-            <MudTooltip Text="Restart Bio">
-                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="BeginBio">
-                    Restart Bio
+            <MudTooltip Text=@ConstantString.RestartBio>
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="@BeginBio">
+                   @ConstantString.RestartBio
                 </MudButton>
             </MudTooltip>
         }

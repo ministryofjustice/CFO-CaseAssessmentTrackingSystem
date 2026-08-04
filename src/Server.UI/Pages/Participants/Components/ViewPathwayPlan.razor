@@ -19,10 +19,12 @@
                 <div class="d-flex gap-4 align-center">
                     @if (ParticipantDetails?.IsActive==true)
                     {
-                        <MudTooltip Text="New objective">
-                            <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@AddObjective"></MudIconButton>
-                        </MudTooltip>
-                        <MudText>New objective</MudText>
+                        <MudButton Color="Color.Primary" 
+                                   Variant="Variant.Filled" 
+                                   StartIcon="@Icons.Material.Filled.Add" 
+                                   OnClick="@AddObjective">
+                            @ConstantString.AddObjective
+                        </MudButton>
                     }
                     <MudSpacer />
                     <div class="d-flex flex-column">
