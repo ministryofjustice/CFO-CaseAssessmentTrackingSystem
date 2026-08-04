@@ -46,13 +46,8 @@
     }
     else
     {
-        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Dense="true">
+        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Dense="true" Class="mt-4">
             <HeaderContent>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ParticipantId)">
-                        Participant ID
-                    </MudTableSortLabel>
-                </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ParticipantName)">
                         Participant
@@ -90,12 +85,15 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Participant ID">
-                    <MudButton Color="Color.Info" Variant="Variant.Text" Size="Size.Small" OnClick="@(() => EditParticipant(context.ParticipantId))">
-                        @context.ParticipantId
-                    </MudButton>
+                <MudTd DataLabel="Participant">
+
+                    <MudStack Spacing="0">
+                        <MudText>@context.ParticipantName</MudText>
+                        <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=recent-approved-activities")>
+                            @context.ParticipantId
+                        </MudLink>
+                    </MudStack>                    
                 </MudTd>
-                <MudTd DataLabel="Participant">@context.ParticipantName</MudTd>
                 <MudTd DataLabel="Activity Type">@context.ActivityType</MudTd>
                 <MudTd DataLabel="Category">@context.Category</MudTd>
                 <MudTd DataLabel="Approved On">@context.ApprovedOn?.ToString("d")</MudTd>
