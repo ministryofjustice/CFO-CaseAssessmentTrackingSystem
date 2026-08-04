@@ -285,4 +285,11 @@ public static class ConstantString
         Localize("Edit Initiative");
     public static string AmendLifetime =>
         Localize("Amend Lifetime");
+    
+    public static string AddPickList =>
+        Localize("Add PickList");
+    public static string EditPickList =>
+        Localize("Edit PickList");
+    public static string DeletePickList =>
+        Localize("Delete PickList");
 }
