@@ -34,7 +34,7 @@ public partial class ArchivedCaseBehaviour
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
-        var dialog = await DialogService.ShowAsync<SelectTenantDialog>("Dashboard Options", parameters, options);
+        var dialog = await DialogService.ShowAsync<SelectTenantDialog>("Select a tenant", parameters, options);
         var result = await dialog.Result;
 
         if (result is { Canceled: false, Data: SelectedTenant tenant })
