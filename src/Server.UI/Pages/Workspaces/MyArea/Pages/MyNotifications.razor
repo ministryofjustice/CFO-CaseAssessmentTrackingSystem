@@ -41,6 +41,8 @@
             <!-- Additional filters row -->
             <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
                 <MudPagination 
+                    Rectangular="true"
+                    Variant="Variant.Text"
                     Selected="@_pageNumber"
                     Count="@Data.TotalPages" 
                     SelectedChanged="OnPaginationChanged"
