@@ -153,7 +153,9 @@ public static class ConstantString
     Localize("Complete PRI");
     public static string AbandonPRI =>
     Localize("Abandon PRI");
-
+    public static string AddPRI =>
+        Localize("Add PRI");
+    
     public static string AbandonPhase =>
     Localize("Abandon Phase");
 
@@ -161,11 +163,14 @@ public static class ConstantString
         Localize("Begin Assessment");
 
     public static string ViewParticipant => Localize("View Participant");
-    public static string ViewActivity => Localize("View Activity");
+    public static string ViewTemplate => Localize("View Template");
     public static string ViewEnrolment => Localize("View Enrolment");
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");
 
+    public static string ContinueEnrolment => Localize("Continue Enrolment");
+
+    
     public static string Unarchive => Localize("Unarchive");
 
     public static string ActivePreReleaseInventoryPRI =>
@@ -243,4 +248,27 @@ public static class ConstantString
     public static string Trigger => Localize("Trigger");
     
     public static string Labels => Localize(nameof(Labels));
+    
+    public static string AddContact =>
+        Localize("Add Contact");
+    
+    public static string AddBio =>
+        Localize("Add Bio");
+    public static string ResumeBio =>
+        Localize("Resume Bio");
+    public static string RestartBio =>
+        Localize("Restart Bio");
+    
+    public static string WingInduction =>
+        Localize("Wing Induction");
+    public static string WingInductions =>
+        Localize("Wing Inductions");
+    public static string HubInduction =>
+        Localize("Hub Induction");
+    public static string HubInductions =>
+        Localize("Hub Inductions");
+    public static string AddInduction =>
+        Localize("Add Induction");
+    public static string AddObjective =>
+        Localize("Add Objective");
 }
