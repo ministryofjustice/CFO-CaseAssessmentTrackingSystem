@@ -42,8 +42,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography.X509Certificates;
 using Quartz;
 using Quartz.AspNetCore;
 using Rebus;
@@ -329,23 +331,34 @@ public static class DependencyInjection
         services.AddDefaultAWSOptions(options);
         services.AddAWSService<IAmazonS3>();
 
+        services.Configure<DmsOptions>(configuration.GetSection(DmsOptions.Dms));
+
         services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
-        {
-            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
-            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
-        });
+            {
+                var dmsOptions = provider.GetRequiredService<IOptions<DmsOptions>>().Value;
+                client.DefaultRequestHeaders.Add("X-API-KEY", dmsOptions.ApiKey);
+                client.BaseAddress = new Uri(dmsOptions.ApplicationUrl);
+            })
+            .ConfigurePrimaryHttpMessageHandler(provider =>
+                ConfigureDmsClientCertificate(provider.GetRequiredService<IOptions<DmsOptions>>().Value));
 
-        services.AddHttpClient<OfflocService>((_, client) =>
-        {
-            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
-            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
-        });
+        services.AddHttpClient<OfflocService>((provider, client) =>
+            {
+                var dmsOptions = provider.GetRequiredService<IOptions<DmsOptions>>().Value;
+                client.DefaultRequestHeaders.Add("X-API-KEY", dmsOptions.ApiKey);
+                client.BaseAddress = new Uri(dmsOptions.ApplicationUrl);
+            })
+            .ConfigurePrimaryHttpMessageHandler(provider =>
+                ConfigureDmsClientCertificate(provider.GetRequiredService<IOptions<DmsOptions>>().Value));
 
-        services.AddHttpClient<DeliusService>((_, client) =>
-        {
-            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
-            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
-        });
+        services.AddHttpClient<DeliusService>((provider, client) =>
+            {
+                var dmsOptions = provider.GetRequiredService<IOptions<DmsOptions>>().Value;
+                client.DefaultRequestHeaders.Add("X-API-KEY", dmsOptions.ApiKey);
+                client.BaseAddress = new Uri(dmsOptions.ApplicationUrl);
+            })
+            .ConfigurePrimaryHttpMessageHandler(provider =>
+                ConfigureDmsClientCertificate(provider.GetRequiredService<IOptions<DmsOptions>>().Value));
         
         services.AddSingleton<IOfflocService>(sp =>
         {
@@ -380,6 +393,27 @@ public static class DependencyInjection
             .AddScoped<ICumulativeExcelService, CumulativeExcelService>()
             .AddScoped<IOutcomeQualityDipSampleExcelService, OutcomeQualityDipSampleExcelService>()
             .AddScoped<IUploadService, UploadService>();
+    }
+
+    /// <summary>
+    /// Configures an <see cref="HttpClientHandler"/> with the DMS mTLS client certificate, when one has
+    /// been provided. Shared across the <see cref="CandidateService"/>, <see cref="OfflocService"/> and
+    /// <see cref="DeliusService"/> registrations, which all authenticate against DMS using the same
+    /// certificate and API key.
+    /// </summary>
+    private static HttpClientHandler ConfigureDmsClientCertificate(DmsOptions dmsOptions)
+    {
+        var handler = new HttpClientHandler();
+
+        if (!string.IsNullOrWhiteSpace(dmsOptions.ClientCertBase64)
+            && !string.IsNullOrWhiteSpace(dmsOptions.ClientCertPassword))
+        {
+            var pfxBytes = Convert.FromBase64String(dmsOptions.ClientCertBase64);
+            var certificate = X509CertificateLoader.LoadPkcs12(pfxBytes, dmsOptions.ClientCertPassword);
+            handler.ClientCertificates.Add(certificate);
+        }
+
+        return handler;
     }
 
     private static IServiceCollection AddAuthenticationService(this IServiceCollection services, IConfiguration configuration)
