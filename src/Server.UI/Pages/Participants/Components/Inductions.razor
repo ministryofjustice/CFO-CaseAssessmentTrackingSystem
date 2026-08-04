@@ -1,19 +1,20 @@
-@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Inductions.Commands
 @using Cfo.Cats.Application.Features.Inductions.DTOs
-@using Cfo.Cats.Application.Features.Inductions.Queries
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Domain.Entities.Inductions
 @using Humanizer
 
 @inherits CatsComponentBase
 
 @if (ParticipantIsActive)
 {
-    <MudMenu Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" IconColor="Color.Primary" AriaLabel="Add Induction" AnchorOrigin="Origin.BottomLeft" Class="ma-3">
-        <MudMenuItem OnClick="AddHubInduction" Label="Hub Induction" />
-        <MudMenuItem OnClick="AddWingInduction" Label="Wing Induction" />
+    <MudMenu StartIcon="@Icons.Material.Filled.Add" 
+             Color="Color.Primary" 
+             Variant="Variant.Filled" 
+             Label="@ConstantString.AddInduction" 
+             AriaLabel="@ConstantString.AddInduction" 
+             AnchorOrigin="Origin.BottomLeft" 
+             Class="ma-3">
+        
+        <MudMenuItem OnClick="@AddHubInduction">@ConstantString.HubInduction</MudMenuItem>
+        <MudMenuItem OnClick="@AddWingInduction">@ConstantString.WingInduction</MudMenuItem>
     </MudMenu>
 }
 
@@ -22,7 +23,7 @@
         <TitleContent>
             <div class="d-flex">
                 <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
-                <MudText>Hub Inductions</MudText>
+                <MudText>@ConstantString.HubInductions</MudText>
                 <MudBadge Content="@(HubInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>
@@ -57,7 +58,7 @@
         <TitleContent>
             <div class="d-flex">
                 <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
-                <MudText>Wing Inductions</MudText>
+                <MudText>@ConstantString.WingInductions</MudText>
                 <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>

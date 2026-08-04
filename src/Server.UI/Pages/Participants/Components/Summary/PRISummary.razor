@@ -1,5 +1,4 @@
-﻿@using Cfo.Cats.Domain.Common.Enums
-@using Humanizer
+﻿@using Humanizer
 @inherits CatsComponentBase
 
 <MudCard Style="Height: 100%;">
@@ -17,7 +16,6 @@
         }
         else
         {
-
             <DataList>
                 <ChildContent>
                     <DataListItem Label="Date Created" HelperText="@_latestPri.Created.Humanize()">
@@ -58,7 +56,6 @@
                         </DataListItem>
                     }
 
-
                 </ChildContent>
             </DataList>
         }
@@ -68,7 +65,7 @@
         @if (CanAddPri())
         {
             <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@BeginPri">
-                Create PRI
+                @ConstantString.AddPRI    
             </MudButton>
         }
     </MudCardActions>

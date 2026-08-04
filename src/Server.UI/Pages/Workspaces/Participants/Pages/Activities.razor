@@ -7,8 +7,6 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
 
-@inject IStringLocalizer<Activities> L
-
 @{
     Color StatusColour(ActivityStatus status) => status switch
     {
@@ -38,10 +36,10 @@
         </MudTextField>
         <MudSpacer />
         <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
-                    StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
+                    StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefresh">
             @ConstantString.Refresh
         </MudButton>
-        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="OnExport"
+        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="@OnExport"
                             StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
             @ConstantString.Export
         </MudLoadingButton>
@@ -83,7 +81,7 @@
         </MudMenu>
 
         <!-- Submitted by -->
-        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSubmittedByDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowSubmittedByDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             @if (string.IsNullOrEmpty(Query.OwnerId))
             {
                 @("All Submitters")
@@ -95,7 +93,7 @@
         </MudButton>
 
         <!-- Tenant -->
-        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             @if (string.IsNullOrEmpty(Query.TenantId))
             {
                 @("All Tenants")
@@ -107,7 +105,7 @@
         </MudButton>
 
         <!-- Location (Took place at) -->
-        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             @(Query.LocationId is null ? "All Locations" : Query.LocationName)
         </MudButton>
 
@@ -121,7 +119,7 @@
         </MudMenu>
 
         <MudTooltip Text="Clear search parameters">
-            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
         </MudTooltip>
     </MudStack>
 
@@ -160,13 +158,25 @@
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AnchorOrigin="Origin.BottomLeft">
                         @if (context.Status.AllowsChanges)
                         {
-                            <MudMenuItem OnClick="@(() => EditActivity(context))">@ConstantString.EditActivity</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" 
+                                         IconColor="Color.Secondary" 
+                                         OnClick="@(() => EditActivity(context))">
+                                <MudText>@ConstantString.EditActivity</MudText>
+                            </MudMenuItem>
                         }
                         @if (context.DocumentId.HasValue)
                         {
-                            <MudMenuItem OnClick="@(() => ViewTemplate(context))">View Template</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.DocumentScanner" 
+                                         IconColor="Color.Secondary" 
+                                         OnClick="@(() => ViewTemplate(context))">
+                                <MudText>@ConstantString.ViewTemplate</MudText>
+                            </MudMenuItem>
                         }
-                        <MudMenuItem OnClick="@(() => ViewParticipant(context.ParticipantId))">@ConstantString.ViewParticipant</MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Filled.AssignmentInd" 
+                                     IconColor="Color.Secondary" 
+                                     OnClick="@(() => ViewParticipant(context.ParticipantId))">
+                            <MudText Color="Color.Secondary">@ConstantString.ViewParticipant</MudText>
+                            </MudMenuItem>
                     </MudMenu>
                 </MudTd>
             </RowTemplate>
@@ -237,20 +247,20 @@
                     <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
                         @if (item.Status.AllowsChanges)
                         {
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
-                                    StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditActivity(item))">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditActivity(item))">
                                 @ConstantString.EditActivity
                             </MudButton>
                         }
                         @if (item.DocumentId.HasValue)
                         {
-                            <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
-                                    StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ViewTemplate(item))">
-                                View Template
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.DocumentScanner" OnClick="@(() => ViewTemplate(item))">
+                                @ConstantString.ViewTemplate
                             </MudButton>
                         }
-                        <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
-                                StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => ViewParticipant(item.ParticipantId))">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small"
+                                   StartIcon="@Icons.Material.Filled.AssignmentInd" OnClick="@(() => ViewParticipant(item.ParticipantId))">
                             @ConstantString.ViewParticipant
                         </MudButton>
                     </MudStack>
