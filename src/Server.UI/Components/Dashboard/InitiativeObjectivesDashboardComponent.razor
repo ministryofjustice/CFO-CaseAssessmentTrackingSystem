@@ -74,7 +74,8 @@
                   Hover="true"
                   Striped="true"
                   Dense="true"
-                  SortLabel="Sort By">
+                  SortLabel="Sort By"
+                  Class="mt-4">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantName)">
@@ -129,11 +130,11 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Participant">
-                    <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                    <MudStack Spacing="0">
+                        <MudText>@context.ParticipantName</MudText>
                         <MudLink Href="@($"/pages/workspace/participants/{context.ParticipantId}?from=initiatives")">
-                            @context.ParticipantName
+                            @context.ParticipantId
                         </MudLink>
-                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>
                     </MudStack>
                 </MudTd>
                 <MudTd DataLabel="Assignee">
