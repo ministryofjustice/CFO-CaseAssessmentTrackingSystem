@@ -292,4 +292,9 @@ public static class ConstantString
         Localize("Edit PickList");
     public static string DeletePickList =>
         Localize("Delete PickList");
+    
+    public static string AddUser =>
+        Localize("Add User");
+    public static string EditUser =>
+        Localize("Edit User");
 }
