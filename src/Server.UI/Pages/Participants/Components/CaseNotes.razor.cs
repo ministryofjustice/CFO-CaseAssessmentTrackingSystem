@@ -8,7 +8,7 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 public partial class CaseNotes
 {
     private PaginatedData<ParticipantNoteDto>? _paginatedNotes;
-    private const int PageSize = 5;
+    private const int PageSize = 20;
     private int _pageNumber = 1;
 
     [Parameter, EditorRequired]
