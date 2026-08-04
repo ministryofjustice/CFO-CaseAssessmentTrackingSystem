@@ -168,9 +168,9 @@ else
             <CellTemplate>
                 <MudStack AlignItems="AlignItems.Start" Spacing="0">
                     <div class="d-flex align-items-center gap-2">
-                        <MudLink OnClick="@(() => ViewParticipant(context.Item.Id))">
+                        <MudText>
                             @context.Item.ParticipantName
-                        </MudLink>
+                        </MudText>
                         @if (context.Item.HasIncomingTransfer)
                         {
                             <MudChip T="string" Size="MudSize.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.Input">
@@ -178,7 +178,9 @@ else
                             </MudChip>
                         }
                     </div>
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Item.Id</MudText>
+                    <MudLink Typo="Typo.body1" OnClick="@(() => ViewParticipant(context.Item.Id))">
+                        @context.Item.Id
+                    </MudLink>
                 </MudStack>
             </CellTemplate>
         </PropertyColumn>
