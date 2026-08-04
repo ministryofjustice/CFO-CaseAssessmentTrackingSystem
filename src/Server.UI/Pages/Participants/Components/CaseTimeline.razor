@@ -46,7 +46,7 @@
                         @Data.TotalItems timeline entries
                     </MudText>
                 </MudStack>
-                <MudPagination Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true"
+                <MudPagination Rectangular="true" Variant="Variant.Text" Size="Size.Small" Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true"
                                SelectedChanged="OnPaginationChanged">
                 </MudPagination>
             </MudStack>

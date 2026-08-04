@@ -9,10 +9,13 @@
     <MudPaper Class="pa-3">
 
         <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mb-2">
-            <MudPagination Count="@TotalPages"
-                            ShowFirstButton="true"
-                            ShowLastButton="true"
-                            SelectedChanged="OnPaginationChanged">
+            <MudPagination 
+                Rectangular="true" 
+                Variant="Variant.Text"
+                Count="@TotalPages"
+                ShowFirstButton="true"
+                ShowLastButton="true"
+                SelectedChanged="OnPaginationChanged">
             </MudPagination>
             <MudText Typo="Typo.body1">
                 @TotalNotes @(TotalNotes == 1 ? "note" : "notes")

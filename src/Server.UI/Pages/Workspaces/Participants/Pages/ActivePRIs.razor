@@ -55,13 +55,16 @@
 
 <!-- Pagination and record count -->
 <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-    <MudPagination Selected="@_currentPage"
-                   Count="@_totalPages"
-                   MiddleCount="2"
-                   BoundaryCount="1"
-                   SelectedChanged="@PageChanged"
-                   Size="Size.Small"
-                   Disabled="@_loading" />
+    <MudPagination 
+        Rectangular="true"
+        Variant="Variant.Text"
+        Selected="@_currentPage"
+        Count="@_totalPages"
+        MiddleCount="2"
+        BoundaryCount="1"
+        SelectedChanged="@PageChanged"
+        Size="Size.Small"
+        Disabled="@_loading" />
     
     <MudText>@_totalItems records</MudText>
     
