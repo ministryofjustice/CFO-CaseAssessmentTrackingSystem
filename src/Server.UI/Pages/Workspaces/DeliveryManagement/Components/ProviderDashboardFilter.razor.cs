@@ -36,6 +36,9 @@ public partial class ProviderDashboardFilter
     [Parameter]
     public EventCallback ClearRequested { get; set; }
 
+    [Parameter]
+    public bool ShowUser { get; set; }= true;
+
     private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<string, string> _tenants = new Dictionary<string, string>();
 

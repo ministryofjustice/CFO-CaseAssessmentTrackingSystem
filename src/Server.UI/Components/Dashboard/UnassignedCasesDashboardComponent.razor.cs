@@ -86,6 +86,13 @@ public partial class UnassignedCasesDashboardComponent
     {
         var tenantChanged = _previousTenantId != TenantId;
 
+        var currentLocationId = Query.Locations is { Length: > 0 } ? Query.Locations[0] : (int?)null;
+        var filterParamsChanged =
+            Query.EnrolmentStatus != SelectedEnrolmentStatus ||
+            currentLocationId != SelectedLocationId ||
+            Query.Keyword != KeywordFilter ||
+            _includeTransferIn != IncludeTransferIn;
+
         // Reload locations if tenant changed
         if (tenantChanged)
         {
@@ -99,14 +106,24 @@ public partial class UnassignedCasesDashboardComponent
             }
         }
 
+        // Apply filter parameters pushed down from the parent (e.g. restored from session storage)
+        if (filterParamsChanged && !tenantChanged)
+        {
+            _includeTransferIn = IncludeTransferIn;
+            Query.IncludeTransferIn = _includeTransferIn;
+            Query.Keyword = KeywordFilter;
+            Query.EnrolmentStatus = SelectedEnrolmentStatus;
+            Query.Locations = SelectedLocationId.HasValue ? [SelectedLocationId.Value] : [];
+        }
+
         // Reload summary data when switching to visual mode or tenant changed
         if (VisualMode && (tenantChanged || !_previousVisualMode))
         {
             await LoadDataAsync();
         }
 
-        // Reload table data if tenant changed and in tabular mode
-        if (!VisualMode && tenantChanged && _table != null)
+        // Reload table data if tenant changed or filter params were pushed from parent
+        if (!VisualMode && (tenantChanged || (filterParamsChanged && !tenantChanged)) && _table != null)
         {
             await _table.ReloadServerData();
         }
@@ -392,7 +409,7 @@ public partial class UnassignedCasesDashboardComponent
         Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=unassigned-cases");
 
     private void NavigateToTransfers() =>
-        Navigation.NavigateTo("/pages/workspace/participants/transfers");
+        Navigation.NavigateTo("/pages/workspace/participants/transfers?from=unassigned-cases");
 }
 
 public record ChartDataPoint(string LocationName, EnrolmentStatus Status, int Count);
