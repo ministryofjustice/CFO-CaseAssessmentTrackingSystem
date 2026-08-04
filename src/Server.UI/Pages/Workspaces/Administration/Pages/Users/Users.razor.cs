@@ -342,10 +342,10 @@ public partial class Users
     private async Task OnCreate()
     {
         var model = new ApplicationUserDto { AssignedRoles = [] };
-        await ShowCreateUserDialog(model, L["Create a new user"]);
+        await ShowCreateUserDialog(model, ConstantString.AddUser);
     }
 
-    private async Task OnEdit(ApplicationUserDto item) => await ShowEditUserDialog(item, L["Edit the user"]);
+    private async Task OnEdit(ApplicationUserDto item) => await ShowEditUserDialog(item, ConstantString.EditUser);
 
     private async Task OnUnlock(ApplicationUserDto item)
     {

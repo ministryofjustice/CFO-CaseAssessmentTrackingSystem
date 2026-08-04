@@ -116,7 +116,7 @@ public partial class Dictionaries
                 x => x.Command, command
             },
             {
-                x => x.ContentText, string.Format(deleteContent, item.Name)
+                x => x.ContentText, string.Format(deleteContent, (item.Name + " - " + item.Value))
             }
         };
         var options = new DialogOptions
@@ -126,7 +126,7 @@ public partial class Dictionaries
             FullWidth = true
         };
         var dialog =
-            await DialogService.ShowAsync<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters,
+            await DialogService.ShowAsync<DeleteConfirmation>(ConstantString.DeletePickList, parameters,
                 options);
         var state = await dialog.Result;
         if (!state!.Canceled)
@@ -155,7 +155,7 @@ public partial class Dictionaries
             FullWidth = true
         };
         var dialog = await DialogService.ShowAsync<CreatePicklistDialog>
-            (L["Create a new picklist"], parameters, options);
+            (ConstantString.AddPickList, parameters, options);
         var state = await dialog.Result;
         if (!state!.Canceled)
         {

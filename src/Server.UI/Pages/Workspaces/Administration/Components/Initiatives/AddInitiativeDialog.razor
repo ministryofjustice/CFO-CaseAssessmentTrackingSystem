@@ -2,7 +2,7 @@
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.subtitle1">Add Initiative</MudText>
+        <MudText Typo="Typo.subtitle1">@MudDialog.Title</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper MinHeight="300px" Elevation="0" Class="pa-4">
@@ -60,7 +60,7 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="Save">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Save">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
