@@ -277,5 +277,12 @@ public static class ConstantString
     public static string EditLabel =>
         Localize("Edit Label");
     public static string Example => Localize("Example");
-
+    
+    
+    public static string AddInitiative =>
+        Localize("Add Initiative");
+    public static string EditInitiative =>
+        Localize("Edit Initiative");
+    public static string AmendLifetime =>
+        Localize("Amend Lifetime");
 }
