@@ -271,4 +271,30 @@ public static class ConstantString
         Localize("Add Induction");
     public static string AddObjective =>
         Localize("Add Objective");
+    
+    public static string AddLabel =>
+        Localize("Add Label");
+    public static string EditLabel =>
+        Localize("Edit Label");
+    public static string Example => Localize("Example");
+    
+    
+    public static string AddInitiative =>
+        Localize("Add Initiative");
+    public static string EditInitiative =>
+        Localize("Edit Initiative");
+    public static string AmendLifetime =>
+        Localize("Amend Lifetime");
+    
+    public static string AddPickList =>
+        Localize("Add PickList");
+    public static string EditPickList =>
+        Localize("Edit PickList");
+    public static string DeletePickList =>
+        Localize("Delete PickList");
+    
+    public static string AddUser =>
+        Localize("Add User");
+    public static string EditUser =>
+        Localize("Edit User");
 }
