@@ -50,6 +50,8 @@
     <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
         <MudPagination 
+            Rectangular="true"
+            Variant="Variant.Text"
             @bind-Selected="Query.PageNumber"
             @bind-Selected:after="@(() => OnRefresh.InvokeAsync())"
             Count="@TotalPages"
