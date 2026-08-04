@@ -33,7 +33,7 @@ public partial class LabelsTable
             { x => x.CurrentUser, CurrentUser }
         };
 
-        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true, CloseOnNavigation = false};
 
         var result = await DialogService.ShowAsync<AddLabelDialog>("Add Label", parameters, options);
         var dialogResult = await result.Result;
@@ -62,7 +62,7 @@ public partial class LabelsTable
             { x => x.CurrentUser, CurrentUser }
         };
 
-        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true, CloseOnNavigation = false};
         var result = await DialogService.ShowAsync<EditLabelDialog>("Edit Label", parameters, options);
         var dialogResult = await result.Result;
         if (dialogResult!.Canceled == false)

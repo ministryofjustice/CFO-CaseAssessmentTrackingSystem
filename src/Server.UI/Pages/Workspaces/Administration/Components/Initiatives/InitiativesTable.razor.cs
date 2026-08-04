@@ -57,8 +57,8 @@ public partial class InitiativesTable
             { x => x.CurrentUser, CurrentUser }
         };
 
-        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
-        var result = await DialogService.ShowAsync<AddInitiativeDialog>("Add Initiative", parameters, options);
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true, CloseOnNavigation = false };
+        var result = await DialogService.ShowAsync<AddInitiativeDialog>(ConstantString.AddInitiative, parameters, options);
         var dialogResult = await result.Result;
         if (dialogResult!.Canceled == false)
         {
@@ -84,8 +84,8 @@ public partial class InitiativesTable
             { x => x.CurrentUser, CurrentUser }
         };
 
-        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
-        var result = await DialogService.ShowAsync<EditInitiativeDialog>("Edit Initiative", parameters, options);
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true, CloseOnNavigation = false };
+        var result = await DialogService.ShowAsync<EditInitiativeDialog>(ConstantString.EditInitiative, parameters, options);
         var dialogResult = await result.Result;
         if (dialogResult!.Canceled == false)
         {
@@ -108,8 +108,8 @@ public partial class InitiativesTable
             { x => x.CurrentUser, CurrentUser }
         };
 
-        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
-        var result = await DialogService.ShowAsync<AmendInitiativeLifetimeDialog>("Amend Lifetime", parameters, options);
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true, CloseOnNavigation = false };
+        var result = await DialogService.ShowAsync<AmendInitiativeLifetimeDialog>(ConstantString.AmendLifetime, parameters, options);
         var dialogResult = await result.Result;
         if (dialogResult!.Canceled == false)
         {

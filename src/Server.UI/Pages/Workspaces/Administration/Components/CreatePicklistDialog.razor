@@ -5,6 +5,12 @@
 @inject IStringLocalizer<Dictionaries> L
 
 <MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.subtitle1">
+            <MudIcon Icon="@Icons.Material.Filled.Create" Class="mr-3 mb-n1"/>
+            @MudDialog.Title
+        </MudText>
+    </TitleContent>
     <DialogContent>
         <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
             <MudGrid>
