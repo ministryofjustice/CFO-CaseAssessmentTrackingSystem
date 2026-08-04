@@ -89,7 +89,7 @@
                     Size="Size.Small"
                     Color="Color.Secondary" 
                     OnClick="@(() => OnViewParticipant.InvokeAsync(item))">
-                    @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
+                    @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? ConstantString.ContinueEnrolment : ConstantString.ViewParticipant)
                 </MudButton>
             </MudStack>
         </MudPaper>
