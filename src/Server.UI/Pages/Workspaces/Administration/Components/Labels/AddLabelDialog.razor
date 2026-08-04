@@ -3,7 +3,7 @@
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.subtitle1">
-            Add Label
+            @ConstantString.AddLabel
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -91,8 +91,8 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudStack Row="true">
-                            <MudText Typo="Typo.body2">Example</MudText>
-                            <CatsChip Description="Model.Description" Label="Model.Label" Variant="Model.Variant" Colour="Model.Colour" Icon="Model.AppIcon" />
+                            <MudText Typo="Typo.body2">@ConstantString.Example</MudText>
+                            <CatsChip Description="@Model.Description" Label="@Model.Name" Variant="Model.Variant" Colour="Model.Colour" Icon="Model.AppIcon" />
                         </MudStack>
                     </MudItem>
                 </MudGrid>
@@ -100,7 +100,7 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
         <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Add">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>

@@ -271,4 +271,11 @@ public static class ConstantString
         Localize("Add Induction");
     public static string AddObjective =>
         Localize("Add Objective");
+    
+    public static string AddLabel =>
+        Localize("Add Label");
+    public static string EditLabel =>
+        Localize("Edit Label");
+    public static string Example => Localize("Example");
+
 }
