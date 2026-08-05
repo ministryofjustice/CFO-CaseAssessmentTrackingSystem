@@ -43,10 +43,15 @@ public static class SearchParticipants
             }
 
             var context = unitOfWork.DbContext;
+            var tenantId = request.CurrentUser!.TenantId!;
+            var isInternal = request.CurrentUser.HasInternalRole();
 
-            var query = from p in context.Participants
-                        where p.Owner!.TenantId!.StartsWith(request.CurrentUser!.TenantId!)
-                        select p;
+            // internal users see assigned and unassigned; external users see only their tenant's assigned cases
+            var query = isInternal
+                ? context.Participants.AsQueryable()
+                : from p in context.Participants
+                  where p.Owner!.TenantId!.StartsWith(tenantId)
+                  select p;
 
             if (keyword.Split(" ") is { Length: 2 } segments)
             {
@@ -70,7 +75,8 @@ public static class SearchParticipants
                     Id = p.Id,
                     FirstName = p.FirstName,
                     LastName = p.LastName,
-                    CurrentLocation = p.CurrentLocation.Name
+                    CurrentLocation = p.CurrentLocation.Name,
+                    IsUnassigned = p.OwnerId == null
                 })
                 .ToListAsync(cancellationToken);
 
