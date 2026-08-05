@@ -71,11 +71,12 @@ public partial class MyNotifications
         return LoadDataAsync();
     }
 
-    private void GotoNotification(string? itemLink)
+    private async Task GotoNotification(NotificationDto notification)
     {
-        if (itemLink is not null)
+        if (notification is { Link: not null })
         {
-            Navigation.NavigateTo(itemLink);
+            await DismissNotification(notification.Id);
+            Navigation.NavigateTo(notification.Link);
         }
     }
     

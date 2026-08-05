@@ -54,9 +54,8 @@
 
                 <MudText>@Data.TotalItems records</MudText>
 
-                <MudSwitch Label="Include Read" Value="@_showUnread" ValueChanged="OnShowUnreadChanged" Color="Color.Info" T="bool" />
-
                 <MudSpacer />
+                <MudSwitch Label="Include Read" Value="@_showUnread" ValueChanged="OnShowUnreadChanged" Color="Color.Info" T="bool" Size="Size.Small" />
 
                 <!-- Type Filter -->
                 <MudMenu Size="Size.Small" Label="@($"Type: {GetTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -88,7 +87,7 @@
                                     Variant="Variant.Filled" 
                                     Color="Color.Primary" 
                                     StartIcon="@Icons.Material.Filled.Visibility"
-                                    OnClick="@(() => GotoNotification(item.Link))"
+                                    OnClick="@(() => GotoNotification(item))"
                                     Disabled="Loading">
                                     View
                                 </MudButton>
