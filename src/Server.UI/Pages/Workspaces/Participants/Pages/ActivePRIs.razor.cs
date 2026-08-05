@@ -6,11 +6,16 @@ using Cfo.Cats.Application.Features.PRIs.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.PRIs.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class ActivePRIs
 {
+    [Inject]
+    public CatsSessionStorage SessionStorage { get; set; } = null!;
+
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
     [SupplyParameterFromQuery(Name = "ListView")]
@@ -45,6 +50,21 @@ public partial class ActivePRIs
             SortDirection = "Descending"
         };
 
+        // Restore session state if available
+        var cached = await SessionStorage.GetAsync<ActivePRIsSessionData>();
+        
+        if (cached is { Succeeded: true, Data: { } sd })
+        {
+            Query.Keyword = sd.Keyword;
+            Query.OrderBy = string.IsNullOrWhiteSpace(sd.OrderBy) ? "Id" : sd.OrderBy;
+            Query.SortDirection = string.IsNullOrWhiteSpace(sd.SortDirection) ? "Descending" : sd.SortDirection;
+            Query.PageNumber = sd.PageNumber;
+            Query.IncludeOutgoing = sd.IncludeOutgoing;
+            Query.IncludeIncoming = sd.IncludeIncoming;
+            Tabular = sd.Tabular;
+            _priTypeFilter = sd.PriTypeFilter;
+        }
+
         await OnRefresh();
         await base.OnInitializedAsync();
     }
@@ -74,6 +94,9 @@ public partial class ActivePRIs
                     Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
+            
+            // Save session state
+            await SessionStorage.SetAsync(ActivePRIsSessionData.FromQuery(Query, Tabular, _priTypeFilter));
         }
         finally
         {
@@ -84,8 +107,8 @@ public partial class ActivePRIs
     private async Task TabularChanged(bool? tabular)
     {
         Tabular = tabular ?? true;
-        // Data is already loaded, just switching views
-        await Task.CompletedTask;
+        // Save the updated tabular state
+        await SessionStorage.SetAsync(ActivePRIsSessionData.FromQuery(Query!, Tabular, _priTypeFilter));
     }
     
     private async Task PageChanged(int page)
@@ -162,13 +185,6 @@ public partial class ActivePRIs
         Query.PageNumber = 1; // Reset to first page on filter change
         
         await OnRefresh();
-    }
-
-    private enum PriTypeFilter
-    {
-        All,
-        Outgoing,
-        Incoming
     }
 
     private void ViewParticipant(PRIPaginationDto pri) => Navigation.NavigateTo($"/pages/workspace/participants/{pri.ParticipantId}?from=activepri");
@@ -264,5 +280,4 @@ public partial class ActivePRIs
             await OnRefresh();
         }
     }
-
 }
