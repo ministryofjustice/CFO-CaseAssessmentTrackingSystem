@@ -107,7 +107,7 @@ jobs:
 
   # deploy_preprod:
   #   name: Deploy to the pre-production environment
-  #   needs: [build_app, deploy_train]
+  #   needs: [build_app, deploy_dev]
   #   uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
   #   secrets: inherit
   #   with:
