@@ -59,6 +59,15 @@ public partial class EducationAndTrainingDashboardComponent
                 },
             },
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels 
+            { 
+                Rotate = -45, 
+                RotateAlways = true,
+                OffsetY = 0
+            }
+        },
         Yaxis =
         [
             new YAxis
