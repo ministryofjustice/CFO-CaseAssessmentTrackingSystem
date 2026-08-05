@@ -31,7 +31,7 @@ public class NotifyPqaActivityRejectedEventHandler(IUnitOfWork unitOfWork) : INo
             if (previous == null)
             {
                 var n = Notification.Create(heading, details, qaUser!);
-                n.SetLink($"pages/workspace/provider/activities/pqa/");
+                n.SetLink($"pages/workspace/deliverymanagement/activities/pqa/");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
