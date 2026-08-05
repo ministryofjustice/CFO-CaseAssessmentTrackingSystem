@@ -1,0 +1,52 @@
+serviceAccountName: hmpps-cfo-case-assessment-tracking-system-train
+
+generic-service:
+  serviceAccountName: hmpps-cfo-case-assessment-tracking-system-train
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+    scaleUpStabilizationWindowSeconds: 60
+  ingress:
+    host: hmpps-cfo-case-assessment-tracking-system-train.live.cloud-platform.service.justice.gov.uk
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  env:
+    DOTNET_ENVIRONMENT: "Training"
+    Sentry__Environment: "Training-CloudPlatform"
+    # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
+    # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
+    WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-train.svc.cluster.local:8080"
+    DMS__ApplicationUrl: "https://dev-dms-api.co-financing.org"
+
+worker:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    DOTNET_ENVIRONMENT: "Training"
+    Sentry__Environment: "Training-CloudPlatform"
+
+# RDS bridge - disabled in non-development environments
+rdsPortForward:
+  enabled: true
+
+# Redis bridge - disabled in non-development environments
+redisPortForward:
+  enabled: true
+
+# todo: enable prometheus alerts (CCPM-41)
+# generic-prometheus-alerts:
+#   businessHoursOnly: true
+#   alertSeverity: <to-be-determined>
