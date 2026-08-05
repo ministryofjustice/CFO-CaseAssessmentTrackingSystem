@@ -46,7 +46,11 @@ rdsPortForward:
 redisPortForward:
   enabled: true
 
-# todo: enable prometheus alerts (CCPM-41)
-# generic-prometheus-alerts:
-#   businessHoursOnly: true
-#   alertSeverity: <to-be-determined>
+generic-prometheus-alerts:
+  businessHoursOnly: true
+  alertSeverity: hmpps-cfo-case-assessment-tracking-system-dev # use dev severity for now, as we don't have a train severity configured in Prometheus yet
+  rdsAlertsDatabases:
+    hmpps-cfo-case-assessment-tracking-system-db-training: train sql server
+  elastiCacheAlertsClusterIds:
+    cp-1f741f241b474c71-001: train redis cluster node 1 (primary)
+    cp-1f741f241b474c71-002: train redis cluster node 2 (replica)
