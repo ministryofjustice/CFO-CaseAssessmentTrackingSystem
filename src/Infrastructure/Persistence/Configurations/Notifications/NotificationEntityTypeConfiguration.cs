@@ -47,7 +47,7 @@ public class NotificationEntityTypeConfiguration : IEntityTypeConfiguration<Noti
 
         builder.Property(x => x.Link)
             .IsRequired(false)
-            .HasMaxLength(50);
+            .HasMaxLength(200);
 
         builder.HasOne<ApplicationUser>()
             .WithMany()

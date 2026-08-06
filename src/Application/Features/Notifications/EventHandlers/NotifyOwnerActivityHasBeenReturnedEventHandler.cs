@@ -11,7 +11,7 @@ public class NotifyOwnerActivityHasBeenReturnedEventHandler(IUnitOfWork unitOfWo
         {
             const string heading = "Activity returned";
 
-            string details = $"Your {notification.Item.Type.Name} (${notification.Item.Category.Name}) activtiy has been returned by QA.";
+            string details = $"Your {notification.Item.Type.Name} ({notification.Item.Category.Name}) activity has been returned by QA.";
 
             var n = Notification.Create(heading, details, notification.Item.OwnerId!);
             n.SetLink($"/pages/workspace/participants/" + notification.Item.ParticipantId);                

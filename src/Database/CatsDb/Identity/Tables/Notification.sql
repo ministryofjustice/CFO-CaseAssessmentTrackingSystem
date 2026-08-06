@@ -2,7 +2,7 @@ CREATE TABLE [Identity].[Notification] (
     [Id]               UNIQUEIDENTIFIER NOT NULL,
     [Heading]          NVARCHAR (50)    NOT NULL,
     [Details]          NVARCHAR (MAX)   NOT NULL,
-    [Link]             NVARCHAR (50)    NULL,
+    [Link]             NVARCHAR (200)   NULL,
     [ReadDate]         DATETIME2 (7)    NULL,
     [Created]          DATETIME2 (7)    NOT NULL,
     [CreatedBy]        NVARCHAR (36)    NULL,
