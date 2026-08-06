@@ -49,7 +49,7 @@ public static class SearchParticipants
             var query = isInternal
                 ? from p in context.Participants
                   where p.Owner!.TenantId!.StartsWith(tenantId)
-                        || (p.OwnerId == null && p.CurrentLocation.Tenants.Any(t => t.Id.StartsWith(tenantId)))
+                        || p.OwnerId == null
                   select p
                 : from p in context.Participants
                   where p.Owner!.TenantId!.StartsWith(tenantId)
