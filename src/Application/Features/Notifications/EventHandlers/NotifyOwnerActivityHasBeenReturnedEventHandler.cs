@@ -11,22 +11,11 @@ public class NotifyOwnerActivityHasBeenReturnedEventHandler(IUnitOfWork unitOfWo
         {
             const string heading = "Activity returned";
 
-            string details = "You have activities that have been returned by PQA";
+            string details = $"Your {notification.Item.Type.Name} (${notification.Item.Category.Name}) activtiy has been returned by QA.";
 
-            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
-                n => n.Heading == heading
-                && n.OwnerId == notification.Item.OwnerId
-                && n.ReadDate == null
-            );
-
-            previous?.ResetNotificationDate();
-
-            if(previous is null)
-            {
-                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/workspace/participants/" + notification.Item.ParticipantId);                
-                await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
-            }
+            var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+            n.SetLink($"/pages/workspace/participants/" + notification.Item.ParticipantId);                
+            await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
         }
     }
 }
