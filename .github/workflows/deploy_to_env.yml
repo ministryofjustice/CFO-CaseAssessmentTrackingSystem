@@ -3,10 +3,7 @@ name: Deploy to environment
 # Manual promotion / rollback. Deploys an PRE-BUILT image version to a chosen
 # environment. The chosen `version` must already exist in ghcr:
 #   ghcr.io/ministryofjustice/hmpps-cfo-cats:<version>
-# Regular builds (pipeline.yml, on main) are tagged  date.run_number.sha7
-# Hotfix builds (build-hotfix.yml)       are tagged  date.run_number.sha7, plus an optional
-#   custom tag supplied at dispatch (e.g. hotfix-ccpm-42) - promote whichever you prefer.
-# This is the recommended way to promote a dev-proven build to preprod/prod, or to
+# This is the recommended way to promote a hotfix to an environment, or to
 # roll back to a known-good earlier version.
 on:
   workflow_dispatch:
