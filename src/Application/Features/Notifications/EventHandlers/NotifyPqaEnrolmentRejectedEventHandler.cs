@@ -3,36 +3,47 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Notifications.EventHandlers;
 
-public class NotifyPqaEnrolmentRejectedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
+public class NotifyPqaEnrolmentRejectedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<EnrolmentPqaQueueCreatedDomainEvent>
 {
-    public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(EnrolmentPqaQueueCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-
-        if (notification.From == EnrolmentStatus.SubmittedToAuthorityStatus && notification.To == EnrolmentStatus.SubmittedToProviderStatus)
+        // Only notify if this is a REJECTED entry (returned from authority)
+        if (notification.Entity.IsAccepted == false)
         {
-            const string heading = "Enrolment returned from authority";
-            string details = "You have enrolments that have been returned";
+            var heading = $"Enrolment returned - {notification.Entity.ParticipantId}";
+            var details = "This enrolment has been returned from the authority for review";
 
-            // who did the PQA?
+            // Get the PREVIOUS accepted PQA queue entry to find who originally did the PQA
             var qaUser = await unitOfWork.DbContext
                 .EnrolmentPqaQueue.AsNoTracking()
                 .Where(pqa =>
-                    pqa.ParticipantId == notification.Item.Id && pqa.IsAccepted == true && pqa.IsCompleted == true)
-                .Select(pqa => pqa.LastModifiedBy!)
+                    pqa.ParticipantId == notification.Entity.ParticipantId 
+                    && pqa.IsAccepted == true 
+                    && pqa.IsCompleted == true)
+                .Select(pqa => pqa.LastModifiedBy)
                 .FirstOrDefaultAsync(cancellationToken);
+            
+            if (qaUser == null)
+            {
+                return;
+            }
 
-            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
+            // Use the entity ID directly from the event for the link
+            var link = $"pages/workspace/deliverymanagement/enrolments/pqa/{notification.Entity.Id}";
+
+            var previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
-                && n.OwnerId == qaUser
-                && n.ReadDate == null
+                    && n.OwnerId == qaUser
+                    && n.Link == link
+                    && n.ReadDate == null
             );
 
             previous?.ResetNotificationDate();
 
             if (previous == null)
             {
-                var n = Notification.Create(heading, details, qaUser!);
-                n.SetLink($"pages/workspace/deliverymanagement/enrolments/pqa/");
+                var n = Notification.Create(heading, details, qaUser);
+                n.SetLink(link);
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
