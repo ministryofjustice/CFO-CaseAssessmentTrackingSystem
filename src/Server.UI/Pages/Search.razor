@@ -56,13 +56,13 @@
                         break;
                     case ParticipantResult participant:
                         <MudListItem T="string"
-                                     Icon="@Icons.Material.Filled.Person"
+                                     Icon="@(participant.Participant.IsUnassigned ? Icons.Material.Filled.PersonSearch : Icons.Material.Filled.Person)"
                                      Href="@($"/pages/workspace/participants/{participant.Participant.Id}")">
                             <MudText Typo="Typo.body1">
                                 <MudHighlighter HighlightedText="@_searchedKeyword" Text="@participant.Participant.FullName" />
                             </MudText>
                             <MudText Typo="Typo.caption">
-                                @participant.Participant.Id@(string.IsNullOrWhiteSpace(participant.Participant.CurrentLocation) ? "" : $" - {participant.Participant.CurrentLocation}")
+                                @participant.Participant.Id@(string.IsNullOrWhiteSpace(participant.Participant.CurrentLocation) ? "" : $" - {participant.Participant.CurrentLocation}")@(participant.Participant.IsUnassigned ? " \u2014 Unassigned" : "")
                             </MudText>
                         </MudListItem>
                         break;
