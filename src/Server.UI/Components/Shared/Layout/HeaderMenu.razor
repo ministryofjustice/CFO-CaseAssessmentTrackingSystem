@@ -1,6 +1,7 @@
 ﻿@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services
 @inherits CatsComponentBase
 @inject IStringLocalizer<HeaderMenu> L
+@inject IApplicationSettings Settings
 
 
 <MudAppBar Class=""
@@ -45,6 +46,8 @@
                     <MudMenuItem Href=@MyAreaLinks.Notifications.Href Label="Notifications"/>
                     <MudDivider />
                     <MudMenuItem Href=@IdentityComponentsEndpointRouteBuilderExtensions.Logout Label="Logout"/>
+                    <MudDivider />
+                    <MudMenuItem  Disabled Label="@Settings.Version" Class="py-0" Style="--mud-typography-body1-size: 0.75rem;"/>
                 </ChildContent>
             </MudMenu>
         </MudStack>
