@@ -8,14 +8,6 @@ run-name: Force build image from ${{ github.ref_name }}
 
 on:
   workflow_dispatch:
-    inputs:
-      image_tag:
-        description: >-
-          Tag for the image (e.g. hotfix/critical-bug-fix). Must be a valid Docker
-          tag (letters, digits, . _ - ; no / or :).
-        required: true
-        default: ''
-        type: string
 
 permissions:
   contents: read
@@ -26,26 +18,14 @@ permissions:
 # Manual, rare action; guard against a double-dispatch racing itself on the same ref.
 # Safe to cancel: this workflow only builds/pushes (no helm, no deploy).
 concurrency:
-  group: build-hotfix-${{ github.ref }}
+  group: build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # Same verification as pipeline.yml's dotnet_verify, so a build can't ship untested.
-  # Also validates the image_tag up front so a bad tag fails before the build.
   dotnet_verify:
     name: Build & test (.NET)
     runs-on: ubuntu-latest
     steps:
-      - name: Validate image tag
-        shell: bash
-        env:
-          IMAGE_TAG: ${{ inputs.image_tag }}
-        run: |
-          if [[ ! "$IMAGE_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}$ ]]; then
-            echo "::error::'$IMAGE_TAG' is not a valid Docker tag. Use letters, digits, '.', '_' or '-' (no '/' or ':'), max 128 chars, not starting with '.' or '-'."
-            exit 1
-          fi
-          echo "OK: image tag '$IMAGE_TAG'."
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Setup .NET
@@ -79,5 +59,15 @@ jobs:
       generate_sbom: true
       attach_sbom_to_registry: true
       sign_image: true
-      # Optional human-friendly tag alongside the generated date.run_number.sha7 tag.
-      additional_docker_tag: ${{ inputs.image_tag }}
+
+  summary:
+    name: Build summary
+    runs-on: ubuntu-latest
+    needs: [force_build_image]
+
+    steps:
+      - name: Write summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- App version: ${{ needs.force_build_image.outputs.app_version }}" >> $GITHUB_STEP_SUMMARY
