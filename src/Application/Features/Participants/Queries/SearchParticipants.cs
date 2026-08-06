@@ -43,10 +43,17 @@ public static class SearchParticipants
             }
 
             var context = unitOfWork.DbContext;
+            var tenantId = request.CurrentUser!.TenantId!;
+            var isInternal = request.CurrentUser.HasInternalRole();
 
-            var query = from p in context.Participants
-                        where p.Owner!.TenantId!.StartsWith(request.CurrentUser!.TenantId!)
-                        select p;
+            var query = isInternal
+                ? from p in context.Participants
+                  where p.Owner!.TenantId!.StartsWith(tenantId)
+                        || p.OwnerId == null
+                  select p
+                : from p in context.Participants
+                  where p.Owner!.TenantId!.StartsWith(tenantId)
+                  select p;
 
             if (keyword.Split(" ") is { Length: 2 } segments)
             {
@@ -70,7 +77,8 @@ public static class SearchParticipants
                     Id = p.Id,
                     FirstName = p.FirstName,
                     LastName = p.LastName,
-                    CurrentLocation = p.CurrentLocation.Name
+                    CurrentLocation = p.CurrentLocation.Name,
+                    IsUnassigned = p.OwnerId == null
                 })
                 .ToListAsync(cancellationToken);
 
