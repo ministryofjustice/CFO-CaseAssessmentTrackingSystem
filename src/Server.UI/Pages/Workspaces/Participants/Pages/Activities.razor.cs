@@ -40,7 +40,7 @@ public partial class Activities
     public ITenantService TenantService { get; set; } = null!;
 
     [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
@@ -142,8 +142,6 @@ public partial class Activities
             _totalItems = 0;
         }
 
-        _expandedRows.Clear();
-
         await SessionStorage.SetAsync(ActivitiesSessionData.FromQuery(Query, Tabular));
     }
 
@@ -193,6 +191,18 @@ public partial class Activities
         }
     }
 
+    private void ToggleExpansionPanel(Guid activityId, bool expanded)
+    {
+        if (expanded)
+        {
+            _expandedRows.Add(activityId);
+        }
+        else
+        {
+            _expandedRows.Remove(activityId);
+        }
+    }
+    
     private async Task PageChanged(int page)
     {
         Query.PageNumber = page;
@@ -215,7 +225,7 @@ public partial class Activities
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Descending.ToString();
+            Query.SortDirection = nameof(SortDirection.Descending);
         }
         await OnRefresh();
     }
@@ -339,7 +349,7 @@ public partial class Activities
         Query.ApprovedWithinDays = null;
         Query.Keyword = null;
         Query.OrderBy = "Created";
-        Query.SortDirection = SortDirection.Descending.ToString();
+        Query.SortDirection = nameof(SortDirection.Descending);
         Query.PageNumber = 1;
         Tabular = false;
     }

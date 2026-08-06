@@ -32,11 +32,12 @@
         {
             <MudText Typo="Typo.body1" Class="mud-text-secondary">No notes.</MudText>
         }
-        <MudTextField Label="@Activity.GetMemberDescription(x => x.AdditionalInformation)"
-                      Value="@Activity.AdditionalInformation"
-                      Lines="5"
-                      Class="mt-2"
-                      ReadOnly />
+        
+        @if (!string.IsNullOrWhiteSpace(Activity.AdditionalInformation))
+        {
+            <MudText Typo="Typo.subtitle2" Class="mt-3">@Activity.GetMemberDescription(x => x.AdditionalInformation)</MudText>
+            <MudText Typo="Typo.body1">@Activity.AdditionalInformation</MudText>
+        }
     }
 </MudStack>
 

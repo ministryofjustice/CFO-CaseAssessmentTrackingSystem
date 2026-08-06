@@ -236,15 +236,18 @@
                             </MudText>
                             <MudSpacer />
                             <MudText Typo="Typo.body1">
-                                Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
+                                Took place on: @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
                                 at @item.TookPlaceAtLocationName
                             </MudText>
                         </MudStack>
                     </MudStack>
 
-                    <ActivityExpansionPanel Activity="item"
+                    <ActivityExpansionPanel @key="item.ActivityId"
+                                            Activity="item"
                                             IncludeInternalNotes="Query.IncludeInternalNotes"
-                                            CurrentUser="UserProfile" />
+                                            CurrentUser="UserProfile"
+                                            IsExpanded="IsExpanded(item.ActivityId)"
+                                            IsExpandedChanged="@(expanded => ToggleExpansionPanel(item.ActivityId, expanded))" />
 
                     <MudDivider Class="mt-4 mb-2" />
                     <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
