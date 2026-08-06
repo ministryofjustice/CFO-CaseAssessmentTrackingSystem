@@ -1,0 +1,156 @@
+@page "/system/hmpps-external-api-status"
+
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+
+@attribute [Authorize(SecurityPolicies.SystemSupportFunctions)]
+
+@inject IServiceProvider ServiceProvider
+
+<PageTitle>HMPPS External API Status</PageTitle>
+
+@if (!_enabled)
+{
+    <MudAlert Severity="Severity.Info">
+        The HMPPS External API integration is experimental and currently disabled. Enable it via the
+        "Features:HmppsExternalApi:Enabled" configuration flag.
+    </MudAlert>
+}
+else
+{
+    <MudChip T="string" Color="@_color">@_status</MudChip>
+
+    <MudStack Row="true" Class="mt-4" AlignItems="AlignItems.Center">
+        <MudTextField T="string" @bind-Value="_hmppsId" Label="HMPPS ID" Immediate="true" Style="max-width:250px" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(_loading || string.IsNullOrWhiteSpace(_hmppsId))" OnClick="LoadRisks">
+            Get Serious Harm Risk
+        </MudButton>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
+    }
+    else if (_riskError is not null)
+    {
+        <MudAlert Class="mt-4" Severity="Severity.Error">@_riskError</MudAlert>
+    }
+    else if (_risks is not null)
+    {
+        <MudCard Class="mt-4">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+                    <MudText Typo="Typo.h6">Risk of Serious Harm</MudText>
+                    <MudChip T="string">@(_risks.Summary?.OverallRiskLevel ?? "Unknown")</MudChip>
+                </MudStack>
+                <MudText Typo="Typo.body2">Assessed on: @(_risks.AssessedOn?.ToString("dd/MM/yyyy") ?? "Unknown")</MudText>
+                <MudText Typo="Typo.body2">Who is at risk: @(_risks.Summary?.WhoIsAtRisk ?? "-")</MudText>
+                <MudText Typo="Typo.body2">Nature of risk: @(_risks.Summary?.NatureOfRisk ?? "-")</MudText>
+
+                <MudText Typo="Typo.subtitle2" Class="mt-4">Risk to self</MudText>
+                <MudGrid Class="mt-1">
+                    @foreach (var (label, detail) in RiskToSelfItems)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudPaper Class="pa-3" Outlined="true">
+                                <MudText Typo="Typo.body1" Class="mb-2">@label</MudText>
+                                <MudStack Row="true" Spacing="1">
+                                    <MudChip T="string" Size="Size.Small" Color="@RiskColor(detail?.Current)">Current: @(detail?.Current ?? "-")</MudChip>
+                                    <MudChip T="string" Size="Size.Small" Color="@RiskColor(detail?.Previous)">Previous: @(detail?.Previous ?? "-")</MudChip>
+                                </MudStack>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                <MudText Typo="Typo.subtitle2" Class="mt-4">Other risks</MudText>
+                <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2" Class="mt-1">
+                    @foreach (var (label, value) in OtherRiskItems)
+                    {
+                        <MudChip T="string" Color="@RiskColor(value)">@label: @(value ?? "-")</MudChip>
+                    }
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    }
+}
+
+@code {
+    private bool _enabled;
+    private IHmppsExternalApiService? _service;
+
+    private string _status = "Checking...";
+    private Color _color = Color.Default;
+
+    private string? _hmppsId;
+    private bool _loading;
+    private string? _riskError;
+    private RisksDto? _risks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // The HMPPS External API client is only registered when the feature is enabled.
+        // Resolve it optionally so this page degrades gracefully when the feature is gated off.
+        _service = ServiceProvider.GetService<IHmppsExternalApiService>();
+        _enabled = _service is not null;
+
+        if (!_enabled)
+        {
+            return;
+        }
+
+        var result = await _service!.GetStatusAsync(CancellationToken.None);
+
+        _status = result.Succeeded ? "Connected" : "Disconnected";
+        _color = result.Succeeded ? Color.Success : Color.Error;
+    }
+
+    private async Task LoadRisks()
+    {
+        if (_service is null || string.IsNullOrWhiteSpace(_hmppsId))
+        {
+            return;
+        }
+
+        _loading = true;
+        _riskError = null;
+        _risks = null;
+
+        var result = await _service.GetSeriousHarmRiskAsync(_hmppsId, CancellationToken.None);
+
+        if (result.Succeeded)
+        {
+            _risks = result.Data;
+        }
+        else
+        {
+            _riskError = result.ErrorMessage is { Length: > 0 } ? result.ErrorMessage : "No risk data found.";
+        }
+
+        _loading = false;
+    }
+
+    private IEnumerable<(string Label, RiskDetailDto? Detail)> RiskToSelfItems => new (string, RiskDetailDto?)[]
+    {
+        ("Suicide", _risks?.RiskToSelf?.Suicide),
+        ("Self harm", _risks?.RiskToSelf?.SelfHarm),
+        ("Custody", _risks?.RiskToSelf?.Custody),
+        ("Hostel setting", _risks?.RiskToSelf?.HostelSetting),
+        ("Vulnerability", _risks?.RiskToSelf?.Vulnerability),
+    };
+
+    private IEnumerable<(string Label, string? Value)> OtherRiskItems => new (string, string?)[]
+    {
+        ("Escape or abscond", _risks?.OtherRisks?.EscapeOrAbscond),
+        ("Control issues / disruptive behaviour", _risks?.OtherRisks?.ControlIssuesDisruptiveBehaviour),
+        ("Breach of trust", _risks?.OtherRisks?.BreachOfTrust),
+        ("Risk to other prisoners", _risks?.OtherRisks?.RiskToOtherPrisoners),
+    };
+
+    private static Color RiskColor(string? value) => value switch
+    {
+        "YES" => Color.Error,
+        "NO" => Color.Success,
+        "DK" => Color.Warning,
+        _ => Color.Default,
+    };
+}

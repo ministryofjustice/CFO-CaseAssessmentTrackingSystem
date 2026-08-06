@@ -136,6 +136,10 @@ generic-service:
       HTTPS_PROXY: "HTTPS_PROXY"
       HTTP_PROXY: "HTTP_PROXY"
       NO_PROXY: "NO_PROXY"
+    hmpps-external-api-credentials:
+      HmppsExternalApi__ClientCertBase64: "client-pfx-base64"
+      HmppsExternalApi__ClientCertPassword: "pfx-password"
+      HmppsExternalApi__ApiKey: "api-key"
 
   env:
     ConnectionStrings__CatsDb: *catsDb
@@ -148,6 +152,7 @@ generic-service:
     Features__UseSignalRBackplane: "true"
     Features__DmsHardLinkApiEnabled: "true"
     Features__EnablePrometheusScrapingEndpoint: "true"
+    Features__HmppsExternalApi__Enabled: "true"
     WorkerOptions__BaseUrl: "http://cats-worker:8080"
     Sentry__Release: "0.0.0"                    # overridden by CI
     AppConfigurationSettings__Version: "0.0.0"  # overridden by CI

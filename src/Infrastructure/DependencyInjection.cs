@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Amazon.Runtime;
 using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces;
@@ -29,6 +30,7 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Initiatives;
 using Cfo.Cats.Infrastructure.Services.Delius;
+using Cfo.Cats.Infrastructure.Services.HmppsExternalApi;
 using Cfo.Cats.Infrastructure.Services.Jobs;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MessageHandling;
@@ -45,7 +47,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using Microsoft.Extensions.DependencyInjection;
-using System.Security.Cryptography.X509Certificates;
 using Quartz;
 using Quartz.AspNetCore;
 using Rebus;
@@ -381,6 +382,39 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.Add("key", configuration.GetRequiredValue("Ordnance:Places:ApiKey"));
             client.BaseAddress = new Uri(configuration.GetRequiredValue("Ordnance:Places:ApplicationUrl"));
         });
+
+        services.Configure<HmppsExternalApiOptions>(configuration.GetSection(HmppsExternalApiOptions.HmppsExternalApi));
+
+        // Experimental integration - only registered when explicitly enabled via feature flag.
+        if (configuration.GetValue<bool>("Features:HmppsExternalApi:Enabled"))
+        {
+            services.AddHttpClient<IHmppsExternalApiService, HmppsExternalApiService>((provider, client) =>
+                {
+                    var hmppsExternalApiOptions = provider.GetRequiredService<IOptions<HmppsExternalApiOptions>>().Value;
+
+                    client.BaseAddress = new Uri(hmppsExternalApiOptions.BaseUrl);
+
+                    if (!string.IsNullOrWhiteSpace(hmppsExternalApiOptions.ApiKey))
+                    {
+                        client.DefaultRequestHeaders.Add("X-API-KEY", hmppsExternalApiOptions.ApiKey);
+                    }
+                })
+                .ConfigurePrimaryHttpMessageHandler(provider =>
+                {
+                    var hmppsExternalApiOptions = provider.GetRequiredService<IOptions<HmppsExternalApiOptions>>().Value;
+                    var handler = new HttpClientHandler();
+
+                    if (!string.IsNullOrWhiteSpace(hmppsExternalApiOptions.ClientCertBase64)
+                        && !string.IsNullOrWhiteSpace(hmppsExternalApiOptions.ClientCertPassword))
+                    {
+                        var pfxBytes = Convert.FromBase64String(hmppsExternalApiOptions.ClientCertBase64);
+                        var certificate = X509CertificateLoader.LoadPkcs12(pfxBytes, hmppsExternalApiOptions.ClientCertPassword);
+                        handler.ClientCertificates.Add(certificate);
+                    }
+
+                    return handler;
+                });
+        }
 
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
