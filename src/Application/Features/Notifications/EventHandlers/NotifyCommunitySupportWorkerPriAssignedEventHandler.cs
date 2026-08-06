@@ -14,20 +14,9 @@ public class NotifyCommunitySupportWorkerPriAssignedEventHandler(IUnitOfWork uni
 
             string details = "You have been assigned a PRI";
 
-            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
-                n => n.Heading == heading
-                && n.OwnerId == pri.Item.AssignedTo
-                && n.ReadDate == null
-            );
-
-            previous?.ResetNotificationDate();
-
-            if (previous is null)
-            {
-                var n = Notification.Create(heading, details, pri.Item.AssignedTo);
-                n.SetLink($"pages/participants/pre-release-inventory");
-                await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
-            }
+            var n = Notification.Create(heading, details, pri.Item.AssignedTo);
+            n.SetLink($"/pages/workspace/participants/{pri.Item.ParticipantId}/");
+            await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
         }
     }
 }

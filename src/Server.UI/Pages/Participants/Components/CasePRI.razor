@@ -79,7 +79,7 @@
             </TitleContent>
             <ChildContent>
                 <MudForm Model="preMeeting" Validation="Validator.ValidateValue(preMeeting)"  ReadOnly Disabled>
-                    <MudText Class="mb-1" Typo="Typo.body2">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
+                    <MudText Class="mb-1" Typo="Typo.body1">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
                     <MudDatePicker @bind-Date="preMeeting!.AttendedOn"
                     For="() => preMeeting!.AttendedOn"
                     Label="Date pre-release meeting took place"

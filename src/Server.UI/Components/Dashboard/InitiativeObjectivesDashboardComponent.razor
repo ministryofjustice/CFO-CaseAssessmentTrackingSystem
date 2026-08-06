@@ -18,31 +18,29 @@
 @if (Data is not null && Data.Any())
 {
     <MudGrid Spacing="2" Class="mb-3">
-        <MudItem xs="12" Class="d-flex justify-space-between align-center">
-            <MudText Typo="Typo.h6">Initiative Objectives</MudText>
-            <div class="d-flex align-center gap-3">
-                @if (!VisualMode)
-                {
-                    <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="StateHasChanged"
-                                           ActiveOnly="false"
-                                           Style="max-width: 260px;" 
-                                           Label="Initiative" />
-                }
-                <MudSwitch T="bool" @bind-Value="ShowActiveOnly" Color="Color.Primary" Label="Show open objectives only" />
-                <MudLoadingButton Variant="Variant.Filled"
-                                  Size="MudBlazor.Size.Small"
-                                  Loading="@_downloading"
-                                  Disabled="@Loading"
-                                  OnClick="@OnExport"
-                                  StartIcon="@Icons.Material.Filled.Download"
-                                  Color="Color.Secondary">
-                    @ConstantString.Export
-                </MudLoadingButton>
-            </div>
-        </MudItem>
-        <MudItem xs="12">
+        <!-- This is the left column -->
+        <MudItem xs="12" sm="6">
             <MudChip T="string">Active (@TotalActive)</MudChip>
             <MudChip T="string">Completed (@TotalCompleted)</MudChip>
+        </MudItem>
+        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center gap-3">
+            @if (!VisualMode)
+            {
+                <InitiativeAutoComplete @bind-Value="_initiativeFilter" @bind-Value:after="OnInitiativeFilterChanged"
+                                        ActiveOnly="false"
+                                        Style="max-width: 260px;" 
+                                        Label="Initiative" />
+            }
+            <MudSwitch T="bool" Value="ShowActiveOnly" ValueChanged="OnShowActiveOnlyChanged" Color="Color.Primary" Label="Show open objectives only" />
+            <MudLoadingButton Variant="Variant.Filled"
+                                Size="MudBlazor.Size.Small"
+                                Loading="@_downloading"
+                                Disabled="@Loading"
+                                OnClick="@OnExport"
+                                StartIcon="@Icons.Material.Filled.Download"
+                                Color="Color.Secondary">
+                @ConstantString.Export
+            </MudLoadingButton>
         </MudItem>
     </MudGrid>
 
@@ -76,7 +74,8 @@
                   Hover="true"
                   Striped="true"
                   Dense="true"
-                  SortLabel="Sort By">
+                  SortLabel="Sort By"
+                  Class="mt-4">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto, object>(x => x.ParticipantName)">
@@ -131,24 +130,24 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Participant">
-                    <MudStack AlignItems="AlignItems.Start" Spacing="0">
-                        <MudLink Href="@($"/pages/participants/{context.ParticipantId}")">
-                            @context.ParticipantName
+                    <MudStack Spacing="0">
+                        <MudText>@context.ParticipantName</MudText>
+                        <MudLink Href="@($"/pages/workspace/participants/{context.ParticipantId}?from=initiatives")">
+                            @context.ParticipantId
                         </MudLink>
-                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ParticipantId</MudText>
                     </MudStack>
                 </MudTd>
                 <MudTd DataLabel="Assignee">
                     <MudStack AlignItems="AlignItems.Start" Spacing="0">
-                        <MudText Typo="Typo.body2">@context.OwnerDisplayName</MudText>
+                        <MudText Typo="Typo.body1">@context.OwnerDisplayName</MudText>
                         <MudText Typo="Typo.caption">@context.OwnerTenantName</MudText>
                     </MudStack>
                 </MudTd>
                 <MudTd DataLabel="Objective">
-                    <MudText Typo="Typo.body2">@context.ObjectiveDescription</MudText>
+                    <MudText Typo="Typo.body1">@context.ObjectiveDescription</MudText>
                 </MudTd>
                 <MudTd DataLabel="Created By">
-                    <MudText Typo="Typo.body2">@context.InitiativeObjectiveCreatedBy</MudText>
+                    <MudText Typo="Typo.body1">@context.InitiativeObjectiveCreatedBy</MudText>
                 </MudTd>
                 <MudTd DataLabel="Initiative">
                     <MudTooltip Text="@context.InitiativeDescription">
@@ -156,10 +155,10 @@
                     </MudTooltip>
                 </MudTd>
                 <MudTd DataLabel="Start Date">
-                    <MudText Typo="Typo.body2">@(context.ParticipantStartDate?.ToString("dd/MM/yyyy") ?? "-")</MudText>
+                    <MudText Typo="Typo.body1">@(context.ParticipantStartDate?.ToString("dd/MM/yyyy") ?? "-")</MudText>
                 </MudTd>
                 <MudTd DataLabel="End Date">
-                    <MudText Typo="Typo.body2">@(context.ParticipantEndDate?.ToString("dd/MM/yyyy") ?? "-")</MudText>
+                    <MudText Typo="Typo.body1">@(context.ParticipantEndDate?.ToString("dd/MM/yyyy") ?? "-")</MudText>
                 </MudTd>
                 <MudTd DataLabel="Objective Status">
                     @if (context.IsObjectiveCompleted)
@@ -183,10 +182,10 @@
                     }
                 </MudTd>
                 <MudTd DataLabel="Task Status">
-                    <MudText Typo="Typo.body2">@context.TaskSummary</MudText>
+                    <MudText Typo="Typo.body1">@context.TaskSummary</MudText>
                 </MudTd>
                 <MudTd DataLabel="Activities">
-                    <MudText Typo="Typo.body2">@context.ActivityCount</MudText>
+                    <MudText Typo="Typo.body1">@context.ActivityCount</MudText>
                 </MudTd>
             </RowTemplate>
             <PagerContent>
@@ -197,5 +196,5 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }

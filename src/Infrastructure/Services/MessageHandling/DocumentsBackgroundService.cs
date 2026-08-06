@@ -11,7 +11,6 @@ namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
 
 internal class DocumentsBackgroundService(IServiceProvider provider, IConfiguration configuration, IOptions<RabbitSettings> options) : BackgroundService
 {
-
     private BuiltinHandlerActivator? _activator;
     private IBus? _bus;
 
@@ -25,6 +24,7 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportRiskDueIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportParticipantsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportPqaActivitiesIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportActivitiesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportPqaEnrolmentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportActivityPaymentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportEducationPaymentsIntegrationEventConsumer>(provider);
@@ -36,10 +36,21 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportCumulativesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportProviderFeedbackIntegrationEventConsumer>(provider);
-       _activator.Handle<DocumentExportPerformanceDashboardIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportArchivedCasesBehaviourIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInitiativeObjectivesDashboardIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInitiativesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportUsersIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportActivePrisIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEngagementsByLocationIntegrationEventConsumer>(provider);
+       
+       _activator.Handle<DocumentExportPerformanceActivitiesIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceEducationAndTrainingIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceEmploymentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceEnrolmentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceInductionsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceReassessmentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceRecentApprovedActivitiesIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportPerformanceSupportAndReferralIntegrationEventConsumer>(provider);
        
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.DocumentService)

@@ -1,7 +1,7 @@
 ﻿@layout MainLayout
 @inherits LayoutComponentBase
 
-@inject IWebHostEnvironment Env
+@inject IWebHostEnvironment Environment
 @inject IConfiguration Configuration
 
 <MudLayout>
@@ -10,27 +10,33 @@
             <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
-            <PresenceConnector />
-            <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
-                        OpenSearchDialog="OpenSearchDialog"
-                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"/>
-            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@_userProfile?.AssignedRoles"
-            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
-            <MudMainContent>
-                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
-                    <ErrorBoundary @ref="ErrorBoundary">
-                        <ChildContent>
-                            <CascadingValue Value="@_userProfile">
-                                @Body
-                            </CascadingValue>
-                        </ChildContent>
-                        <ErrorContent Context="exception">
-                            <CustomError Exception="exception"></CustomError>
-                        </ErrorContent>
-                    </ErrorBoundary>
-                </MudContainer>
-            </MudMainContent>
-
+            <CascadingValue Value="@_userProfile">
+                <PresenceConnector />
+                <HeaderMenu />
+                <MudMainContent>
+                    @if(Environment.IsProduction() is false && _showEnvironment)
+                    {
+                         <MudAlert 
+                            Severity="Severity.Warning" 
+                            Variant="Variant.Filled" 
+                            ShowCloseIcon="true" 
+                            ContentAlignment="HorizontalAlignment.Center"
+                            CloseIconClicked="@(() => _showEnvironment = false)">
+                            @Environment.EnvironmentName Environment
+                        </MudAlert>
+                    }
+                    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" >
+                        <ErrorBoundary @ref="ErrorBoundary">
+                            <ChildContent>                        
+                                    @Body              
+                            </ChildContent>
+                            <ErrorContent Context="exception">
+                                <CustomError Exception="exception"></CustomError>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </MudContainer>
+                </MudMainContent>
+            </CascadingValue>
 
         </Authorized>
     </AuthorizeView>
@@ -39,8 +45,9 @@
 
 @code
 {
-    private bool _commandPaletteOpen;
-    private bool _navigationMenuDrawerOpen = false;
+
+    private bool _showEnvironment = true;
+
     private UserProfile? _userProfile;
     private ErrorBoundary? ErrorBoundary { set; get; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -56,43 +63,6 @@
         ResetBoundary();
     }
 
-    private void ResetBoundary()
-    {
-        // On each page navigation, reset any error state
+    private void ResetBoundary() =>
         ErrorBoundary?.Recover();
-    }
-
-    protected void NavigationMenuDrawerOpenChangedHandler(bool state)
-    {
-        _navigationMenuDrawerOpen = state;
-    }
-
-    protected void ToggleNavigationMenuDrawer()
-    {
-        _navigationMenuDrawerOpen = !_navigationMenuDrawerOpen;
-    }
-
-    private async Task OpenSearchDialog()
-    {
-        if (!_commandPaletteOpen)
-        {
-            var options = new DialogOptions
-            {
-                NoHeader = true,
-                MaxWidth = MaxWidth.Medium,
-                FullWidth = true
-            };
-            
-            var parameters = new DialogParameters<SearchDialog>
-            {
-                { x => x.UserProfile, this._userProfile }
-            };
-
-            var commandPalette = await DialogService.ShowAsync<SearchDialog>("", parameters ,options);
-            _commandPaletteOpen = true;
-
-            await commandPalette.Result;
-            _commandPaletteOpen = false;
-        }
-    }
 }

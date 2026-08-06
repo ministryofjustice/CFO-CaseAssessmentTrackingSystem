@@ -1,4 +1,3 @@
-@using ActualLab.Fusion.Extensions
 @using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -28,7 +27,7 @@
         </MudItem>
         <!-- Toggle button -->
         <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-            <MudSwitch T="bool" @bind-Value="ShowOverdueOnly" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
+            <MudSwitch T="bool" Value="ShowOverdueOnly" ValueChanged="OnShowOverdueOnlyChanged" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
         </MudItem>
     </MudGrid>
     @if(VisualMode)
@@ -60,7 +59,7 @@
     }
     else
     {
-        <MudTable Items="FilteredTabularData" Hover="true" Striped="true">
+        <MudTable Dense="true" Items="FilteredTabularData" Hover="true" Striped="true">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantCurrentLocation!)">
@@ -91,7 +90,7 @@
 
             <RowTemplate>
                 <MudTd DataLabel="Participant Location">
-                    <MudText Typo="Typo.body2">@context.ParticipantCurrentLocation</MudText>
+                    <MudText Typo="Typo.body1">@context.ParticipantCurrentLocation</MudText>
                 </MudTd>
                 <MudTd DataLabel="Review Location">
                     <MudText>@context.ReviewLocation</MudText>
@@ -105,7 +104,7 @@
                                     @context.EnrolmentStatus
                                 </MudChip>
                             </MudStack>                    
-                            <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                            <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=pathway-plan-reviews")>
                                 @context.ParticipantId
                             </MudLink>
                         </MudStack>
@@ -154,6 +153,6 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }
 

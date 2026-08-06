@@ -9,7 +9,7 @@
 {
     if (ConsentDto is not null && ConsentDto.Length > 0)
     {
-        <MudText Typo="Typo.body2">
+        <MudText Typo="Typo.body1">
             Consent documentation already uploaded:
         </MudText>
         
@@ -17,7 +17,7 @@
             @foreach (var c in ConsentDto)
             {
                 <MudListItem T="string">
-                    <MudText Typo="Typo.body2">
+                    <MudText Typo="Typo.body1">
                         @c.FileName 
                     </MudText>
                 </MudListItem>

@@ -26,13 +26,13 @@
 				</CardHeaderContent>
 			</MudCardHeader>
 			<MudCardContent>
-				<MudTable Items="Data.Items"
+				<MudTable Dense="true" Items="Data.Items"
 						  Hover="true"
 						  Striped="true"
 						  Filter="new Func<ParticipantsWithNoRiskDto, bool>(FilterFunc)">
 					<ToolBarContent>
 
-						<MudText Typo="Typo.h6">Details</MudText>
+						<MudText Typo="Typo.subtitle1">Details</MudText>
 						<MudSpacer />
 						<MudStack>			
 							@if (_canSearch)
@@ -64,7 +64,7 @@
 						<MudTd DataLabel="Participant">
 							<MudStack>
 								<MudText>@($"{context.ParticipantName}")</MudText>
-								<MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+								<MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}")>
 									@context.ParticipantId
 								</MudLink>
 							</MudStack>
@@ -95,11 +95,11 @@
 								<MudText>@context.CaseCreatedDate</MudText>
 								@if (context.CaseCreatedDate == DateTime.Today)
 								{
-									<MudText Typo="Typo.body2">Today</MudText>
+									<MudText Typo="Typo.body1">Today</MudText>
 								}
 								else
 								{
-									<MudText Typo="Typo.body2">@context.CaseCreatedDate.Humanize()</MudText>
+									<MudText Typo="Typo.body1">@context.CaseCreatedDate.Humanize()</MudText>
 								}
 							</MudStack>			
 						</MudTd>
@@ -107,7 +107,7 @@
 					
 					<PagerContent>
 						<MudListSubheader Class="d-flex justify-center mt-2">
-							<MudPagination Count=@Data.TotalPages ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+							<MudPagination Rectangular="true" Variant="Variant.Text" Size="Size.Small" Count=@Data.TotalPages ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
 						</MudListSubheader>
 					</PagerContent>
 				</MudTable>

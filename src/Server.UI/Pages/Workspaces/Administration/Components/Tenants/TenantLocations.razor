@@ -1,0 +1,68 @@
+﻿@inherits CatsComponentBase
+
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" />
+}
+else
+{
+    <MudCard Elevation="0" Class="d-flex flex-grow-0">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">
+                    <strong>Accessible Locations</strong>
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+
+            <MudExpansionPanels>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex">
+                            <MudText Class="mt-1">Custody Locations</MudText>
+                            <MudBadge Content="@(_locations.Count(c => c.LocationType.IsCustody))" Color="Color.Default" Overlap="true" Class="d-flex ml-auto">
+                                <MudIcon Icon="@Icons.Material.Filled.Castle" Color="Color.Primary" />
+                            </MudBadge>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudList T="string">
+                            <MudGrid>
+                                @foreach (var l in _locations.Where(c => c.LocationType.IsCustody).OrderBy(l => l.Name))
+                                {
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudListItem Icon="@GetIcon(l.GenderProvision)" IconColor="Color.Primary" Text="@l.Name" SecondaryText="@l.LocationType.Name"></MudListItem>
+                                    </MudItem>
+                                }    
+                            </MudGrid>
+                        </MudList>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex">
+                            <MudText Class="mt-1">Community Locations</MudText>
+                            <MudBadge Content="@(_locations.Count(c => c.LocationType.IsCustody == false))" Color="Color.Default" Overlap="true" Class="d-flex ml-auto">
+                                <MudIcon Icon="@Icons.Material.Filled.Castle" Color="Color.Primary" />
+                            </MudBadge>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudList T="string">
+                            <MudGrid>
+                                @foreach (var l in _locations.Where(c => c.LocationType.IsCustody == false).OrderBy(l => l.Name))
+                                {
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudListItem Icon="@GetLocationIcon(l)" IconColor="Color.Primary" Text="@l.Name" SecondaryText="@l.LocationType.Name"></MudListItem>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudList>
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+            
+        </MudCardContent>
+    </MudCard>
+}

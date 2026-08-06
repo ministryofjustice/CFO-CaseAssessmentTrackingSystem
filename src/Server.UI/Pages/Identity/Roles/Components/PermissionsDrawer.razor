@@ -8,7 +8,7 @@
            OpenChanged="@(s => OnOpenChanged.InvokeAsync(s))"
            Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
     <MudDrawerHeader>
-        <MudText Typo="Typo.h6">Set Permissions</MudText>
+        <MudText Typo="Typo.subtitle1">Set Permissions</MudText>
     </MudDrawerHeader>
     <MudStack AlignItems="AlignItems.Stretch" Class="px-5">
         <MudTextField @bind-Value="Keyword" Label="Search"
@@ -29,7 +29,7 @@
                             <MudText Typo="Typo.body1">
                                 @L[group]
                             </MudText>
-                            <MudText Typo="Typo.body2">
+                            <MudText Typo="Typo.body1">
                                 @(L[Permissions.First(x => x.Group == group).Description])
                             </MudText>
                         </MudStack>

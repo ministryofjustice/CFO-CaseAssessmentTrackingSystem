@@ -1,74 +1,72 @@
-﻿@using Cfo.Cats.Domain.Common.Enums
+﻿@using Humanizer
 @inherits CatsComponentBase
 
 <MudCard Style="Height: 100%;">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Latest Pre-Release Inventory (PRI)</MudText>
+            <MudText Typo="Typo.subtitle1">Latest Pre-Release Inventory (PRI)</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
         @if (_latestPri is null)
         {
-            <MudText Typo="Typo.body2">@_noPriInfo</MudText>
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                @_noPriInfo
+            </MudAlert> 
         }
         else
         {
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Date Created</strong></MudText>
-                <MudText>@_latestPri.Created.ToString("dd/MM/yyyy")</MudText>
-            </MudStack>
-
-            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                <MudText><strong>Actual Release Date</strong></MudText>
-
-                @if (_latestPri.ActualReleaseDate != null)
-                {
-                    <MudText>@_latestPri.ActualReleaseDate?.ToString("dd/MM/yyyy")</MudText>
-                }
-                else
-                {
-                    <MudText>None</MudText>
-                }
-            </MudStack>
-
-            @if (_latestPri.Status == PriStatus.Completed || _latestPri.Status == PriStatus.Abandoned)
-            {
-                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Date @_latestPri.Status.Name</strong></MudText>
-                    <MudText Typo="Typo.body2">@_latestPri.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
-                </MudStack>
-
-                if (_latestPri.Status == PriStatus.Abandoned)
-                {
-                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                        <MudText><strong>@_latestPri.Status.Name Reason</strong></MudText>
-                        <MudText Typo="Typo.body2">@_latestPri.AbandonReason</MudText>
-                    </MudStack>
-                }
-            }
-
-            @if (_showTtgDue)
-            {
-                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>TTG Due</strong></MudText>
-                    <MudTooltip Text="@_priDueTooltipText">
-                        <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
+            <DataList>
+                <ChildContent>
+                    <DataListItem Label="Date Created" HelperText="@_latestPri.Created.Humanize()">
+                        @_latestPri.Created.ToShortDateString()
+                    </DataListItem>
+                    <DataListItem Label="Actual Release Date">
                         <MudText>
-                            @_priDueInfo
+                            @_latestPri.ActualReleaseDate.ToShortDateOrDefault("None")
                         </MudText>
-                    </MudTooltip>
-                </MudStack>
-            }
+                    </DataListItem>
+
+                    @if (_latestPri.Status == PriStatus.Completed || _latestPri.Status == PriStatus.Abandoned)
+                    {
+                        <DataListItem Label="@($"Date {_latestPri.Status.Name}")" HelperText="@_latestPri.CompletedOn!.Value.Humanize()">
+                            @_latestPri.CompletedOn.ToShortDateOrEmptyString()
+                        </DataListItem>
+
+                        if (_latestPri.Status == PriStatus.Abandoned)
+                        {
+                            <DataListItem Label="@($"{_latestPri.Status.Name} Reason")">
+                                @_latestPri.AbandonReason
+                            </DataListItem>
+                        }
+                    }
+
+                    @if(_showTtgDue)
+                    {
+                        <DataListItem Label="TTG Due" HelperText="@_latestPri.TTGDueDate.Humanize()">
+                            <MudStack Row="true" StretchItems="StretchItems.Start">
+                                <MudText>
+                                    @_priDueInfo
+                                </MudText>
+                                <MudIcon Size="Size.Small"
+                                    Color="@_priDueIconColor"
+                                    Icon="@_priDueIcon">
+                                </MudIcon>
+                            </MudStack>
+                        </DataListItem>
+                    }
+
+                </ChildContent>
+            </DataList>
         }
     </MudCardContent>
     
     <MudCardActions>
         @if (CanAddPri())
         {
-            <MudTooltip Text="Create PRI">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@BeginPri" />
-            </MudTooltip>
+            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@BeginPri">
+                @ConstantString.AddPRI    
+            </MudButton>
         }
     </MudCardActions>
 </MudCard>

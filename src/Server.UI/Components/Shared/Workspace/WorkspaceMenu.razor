@@ -1,0 +1,41 @@
+@using Cfo.Cats.Server.UI.Models.Breadcrumb
+
+<MudText Typo="Typo.h2">
+    Workspace Links
+</MudText>
+
+<!-- Replaced MudGrid with a responsive MudStack -->
+<MudStack Class="mt-4" Row="true" Wrap="Wrap.Wrap" Spacing="8" StretchItems="StretchItems.None">
+
+    @foreach(var grp in Links.GroupBy(x => x.Group).Where(g => g.Any()))
+    {
+        <!-- Added flex-grow-1 so it takes available space evenly -->
+        <MudStack AlignItems="AlignItems.Stretch" Class="flex-grow-1">
+            @if(string.IsNullOrWhiteSpace(grp.Key) == false)
+            {
+                <MudText Typo="Typo.h3" Color="Color.Secondary">
+                    @grp.Key
+                </MudText>
+            }
+            
+            @foreach(var link in grp.OrderBy(x => x.Order))
+            {
+                var id = Guid.NewGuid();
+                <MudStack Spacing="0">
+                    <MudLink Href="@link.Href" aria-describedby="@id" Underline="Underline.Always">
+                        @link.Title
+                    </MudLink>
+                    <MudText id="@id" Typo="Typo.caption">
+                        @link.Description
+                    </MudText>
+                </MudStack>
+            }
+        </MudStack>                
+    }
+
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BreadcrumbLinkModel[] Links { get; set; }
+}

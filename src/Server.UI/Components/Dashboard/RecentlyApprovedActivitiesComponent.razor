@@ -1,5 +1,6 @@
-@using Cfo.Cats.Application.Features.Dashboard.Queries
 @inherits CatsComponent<GetRecentlyApprovedActivities.ApprovedActivitiesDto>
+
+@using Cfo.Cats.Application.Features.Dashboard.Queries
 
 @if (Loading)
 {
@@ -15,12 +16,21 @@
 
 @if (Data is not null && Data.Details.Any())
 {
-    <MudGrid Spacing="2">
-        <MudItem>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
             <MudChip T="string">Custody (@Data.Custody)</MudChip>
             <MudChip T="string">Community (@Data.Community)</MudChip>
-        </MudItem>
-    </MudGrid>
+        </MudStack>
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          OnClick="@OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
+    
     @if (VisualMode)
     {
         <ApexCharts.ApexChart TItem="GetRecentlyApprovedActivities.ActivityDetail" Options="Options" Height="650" Width="@("100%")">
@@ -36,13 +46,8 @@
     }
     else
     {
-        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Dense="true">
+        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Dense="true" Class="mt-4">
             <HeaderContent>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ParticipantId)">
-                        Participant ID
-                    </MudTableSortLabel>
-                </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetRecentlyApprovedActivities.ActivityDetail, object>(x => x.ParticipantName)">
                         Participant
@@ -80,12 +85,15 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Participant ID">
-                    <MudButton Color="Color.Info" Variant="Variant.Text" Size="Size.Small" OnClick="@(() => EditParticipant(context.ParticipantId))">
-                        @context.ParticipantId
-                    </MudButton>
+                <MudTd DataLabel="Participant">
+
+                    <MudStack Spacing="0">
+                        <MudText>@context.ParticipantName</MudText>
+                        <MudLink Typo="Typo.body1" Href=@($"/pages/workspace/participants/{context.ParticipantId}?from=recent-approved-activities")>
+                            @context.ParticipantId
+                        </MudLink>
+                    </MudStack>                    
                 </MudTd>
-                <MudTd DataLabel="Participant">@context.ParticipantName</MudTd>
                 <MudTd DataLabel="Activity Type">@context.ActivityType</MudTd>
                 <MudTd DataLabel="Category">@context.Category</MudTd>
                 <MudTd DataLabel="Approved On">@context.ApprovedOn?.ToString("d")</MudTd>
@@ -101,5 +109,5 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }

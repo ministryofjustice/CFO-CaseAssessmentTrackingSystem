@@ -1,0 +1,109 @@
+@inherits CatsComponent<ServiceDeskQueueSummaryDto>
+
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+
+@if (Loading)
+{
+    <MudLoading Text="Fetching queue summary..." />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is {  })
+{
+    @if (ShowEnrolments)
+    {
+
+        <MudStack>
+            <MudText Typo="Typo.h3" Class="mb-2">
+                Enrolments
+            </MudText>
+            @if (CanViewFirstPass)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">First Pass</MudText>
+                        <MudText Typo="Typo.body1">@Data.EnrolmentQa1Count (@Data.EnrolmentQa1InProgress in progress)</MudText>
+                    </MudStack>
+                    <MudButton StartIcon="@Icons.Material.Filled.MoveToInbox" Variant="Variant.Filled" OnClick="@GrabEnrolmentQa1" Color="Color.Primary">
+                        Get Next
+                    </MudButton>
+                </MudStack>
+            }
+
+            @if (CanViewSecondPass)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">Second Pass</MudText>
+                        <MudText Typo="Typo.body1">@Data.EnrolmentQa2Count (@Data.EnrolmentQa2InProgress in progress)</MudText>
+                    </MudStack>
+                    <MudButton StartIcon="@Icons.Material.Filled.MoveToInbox" Variant="Variant.Filled" OnClick="@GrabEnrolmentQa2" Color="Color.Primary">
+                        Get Next
+                    </MudButton>
+                </MudStack>
+            }
+
+            @if (CanViewEscalation)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">Escalation</MudText>
+                        <MudText Typo="Typo.body1">@Data.EnrolmentEscalationCount (@Data.EnrolmentEscalationInProgress in progress)</MudText>
+                    </MudStack>
+                </MudStack>
+            }
+        </MudStack>
+        
+        
+    @if (ShowActivities)
+    {
+        <MudStack Class="mt-4">
+            <MudText Typo="Typo.h3" Class="mb-3">
+                Activities
+            </MudText>
+            
+            @if (CanViewFirstPass)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">First Pass</MudText>
+                        <MudText Typo="Typo.body1">@Data.ActivityQa1Count (@Data.ActivityQa1InProgress in progress)</MudText>
+                    </MudStack>
+                    <MudButton StartIcon="@Icons.Material.Filled.MoveToInbox" Variant="Variant.Filled" OnClick="@GrabActivityQa1" Color="Color.Primary">
+                        Get Next
+                    </MudButton>
+                </MudStack>
+            }
+
+            @if (CanViewSecondPass)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">Second Pass</MudText>
+                        <MudText Typo="Typo.body1">@Data.ActivityQa2Count (@Data.ActivityQa2InProgress in progress)</MudText>
+                    </MudStack>
+                    <MudButton StartIcon="@Icons.Material.Filled.MoveToInbox" Variant="Variant.Filled" OnClick="@GrabActivityQa2" Color="Color.Primary">
+                        Get Next
+                    </MudButton>
+                </MudStack>
+            }
+
+            @if (CanViewEscalation)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">Escalation</MudText>
+                        <MudText Typo="Typo.body1">@Data.ActivityEscalationCount (@Data.ActivityEscalationInProgress in progress)</MudText>
+                    </MudStack>
+                </MudStack>
+            }
+        </MudStack>
+        }
+    }
+}

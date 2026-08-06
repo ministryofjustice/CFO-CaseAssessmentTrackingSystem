@@ -88,12 +88,12 @@
                                     <div class="pr-2">
                                         <div class="d-flex gap-2 align-center">
                                             <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
-                                            <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
+                                            <MudText Typo="Typo.body1">@activity.Definition.Category.Name</MudText>
                                         </div>
-                                        <MudText Typo="Typo.body2">
+                                        <MudText Typo="Typo.body1">
                                             Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
                                         </MudText>
-                                        <MudText Typo="Typo.body2" Class="pt-1">
+                                        <MudText Typo="Typo.body1" Class="pt-1">
                                             Took place on @commencedOn.ToShortDateString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
                                             at @activity.TookPlaceAtLocationName
                                         </MudText>                          
@@ -104,7 +104,7 @@
                                                 ? string.Empty
                                                 : $" because {activity.AbandonJustification.Trim()}";
 
-                                            <MudText Typo="Typo.body2" Class="pt-1">
+                                            <MudText Typo="Typo.body1" Class="pt-1">
                                                 Abandon Reason: @activity.AbandonReason@justification
                                             </MudText>
                                         }
@@ -152,7 +152,7 @@
                     <MudDivider />
                 }
                 <MudListSubheader Class="d-flex justify-center mt-2">
-                    <MudPagination Count="@_activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+                    <MudPagination Rectangular="true" Variant="Variant.Text" Count="@_activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
                 </MudListSubheader>
             }
         </MudList>

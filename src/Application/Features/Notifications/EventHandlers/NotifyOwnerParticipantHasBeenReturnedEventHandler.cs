@@ -11,28 +11,17 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
         {
             if (notification.Item.OwnerId is null)
             {
-                logger.LogWarning("Participant {ParticipantId} without an owner has been returned. Notification ignored.", notification.Item.Id);
+                logger.LogDebug("Participant {ParticipantId} without an owner has been returned. Notification ignored.", notification.Item.Id);
                 return;
             }
 
             const string heading = "Enrolment returned";
 
-            string details = "You have enrolments that have been returned by PQA";
-
-            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
-                n => n.Heading == heading
-                && n.OwnerId == notification.Item.OwnerId
-                && n.ReadDate == null
-            );
-
-            previous?.ResetNotificationDate();
-
-            if(previous is null)
-            {
-                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/participants/?listView=Enrolling");
-                await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
-            }
+            string details = $"Your enrolment for {notification.Item.FullName} at {notification.Item.EnrolmentLocation?.Name} has been returned.";
+          
+            var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+            n.SetLink($"/pages/workspace/participants/{notification.Item.Id}/");
+            await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
         }
     }
 }

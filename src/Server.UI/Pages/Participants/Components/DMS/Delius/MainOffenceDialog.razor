@@ -4,7 +4,7 @@
 <MudDialog>
     <DialogContent>
         
-        <MudDataGrid @ref="_dataGrid" ReadOnly="true" Items="@Disposals">
+        <MudDataGrid Hover="true" Striped="true" Dense="true" @ref="_dataGrid" ReadOnly="true" Items="@Disposals">
             <Columns>
                 <HierarchyColumn T="DisposalDto" ButtonDisabledFunc="@(x => x.Requirements.Length == 0)"></HierarchyColumn>
                 <PropertyColumn Property="x => x.SentenceDate" Title="Sentence Date"></PropertyColumn>
@@ -17,11 +17,11 @@
                 <MudCard>
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Requirements</MudText>
+                            <MudText Typo="Typo.subtitle1">Requirements</MudText>
                         </CardHeaderContent>
                     </MudCardHeader>
                     <MudCardContent>
-                        <MudTable Items="@context.Item.Requirements" Context="requirement" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                        <MudTable Dense="true" Striped="true" Items="@context.Item.Requirements" Context="requirement" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
                             <HeaderContent>
                                 <MudTh>Category</MudTh>
                                 <MudTh>Sub Category</MudTh>

@@ -89,7 +89,7 @@
 	}
 	else
 	{
-		<MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
+		<MudTable Dense="true" Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
 			<HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesTabularData, object>(x => x.ContractName!)">
@@ -165,5 +165,5 @@
 }
 else
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }

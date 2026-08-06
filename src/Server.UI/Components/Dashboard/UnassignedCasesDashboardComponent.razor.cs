@@ -21,6 +21,21 @@ public partial class UnassignedCasesDashboardComponent
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
 
+    [Parameter]
+    public bool IncludeTransferIn { get; set; } = true;
+
+    [Parameter]
+    public string? KeywordFilter { get; set; }
+
+    [Parameter]
+    public int? SelectedEnrolmentStatus { get; set; }
+
+    [Parameter]
+    public int? SelectedLocationId { get; set; }
+
+    [Parameter]
+    public EventCallback<UnassignedCasesDashboardFilters> FiltersChanged { get; set; }
+
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
@@ -53,6 +68,17 @@ public partial class UnassignedCasesDashboardComponent
         _locations = LocationService.GetVisibleLocations(TenantId)
                         .ToDictionary(k => k.Id, e => e.Name);
 
+        _includeTransferIn = IncludeTransferIn;
+        Query.IncludeTransferIn = _includeTransferIn;
+        Query.Keyword = KeywordFilter;
+        Query.EnrolmentStatus = SelectedEnrolmentStatus;
+        Query.Locations = SelectedLocationId.HasValue ? [SelectedLocationId.Value] : [];
+
+        if (EnsureValidLocationFilter())
+        {
+            await NotifyFiltersChanged();
+        }
+
         await base.OnInitializedAsync();
     }
 
@@ -60,12 +86,34 @@ public partial class UnassignedCasesDashboardComponent
     {
         var tenantChanged = _previousTenantId != TenantId;
 
+        var currentLocationId = Query.Locations is { Length: > 0 } ? Query.Locations[0] : (int?)null;
+        var filterParamsChanged =
+            Query.EnrolmentStatus != SelectedEnrolmentStatus ||
+            currentLocationId != SelectedLocationId ||
+            Query.Keyword != KeywordFilter ||
+            _includeTransferIn != IncludeTransferIn;
+
         // Reload locations if tenant changed
         if (tenantChanged)
         {
             _locations = LocationService.GetVisibleLocations(TenantId)
                 .ToDictionary(k => k.Id, e => e.Name);
             _previousTenantId = TenantId;
+
+            if (EnsureValidLocationFilter())
+            {
+                await NotifyFiltersChanged();
+            }
+        }
+
+        // Apply filter parameters pushed down from the parent (e.g. restored from session storage)
+        if (filterParamsChanged && !tenantChanged)
+        {
+            _includeTransferIn = IncludeTransferIn;
+            Query.IncludeTransferIn = _includeTransferIn;
+            Query.Keyword = KeywordFilter;
+            Query.EnrolmentStatus = SelectedEnrolmentStatus;
+            Query.Locations = SelectedLocationId.HasValue ? [SelectedLocationId.Value] : [];
         }
 
         // Reload summary data when switching to visual mode or tenant changed
@@ -74,8 +122,8 @@ public partial class UnassignedCasesDashboardComponent
             await LoadDataAsync();
         }
 
-        // Reload table data if tenant changed and in tabular mode
-        if (!VisualMode && tenantChanged && _table != null)
+        // Reload table data if tenant changed or filter params were pushed from parent
+        if (!VisualMode && (tenantChanged || (filterParamsChanged && !tenantChanged)) && _table != null)
         {
             await _table.ReloadServerData();
         }
@@ -175,10 +223,20 @@ public partial class UnassignedCasesDashboardComponent
 
             var result = await Service.Send(Query, cancellationToken);
 
+            if (result is not { Succeeded: true, Data: { } data })
+            {
+                ErrorMessage = result?.ErrorMessage ?? "Unable to load unassigned cases.";
+                return new GridData<UnassignedCaseDto>
+                {
+                    Items = [],
+                    TotalItems = 0
+                };
+            }
+
             return new GridData<UnassignedCaseDto>()
             {
-                Items = result.Data!.Items,
-                TotalItems = result.Data.TotalItems
+                Items = data.Items,
+                TotalItems = data.TotalItems
             };
         }
         finally
@@ -190,12 +248,14 @@ public partial class UnassignedCasesDashboardComponent
     private async Task OnSearch(string text)
     {
         Query.Keyword = text;
+        await NotifyFiltersChanged();
         await _table.ReloadServerData();
     }
 
     private async Task EnrolmentStatusChanged(int? statusValue)
     {
         Query.EnrolmentStatus = statusValue;
+        await NotifyFiltersChanged();
         await _table.ReloadServerData();
     }
 
@@ -214,6 +274,7 @@ public partial class UnassignedCasesDashboardComponent
         if (result is { Canceled: false, Data: LocationDto location })
         {
             Query.Locations = [location.Id];
+            await NotifyFiltersChanged();
             await _table.ReloadServerData();
         }
     }
@@ -224,6 +285,7 @@ public partial class UnassignedCasesDashboardComponent
         Query.EnrolmentStatus = null;
         Query.Locations = [];
         Query.IncludeTransferIn = _includeTransferIn;
+        await NotifyFiltersChanged();
         await _table.ReloadServerData();
     }
 
@@ -231,7 +293,52 @@ public partial class UnassignedCasesDashboardComponent
     {
         _includeTransferIn = value;
         Query.IncludeTransferIn = value;
+        await NotifyFiltersChanged();
         await _table.ReloadServerData();
+    }
+
+    private Task NotifyFiltersChanged()
+    {
+        if (FiltersChanged.HasDelegate is false)
+        {
+            return Task.CompletedTask;
+        }
+
+        return FiltersChanged.InvokeAsync(new UnassignedCasesDashboardFilters
+        {
+            IncludeTransferIn = _includeTransferIn,
+            Keyword = Query.Keyword,
+            EnrolmentStatus = Query.EnrolmentStatus,
+            LocationId = Query.Locations is { Length: > 0 } ? Query.Locations[0] : null
+        });
+    }
+
+    private bool EnsureValidLocationFilter()
+    {
+        if (Query.Locations is not { Length: > 0 })
+        {
+            return false;
+        }
+
+        if (_locations.ContainsKey(Query.Locations[0]))
+        {
+            return false;
+        }
+
+        Query.Locations = [];
+        return true;
+    }
+
+    private string GetSelectedLocationLabel()
+    {
+        if (Query.Locations is not { Length: > 0 })
+        {
+            return "All Locations";
+        }
+
+        return _locations.TryGetValue(Query.Locations[0], out var locationName)
+            ? locationName
+            : "All Locations";
     }
 
     private async Task AssignToSelf(UnassignedCaseDto participant)
@@ -299,10 +406,18 @@ public partial class UnassignedCasesDashboardComponent
     }
 
     private void ViewParticipant(string participantId) =>
-        Navigation.NavigateTo($"/pages/participants/{participantId}");
+        Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=unassigned-cases");
 
     private void NavigateToTransfers() =>
-        Navigation.NavigateTo("/pages/participants/transfers");
+        Navigation.NavigateTo("/pages/workspace/participants/transfers?from=unassigned-cases");
 }
 
 public record ChartDataPoint(string LocationName, EnrolmentStatus Status, int Count);
+
+public record UnassignedCasesDashboardFilters
+{
+    public bool IncludeTransferIn { get; init; } = true;
+    public string? Keyword { get; init; }
+    public int? EnrolmentStatus { get; init; }
+    public int? LocationId { get; init; }
+}

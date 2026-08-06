@@ -2,54 +2,66 @@
 <MudCard Style="Height: 100%;">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Pathway Plan</MudText>
+            <MudText Typo="Typo.subtitle1">Pathway Plan</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
         @if (HasPathwayPlan)
         {
 
-            @if (HasPathwayBeenReviewed)
-            {
-                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Last Reviewed</strong></MudText>
-                    <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
-                        <MudText>
-                            @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
-                        </MudText>
-                    </MudTooltip>
-                </MudStack>
-            }
-            else
-            {
-                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Date Created</strong></MudText>
-                    <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.Created.ToString("dd/MM/yyyy hh:mm")">
-                        <MudText>
-                            @ParticipantSummaryDto.PathwayPlan!.Created.Humanize()
-                        </MudText>
-                    </MudTooltip>
-                </MudStack>
-            }
+            var due = HasPathwayBeenReviewed ? 
+                ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.AddMonths(3)
+                : ParticipantSummaryDto.PathwayPlan!.Created.AddMonths(3);
 
-            @if (HasPathwayBeenReviewed)
-            {
-                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Reviewed By</strong></MudText>
-                    <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
-                </MudStack>
-            }
-            else
-            {
-                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-                    <MudText><strong>Created By</strong></MudText>
-                    <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
-                </MudStack>
-            }
+            <DataList>
+                <ChildContent>
+
+                    <DataListItem Label="Last Reviewed">
+                        <ChildContent>
+                            <MudText>
+                                <MudText>
+                                    @ParticipantSummaryDto.PathwayPlan.LastReviewed.ToShortDateOrDefault("Never")
+                                </MudText>
+                            </MudText>
+                        </ChildContent>
+                    </DataListItem>
+
+                    <DataListItem Label="Reviewed By">
+                        <ChildContent>
+                                @if(ParticipantSummaryDto.PathwayPlan.LastReviewedBy is not null)
+                                {
+                                    <MudText>
+                                        @UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName
+                                    </MudText>
+                                }
+                                else
+                                {
+                                    <MudText>
+                                        N/A
+                                    </MudText>
+                                }
+                        </ChildContent>
+                    </DataListItem>
+
+                    <DataListItem Label="Due Date" HelperText="@due.Humanize()">
+                        <MudStack Row="true" StretchItems="StretchItems.Start">
+                            <MudText>
+                                @ParticipantSummaryDto.PathwayPlan!.Created.AddMonths(3).Date.ToShortDateString()
+                            </MudText>
+                            <MudIcon Size="Size.Small"
+                                Color="@(due < DateTime.Now.Date ? Color.Warning : Color.Info)"
+                                Icon="@(due < DateTime.Now.Date ? Icons.Material.Filled.Error : Icons.Material.Filled.Info)" />
+                        </MudStack>
+                    </DataListItem>
+                </ChildContent>
+            </DataList>
+
+           
+
         }
         else
         {
-            <MudText>No pathway plan found.</MudText>
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">No pathway plan found.</MudAlert>
         }
     </MudCardContent>
 </MudCard>

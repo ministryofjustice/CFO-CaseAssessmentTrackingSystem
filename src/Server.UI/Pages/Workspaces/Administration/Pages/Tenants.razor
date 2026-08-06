@@ -1,0 +1,68 @@
+﻿@page "/pages/workspace/administration/tenants"
+
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+@using Cfo.Cats.Application.Features.Tenants.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Tenants
+
+@attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
+
+@inject IStringLocalizer<Tenants> L
+@inject ITenantService TenantService
+
+@inherits CatsComponentBase
+
+<PageTitle>Tenants</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudGrid>
+    <MudItem sm="6" md="4" >
+        @if (_loading == false)
+        {
+            <MudTreeView T="TenantDto" Hover
+                         SelectionMode="SelectionMode.SingleSelection"
+                         SelectedValueChanged="OnSelectedTenantChanged">
+                @foreach (var node in GetRootNodes())
+                {
+                    <MudTreeViewItem Text="@node.Name" Value="@node" Expanded="true">
+                        @if (HasChildren(node))
+                        {
+                            @RenderChildNodes(node.Id)
+                        }
+                    </MudTreeViewItem>
+                }
+            </MudTreeView>
+        }
+    </MudItem>
+    <MudItem sm="6" md="8">
+        @if (SelectedTenant is not null)
+        {
+            <MudCard Elevation="0" Class="d-flex flex-grow-0">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">
+                            <strong>Allowed Domains</strong>
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        @foreach (var domain in SelectedTenant.Domains)
+                        {
+                            <MudItem xs="12" md="6" lg="4" Class="d-flex">
+                                <MudField Variant="Variant.Text">@domain</MudField>
+                                <MudIconButton OnClick="@(() => OnDeleteDomain(domain, SelectedTenant.Id))" Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OnAddDomain(SelectedTenant))">Add Domain</MudButton>
+                </MudCardActions>
+            </MudCard>
+
+            <TenantLocations TenantId="@SelectedTenant.Id" />
+        }
+    </MudItem>
+</MudGrid>

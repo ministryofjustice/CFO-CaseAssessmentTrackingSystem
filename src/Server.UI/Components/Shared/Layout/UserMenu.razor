@@ -39,7 +39,7 @@
 
                     <MudStack Justify="Justify.SpaceBetween" Spacing="0">
                         <MudText Typo="Typo.body1">@UserProfile.DisplayName</MudText>
-                        <MudText Typo="Typo.body2">@UserProfile.Email</MudText>
+                        <MudText Typo="Typo.body1">@UserProfile.Email</MudText>
                     </MudStack>
                     }
                 </MudStack>
@@ -61,6 +61,28 @@
                         </MudIcon>
                         <MudText>
                             @L["Set Default Page"]
+                        </MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem Href="/">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Notifications"
+                                 Color="Color.Info">
+
+                        </MudIcon>
+                        <MudText>
+                            @L["Notifications"]
+                        </MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem Href="/pages/analytics/my-documents">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.DocumentScanner"
+                                 Color="Color.Info">
+
+                        </MudIcon>
+                        <MudText>
+                            @L["My Documents"]
                         </MudText>
                     </MudStack>
                 </MudMenuItem>

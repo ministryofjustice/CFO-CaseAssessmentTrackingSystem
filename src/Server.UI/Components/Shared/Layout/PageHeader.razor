@@ -1,0 +1,17 @@
+
+
+<CatsBreadcrumbs Items="@AllItems" />
+
+
+
+@code{
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; }
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<BreadcrumbItem> Items { get;set; }
+
+    private IReadOnlyList<BreadcrumbItem> AllItems => [new BreadcrumbItem("Home", "", false), ..Items ];
+
+}

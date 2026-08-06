@@ -5,5 +5,5 @@ namespace Cfo.Cats.Server.UI.Services.Navigation;
 
 public interface IAsyncMenuService
 {
-    Task<IEnumerable<MenuSectionModel>> GetFeaturesAsync(ClaimsPrincipal principal);
+    Task<NavigationMenuModel> GetFeaturesAsync(ClaimsPrincipal principal);
 }

@@ -1,0 +1,48 @@
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services;
+using Cfo.Cats.Server.UI.Services;
+
+namespace Cfo.Cats.Server.UI.Components.Shared.Layout;
+
+public partial class HeaderMenu
+{
+
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private ILogger<HeaderMenu> Logger { get; set; } = null!;
+    [Inject] private INotificationService NotificationService { get; set; } = null!;
+    
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = default!;
+
+    
+    private string _homePageUrl = "/";
+    private int _notifications;
+
+    protected override async Task OnInitializedAsync()
+    {   
+        _notifications = await NotificationService.GetNotificationCount(CurrentUser.UserId);
+        
+        NotificationService.OnRefreshed += OnNotificationsRefreshed;
+
+        await base.OnInitializedAsync();
+    }
+
+    private async void OnNotificationsRefreshed() =>
+        await InvokeAsync(async () =>
+        {
+            _notifications = await NotificationService.GetNotificationCount(CurrentUser.UserId);
+            StateHasChanged();
+        });
+
+    protected void GotoNotifiations() => NavigationManager.NavigateTo(MyAreaLinks.Notifications.Href, false);
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            NotificationService.OnRefreshed -= OnNotificationsRefreshed;
+        }
+
+        base.Dispose(disposing);
+    }
+}

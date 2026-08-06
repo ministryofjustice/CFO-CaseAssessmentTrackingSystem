@@ -1,6 +1,6 @@
 ﻿@inherits CatsComponentBase
 
-@page "/pages/participants/{Upci}/PRI"
+@page "/pages/workspace/participants/{Upci}/PRI"
 
 @using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Common.Validators
@@ -83,7 +83,7 @@
                         <CatsMudStep Title="Pre-Release Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(_meetingForm)">
                             <ChildContent>
                                 <MudForm @ref="_meetingForm" Model="_model.Meeting" Validation="Validator.ValidateValue(_model.Meeting)">
-                                    <MudText Class="mb-1" Typo="Typo.body2">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
+                                    <MudText Class="mb-1" Typo="Typo.body1">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
                                     <MudDatePicker @bind-Date="_model.Meeting.AttendedOn"
                                     For="() => _model.Meeting.AttendedOn"
                                     Label="Date pre-release meeting took place"

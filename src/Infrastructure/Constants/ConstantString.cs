@@ -66,7 +66,7 @@ public static class ConstantString
 
     public static string ArchiveSuccess => Localize("Archive successfully");
     public static string ArchiveFail => Localize("Archive fail");
-    public static string UpdateSuccess => Localize("AddOrUpdate successfully");
+    public static string UpdateSuccess => Localize("Update succeeded");
     public static string CreateSuccess => Localize("Create successfully");
     public static string LoginSuccess => Localize("Login successfully");
     public static string LogoutSuccess => Localize("Logout successfully");
@@ -153,7 +153,9 @@ public static class ConstantString
     Localize("Complete PRI");
     public static string AbandonPRI =>
     Localize("Abandon PRI");
-
+    public static string AddPRI =>
+        Localize("Add PRI");
+    
     public static string AbandonPhase =>
     Localize("Abandon Phase");
 
@@ -161,11 +163,14 @@ public static class ConstantString
         Localize("Begin Assessment");
 
     public static string ViewParticipant => Localize("View Participant");
-    public static string ViewActivity => Localize("View Activity");
+    public static string ViewTemplate => Localize("View Template");
     public static string ViewEnrolment => Localize("View Enrolment");
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");
 
+    public static string ContinueEnrolment => Localize("Continue Enrolment");
+
+    
     public static string Unarchive => Localize("Unarchive");
 
     public static string ActivePreReleaseInventoryPRI =>
@@ -228,8 +233,6 @@ public static class ConstantString
 
     public static string EditParticipant => Localize("Edit Participant");
 
-    public static string EditAchievement => Localize("Edit Achievement");
-
     public static string AbandonActivity => Localize("Abandon Activity");
     public static string AbandonSuccess => Localize("Abandoned successfully");
 
@@ -245,4 +248,53 @@ public static class ConstantString
     public static string Trigger => Localize("Trigger");
     
     public static string Labels => Localize(nameof(Labels));
+    
+    public static string AddContact =>
+        Localize("Add Contact");
+    
+    public static string AddBio =>
+        Localize("Add Bio");
+    public static string ResumeBio =>
+        Localize("Resume Bio");
+    public static string RestartBio =>
+        Localize("Restart Bio");
+    
+    public static string WingInduction =>
+        Localize("Wing Induction");
+    public static string WingInductions =>
+        Localize("Wing Inductions");
+    public static string HubInduction =>
+        Localize("Hub Induction");
+    public static string HubInductions =>
+        Localize("Hub Inductions");
+    public static string AddInduction =>
+        Localize("Add Induction");
+    public static string AddObjective =>
+        Localize("Add Objective");
+    
+    public static string AddLabel =>
+        Localize("Add Label");
+    public static string EditLabel =>
+        Localize("Edit Label");
+    public static string Example => Localize("Example");
+    
+    
+    public static string AddInitiative =>
+        Localize("Add Initiative");
+    public static string EditInitiative =>
+        Localize("Edit Initiative");
+    public static string AmendLifetime =>
+        Localize("Amend Lifetime");
+    
+    public static string AddPickList =>
+        Localize("Add PickList");
+    public static string EditPickList =>
+        Localize("Edit PickList");
+    public static string DeletePickList =>
+        Localize("Delete PickList");
+    
+    public static string AddUser =>
+        Localize("Add User");
+    public static string EditUser =>
+        Localize("Edit User");
 }

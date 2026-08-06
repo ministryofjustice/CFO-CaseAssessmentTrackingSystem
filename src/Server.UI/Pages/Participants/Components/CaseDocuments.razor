@@ -17,7 +17,7 @@
         min-height: 50px;
     }
 </style>
-    <MudDataGrid T="DocumentDto" FixedHeader="true" Loading="_loading"
+    <MudDataGrid Striped="true" Dense="true" T="DocumentDto" FixedHeader="true" Loading="_loading"
                  FixedFooter="true"
                  Height="calc(100vh - 330px)"
                  Items="@_documents"
@@ -48,16 +48,16 @@
             <PropertyColumn Property="x => x.CreatedBy" Title="@L[_currentDto.GetMemberDescription(x => x.CreatedBy)]">
                 <CellTemplate>
                     <div>
-                        <MudText Typo="Typo.body2">@context.Item.CreatedByName</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.Created.Humanize()</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.CreatedByName</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.Created.Humanize()</MudText>
                     </div>
                 </CellTemplate>
             </PropertyColumn>
             <PropertyColumn Property="x => x.TenantId" Title="@L[_currentDto.GetMemberDescription(x => x.TenantName)]">
             <CellTemplate>
                 <div>
-                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
-                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.TenantId</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.TenantName</MudText>
+                    <MudText Typo="Typo.body1" Class="mud-text-secondary">@context.Item.TenantId</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>

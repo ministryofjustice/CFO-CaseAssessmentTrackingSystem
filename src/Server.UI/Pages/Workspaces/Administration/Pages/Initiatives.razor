@@ -1,0 +1,12 @@
+@page "/pages/workspace/administration/initiatives"
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Initiatives
+
+@attribute [Authorize(Policy = SecurityPolicies.Initiatives)]
+
+<PageTitle>Initiatives</PageTitle>
+
+<AdministrationPageHeader />
+
+<InitiativesTable />

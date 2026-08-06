@@ -72,10 +72,21 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate EnrolmentAdvisoriesToProvider = new(nameof(EnrolmentAdvisoriesToProvider), 14);
     public static readonly DocumentTemplate ActivitiesAdvisoriesToProvider = new(nameof(ActivitiesAdvisoriesToProvider), 15);
     public static readonly DocumentTemplate ProviderFeedback = new(nameof(ProviderFeedback), 16);
-    public static readonly DocumentTemplate PerformanceDashboard = new(nameof(PerformanceDashboard), 17);
+    public static readonly DocumentTemplate ArchivedCasesBehaviour = new(nameof(ArchivedCasesBehaviour), 17);
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
     public static readonly DocumentTemplate OutcomeQualityDipSample = new(nameof(OutcomeQualityDipSample), 500);
     public static readonly DocumentTemplate Initiatives = new(nameof(Initiatives), 900);
     public static readonly DocumentTemplate InitiativeObjectivesDashboard = new(nameof(InitiativeObjectivesDashboard), 1300);
     public static readonly DocumentTemplate Users = new(nameof(Users), 1400);
+    public static readonly DocumentTemplate Activities = new(nameof(Activities), 18);
+    public static readonly DocumentTemplate ActivePRIs = new(nameof(ActivePRIs), 19);
+    public static readonly DocumentTemplate EngagementsByLocation = new(nameof(EngagementsByLocation), 20);
+    public static readonly DocumentTemplate PerformanceEnrolments = new(nameof(PerformanceEnrolments), 1800);
+    public static readonly DocumentTemplate PerformanceInductions= new(nameof(PerformanceInductions), 1900);
+    public static readonly DocumentTemplate PerformanceSupportAndReferral = new(nameof(PerformanceSupportAndReferral), 2000);
+    public static readonly DocumentTemplate PerformanceActivities = new(nameof(PerformanceActivities), 2100);
+    public static readonly DocumentTemplate PerformanceEducationAndTraining = new(nameof(PerformanceEducationAndTraining), 2200);
+    public static readonly DocumentTemplate PerformanceEmployments= new(nameof(PerformanceEmployments), 2300);
+    public static readonly DocumentTemplate PerformanceReassessments = new(nameof(PerformanceReassessments), 2400);
+    public static readonly DocumentTemplate PerformanceRecentApprovedActivities = new(nameof(PerformanceRecentApprovedActivities), 2500);
 }

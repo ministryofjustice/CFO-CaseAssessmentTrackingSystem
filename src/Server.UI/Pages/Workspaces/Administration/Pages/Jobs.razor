@@ -1,0 +1,13 @@
+@page "/pages/workspace/administration/jobs"
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.SystemSupportFunctions)]
+
+<PageTitle>Jobs</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudGrid>
+    <JobManagement />
+</MudGrid>

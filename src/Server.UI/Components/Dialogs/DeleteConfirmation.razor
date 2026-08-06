@@ -1,28 +1,27 @@
-@inject IStringLocalizer<SharedResource> L
 @inject IMediator Mediator
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">
+        <MudText Typo="Typo.subtitle1">
             <MudIcon Icon="@Icons.Material.Filled.Delete" Class="mr-3 mb-n1"/>
-            @ConstantString.DeleteConfirmationTitle
+                @MudDialog.Title
         </MudText>
     </TitleContent>
     <DialogContent>
         <MudText>@ContentText</MudText>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@CancelText</MudButton>
-        <MudButton Color="Color.Warning" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" OnClick="Submit">@ConfirmText</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@CancelText</MudButton>
+        <MudButton Color="Color.Warning" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" OnClick="@Submit">@ConfirmText</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code
 {
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [EditorRequired] [Parameter] public string? ContentText { get; set; }
-    [EditorRequired] [Parameter] public ICommand<Result<int>> Command { get; set; } = default!;
+    [EditorRequired] [Parameter] public ICommand<Result<int>> Command { get; set; } = null!;
     [Parameter] public string ConfirmText { get; set; } = @ConstantString.Confirm;
     [Parameter] public string CancelText { get; set; } = @ConstantString.Cancel;
 

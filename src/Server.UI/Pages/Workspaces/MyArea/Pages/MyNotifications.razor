@@ -1,0 +1,122 @@
+﻿@page "/pages/workspace/my-area/notifications"
+@inherits CatsComponent<PaginatedData<NotificationDto>>
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using Cfo.Cats.Application.Features.Notifications.DTOs
+@using Cfo.Cats.Application.Features.Notifications.Specifications
+@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Components
+@using Humanizer
+
+    <MyAreaPageHeader />
+
+    @if (Loading)
+    {
+        <MudLoading Text="Notifications" />
+    }
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error">
+            @ErrorMessage
+        </MudAlert>
+    }
+
+    @if (Data is { Items: not null })
+    {
+        <MudStack>
+            <!-- Header/Filter row -->
+            <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                <MudTextField T="string" Value="@_keyword" Placeholder="@ConstantString.Search"
+                              ValueChanged="@OnSearchChanged" Clearable="true" ShrinkLabel="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                              AdornmentColor="Color.Secondary">
+                </MudTextField>
+                <MudSpacer />
+                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                           StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefreshClicked">
+                    @ConstantString.Refresh
+                </MudButton>
+            </MudStack>
+
+            <!-- Additional filters row -->
+            <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                <MudPagination 
+                    Rectangular="true"
+                    Variant="Variant.Text"
+                    Selected="@_pageNumber"
+                    Count="@Data.TotalPages" 
+                    SelectedChanged="OnPaginationChanged"
+                    ShowFirstButton="true" 
+                    ShowLastButton="true"
+                    MiddleCount="2"
+                    BoundaryCount="1"
+                    Size="Size.Small" />
+
+                <MudText>@Data.TotalItems records</MudText>
+
+                <MudSpacer />
+                <MudSwitch Label="Include Read" Value="@_showUnread" ValueChanged="OnShowUnreadChanged" Color="Color.Info" T="bool" Size="Size.Small" />
+
+                <!-- Type Filter -->
+                <MudMenu Size="Size.Small" Label="@($"Type: {GetTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                    <MudMenuItem Label="All" OnClick="@(() => OnTypeChanged(null))" />
+                    <MudMenuItem Label="Activities" OnClick="@(() => OnTypeChanged(NotificationType.Activities))" />
+                    <MudMenuItem Label="Enrolments" OnClick="@(() => OnTypeChanged(NotificationType.Enrolments))" />
+                    <MudMenuItem Label="Assigned" OnClick="@(() => OnTypeChanged(NotificationType.Assigned))" />
+                    <MudMenuItem Label="Unassigned" OnClick="@(() => OnTypeChanged(NotificationType.Unassigned))" />
+                    <MudMenuItem Label="PRI" OnClick="@(() => OnTypeChanged(NotificationType.Pri))" />
+                </MudMenu>
+            </MudStack>
+        </MudStack>
+        
+        <MudStack class="mt-4">
+            @foreach (var item in Data.Items)
+            {
+                <MudPaper Outlined="true" Class="pa-4">
+                    <MudStack>
+                        <div>
+                            <MudText Typo="Typo.caption" Color="Color.Info">@item.Heading</MudText>
+                            <MudText Typo="Typo.body1">@item.Details</MudText>
+                            <MudText Typo="Typo.body1">@item.NotificationDate.Humanize()</MudText>
+                        </div>
+                        <MudDivider Class="mt-2 mb-2" />
+                        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                            @if (!string.IsNullOrEmpty(item.Link))
+                            {
+                                <MudButton 
+                                    Variant="Variant.Filled" 
+                                    Color="Color.Primary" 
+                                    StartIcon="@Icons.Material.Filled.Visibility"
+                                    OnClick="@(() => GotoNotification(item))"
+                                    Disabled="Loading">
+                                    View
+                                </MudButton>
+                            }
+                            @if (item.ReadDate is null)
+                            {
+                                <MudButton 
+                                    Variant="Variant.Filled" 
+                                    Color="Color.Info" 
+                                    StartIcon="@Icons.Material.Filled.DoneAll"
+                                    OnClick="@(() => DismissNotification(item.Id))" 
+                                    Disabled="Loading">
+                                    Mark as Read
+                                </MudButton>
+                            }
+                            else
+                            {
+                                <MudButton 
+                                    Variant="Variant.Filled" 
+                                    Color="Color.Default" 
+                                    StartIcon="@Icons.Material.Filled.MarkAsUnread"
+                                    OnClick="@(() => UnreadNotification(item.Id))" 
+                                    Disabled="Loading">
+                                    Mark as Unread
+                                </MudButton>
+                            }
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            }
+        </MudStack>
+    }

@@ -2,93 +2,57 @@
 
 @inherits CatsComponentBase
 
+
 @if(_paginatedNotes is not null)
 {
-    @if (_paginatedNotes.TotalItems > 0)
-    {
-        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+
+    <MudPaper Class="pa-3">
+
+        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mb-2">
+            <MudPagination 
+                Rectangular="true" 
+                Variant="Variant.Text"
+                Count="@TotalPages"
+                ShowFirstButton="true"
+                ShowLastButton="true"
+                SelectedChanged="OnPaginationChanged">
+            </MudPagination>
             <MudText Typo="Typo.body1">
                 @TotalNotes @(TotalNotes == 1 ? "note" : "notes")
-
             </MudText>
-            <MudPagination Count="@TotalPages"
-                           ShowFirstButton="true"
-                           ShowLastButton="true"
-                           SelectedChanged="OnPaginationChanged">
-            </MudPagination>
-        </MudStack>
-    }
-
-    <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-        @if (AllowAddNote)
-        {
-            <MudTimelineItem TimelineAlign="TimelineAlign.Start">
-                <div class="d-flex gap-4 align-center mud-list-subheader">
-                    <MudTooltip Text="New">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnAddNote" Class="rounded-circle"></MudIconButton>
-                    </MudTooltip>
-                    <MudText>New note</MudText>
-                </div>
-            </MudTimelineItem>
-        }
-        else
-        {
-            if (_paginatedNotes.TotalItems == 0)
+            <MudSpacer />
+            @if (AllowAddNote)
             {
-                <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
-                    <MudCard>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">
-                                No Notes
-                            </MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudTimelineItem>
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnAddNote"> Add Note</MudButton>
             }
-        }
+        </MudStack>
 
-        @foreach (var note in PagedNotes)
-        {
-            <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
-                <MudCard>
-                    <MudCardContent>
-                        <MudCardHeader>
-                            <CardHeaderAvatar>
-                                <MudAvatar Color="Color.Secondary">@note.CreatedBy.Substring(0, 1)</MudAvatar>
-                            </CardHeaderAvatar>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body1">
-                                    @note.CreatedBy
-                                </MudText>
-                                <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                @if (note.CallReference is not null)
-                                {
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Primary">
-                                        Call Reference @note.CallReference
-                                    </MudChip>
-                                }
-                            </CardHeaderActions>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">
-                                <div class="word-wrap">
-                                    @note.Message
-                                </div>
-                            </MudText>
-                           
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
-                                <MudText Typo="Typo.body2">
-                                    @note.Created.Humanize()
-                                </MudText>
-                            </MudTooltip>
-                        </MudCardActions>
-                    </MudCardContent>
-                </MudCard>
-            </MudTimelineItem>
-        }
-    </MudTimeline>
+        <MudStack Spacing="2">
+            @foreach(var note in PagedNotes)
+            {
+                <MudPaper Class="pa-3">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudAvatar Size="Size.Small">
+                            @note.CreatedBy.Substring(0, 1)
+                        </MudAvatar>
+                        <MudText Typo="Typo.subtitle1">@note.CreatedBy</MudText>
+                        <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                            <MudText Typo="Typo.caption">@note.Created.Humanize()</MudText>
+                        </MudTooltip>
+                    </MudStack>
+                    <MudText Class="mt-2">
+                        @if (note.CallReference is not null)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">
+                                Call Reference @note.CallReference
+                            </MudChip>
+                        }
+                        @note.Message
+                    </MudText>
+                </MudPaper>
+            }
+        </MudStack>
+    </MudPaper>
+
+   
 }

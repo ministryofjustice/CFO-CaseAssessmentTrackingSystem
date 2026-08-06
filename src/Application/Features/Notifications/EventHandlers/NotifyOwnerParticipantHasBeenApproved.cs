@@ -11,29 +11,17 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork, ILogg
         {
             if (notification.Item.OwnerId is null)
             {
-                logger.LogWarning("Participant {ParticipantId} without an owner has been approved. Notification ignored.", notification.Item.Id);
+                logger.LogDebug("Participant {ParticipantId} without an owner has been approved. Notification ignored.", notification.Item.Id);
                 return;
             }
 
             const string heading = "Enrolment approved";
 
-            string details = "You have enrolments that have been approved";
-
-            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
-                n => n.Heading == heading
-                && n.OwnerId == notification.Item.OwnerId
-                && n.ReadDate == null
-            );
-
-            previous?.ResetNotificationDate();
-
-            if (previous is null)
-            {
-                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/participants/?listView=Approved");
-                await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
-            }
-           
-        }
+            string details = $"Your enrolment for {notification.Item.FullName} at {notification.Item.EnrolmentLocation?.Name} has been approved.";
+   
+            var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+            n.SetLink($"/pages/workspace/participants/{notification.Item.Id}/");
+            await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
+    }
     }
 }

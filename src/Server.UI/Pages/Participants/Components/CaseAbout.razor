@@ -2,7 +2,6 @@
 
 @attribute [StreamRendering]
 
-
 @if (_loading)
 {
     <MudProgressLinear Indeterminate="true" />
@@ -15,13 +14,13 @@ else
                 <MudCard Style="Height: 100%">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Personal Details</MudText>
+                            <MudText Typo="Typo.subtitle1">Personal Details</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
                             @if (ParticipantIsActive)
                             {
-                                <MudTooltip Text="Edit">
-                                    <MudIconButton Color="Color.Primary" OnClick="EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
+                                <MudTooltip Text=@ConstantString.Edit>
+                                    <MudIconButton Color="Color.Primary" OnClick="@EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
                                 </MudTooltip>
                             }
                         </CardHeaderActions>
@@ -46,7 +45,7 @@ else
                 <MudCard Style="Height: 100%">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Address Book</MudText>
+                            <MudText Typo="Typo.subtitle1">Address Book</MudText>
                         </CardHeaderContent>
                         <CardHeaderAvatar>
                             <MudAvatar Color="Color.Tertiary">
@@ -68,10 +67,10 @@ else
                                             @if (ParticipantIsActive)
                                             {
                                                 <div class="d-flex gap-2">
-                                                    <MudTooltip Text="Edit">
+                                                    <MudTooltip Text=@ConstantString.Edit>
                                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" OnClick="() => EditContact(detail)" />
                                                     </MudTooltip>
-                                                    <MudTooltip Text="Delete">
+                                                    <MudTooltip Text=@ConstantString.Delete>
                                                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Size="Size.Small" OnClick="() => DeleteContact(detail)" />
                                                     </MudTooltip>
                                                 </div>
@@ -104,10 +103,9 @@ else
                     <MudCardActions>
                         @if (ParticipantIsActive)
                         {
-                           <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="AddContact">
-                            Add
-                           </MudButton>
-                           
+                            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@AddContact">
+                                @ConstantString.AddContact
+                            </MudButton>
                         }
                     </MudCardActions>
                 </MudCard>

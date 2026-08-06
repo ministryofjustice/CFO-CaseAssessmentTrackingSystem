@@ -1,0 +1,76 @@
+﻿@page "/pages/workspace/deliverymanagement/cumulatives"
+@inherits CatsComponentBase
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+<DeliveryManagementPageHeader />
+
+@if (_noAccessToContracts)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mt-3">
+        <MudStack>
+            Cumulative figures are only available at the Contract level.
+        </MudStack>
+    </MudAlert>
+}
+else
+{
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+
+         <MudMenu Size="MudBlazor.Size.Small" 
+             Variant="Variant.Text" 
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+             Label="@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month)">
+            @foreach (var month in Enumerable.Range(1, 12))
+            {
+                <MudMenuItem OnClick="@(() => OnMonthChanged(month))">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudMenuItem>
+            }
+        </MudMenu>
+
+        <MudMenu Size="MudBlazor.Size.Small" 
+            Variant="Variant.Text" 
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+            Label="@Year.ToString()">
+                @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
+                {
+                    <MudMenuItem Label="@year.ToString()" OnClick="@(() => OnYearChanged(year))" />
+                }
+        </MudMenu>
+
+        <MudMenu Size="MudBlazor.Size.Small"
+            Variant="Variant.Text"
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+            Label="@(SelectedContract is null ? "Contract" : SelectedContract.Name )">
+                @foreach(var c in ContractService.GetVisibleContracts(CurrentUser.TenantId!))
+                {
+                    <MudMenuItem Label="@c.Name" OnClick="@(() => OnContractChanged(c))" />
+                }
+        </MudMenu>
+
+        <MudTooltip Text="Clear search parameters">
+            <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" />
+        </MudTooltip>
+
+        <MudLoadingButton 
+            Loading="@_downloading"
+            Variant="Variant.Filled"
+            Color="Color.Secondary"
+            StartIcon="@Icons.Material.Filled.CloudDownload"
+            Size="Size.Small"
+            OnClick="OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
+
+    <CumulativeDetailsComponent @key="@($"{Month}-{Year}-{SelectedContract?.Id}-LastMonth")" 
+                                EndDate="new DateOnly(Year, Month, 1).AddDays(-1)" 
+                                Contract="SelectedContract" />
+
+ 
+    <CumulativeDetailsComponent @key="@($"{Month}-{Year}-{SelectedContract?.Id}-ThisMonth")" 
+                                EndDate="new DateOnly(Year, Month, DateTime.DaysInMonth(Year, Month))"
+                                Contract="SelectedContract" />
+   
+}

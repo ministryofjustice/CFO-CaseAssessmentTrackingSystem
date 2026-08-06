@@ -10,6 +10,8 @@ public static class SecurityPolicies
 
     public const string Internal = nameof(Internal);
 
+    public const string ServiceDesk = nameof(ServiceDesk);
+
     public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
@@ -67,6 +69,8 @@ public static class SecurityPolicies
 
     public const string ServiceDeskManagement = nameof(ServiceDeskManagement);
 
+    public const string ServiceDeskSyncInformation = nameof(ServiceDeskSyncInformation);
+
     /// <summary>
     /// Allows access to the Initiatives management page and list.
     /// </summary>
@@ -76,6 +80,11 @@ public static class SecurityPolicies
     /// Allows adding, editing, amending, and deactivating initiatives. Aligns with CMPSM role.
     /// </summary>
     public const string ManageInitiatives = nameof(ManageInitiatives);
+
+    /// <summary>
+    /// Allows marking a user as In-Review. Aligns with System Support, SMT, and QA Manager roles.
+    /// </summary>
+    public const string MarkUserInReview = nameof(MarkUserInReview);
 
     public const string UserManagement = nameof(UserManagement);
 }

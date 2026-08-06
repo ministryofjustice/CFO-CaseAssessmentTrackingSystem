@@ -21,7 +21,7 @@
         It excludes any participants <strong>auto</strong> archived for being > 30 days past Licence End Date
     </MudAlert>
 
-    if (VisualMode)
+    @if (VisualMode)
     {
         <ApexCharts.ApexChart TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
                               Options="@Options"
@@ -44,7 +44,7 @@
     }
     else
     {
-        <MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
+        <MudTable Dense="true" Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
             <HeaderContent>               
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetArchivedCasesByTenantAndReason.ArchivedCasesTabularData, object>(x => x.Tenant)">
@@ -93,7 +93,12 @@
 
             <RowTemplate>
                 <MudTd DataLabel="Tenant">@context.Tenant</MudTd>
-                <MudTd DataLabel="Reason">@context.Reason</MudTd>
+                <MudTd DataLabel="Reason">
+                    <MudStack>
+                        @context.Reason
+                        <MudText Typo="Typo.caption">@context.AdditionalInformation</MudText>
+                    </MudStack>
+                </MudTd>
                 <MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
                 <MudTd DataLabel="Location">@context.Location</MudTd>
                 <MudTd DataLabel="Created">@context.Created.ToShortDateString()</MudTd>
@@ -110,7 +115,7 @@
 }
 else
 {
-    <MudText Typo="Typo.body2"
+    <MudText Typo="Typo.body1"
              Color="Color.Secondary"
              Align="MudBlazor.Align.Center">
         No data available
