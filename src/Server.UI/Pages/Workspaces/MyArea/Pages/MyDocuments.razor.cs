@@ -8,6 +8,14 @@ public partial class MyDocuments
 {
     private string searchString = "";
 
+    private bool FilterFunc(GeneratedDocumentDto doc)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) { return true; }
+        return doc.Status.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+            || (doc.Title?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (doc.Description?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
     protected override IQuery<Result<GeneratedDocumentDto[]>> CreateQuery() => 
         new GetMyDocumentsQuery.Query();
 

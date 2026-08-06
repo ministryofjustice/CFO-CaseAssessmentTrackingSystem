@@ -28,10 +28,14 @@
     Breakpoint="Breakpoint.Sm"
     Loading="@Loading"
     LoadingProgressColor="Color.Info"
+    Filter="FilterFunc"
     Class="mb-8 pa-4">
         <ToolBarContent>
             <MudSpacer />
-            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Immediate="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+            <MudTooltip Text="Clear search parameters">
+                <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => searchString = string.Empty)" />
+            </MudTooltip>
         </ToolBarContent>
         <HeaderContent>
             <MudTh>@ConstantString.Actions</MudTh>
@@ -86,6 +90,9 @@
                 </div>
             </MudTd>
         </RowTemplate>
+        <NoRecordsContent>
+            <MudText>@(string.IsNullOrWhiteSpace(searchString) ? "You have no documents available." : "No documents match the current search.")</MudText>
+        </NoRecordsContent>
         <PagerContent>
             <MudTablePager />
         </PagerContent>
