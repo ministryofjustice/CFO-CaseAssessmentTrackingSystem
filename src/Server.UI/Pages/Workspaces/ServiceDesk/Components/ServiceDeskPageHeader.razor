@@ -58,6 +58,8 @@
         {
             middle = from.ToString().ToLowerInvariant() switch
             {
+                "activities-queue" => ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(),
+                "enrolments-queue" => ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(),                
                 "activities-feedback" => ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(),
                 "enrolments-feedback" => ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(),
                 "activities-item" => BuildItemBreadcrumbFromQuery("Activity", "activities", uri.Query),
