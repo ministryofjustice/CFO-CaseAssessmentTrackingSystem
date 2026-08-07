@@ -40,6 +40,13 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
         {
             Stacked = false
         },
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true,
+            Position = LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
+        },
         PlotOptions = new PlotOptions
         {
             Bar = new PlotOptionsBar
@@ -59,12 +66,35 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
                 },
             },
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true,
+                OffsetY = 5
+            }
+        },
         Yaxis =
         [
             new YAxis
             {
                 Min = 0,
                 ForceNiceScale = true
+            }
+        ],
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexChartOptions<GetRecentlyApprovedActivities.ActivityDetail>
+                {
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Bottom
+                    }
+                }
             }
         ],
         Theme = new Theme

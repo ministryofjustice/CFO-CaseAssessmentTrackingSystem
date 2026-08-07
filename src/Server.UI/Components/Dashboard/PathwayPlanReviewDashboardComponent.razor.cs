@@ -38,6 +38,13 @@ public partial class PathwayPlanReviewDashboardComponent
         {
             Stacked = true
         },
+        Legend = new ApexCharts.Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true,
+            Position = ApexCharts.LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
+        },
         PlotOptions = new ApexCharts.PlotOptions
         {
             Bar = new ApexCharts.PlotOptionsBar
@@ -57,6 +64,15 @@ public partial class PathwayPlanReviewDashboardComponent
                 },
             },
         },
+        Xaxis = new ApexCharts.XAxis
+        {
+            Labels = new ApexCharts.XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true,
+                OffsetY = 5
+            }
+        },
         Yaxis = new List<YAxis>
         {
             new YAxis
@@ -65,6 +81,20 @@ public partial class PathwayPlanReviewDashboardComponent
                 ForceNiceScale = true
             }
         },
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexCharts.ApexChartOptions<GetPathwayPlans.LocationDetail>
+                {
+                    Legend = new ApexCharts.Legend
+                    {
+                        Position = ApexCharts.LegendPosition.Bottom
+                    }
+                }
+            }
+        ],
         Theme = new ApexCharts.Theme
         {
             Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light

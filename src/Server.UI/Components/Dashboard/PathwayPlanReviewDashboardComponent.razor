@@ -32,30 +32,32 @@
     </MudGrid>
     @if(VisualMode)
     {
-        <ApexCharts.ApexChart @key="ShowOverdueOnly" TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
-            @if (!ShowOverdueOnly)
-            {
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexCharts.ApexChart @key="ShowOverdueOnly" TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
+                @if (!ShowOverdueOnly && Data.TotalReviewed > 0)
+                {
+                    <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
+                                                Items="Data.ChartData"
+                                                Name="@($"Reviewed ({Data.TotalReviewed})")"
+                                                SeriesType="ApexCharts.SeriesType.Bar"
+                                                XValue="@(e => e.LocationName)"
+                                                YValue="@(e => e.TotalCount - e.OverdueCount)"
+                                                ShowDataLabels="true"
+                                                Color="#5cb85c">
+                    </ApexCharts.ApexPointSeries>
+                }
+
                 <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
-                                            Items="Data.ChartData"
-                                            Name="@($"Reviewed ({Data.TotalReviewed})")"
+                                            Items="FilteredChartData"
+                                            Name="@($"Reviewed 3+ months ago ({Data.TotalOverdueCount})")"
                                             SeriesType="ApexCharts.SeriesType.Bar"
                                             XValue="@(e => e.LocationName)"
-                                            YValue="@(e => e.TotalCount - e.OverdueCount)"
+                                            YValue="@(e => e.OverdueCount)"
                                             ShowDataLabels="true"
-                                            Color="#5cb85c">
+                                            Color="#d9534f">
                 </ApexCharts.ApexPointSeries>
-            }
-
-            <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
-                                        Items="FilteredChartData"
-                                        Name="@($"Reviewed 3+ months ago ({Data.TotalOverdueCount})")"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.LocationName)"
-                                        YValue="@(e => e.OverdueCount)"
-                                        ShowDataLabels="true"
-                                        Color="#d9534f">
-            </ApexCharts.ApexPointSeries>
-        </ApexCharts.ApexChart>
+            </ApexCharts.ApexChart>
+        </div>
     }
     else
     {

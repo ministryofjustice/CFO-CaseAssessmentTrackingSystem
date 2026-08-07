@@ -23,24 +23,26 @@
 
     @if (VisualMode)
     {
-        <ApexCharts.ApexChart TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
-                              Options="@Options"
-                              Height="650"
-                              Width="@( "100%" )">
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexCharts.ApexChart TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
+                                  Options="@Options"
+                                  Height="650"
+                                  Width="@( "100%" )">
 
-            @foreach (var series in SeriesByReason)
-            {
-                <ApexCharts.ApexPointSeries
-                    TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
-                    Items="@(series.Items)"
-                    SeriesType="ApexCharts.SeriesType.Bar"
-                    Name="@(series.Reason)"
-                    XValue="@(e => e.Tenant)"
-                    YValue="@(e => e.Count)"
-                    ShowDataLabels="true" />
-            }
+                @foreach (var series in SeriesByReason)
+                {
+                    <ApexCharts.ApexPointSeries
+                        TItem="GetArchivedCasesByTenantAndReason.ArchivedCasesChartData"
+                        Items="@(series.Items)"
+                        SeriesType="ApexCharts.SeriesType.Bar"
+                        Name="@(series.Reason)"
+                        XValue="@(e => e.Tenant)"
+                        YValue="@(e => e.Count)"
+                        ShowDataLabels="true" />
+                }
 
-        </ApexCharts.ApexChart>
+            </ApexCharts.ApexChart>
+        </div>
     }
     else
     {

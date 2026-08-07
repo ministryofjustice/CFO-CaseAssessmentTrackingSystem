@@ -2,6 +2,7 @@
 
 <MudExpansionPanels Elevation="0" Class="mt-2">
     <MudExpansionPanel Text="Notes &amp; additional information"
+                       Expanded="@_isExpanded"
                        ExpandedChanged="OnExpandedChanged">
         @if (_isExpanded)
         {
@@ -24,8 +25,20 @@
     [Parameter, EditorRequired]
     public required UserProfile CurrentUser { get; set; }
 
-    private void OnExpandedChanged(bool expanded)
+    [Parameter]
+    public bool IsExpanded { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsExpandedChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _isExpanded = IsExpanded;
+    }
+
+    private async Task OnExpandedChanged(bool expanded)
     {
         _isExpanded = expanded;
+        await IsExpandedChanged.InvokeAsync(expanded);
     }
 }

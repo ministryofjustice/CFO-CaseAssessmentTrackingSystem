@@ -172,7 +172,9 @@ public partial class UnassignedCasesDashboardComponent
         Legend = new Legend
         {
             Show = true,
-            ShowForSingleSeries = true
+            ShowForSingleSeries = true,
+            Position = LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
         },
         
         PlotOptions = new PlotOptions
@@ -192,12 +194,35 @@ public partial class UnassignedCasesDashboardComponent
                 },
             },
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true,
+                OffsetY = 5
+            }
+        },
         Yaxis =
         [
             new YAxis
             {
                 Min = 0,
                 ForceNiceScale = true
+            }
+        ],
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexChartOptions<ChartDataPoint>
+                {
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Bottom
+                    }
+                }
             }
         ],
         Theme = new Theme

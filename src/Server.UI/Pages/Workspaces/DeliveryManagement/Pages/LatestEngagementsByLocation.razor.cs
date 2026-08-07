@@ -73,8 +73,37 @@ public partial class LatestEngagementsByLocation
     private ApexChartOptions<LocationEngagementSummaryDto> BuildChartOptions() => new()
     {
         Chart = new Chart { Stacked = true },
-        Legend = new Legend { Show = true, ShowForSingleSeries = true },
+        Legend = new Legend 
+        { 
+            Show = true, 
+            ShowForSingleSeries = true,
+            Position = LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
+        },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true,
+                OffsetY = 5
+            }
+        },
         Yaxis = [new YAxis { Min = 0, ForceNiceScale = true }],
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexChartOptions<LocationEngagementSummaryDto>
+                {
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Bottom
+                    }
+                }
+            }
+        ],
         Theme = new Theme { Mode = IsDarkMode ? Mode.Dark : Mode.Light }
     };
 

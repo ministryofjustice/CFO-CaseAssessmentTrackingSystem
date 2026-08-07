@@ -91,7 +91,13 @@ public partial class PaidActivityComponent
             },
             Xaxis = new XAxis
             {
-                Title = new AxisTitle { Text = "Payable" }
+                Title = new AxisTitle { Text = "Payable" },
+                Labels = new XAxisLabels
+                {
+                    Rotate = -45,
+                    RotateAlways = true,
+                    OffsetY = 5
+                }
             },
             Yaxis =
             [
@@ -103,9 +109,23 @@ public partial class PaidActivityComponent
             ],
             Legend = new Legend
             {
-                Position = LegendPosition.Bottom,
+                Position = LegendPosition.Top,
                 HorizontalAlign = ApexCharts.Align.Center
             },
+            Responsive =
+            [
+                new()
+                {
+                    Breakpoint = 768,
+                    Options = new ApexChartOptions<LocationActivityCount>
+                    {
+                        Legend = new Legend
+                        {
+                            Position = LegendPosition.Bottom
+                        }
+                    }
+                }
+            ],
             Theme = new Theme
             {
                 Mode = IsDarkMode ? Mode.Dark : Mode.Light

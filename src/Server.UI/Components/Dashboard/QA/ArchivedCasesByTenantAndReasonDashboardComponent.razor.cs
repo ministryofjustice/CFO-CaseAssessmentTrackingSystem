@@ -94,7 +94,8 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
                             Count = 0
                         });
                 return (reason, items);
-            });
+            })
+            .Where(series => series.items.Any(item => item.Count > 0));
         }
     }
     
@@ -105,6 +106,13 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
             Chart = new Chart
             {
                 Stacked = true
+            },
+            Legend = new Legend
+            {
+                Show = true,
+                ShowForSingleSeries = true,
+                Position = LegendPosition.Top,
+                HorizontalAlign = ApexCharts.Align.Center
             },
             PlotOptions = new PlotOptions
             {
@@ -123,6 +131,15 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
                     }
                 }
             },
+            Xaxis = new XAxis
+            {
+                Labels = new XAxisLabels
+                {
+                    Rotate = -45,
+                    RotateAlways = true,
+                    OffsetY = 5
+                }
+            },
             Yaxis = new List<YAxis>
             {
                 new()
@@ -131,6 +148,20 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
                     ForceNiceScale = true
                 }
             },
+            Responsive =
+            [
+                new()
+                {
+                    Breakpoint = 768,
+                    Options = new ApexChartOptions<GetArchivedCasesByTenantAndReason.ArchivedCasesChartData>
+                    {
+                        Legend = new Legend
+                        {
+                            Position = LegendPosition.Bottom
+                        }
+                    }
+                }
+            ],
             Theme = new Theme
             {
                 Mode = IsDarkMode ? Mode.Dark : Mode.Light
