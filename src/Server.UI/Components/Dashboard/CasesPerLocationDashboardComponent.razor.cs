@@ -34,7 +34,8 @@ public partial class CasesPerLocationDashboardComponent
         Legend = new Legend
         {
             Show = true,
-            ShowForSingleSeries = true
+            ShowForSingleSeries = true,
+            Position = LegendPosition.Top
         },
         
         PlotOptions = new PlotOptions
