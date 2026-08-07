@@ -4,7 +4,7 @@
 <MudDialog>
     <DialogContent>
         <div style="min-width: 600px">
-            <LocationSelectComponent ValueChanged="dto => { OnLocationChanged(dto); }" TenantId="@(TenantId ?? CurrentUser.TenantId)" />
+            <LocationSelectComponent ValueChanged="dto => { OnLocationChanged(dto); }" TenantId="@(TenantId ?? CurrentUser.TenantId)" LocationFilter="Filter" />
         </div>
     </DialogContent>
     <DialogActions>
@@ -23,6 +23,9 @@
 
     [Parameter]
     public string? TenantId { get; set; }
+
+    [Parameter]
+    public Func<LocationDto, bool>? Filter { get; set; } = null;
 
     private bool _saving = false;
 

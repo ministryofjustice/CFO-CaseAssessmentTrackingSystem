@@ -14,8 +14,9 @@ public interface IParticipantDialogService
     /// Shows the location selection dialog.
     /// </summary>
     /// <param name="currentUser">The current user profile for authorization.</param>
+    /// <p
     /// <returns>The selected location, or null if canceled.</returns>
-    Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser);
+    Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null);
 
     /// <summary>
     /// Shows the assignee (user) selection dialog.

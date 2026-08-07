@@ -261,10 +261,13 @@ public partial class UnassignedCasesDashboardComponent
 
     private async Task ShowSelectLocationDialog()
     {
+        Func<LocationDto, bool> filter = x => x.LocationType.IsHub == false;
+
         var parameters = new DialogParameters<SelectLocationDialog>
         {
             { "CurrentUser", CurrentUser },
-            { "TenantId", TenantId }
+            { "TenantId", TenantId },
+            { "Filter", filter }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
