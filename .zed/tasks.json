@@ -1,0 +1,49 @@
+[
+  {
+    "label": "Run Aspire",
+    "command": "dotnet",
+    "args": [
+      "watch",
+      "--project",
+      "src/Aspire/Cats.AppHost/Cats.AppHost.csproj"
+    ],
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Cake Clean",
+    "command": "dotnet",
+    "args": [
+      "cake.cs",
+      "--target",
+      "clean"
+    ]
+  },
+  {
+    "label": "Cake Test",
+    "command": "dotnet",
+    "args": [
+      "cake.cs",
+      "--target",
+      "Test"
+    ]
+  },
+  {
+    "label": "Cake Publish",
+    "command": "dotnet",
+    "args": [
+      "cake.cs",
+      "--target",
+      "publish"
+    ]
+  },
+  {
+    "label": "Nuke Docker Environment",
+    "command": "([[ $(docker ps -q) ]] && docker stop $(docker ps -q) || true) && ([[ $(docker ps -a -q) ]] && docker rm -f $(docker ps -a -q) || true) && ([[ $(docker volume ls -q) ]] && docker volume rm $(docker volume ls -q) || true)",
+    "shell": {
+      "with_arguments": {
+        "program": "/bin/bash",
+        "args": ["-c"]
+      }
+    }
+  }
+]
