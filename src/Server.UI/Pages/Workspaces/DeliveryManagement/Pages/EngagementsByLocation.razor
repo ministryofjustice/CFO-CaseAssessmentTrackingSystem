@@ -97,19 +97,21 @@ else
 {
     @if (_visualMode)
     {
-        <ApexChart TItem="EngagementLocationCategoryCountDto" Options="_options" Height="600">
-            @foreach (var category in GetCategories())
-            {
-                <ApexPointSeries TItem="EngagementLocationCategoryCountDto"
-                                 Name="@category"
-                                 Items="GetCategorySeriesItems(category)"
-                                 XValue="@(x => x.LocationName)"
-                                 YValue="@(x => x.Count)"
-                                 SeriesType="SeriesType.Bar"
-                                 Color="@EngagementLocationCategoryCountDto.GetCategoryColour(category)"
-                                 ShowDataLabels />
-            }
-        </ApexChart>
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexChart TItem="EngagementLocationCategoryCountDto" Options="_options" Height="600">
+                @foreach (var category in GetCategories())
+                {
+                    <ApexPointSeries TItem="EngagementLocationCategoryCountDto"
+                                     Name="@category"
+                                     Items="GetCategorySeriesItems(category)"
+                                     XValue="@(x => x.LocationName)"
+                                     YValue="@(x => x.Count)"
+                                     SeriesType="SeriesType.Bar"
+                                     Color="@EngagementLocationCategoryCountDto.GetCategoryColour(category)"
+                                     ShowDataLabels />
+                }
+            </ApexChart>
+        </div>
     }
     else
     {

@@ -83,27 +83,29 @@
 {
     @if (!Loading && Data is not null && Data.Summaries.Any())
     {
-        <ApexChart TItem="ChartDataPoint" Options="ChartOptions" Height="700">
-            @{
-                var chartData = ChartData();
-                var statuses = chartData
-                    .Select(x => x.Status)
-                    .DistinctBy(x => x.Value)
-                    .OrderBy(x => x.LogicalOrder);
-            }
-            
-            @foreach (var status in statuses)
-            {
-                <ApexPointSeries TItem="ChartDataPoint"
-                                Name="@status.Name"
-                                Items="@chartData.Where(x => x.Status == status).ToList()"
-                                XValue="@(x => x.LocationName)"
-                                YValue="@(x => x.Count)"
-                                SeriesType="SeriesType.Bar"
-                                ShowDataLabels
-                                Color="@status.Colour" />
-            }
-        </ApexChart>
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexChart TItem="ChartDataPoint" Options="ChartOptions" Height="700">
+                @{
+                    var chartData = ChartData();
+                    var statuses = chartData
+                        .Select(x => x.Status)
+                        .DistinctBy(x => x.Value)
+                        .OrderBy(x => x.LogicalOrder);
+                }
+                
+                @foreach (var status in statuses)
+                {
+                    <ApexPointSeries TItem="ChartDataPoint"
+                                    Name="@status.Name"
+                                    Items="@chartData.Where(x => x.Status == status).ToList()"
+                                    XValue="@(x => x.LocationName)"
+                                    YValue="@(x => x.Count)"
+                                    SeriesType="SeriesType.Bar"
+                                    ShowDataLabels
+                                    Color="@status.Colour" />
+                }
+            </ApexChart>
+        </div>
     }
     else if (!Loading)
     {

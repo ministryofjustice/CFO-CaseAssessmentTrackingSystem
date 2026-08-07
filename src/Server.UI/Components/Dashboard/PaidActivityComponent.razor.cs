@@ -91,7 +91,13 @@ public partial class PaidActivityComponent
             },
             Xaxis = new XAxis
             {
-                Title = new AxisTitle { Text = "Payable" }
+                Title = new AxisTitle { Text = "Payable" },
+                Labels = new XAxisLabels
+                {
+                    Rotate = -45,
+                    RotateAlways = true,
+                    OffsetY = 5
+                }
             },
             Yaxis =
             [

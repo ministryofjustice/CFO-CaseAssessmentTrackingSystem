@@ -46,27 +46,29 @@
 
     @if (VisualMode)
     {
-        <ApexCharts.ApexChart @key="ShowActiveOnly" TItem="InitiativeChartPoint" Options="Options" Height="650" Width="@("100%")">
-            <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
-                             Name="@($"Active ({TotalActive})")"
-                             Items="FilteredChartData"
-                             XValue="@(x => new string[] { x.InitiativeCode, x.InitiativeDescription })"
-                             YValue="@(x => (decimal)x.ActiveCount)"
-                             SeriesType="ApexCharts.SeriesType.Bar"
-                             ShowDataLabels="true"
-                             Color="#1976d2" />
-            @if (!ShowActiveOnly)
-            {
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexCharts.ApexChart @key="ShowActiveOnly" TItem="InitiativeChartPoint" Options="Options" Height="650" Width="@("100%")">
                 <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
-                                 Name="@($"Completed ({TotalCompleted})")"
+                                 Name="@($"Active ({TotalActive})")"
                                  Items="FilteredChartData"
                                  XValue="@(x => new string[] { x.InitiativeCode, x.InitiativeDescription })"
-                                 YValue="@(x => (decimal)x.CompletedCount)"
+                                 YValue="@(x => (decimal)x.ActiveCount)"
                                  SeriesType="ApexCharts.SeriesType.Bar"
                                  ShowDataLabels="true"
-                                 Color="#5cb85c" />
-            }
-        </ApexCharts.ApexChart>
+                                 Color="#1976d2" />
+                @if (!ShowActiveOnly)
+                {
+                    <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
+                                     Name="@($"Completed ({TotalCompleted})")"
+                                     Items="FilteredChartData"
+                                     XValue="@(x => new string[] { x.InitiativeCode, x.InitiativeDescription })"
+                                     YValue="@(x => (decimal)x.CompletedCount)"
+                                     SeriesType="ApexCharts.SeriesType.Bar"
+                                     ShowDataLabels="true"
+                                     Color="#5cb85c" />
+                }
+            </ApexCharts.ApexChart>
+        </div>
     }
     else
     {

@@ -52,6 +52,13 @@ public partial class SupportAndReferralDashboardComponent
                 Toolbar = new Toolbar { Show = false },
                 Animations = new Animations { Enabled = true }
             },
+            Legend = new Legend
+            {
+                Show = true,
+                ShowForSingleSeries = true,
+                Position = LegendPosition.Top,
+                HorizontalAlign = ApexCharts.Align.Center
+            },
             PlotOptions = new PlotOptions
             {
                 Bar = new PlotOptionsBar
@@ -86,6 +93,20 @@ public partial class SupportAndReferralDashboardComponent
                     Labels = new YAxisLabels
                     {
                         Show = true
+                    }
+                }
+            ],
+            Responsive =
+            [
+                new()
+                {
+                    Breakpoint = 768,
+                    Options = new ApexChartOptions<ChartDataPoint>
+                    {
+                        Legend = new Legend
+                        {
+                            Position = LegendPosition.Bottom
+                        }
                     }
                 }
             ],

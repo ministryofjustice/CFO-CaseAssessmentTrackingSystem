@@ -26,7 +26,8 @@
     </MudGrid>
     @if(VisualMode)
     {
-        <ApexChart TItem="GetCasesPerLocation.LocationDetail" Options="Options" Height="700">
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexChart TItem="GetCasesPerLocation.LocationDetail" Options="Options" Height="700">
 			@{
 				var chartData = ChartData();
                 var statuses = chartData
@@ -47,6 +48,7 @@
 									Color="@status.Colour" />
 			}
 		</ApexChart>
+        </div>
     }
     else
     {

@@ -90,24 +90,26 @@ else
 
     @if (_visualMode)
     {
-        <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
-            <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                             Name="Last 3 months"
-                             Items="_data.Records"
-                             XValue="@(x => x.LocationName)"
-                             YValue="@(x => x.RecentCount)"
-                             SeriesType="SeriesType.Bar"
-                             ShowDataLabels
-                             Color="#2e7d32" />
-            <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                             Name="More than 3 months ago"
-                             Items="_data.Records"
-                             XValue="@(x => x.LocationName)"
-                             YValue="@(x => x.InactiveCount)"
-                             SeriesType="SeriesType.Bar"
-                             ShowDataLabels
-                             Color="#ed6c02" />
-        </ApexChart>
+        <div style="overflow: visible; margin-bottom: 120px;">
+            <ApexChart TItem="LocationEngagementSummaryDto" Options="_options" Height="600">
+                <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                                 Name="Last 3 months"
+                                 Items="_data.Records"
+                                 XValue="@(x => x.LocationName)"
+                                 YValue="@(x => x.RecentCount)"
+                                 SeriesType="SeriesType.Bar"
+                                 ShowDataLabels
+                                 Color="#2e7d32" />
+                <ApexPointSeries TItem="LocationEngagementSummaryDto"
+                                 Name="More than 3 months ago"
+                                 Items="_data.Records"
+                                 XValue="@(x => x.LocationName)"
+                                 YValue="@(x => x.InactiveCount)"
+                                 SeriesType="SeriesType.Bar"
+                                 ShowDataLabels
+                                 Color="#ed6c02" />
+            </ApexChart>
+        </div>
     }
     else
     {

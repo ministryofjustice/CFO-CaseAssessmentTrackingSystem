@@ -56,6 +56,15 @@ public partial class CasesPerLocationDashboardComponent
                 },
             },
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true,
+                OffsetY = 5
+            }
+        },
         Yaxis =
         [
             new YAxis

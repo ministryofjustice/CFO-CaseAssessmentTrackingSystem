@@ -40,6 +40,13 @@ public partial class EducationAndTrainingDashboardComponent
         {
             Stacked = true
         },
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true,
+            Position = LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
+        },
         PlotOptions = new PlotOptions
         {
             Bar = new PlotOptionsBar
@@ -74,6 +81,20 @@ public partial class EducationAndTrainingDashboardComponent
             {
                 Min = 0,
                 ForceNiceScale = true
+            }
+        ],
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexChartOptions<GetEducationAndTrainings.LocationDetail>
+                {
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Bottom
+                    }
+                }
             }
         ],
         Theme = new Theme

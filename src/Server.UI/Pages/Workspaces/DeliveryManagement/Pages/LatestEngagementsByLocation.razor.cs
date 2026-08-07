@@ -80,6 +80,15 @@ public partial class LatestEngagementsByLocation
             Position = LegendPosition.Top,
             HorizontalAlign = ApexCharts.Align.Center
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Rotate = -45,
+                RotateAlways = true,
+                OffsetY = 5
+            }
+        },
         Yaxis = [new YAxis { Min = 0, ForceNiceScale = true }],
         Responsive =
         [
