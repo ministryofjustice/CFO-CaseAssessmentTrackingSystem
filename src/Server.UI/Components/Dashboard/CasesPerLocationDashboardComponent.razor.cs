@@ -35,7 +35,8 @@ public partial class CasesPerLocationDashboardComponent
         {
             Show = true,
             ShowForSingleSeries = true,
-            Position = LegendPosition.Top
+            Position = LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
         },
         
         PlotOptions = new PlotOptions
@@ -61,6 +62,20 @@ public partial class CasesPerLocationDashboardComponent
             {
                 Min = 0,
                 ForceNiceScale = true
+            }
+        ],
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexChartOptions<GetCasesPerLocation.LocationDetail>
+                {
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Bottom
+                    }
+                }
             }
         ],
         Theme = new Theme
