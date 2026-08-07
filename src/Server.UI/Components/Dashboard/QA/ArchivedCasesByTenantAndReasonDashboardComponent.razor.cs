@@ -94,7 +94,8 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
                             Count = 0
                         });
                 return (reason, items);
-            });
+            })
+            .Where(series => series.items.Any(item => item.Count > 0));
         }
     }
     

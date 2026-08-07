@@ -34,7 +34,7 @@
     {
         <div style="overflow: visible; margin-bottom: 120px;">
             <ApexCharts.ApexChart @key="ShowOverdueOnly" TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
-                @if (!ShowOverdueOnly)
+                @if (!ShowOverdueOnly && Data.TotalReviewed > 0)
                 {
                     <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
                                                 Items="Data.ChartData"
