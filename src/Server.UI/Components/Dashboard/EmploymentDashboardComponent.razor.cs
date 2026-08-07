@@ -59,6 +59,15 @@ public partial class EmploymentDashboardComponent
                 },
             },
         },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels 
+            { 
+                Rotate = -45, 
+                RotateAlways = true,
+                OffsetY = 0
+            }
+        },
         Yaxis =
         [
             new YAxis

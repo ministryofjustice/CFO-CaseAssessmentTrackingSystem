@@ -33,17 +33,19 @@
     
 	@if (VisualMode)
 	{
-		<ApexCharts.ApexChart TItem="GetEnrolments.LocationDetail" Options="Options" Height="650" Width="@("100%")">
-            <ApexCharts.ApexPointSeries TItem="GetEnrolments.LocationDetail"
-										Items="Data.Details"
-										SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.LocationName)"
-										YValue="@(e => e.Payable)"
-										Name="Payable"
-										ShowDataLabels="true">
+        <div style="overflow: visible; margin-bottom: 80px;">
+            <ApexCharts.ApexChart TItem="GetEnrolments.LocationDetail" Options="Options" Height="500">
+                <ApexCharts.ApexPointSeries TItem="GetEnrolments.LocationDetail"
+                                            Items="Data.Details"
+                                            SeriesType="ApexCharts.SeriesType.Bar"
+                                            XValue="@(e => e.LocationName)"
+                                            YValue="@(e => e.Payable)"
+                                            Name="Payable"
+                                            ShowDataLabels="true">
 
-			</ApexCharts.ApexPointSeries>
-		</ApexCharts.ApexChart>
+                </ApexCharts.ApexPointSeries>
+            </ApexCharts.ApexChart>
+        </div>
 	}
 	else
 	{
