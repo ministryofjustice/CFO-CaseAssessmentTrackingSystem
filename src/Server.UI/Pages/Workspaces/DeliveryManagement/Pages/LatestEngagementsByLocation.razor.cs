@@ -172,7 +172,7 @@ public partial class LatestEngagementsByLocation
 
     private async Task ShowLocationDialog()
     {
-        var location = await ParticipantDialogService.PromptForLocationAsync(CurrentUser);
+        var location = await ParticipantDialogService.PromptForLocationAsync(CurrentUser, l => l.LocationType.IsHub == false);
 
         if (location is not null)
         {

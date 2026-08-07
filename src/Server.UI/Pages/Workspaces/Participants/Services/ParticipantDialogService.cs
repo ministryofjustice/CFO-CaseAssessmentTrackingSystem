@@ -7,37 +7,34 @@ using Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
-public class ParticipantDialogService : IParticipantDialogService
+public class ParticipantDialogService(IDialogService dialogService) : IParticipantDialogService
 {
-    private readonly IDialogService _dialogService;
-
-    public ParticipantDialogService(IDialogService dialogService) => _dialogService = dialogService;
-
-    public async Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser)
+    public async Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null)
     {
         var parameters = new DialogParameters<SelectLocationDialog>
         {
-            { "CurrentUser", currentUser }
+            { "CurrentUser", currentUser },
+            { "Filter", filter }
         };
 
-        var options = new DialogOptions 
-        { 
-            CloseButton = true, 
-            MaxWidth = MaxWidth.Large, 
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
             FullWidth = false,
             BackdropClick = false,
             CloseOnEscapeKey = true
         };
 
-        var dialog = await _dialogService.ShowAsync<SelectLocationDialog>(
-            "Select a location", 
-            parameters, 
+        var dialog = await dialogService.ShowAsync<SelectLocationDialog>(
+            "Select a location",
+            parameters,
             options);
 
         var result = await dialog.Result;
 
-        return result is { Canceled: false, Data: LocationDto location } 
-            ? location 
+        return result is { Canceled: false, Data: LocationDto location }
+            ? location
             : null;
     }
 
@@ -48,24 +45,24 @@ public class ParticipantDialogService : IParticipantDialogService
             { "CurrentUser", currentUser }
         };
 
-        var options = new DialogOptions 
-        { 
-            CloseButton = true, 
-            MaxWidth = MaxWidth.Large, 
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
             FullWidth = false,
             BackdropClick = false,
             CloseOnEscapeKey = true
         };
 
-        var dialog = await _dialogService.ShowAsync<SelectUserDialog>(
-            "Select an assignee", 
-            parameters, 
+        var dialog = await dialogService.ShowAsync<SelectUserDialog>(
+            "Select an assignee",
+            parameters,
             options);
 
         var result = await dialog.Result;
 
-        return result is { Canceled: false, Data: SelectedUser user } 
-            ? user 
+        return result is { Canceled: false, Data: SelectedUser user }
+            ? user
             : null;
     }
 
@@ -76,24 +73,24 @@ public class ParticipantDialogService : IParticipantDialogService
             { "CurrentUser", currentUser }
         };
 
-        var options = new DialogOptions 
-        { 
-            CloseButton = true, 
-            MaxWidth = MaxWidth.Large, 
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
             FullWidth = false,
             BackdropClick = false,
             CloseOnEscapeKey = true
         };
 
-        var dialog = await _dialogService.ShowAsync<SelectTenantDialog>(
-            "Select a tenant", 
-            parameters, 
+        var dialog = await dialogService.ShowAsync<SelectTenantDialog>(
+            "Select a tenant",
+            parameters,
             options);
 
         var result = await dialog.Result;
 
-        return result is { Canceled: false, Data: SelectedTenant tenant } 
-            ? tenant 
+        return result is { Canceled: false, Data: SelectedTenant tenant }
+            ? tenant
             : null;
     }
 
@@ -114,18 +111,18 @@ public class ParticipantDialogService : IParticipantDialogService
             }
         };
 
-        var options = new DialogOptions 
-        { 
-            CloseButton = true, 
-            MaxWidth = MaxWidth.Medium, 
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
             FullWidth = true,
             BackdropClick = false,
             CloseOnEscapeKey = true
         };
 
-        var dialog = await _dialogService.ShowAsync<ReassignParticipantDialog>(
-            "Reassign participants", 
-            parameters, 
+        var dialog = await dialogService.ShowAsync<ReassignParticipantDialog>(
+            "Reassign participants",
+            parameters,
             options);
 
         var result = await dialog.Result;
