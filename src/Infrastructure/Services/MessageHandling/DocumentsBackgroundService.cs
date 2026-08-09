@@ -52,7 +52,10 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportPerformanceRecentApprovedActivitiesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportPerformanceSupportAndReferralIntegrationEventConsumer>(provider);
        
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+
         _bus = Configure.With(_activator)
+            .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.DocumentService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
             .Options(o =>

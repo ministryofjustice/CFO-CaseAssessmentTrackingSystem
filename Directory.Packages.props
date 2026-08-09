@@ -76,6 +76,7 @@
     <PackageVersion Include="Quartz" Version="3.19.1" />
     <PackageVersion Include="Quartz.AspNetCore" Version="3.19.1" />
     <PackageVersion Include="Rebus" Version="8.9.2" />
+    <PackageVersion Include="Rebus.Microsoft.Extensions.Logging" Version="5.2.0" />
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.1" />
     <PackageVersion Include="Rebus.ServiceProvider" Version="10.7.2" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />

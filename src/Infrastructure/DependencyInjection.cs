@@ -73,24 +73,16 @@ public static class DependencyInjection
             .AddDatabase(configuration)
             .AddServices(configuration);
 
-        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
-            .GetTypes()
-            .Where(t => t.IsAbstract == false && t.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
-
-        foreach (var handler in handlerTypes)
-        {
-            services.AddScoped(handler);
-        }
-
         services.AddAuthenticationService(configuration)
             .AddFusionCacheService(configuration);
 
-        // Rebus message consumer background services (CATS only)
-        services.AddHostedService<OvernightBackgroundService>();
-        services.AddHostedService<TasksBackgroundService>();
-        services.AddHostedService<PaymentBackgroundService>();
-        services.AddHostedService<DocumentsBackgroundService>();
+        // Run the Rebus message consumers in CATS only when a separate Worker process is not handling them.
+        // When Features:UseWorkerForJobs is set, the Worker hosts these consumers instead (see AddWorkerInfrastructure).
+        if (!configuration.GetValue<bool>("Features:UseWorkerForJobs"))
+        {
+            services.AddMessageConsumers();
+        }
+
         services.AddSingleton<ISessionService, SessionService>();
 
         services.AddScoped<INetworkIpProvider, NetworkIpProvider>();
@@ -147,11 +139,39 @@ public static class DependencyInjection
         services.AddScoped<IHandleMessages, SyncParticipantCommandHandler>();
         services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
 
+        // Host the Rebus message consumers here when the Worker is responsible for background processing.
+        services.AddMessageConsumers();
+
         // Quartz always runs in the Worker
         services.AddQuartzJobsAndTriggers(configuration);
 
         // In-process implementation for the Worker's own job management API endpoints
         services.AddScoped<IJobManagementService, QuartzJobManagementService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Rebus message consumer handlers (all <see cref="IHandleMessages{TMessage}"/>
+    /// implementations from the Application assembly) and the background services that host them.
+    /// This runs either in Server.UI or in the standalone Worker depending on Features:UseWorkerForJobs.
+    /// </summary>
+    private static IServiceCollection AddMessageConsumers(this IServiceCollection services)
+    {
+        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
+            .GetTypes()
+            .Where(t => t.IsAbstract == false && t.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
+
+        foreach (var handler in handlerTypes)
+        {
+            services.AddScoped(handler);
+        }
+
+        services.AddHostedService<OvernightBackgroundService>();
+        services.AddHostedService<TasksBackgroundService>();
+        services.AddHostedService<PaymentBackgroundService>();
+        services.AddHostedService<DocumentsBackgroundService>();
 
         return services;
     }
@@ -204,8 +224,10 @@ public static class DependencyInjection
         {
             var provider = services.BuildServiceProvider();
             var rabbitSettings = provider.GetRequiredService<IOptions<RabbitSettings>>().Value;
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
             return Configure.With(new BuiltinHandlerActivator())
+                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
                 .Transport(t => t.UseRabbitMqAsOneWayClient(configuration.GetConnectionString("rabbit"))
                     .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
                 .Start();

@@ -20,7 +20,10 @@ internal class OvernightBackgroundService(IServiceProvider provider, IConfigurat
         _activator.Handle<SyncParticipantCommandHandler>(provider);
         _activator.Handle<NotifyInactiveUserCommandHandler>(provider);
 
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+
         _bus = Configure.With(_activator)
+            .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.OvernightService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
             .Options(o =>

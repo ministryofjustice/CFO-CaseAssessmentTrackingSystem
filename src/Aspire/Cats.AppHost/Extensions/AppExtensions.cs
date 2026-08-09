@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Configuration;
+using YamlDotNet.Core.Tokens;
+
 namespace Cats.AppHost.Extensions;
 
 internal static class AppExtensions
@@ -27,6 +30,9 @@ internal static class AppExtensions
             .WithEnvironment("Features__PresenceHub__Enabled", enablePresenceHub.ToString().ToLowerInvariant())
             .WithEnvironment("Features__PresenceHub__RelayUserPresenceNotifications", relayUserPresenceNotifications.ToString().ToLowerInvariant())
             .WithEnvironment("Features__EnablePrometheusScrapingEndpoint", enablePrometheusScrapingEndpoint.ToString().ToLowerInvariant())
+            .WithDmsConfiguration(builder.Configuration)
+            .WithAwsConfiguration(builder.Configuration)
+            .WithApplicationConfiguration(builder.Configuration)
             .WithReference(rabbit)
             .WaitFor(rabbit);
 
@@ -47,6 +53,9 @@ internal static class AppExtensions
         {
             var worker = builder.AddProject<Projects.Worker>("cats-worker")
                 .WithCatsDatabaseReference(databases.CatsDb)
+                .WithDmsConfiguration(builder.Configuration)
+                .WithAwsConfiguration(builder.Configuration)
+                .WithApplicationConfiguration(builder.Configuration)
                 .WithReference(rabbit)
                 .WaitFor(rabbit);
 
@@ -64,6 +73,53 @@ internal static class AppExtensions
             .WaitForCompletion(database.SeedingProjectResource);
         return builder;
     }
+
+    private static IResourceBuilder<ProjectResource> WithDmsConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration)
+    {
+        string[] keys = ["ApplicationUrl", "ApiKey", "ClientCertBase64", "ClientCertPassword"];
+        return builder.WithSecretsConfiguration(configuration, "DMS", keys);
+    }
+
+    private static IResourceBuilder<ProjectResource> WithApplicationConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration)
+    {
+        const string key = "AppConfigurationSettings";
+
+        var section = configuration.GetSection(key);
+
+        builder.WithEnvironment($"{key}__AppName", section["AppName"]);
+        builder.WithEnvironment($"{key}__Copyright", section["Copyright"]);
+        builder.WithEnvironment($"{key}__Version", section["Version"]);
+        builder.WithEnvironment($"{key}__PrimaryColour", section["PrimaryColour"]);
+        builder.WithEnvironment($"{key}__PrimaryColourDark__Primary", section["PrimaryColourDark:Primary"]);
+        builder.WithEnvironment($"{key}__PrimaryColourDark__TableLines", section["PrimaryColourDark:TableLines"]);
+        builder.WithEnvironment($"{key}__PrimaryColourDark__AppbarBackground", section["PrimaryColourDark:AppbarBackground"]);
+        builder.WithEnvironment($"{key}__PreLoginMessage", section["PreLoginMessage"]);
+        builder.WithEnvironment($"{key}__IdleTimeOutMinutes", section["IdleTimeOutMinutes"]);
+
+        return builder;
+    }
+
+    private static IResourceBuilder<ProjectResource> WithAwsConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration)
+    {
+        string[] keys = ["AccessKey", "SecretKey", "Region", "Bucket", "RootFolder"];
+
+        return builder.WithSecretsConfiguration(configuration, "AWS", keys);
+    }
+
+    private static IResourceBuilder<ProjectResource> WithSecretsConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration, string parentKey, string[] keys)
+    {
+        foreach(var key in keys)
+        {
+            var value = configuration[$"{parentKey}:{key}"];
+            if(string.IsNullOrEmpty(value) == false)
+            {
+                builder.WithEnvironment($"{parentKey}__{key}", value);
+            }
+        }
+
+        return builder;
+    }
+    
     public static IResourceBuilder<RabbitMQServerResource> AddMessageBroker(this IDistributedApplicationBuilder builder)
     {
         var rabbit = builder.AddRabbitMQ("rabbit", port: 5672)
