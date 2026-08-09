@@ -11,6 +11,7 @@ internal static class AppExtensions
         CatsDatabaseResources databases)
     {
         var useWorkerForJobs = string.Equals(builder.Configuration["Features:UseWorkerForJobs"], "true", StringComparison.OrdinalIgnoreCase);
+        var useWorkerForConsumers = string.Equals(builder.Configuration["Features:UseWorkerForConsumers"], "true", StringComparison.OrdinalIgnoreCase);
         var redisEnabled = string.Equals(builder.Configuration["Features:Redis:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
         var useRedisSignalRBackplane = string.Equals(builder.Configuration["Features:Redis:SignalRBackplane"], "true", StringComparison.OrdinalIgnoreCase);
         var useRedisSessionStore = string.Equals(builder.Configuration["Features:Redis:SessionStore"], "true", StringComparison.OrdinalIgnoreCase);
@@ -23,6 +24,7 @@ internal static class AppExtensions
         var cats = builder.AddProject<Projects.Server_UI>("cats")
             .WithCatsDatabaseReference(databases.CatsDb)
             .WithEnvironment("Features__UseWorkerForJobs", useWorkerForJobs.ToString().ToLowerInvariant())
+            .WithEnvironment("Features__UseWorkerForConsumers", useWorkerForConsumers.ToString().ToLowerInvariant())
             .WithEnvironment("Features__Redis__Enabled", redisEnabled.ToString().ToLowerInvariant())
             .WithEnvironment("Features__Redis__SignalRBackplane", useRedisSignalRBackplane.ToString().ToLowerInvariant())
             .WithEnvironment("Features__Redis__SessionStore", useRedisSessionStore.ToString().ToLowerInvariant())
@@ -60,6 +62,18 @@ internal static class AppExtensions
             // Give CATS a reference to the Worker so it can resolve the Worker's
             // job management API via Aspire service discovery ("https+http://cats-worker")
             cats.WithReference(worker);
+        }
+
+        if (useWorkerForConsumers)
+        {
+            builder.AddProject<Projects.Cats_Consumers>("cats-consumers")
+                .WithCatsDatabaseReference(databases.CatsDb)
+                .WithDmsConfiguration(builder.Configuration)
+                .WithAwsConfiguration(builder.Configuration)
+                .WithApplicationConfiguration(builder.Configuration)
+                .WithReplicas(4) // use 4 replicas to simulate a few processes for management
+                .WithReference(rabbit)
+                .WaitFor(rabbit);
         }
 
         return builder;

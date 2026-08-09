@@ -19,6 +19,7 @@
         <ProjectReference Include="..\..\DatabaseSeeding\DatabaseSeeding.csproj"/>
         <ProjectReference Include="..\..\Server.UI\Server.UI.csproj"/>
         <ProjectReference Include="..\..\Worker\Worker.csproj"/>
+        <ProjectReference Include="..\..\Cats.Consumers\Cats.Consumers.csproj"/>
         <ProjectReference Include="..\..\Database\CatsDb\CatsDb.sqlproj"/>
     </ItemGroup>
 
