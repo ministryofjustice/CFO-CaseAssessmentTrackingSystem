@@ -38,6 +38,18 @@ worker:
     DOTNET_ENVIRONMENT: "Development"
     Sentry__Environment: "Development-CloudPlatform"
 
+consumers:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    DOTNET_ENVIRONMENT: "Development"
+    Sentry__Environment: "Development-CloudPlatform"
+
 # RDS bridge - disabled in non-development environments
 rdsPortForward:
   enabled: true
