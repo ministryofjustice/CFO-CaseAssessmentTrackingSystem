@@ -1,6 +1,8 @@
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Pages.Activities.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Activities;
 
@@ -66,6 +68,40 @@ public partial class EditActivityDialog
         finally
         {
             _saving = false;
+        }
+    }
+    
+    private async Task Abandon(Guid? activityId)
+    {
+        if (string.IsNullOrEmpty(CurrentUser.UserId))
+        {
+            Snackbar.Add("Unable to abandon: user not authenticated", Severity.Error);
+            return;
+        }
+        
+        var parameters = new DialogParameters<AbandonActivityDialog>()
+        {
+            {
+                x => x.model, new AbandonActivity.Command()
+                {
+                    ActivityId = activityId,
+                    AbandonJustification = "",
+                    AbandonReason = ActivityAbandonReason.Other,
+                    AbandonedBy = CurrentUser.UserId!
+                }
+            }
+        };
+
+        var options = new DialogOptions
+            { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
+
+        var dialog = await DialogService.ShowAsync<AbandonActivityDialog>("Abandon Activity/ETE", parameters, options);
+
+        var result = await dialog.Result;
+
+        if (result!.Canceled == false)
+        {
+            Dialog.Close(DialogResult.Ok(true));
         }
     }
 }
