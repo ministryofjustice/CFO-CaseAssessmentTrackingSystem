@@ -40,6 +40,19 @@ worker:
     Sentry__Environment: "PreProduction-CloudPlatform"
     Features__PresenceHub__RelayUserPresenceNotifications: "false"
 
+consumers:
+  resources:
+    requests:
+      cpu: 150m
+      memory: 384Mi
+    limits:
+      cpu: 750m
+      memory: 768Mi
+  env:
+    DOTNET_ENVIRONMENT: "PreProduction"
+    Sentry__Environment: "PreProduction-CloudPlatform"
+    Features__PresenceHub__RelayUserPresenceNotifications: "false"
+
 # RDS bridge - disabled in non-development environments
 rdsPortForward:
   enabled: false

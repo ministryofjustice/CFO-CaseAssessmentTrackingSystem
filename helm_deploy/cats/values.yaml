@@ -147,6 +147,7 @@ generic-service:
     ConnectionStrings__redis: *redis
     AWS__RootFolder: "Files"
     Features__UseWorkerForJobs: "true"
+    Features__UseWorkerForConsumers: "true"
     Features__PresenceHub__Enabled: "true"
     Features__PresenceHub__RelayUserPresenceNotifications: "true"
     Features__Redis__Enabled: "true"
@@ -174,6 +175,36 @@ worker:
     ConnectionStrings__rabbit: *rabbit
   # Same shape/convention as generic-service's own `namespace_secrets` (secretName -> {envVar: secretKey}),
   # rendered via the shared `cats.namespaceSecretsEnv` helper in templates/worker.yaml.
+  namespace_secrets:
+    config:
+      RABBIT_USER: "RABBIT_USER"
+      RABBIT_PASS: "RABBIT_PASS"
+      Sentry__Dsn: "SentryDsn"
+    dms-credentials:
+      DMS__ApiKey: "api-key"
+      DMS__ClientCertBase64: "client-pfx-base64"
+      DMS__ClientCertPassword: "pfx-password"
+    hmpps-envoy-https-proxy-env:
+      HTTPS_PROXY: "HTTPS_PROXY"
+      HTTP_PROXY: "HTTP_PROXY"
+      NO_PROXY: "NO_PROXY"
+
+consumers:
+  image:
+    repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
+    tag: ""
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    ConnectionStrings__rabbit: *rabbit
+  # Same shape/convention as generic-service's own `namespace_secrets` (secretName -> {envVar: secretKey}),
+  # rendered via the shared `cats.namespaceSecretsEnv` helper in templates/consumers.yaml.
   namespace_secrets:
     config:
       RABBIT_USER: "RABBIT_USER"

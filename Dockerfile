@@ -1,11 +1,12 @@
 # Single "combined" image containing the .NET apps that share a codebase:
 #   * Server.UI        (Blazor Server) — the container's default entrypoint
 #   * Worker           (Quartz jobs + job-management API)
+#   * Consumers        (Rebus message consumers)
 #   * DatabaseSeeding  (one-off seeding console app)
 #   * migrate-database (one-off schema deploy — a .NET file-based app that deploys the DACPAC via DacFx)
 #
 # Each app is published into its own directory so their appsettings.json files do not
-# collide. The Worker, Seeder and Migrator run this same image with a command override
+# collide. The Worker, Consumers, Seeder and Migrator run this same image with a command override
 # (see helm_deploy/cats: worker.containerCommand and the migrator/seeder hook Jobs).
 FROM mcr.microsoft.com/dotnet/sdk:10.0.302@sha256:ed034a8bf0b24ded0cbbac07e17825d8e9ebfe21e308191d0f7421eaf5ad4664 AS build
 WORKDIR /src
@@ -20,6 +21,9 @@ RUN dotnet restore src/Server.UI/Server.UI.csproj \
 
 RUN dotnet restore src/Worker/Worker.csproj \
  && dotnet publish src/Worker/Worker.csproj --configuration Release --no-restore --output /app/worker
+
+RUN dotnet restore src/Cats.Consumers/Cats.Consumers.csproj \
+ && dotnet publish src/Cats.Consumers/Cats.Consumers.csproj --configuration Release --no-restore --output /app/consumers
 
 RUN dotnet restore src/DatabaseSeeding/DatabaseSeeding.csproj \
  && dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj --configuration Release --no-restore --output /app/seeder
@@ -46,6 +50,7 @@ WORKDIR /app
 
 COPY --from=build /app/ui ./ui
 COPY --from=build /app/worker ./worker
+COPY --from=build /app/consumers ./consumers
 COPY --from=build /app/seeder ./seeder
 COPY --from=build /app/migrator ./migrator
 
