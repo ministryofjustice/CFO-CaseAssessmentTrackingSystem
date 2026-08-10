@@ -76,9 +76,9 @@ public static class DependencyInjection
         services.AddAuthenticationService(configuration)
             .AddFusionCacheService(configuration);
 
-        // Run the Rebus message consumers in CATS only when a separate Worker process is not handling them.
-        // When Features:UseWorkerForJobs is set, the Worker hosts these consumers instead (see AddWorkerInfrastructure).
-        if (!configuration.GetValue<bool>("Features:UseWorkerForJobs"))
+        // Run the Rebus message consumers in CATS only when a separate consumer Worker process is not handling them.
+        // When Features:UseWorkerForConsumers is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
+        if (!configuration.GetValue<bool>("Features:UseWorkerForConsumers"))
         {
             services.AddMessageConsumers();
         }
@@ -112,7 +112,7 @@ public static class DependencyInjection
     }
 
     /// <summary>
-    /// Registers infrastructure services required by the standalone Worker process.
+    /// Registers infrastructure services required by the standalone jobs Worker process.
     /// Use this instead of <see cref="AddInfrastructure"/> when hosting Quartz jobs in a separate Worker.
     /// Does not register Rebus consumer background services or web-specific services.
     /// </summary>
@@ -135,18 +135,45 @@ public static class DependencyInjection
         // In a Worker context it returns null for all user properties, which is acceptable for background jobs.
         services.AddHttpContextAccessor();
 
-        // Register a minimal set of Identity services required by the Worker.
-        services.AddScoped<IHandleMessages, SyncParticipantCommandHandler>();
-        services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
-
-        // Host the Rebus message consumers here when the Worker is responsible for background processing.
-        services.AddMessageConsumers();
-
-        // Quartz always runs in the Worker
+        // Quartz always runs in the jobs Worker
         services.AddQuartzJobsAndTriggers(configuration);
 
         // In-process implementation for the Worker's own job management API endpoints
         services.AddScoped<IJobManagementService, QuartzJobManagementService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers infrastructure services required by the standalone Cats.Consumers process.
+    /// Use this instead of <see cref="AddInfrastructure"/> when hosting the Rebus message consumers in a separate Worker.
+    /// Does not register Quartz jobs, the job management API, or web-specific services.
+    /// </summary>
+    public static IServiceCollection AddConsumerInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
+    {
+        services.AddSettings(configuration, environment)
+            .AddDatabase(configuration)
+            .AddServices(configuration)
+            .AddFusionCacheService(configuration);
+
+        // Localization services are required by FluentValidation validators in the Application layer
+        // that inject IStringLocalizer<T>. In the consumer there are no UI resources, so the default
+        // no-op localizer (which returns the resource key) is sufficient.
+        services.AddLocalization();
+
+        // IHttpContextAccessor is required by CurrentUserService (used by EF interceptors).
+        // In a consumer context it returns null for all user properties, which is acceptable for background processing.
+        services.AddHttpContextAccessor();
+
+        // Register a minimal set of Identity services required by the message consumers.
+        services.AddScoped<IHandleMessages, SyncParticipantCommandHandler>();
+        services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
+
+        // Host the Rebus message consumers here.
+        services.AddMessageConsumers();
 
         return services;
     }

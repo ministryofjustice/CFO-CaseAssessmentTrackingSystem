@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <RootNamespace>Cfo.Cats.Consumers</RootNamespace>
+        <AssemblyName>Cfo.Cats.Consumers</AssemblyName>
+        <UserSecretsId>cfo-cats-consumers</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+        <ProjectReference Include="..\Aspire\Cats.ServiceDefaults\Cats.ServiceDefaults.csproj" />
+    </ItemGroup>
+
+</Project>
