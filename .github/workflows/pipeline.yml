@@ -3,7 +3,7 @@ name: Pipeline
 on:
   push:
     branches:
-      - '**'
+      - main
   workflow_dispatch:
 
 permissions:
@@ -32,33 +32,9 @@ jobs:
       environment: ${{ matrix.environments }}
       chart_name: cats
 
-  # Build + unit-test the .NET solution. There is no shared HMPPS reusable workflow
-  # for .NET, so this is a bespoke job. It builds from source (the Dockerfile is
-  # multi-stage), so no build artifacts are uploaded for the docker build.
-  dotnet_verify:
-    name: Build & test (.NET)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
-        with:
-          global-json-file: global.json
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-      - name: Verify database migrator (file-based app)
-        # Not part of the solution, so build it explicitly to keep it compile-checked in CI.
-        run: dotnet build scripts/migrate-database.cs --configuration Release
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
-
   build_app:
     name: Build docker image (UI + Worker + Seeder + Migrator) from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
-    needs: [dotnet_verify]
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     with:
       docker_registry: 'ghcr.io'

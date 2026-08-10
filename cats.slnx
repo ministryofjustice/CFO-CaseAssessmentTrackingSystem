@@ -9,7 +9,6 @@
     <File Path=".github/dependabot.yml" />
   </Folder>
   <Folder Name="/.github/workflows/">
-    <File Path=".github/workflows/create-release.yml" />
     <File Path=".github/workflows/run-tests.yml" />
   </Folder>
   <Folder Name="/.vscode/">
