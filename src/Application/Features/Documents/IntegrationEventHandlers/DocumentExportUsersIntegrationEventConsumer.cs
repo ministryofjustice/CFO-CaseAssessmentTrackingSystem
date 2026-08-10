@@ -1,7 +1,6 @@
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Identity;
-using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using Rebus.Handlers;
 
@@ -12,7 +11,6 @@ public class DocumentExportUsersIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    UserManager<ApplicationUser> userManager,
     ILogger<DocumentExportUsersIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
@@ -37,7 +35,7 @@ public class DocumentExportUsersIntegrationEventConsumer(
                 ?? new Identity.Commands.ExportUsers.Command();
 
             // Build the query
-            var query = userManager.Users
+            var query = unitOfWork.DbContext.Users
                 .Where(u => u.TenantId!.StartsWith(context.TenantId));
 
             // Apply filters

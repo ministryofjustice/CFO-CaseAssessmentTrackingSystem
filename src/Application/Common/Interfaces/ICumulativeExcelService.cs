@@ -4,6 +4,7 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface ICumulativeExcelService
 {
+    ICumulativeExcelService WithThemeColour(string colour);
     ICumulativeExcelService WithThisMonth(DateOnly date);
     ICumulativeExcelService WithActuals(Actuals actuals);
     ICumulativeExcelService WithTargets(ContractTargetDto targets);

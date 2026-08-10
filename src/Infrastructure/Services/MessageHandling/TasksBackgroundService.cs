@@ -34,7 +34,11 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<CloseOffLastArchivedCaseEntry>(provider)
             .Handle<RecordVeteranLabelStatusConsumer>(provider)
             .Handle<ParticipantCreatedIntegrationEventConsumer>(provider);
+
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+
         _bus = Configure.With(_activator)
+            .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.TasksService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
             .Options(o =>

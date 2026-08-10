@@ -12,11 +12,12 @@ public class CumulativeExcelService : ICumulativeExcelService
     private ContractTargetDto? _thisMonthsTarget;
     private ContractTargetDto? _lastMonthsTarget;
 
-    private XLColor _backgroundColor; 
+    private XLColor? _backgroundColor; 
 
-    public CumulativeExcelService(IApplicationSettings settings)
+    public ICumulativeExcelService WithThemeColour(string colour)
     {
-        _backgroundColor = XLColor.FromHtml(settings.PrimaryColour);
+        _backgroundColor = XLColor.FromHtml(colour);
+        return this;
     }
 
     public ICumulativeExcelService WithThisMonth(DateOnly date)

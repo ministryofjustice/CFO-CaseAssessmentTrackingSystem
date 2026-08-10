@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Configuration;
+using YamlDotNet.Core.Tokens;
+
 namespace Cats.AppHost.Extensions;
 
 internal static class AppExtensions
@@ -27,6 +30,8 @@ internal static class AppExtensions
             .WithEnvironment("Features__PresenceHub__Enabled", enablePresenceHub.ToString().ToLowerInvariant())
             .WithEnvironment("Features__PresenceHub__RelayUserPresenceNotifications", relayUserPresenceNotifications.ToString().ToLowerInvariant())
             .WithEnvironment("Features__EnablePrometheusScrapingEndpoint", enablePrometheusScrapingEndpoint.ToString().ToLowerInvariant())
+            .WithDmsConfiguration(builder.Configuration)
+            .WithAwsConfiguration(builder.Configuration)
             .WithReference(rabbit)
             .WaitFor(rabbit);
 
@@ -47,6 +52,8 @@ internal static class AppExtensions
         {
             var worker = builder.AddProject<Projects.Worker>("cats-worker")
                 .WithCatsDatabaseReference(databases.CatsDb)
+                .WithDmsConfiguration(builder.Configuration)
+                .WithAwsConfiguration(builder.Configuration)
                 .WithReference(rabbit)
                 .WaitFor(rabbit);
 
@@ -64,6 +71,34 @@ internal static class AppExtensions
             .WaitForCompletion(database.SeedingProjectResource);
         return builder;
     }
+
+    private static IResourceBuilder<ProjectResource> WithDmsConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration)
+    {
+        string[] keys = ["ApplicationUrl", "ApiKey", "ClientCertBase64", "ClientCertPassword"];
+        return builder.WithSecretsConfiguration(configuration, "DMS", keys);
+    }
+
+    private static IResourceBuilder<ProjectResource> WithAwsConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration)
+    {
+        string[] keys = ["AccessKey", "SecretKey", "Region", "Bucket", "RootFolder"];
+
+        return builder.WithSecretsConfiguration(configuration, "AWS", keys);
+    }
+
+    private static IResourceBuilder<ProjectResource> WithSecretsConfiguration(this IResourceBuilder<ProjectResource> builder, IConfiguration configuration, string parentKey, string[] keys)
+    {
+        foreach(var key in keys)
+        {
+            var value = configuration[$"{parentKey}:{key}"];
+            if(string.IsNullOrEmpty(value) == false)
+            {
+                builder.WithEnvironment($"{parentKey}__{key}", value);
+            }
+        }
+
+        return builder;
+    }
+    
     public static IResourceBuilder<RabbitMQServerResource> AddMessageBroker(this IDistributedApplicationBuilder builder)
     {
         var rabbit = builder.AddRabbitMQ("rabbit", port: 5672)
