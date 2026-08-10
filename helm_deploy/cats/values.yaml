@@ -193,7 +193,7 @@ consumers:
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""
-  replicaCount: 1
+  replicaCount: 2
   resources:
     requests:
       cpu: 100m
@@ -203,6 +203,7 @@ consumers:
       memory: 512Mi
   env:
     ConnectionStrings__rabbit: *rabbit
+    AWS__RootFolder: "Files"
   # Same shape/convention as generic-service's own `namespace_secrets` (secretName -> {envVar: secretKey}),
   # rendered via the shared `cats.namespaceSecretsEnv` helper in templates/consumers.yaml.
   namespace_secrets:
@@ -210,6 +211,8 @@ consumers:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
       Sentry__Dsn: "SentryDsn"
+    s3-bucket-output:
+      AWS__Bucket: "bucket_name"
     dms-credentials:
       DMS__ApiKey: "api-key"
       DMS__ClientCertBase64: "client-pfx-base64"
