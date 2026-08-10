@@ -4,7 +4,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Documents.EventHandlers;
 
-public class GenerateDocumentOnCreation(IUnitOfWork unitOfWork) : INotificationHandler<GeneratedDocumentCreatedDomainEvent>
+public class GenerateDocumentOnCreation(IUnitOfWork unitOfWork, IApplicationSettings settings) : INotificationHandler<GeneratedDocumentCreatedDomainEvent>
 {
     public async Task Handle(GeneratedDocumentCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
@@ -15,6 +15,7 @@ public class GenerateDocumentOnCreation(IUnitOfWork unitOfWork) : INotificationH
             document.Template.Name, 
             document.CreatedBy!, 
             document.TenantId!, 
-            document.SearchCriteriaUsed));
+            document.SearchCriteriaUsed,
+            settings.PrimaryColour));
     }
 }

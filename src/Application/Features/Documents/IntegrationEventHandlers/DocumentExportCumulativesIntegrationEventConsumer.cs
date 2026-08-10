@@ -67,7 +67,8 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
                 .WithTargets(thisMonthsTargets)
                 .WithLastMonthActuals(previousMonthActuals)
                 .WithLastMonthTargets(previousMonthsTargets)
-                .WithThisMonth(command.EndDate);
+                .WithThisMonth(command.EndDate)
+                .WithThemeColour(context.ThemeColour);
 
             var results = await excelService.ExportAsync();
 
