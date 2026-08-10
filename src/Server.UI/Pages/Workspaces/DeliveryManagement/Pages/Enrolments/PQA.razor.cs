@@ -20,55 +20,53 @@ public partial class PQA
     private ParticipantDto? _participantDto;
     private ParticipantSummaryDto? _participantSummaryDto;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
-    private bool _saving = false;
+    private bool _saving;
+    private bool _loading = true;
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
 
-    private SubmitPqaResponse.Command Command { get; set; } = default!;
+    private SubmitPqaResponse.Command Command { get; set; } = null!;
 
     private string _rtwInfo = String.Empty;
     private string _rtwIcon = String.Empty;
     private Color _rtwIconColor = Color.Transparent;
-    private bool _showRightToWorkWarning = false;
-    private bool _pqaResponseDisabled = false;    
+    private bool _showRightToWorkWarning;
+    private bool _pqaResponseDisabled;    
 
     protected override async Task OnInitializedAsync()
     {
-        if (_participantDto is null)
+        var result = await GetNewMediator().Send(new GetPqaEntryById.Query
         {
-            var result = await GetNewMediator().Send(new GetPqaEntryById.Query
+            Id = Id,
+            CurrentUser = UserProfile
+        });
+
+        if (result.Succeeded)
+        {
+            _queueEntry = result.Data!;
+            _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
             {
-                Id = Id,
-                CurrentUser = UserProfile
+                Id = _queueEntry.ParticipantId
             });
 
-            if (result.Succeeded)
+            Command = new SubmitPqaResponse.Command
             {
-                _queueEntry = result.Data!;
-                _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
-                {
-                    Id = _queueEntry.ParticipantId
-                });
+                QueueEntryId = Id,
+                CurrentUser = UserProfile
+            };
 
-                Command = new SubmitPqaResponse.Command
-                {
-                    QueueEntryId = Id,
-                    CurrentUser = UserProfile
-                };
+            _participantSummaryDto = await GetNewMediator().Send(new GetParticipantSummary.Query()
+            {
+                ParticipantId = _participantDto.Id,
+                CurrentUser = UserProfile!
+            });
 
-                _participantSummaryDto = await GetNewMediator().Send(new GetParticipantSummary.Query()
-                {
-                    ParticipantId = _participantDto.Id,
-                    CurrentUser = UserProfile!
-                });
-
-                await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
-            }
-
-            StateHasChanged();
+            await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
             ShowRightToWorkWarning();
         }
+
+        _loading = false;
     }
 
     protected async Task SetLatestParticipantAssessment(string participantId)
@@ -82,7 +80,7 @@ public partial class PQA
 
             var result = await GetNewMediator().Send(query);
 
-            if (result.Succeeded && result.Data != null)
+            if (result is { Succeeded: true, Data: not null })
             {
                 _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
             }
@@ -161,14 +159,16 @@ public partial class PQA
                                 && _participantSummaryDto!.ConsentStatus == Domain.Common.Enums.ConsentStatus.GrantedStatus
                                 && _participantSummaryDto!.HasActiveRightToWork == false;
 
-        if (_showRightToWorkWarning)
+        if (!_showRightToWorkWarning)
         {
-            _rtwInfo = "Right To Work required!";
-            _rtwIcon = Icons.Material.Filled.Error;
-            _rtwIconColor = Color.Error;
-
-            _pqaResponseDisabled = true;
-            Command.Response = SubmitPqaResponse.PqaResponse.Return;
+            return;
         }
+
+        _rtwInfo = "Right To Work required!";
+        _rtwIcon = Icons.Material.Filled.Error;
+        _rtwIconColor = Color.Error;
+
+        _pqaResponseDisabled = true;
+        Command.Response = SubmitPqaResponse.PqaResponse.Return;
     }
 }
