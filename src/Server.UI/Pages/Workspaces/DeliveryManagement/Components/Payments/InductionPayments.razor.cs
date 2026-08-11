@@ -34,6 +34,10 @@ public partial class InductionPayments
 
     public ApexChartOptions<InductionPaymentSummaryDto> Options => new()
     {
+        Chart = new Chart
+        {
+            Toolbar = new Toolbar { Show = false }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light

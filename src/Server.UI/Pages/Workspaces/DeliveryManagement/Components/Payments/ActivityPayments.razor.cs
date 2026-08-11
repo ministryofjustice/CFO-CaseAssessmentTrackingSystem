@@ -25,20 +25,24 @@ public partial class ActivityPayments
 
     [Parameter] public ContractDto? Contract { get; set; }
 
-    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
+    [CascadingParameter] public UserProfile CurrentUser { get; set; } = null!;
 
     public ApexChartOptions<ActivityPaymentSummaryDto> Options => new()
     {
+        Chart = new Chart
+        {
+            Toolbar = new Toolbar { Show = false }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
         }
     };
 
-    private ActivityPaymentDto[] Payments = [];
-    private List<ActivityPaymentSummaryDto> SummaryData = [];
+    private ActivityPaymentDto[] _payments = [];
+    private List<ActivityPaymentSummaryDto> _summaryData = [];
 
-    private GetActivityPayments.Query? Query;
+    private GetActivityPayments.Query? _query;
 
     private async Task OnRefresh()
     {
@@ -48,15 +52,15 @@ public partial class ActivityPayments
 
             var mediator = GetNewMediator();
 
-            var result = await mediator.Send(Query!);
+            var result = await mediator.Send(_query!);
 
             if (result is not { Succeeded: true })
             {
                 throw new Exception(result.ErrorMessage);
             }
 
-            Payments = result.Data?.Items ?? [];
-            SummaryData = result.Data?.ContractSummary ?? [];
+            _payments = result.Data?.Items ?? [];
+            _summaryData = result.Data?.ContractSummary ?? [];
 
         }
         catch (Exception ex)
@@ -68,7 +72,7 @@ public partial class ActivityPayments
 
     protected override async Task OnInitializedAsync()
     {
-        Query = new()
+        _query = new()
         {
             ContractId = Contract?.Id,
             Month = Month,
@@ -83,7 +87,7 @@ public partial class ActivityPayments
 
     private async Task OnSearch()
     {
-        Query!.Keyword = _searchString;
+        _query!.Keyword = _searchString;
         await OnRefresh();
     }
 
@@ -94,7 +98,7 @@ public partial class ActivityPayments
             _downloading = true;
             var result = await GetNewMediator().Send(new ExportActivityPayments.Command()
             {
-                Query = Query!
+                Query = _query!
             });
 
             if (result.Succeeded)

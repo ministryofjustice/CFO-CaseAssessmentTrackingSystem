@@ -96,7 +96,11 @@ public partial class LatestEngagementsByLocation
 
     private ApexChartOptions<LocationEngagementSummaryDto> BuildChartOptions() => new()
     {
-        Chart = new Chart { Stacked = true },
+        Chart = new Chart 
+        { 
+            Stacked = true,
+            Toolbar = new Toolbar { Show = false }
+        },
         Legend = new Legend 
         { 
             Show = true, 

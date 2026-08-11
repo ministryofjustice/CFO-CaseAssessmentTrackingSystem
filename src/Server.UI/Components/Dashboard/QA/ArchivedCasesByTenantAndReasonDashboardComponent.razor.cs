@@ -105,7 +105,8 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
             Colors = _reasonColours.ToList(),
             Chart = new Chart
             {
-                Stacked = true
+                Stacked = true,
+                Toolbar = new Toolbar { Show = false }
             },
             Legend = new Legend
             {

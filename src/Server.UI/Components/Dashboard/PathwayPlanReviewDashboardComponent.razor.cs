@@ -36,7 +36,8 @@ public partial class PathwayPlanReviewDashboardComponent
     {
         Chart = new ApexCharts.Chart
         {
-            Stacked = true
+            Stacked = true,
+            Toolbar = new ApexCharts.Toolbar { Show = false }
         },
         Legend = new ApexCharts.Legend
         {

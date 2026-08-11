@@ -29,6 +29,7 @@ public partial class CasesPerLocationDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
+            Toolbar = new Toolbar { Show = false }
         },
         
         Legend = new Legend

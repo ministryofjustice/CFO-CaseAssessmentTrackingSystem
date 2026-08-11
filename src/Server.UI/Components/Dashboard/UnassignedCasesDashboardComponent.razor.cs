@@ -167,6 +167,7 @@ public partial class UnassignedCasesDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
+            Toolbar = new Toolbar { Show = false }
         },
         
         Legend = new Legend

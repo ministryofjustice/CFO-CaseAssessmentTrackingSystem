@@ -33,6 +33,10 @@ public partial class EmploymentPayments
 
     public ApexChartOptions<EmploymentPaymentSummaryDto> Options => new()
     {
+        Chart = new Chart
+        {
+            Toolbar = new Toolbar { Show = false }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light

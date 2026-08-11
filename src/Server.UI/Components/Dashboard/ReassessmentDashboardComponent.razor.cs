@@ -38,7 +38,8 @@ public partial class ReassessmentDashboardComponent
     {
         Chart = new Chart
         {
-            Stacked = true
+            Stacked = true,
+            Toolbar = new Toolbar { Show = false }
         },
         Legend = new Legend
         {

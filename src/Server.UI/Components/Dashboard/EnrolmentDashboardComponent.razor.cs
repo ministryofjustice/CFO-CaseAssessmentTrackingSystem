@@ -35,6 +35,7 @@ public partial class EnrolmentDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
+            Toolbar = new Toolbar { Show = false }
         },
         Legend = new Legend
         {

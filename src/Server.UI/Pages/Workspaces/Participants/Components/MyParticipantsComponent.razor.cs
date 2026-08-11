@@ -22,25 +22,7 @@ public partial class MyParticipantsComponent
         Chart = new Chart
         {
             Type = ApexCharts.ChartType.Bar,
-            Toolbar = new Toolbar
-            {
-                Show = true,
-                Export = new ExportOptions
-                {
-                    Csv = new ExportCSV()
-                    {
-                        Filename = "Participants",
-                    },
-                    Png = new ExportPng()
-                    {
-                        Filename = "Particpants-Chart"
-                    },
-                    Svg = new ExportSvg()
-                    {
-                        Filename = "Particpants-Chart"
-                    },
-                }
-            }
+            Toolbar = new Toolbar { Show = false }
         },
         Theme = new Theme
         {

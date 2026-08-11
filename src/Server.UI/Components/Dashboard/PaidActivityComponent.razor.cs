@@ -64,7 +64,7 @@ public partial class PaidActivityComponent
                 Type = ApexCharts.ChartType.Bar,
                 Stacked = true,
                 StackType = StackType.Normal,
-                Toolbar = new Toolbar { Show = true }
+                Toolbar = new Toolbar { Show = false }
             },
             PlotOptions = new PlotOptions
             {

@@ -38,7 +38,8 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
     {
         Chart = new Chart
         {
-            Stacked = false
+            Stacked = false,
+            Toolbar = new Toolbar { Show = false }
         },
         Legend = new Legend
         {

@@ -38,6 +38,10 @@ public partial class EnrolmentPayments
 
     public ApexChartOptions<EnrolmentPaymentSummaryDto> Options => new()
     {
+        Chart = new Chart
+        {
+            Toolbar = new Toolbar { Show = false }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
