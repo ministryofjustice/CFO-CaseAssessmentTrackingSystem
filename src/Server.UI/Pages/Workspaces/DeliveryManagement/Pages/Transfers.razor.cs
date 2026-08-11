@@ -2,9 +2,9 @@ using Cfo.Cats.Application.Features.Transfers.Commands;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.Features.Transfers.Queries;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
 
 public partial class Transfers
 {

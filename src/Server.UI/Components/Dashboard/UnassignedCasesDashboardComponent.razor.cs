@@ -455,7 +455,7 @@ public partial class UnassignedCasesDashboardComponent
         Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=unassigned-cases");
 
     private void NavigateToTransfers() =>
-        Navigation.NavigateTo("/pages/workspace/participants/transfers?from=unassigned-cases");
+        Navigation.NavigateTo("/pages/workspace/deliverymanagement/transfers?from=unassigned-cases");
 }
 
 public record ChartDataPoint(string LocationName, EnrolmentStatus Status, int Count);

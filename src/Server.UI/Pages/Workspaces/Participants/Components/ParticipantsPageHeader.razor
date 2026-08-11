@@ -33,21 +33,10 @@
             "" => [home],
             "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],
             "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb()],
-            "transfers" => BuildTransfersBreadcrumbs(home, uri),
             "pre-release-inventory" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb()],
             "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb()],
             _ => BuildParticipantBreadcrumbs(home, segment, uri)
         };
-    }
-
-    private static IReadOnlyList<BreadcrumbItem> BuildTransfersBreadcrumbs(BreadcrumbItem home, Uri uri)
-    {
-        var parsedQuery = QueryHelpers.ParseQuery(uri.Query);
-        if (parsedQuery.TryGetValue("from", out var from) && from.ToString().ToLowerInvariant() == "unassigned-cases")
-        {
-            return [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb(), ParticipantLinks.Transfers.AsMudBreadcrumb()];
-        }
-        return [home, ParticipantLinks.Transfers.AsMudBreadcrumb()];
     }
 
     private static IReadOnlyList<BreadcrumbItem> BuildParticipantBreadcrumbs(BreadcrumbItem home, string id, Uri uri)
@@ -63,7 +52,7 @@
                 "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
                 "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
                 "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
-                "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb(), participant],
+                "transfers" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.Transfers.AsMudBreadcrumb(), participant],
                 "activities-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],
                 "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
                 "activities-my-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(), participant],

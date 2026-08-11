@@ -12,7 +12,5 @@ public static class ParticipantLinks
 
     public static BreadcrumbLinkModel MovedParticipants = new ("Moved", "Participants you are losing access to as they have moved" , $"{Home.Href}/moved");
 
-    public static BreadcrumbLinkModel Transfers = new ("Transfers", "Manage incoming and view outgoing transfers", $"{Home.Href}/transfers");
-
     public static BreadcrumbLinkModel AllActivities = new ("Activities", "Access all activities" ,$"{Home.Href}/activities");
 }
