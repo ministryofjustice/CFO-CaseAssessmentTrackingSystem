@@ -60,7 +60,7 @@ redisPortForward:
 
 generic-prometheus-alerts:
   businessHoursOnly: true
-  alertSeverity: hmpps-cfo-case-assessment-tracking-system-dev # use dev severity for now, as we don't have a train severity configured in Prometheus yet
+  alertSeverity: hmpps-cfo-alerts-nonprod
   rdsAlertsDatabases:
     hmpps-cfo-case-assessment-tracking-system-db-training: train sql server
   elastiCacheAlertsClusterIds:

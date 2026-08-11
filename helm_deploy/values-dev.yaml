@@ -60,7 +60,7 @@ redisPortForward:
 
 generic-prometheus-alerts:
   businessHoursOnly: true
-  alertSeverity: hmpps-cfo-case-assessment-tracking-system-dev
+  alertSeverity: hmpps-cfo-alerts-nonprod
   rdsAlertsDatabases:
     hmpps-cfo-case-assessment-tracking-system-db-development: dev sql server
   elastiCacheAlertsClusterIds:
