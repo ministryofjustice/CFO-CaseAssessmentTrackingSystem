@@ -59,7 +59,7 @@
             <div class="d-flex">
                 <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
                 <MudText>@ConstantString.WingInductions</MudText>
-                <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+                <MudBadge Content="@(WingInductions.Length)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>
         <ChildContent>
@@ -70,44 +70,46 @@
                     <MudItem xs="12" lg="6">
                         <MudPaper Class="pa-4 ma-2">
                             <MudText Typo="Typo.body1">@i.WingName</MudText>
-                            <MudTable Dense="true" Striped="true" Items="@i.Phases" Hover="true" Breakpoint="Breakpoint.SmAndDown" Class="ma-4 pa-4">
+                            <MudTable Dense="true" Striped="true" Items="@i.Phases" Hover="true" Breakpoint="Breakpoint.Sm">
                                 <HeaderContent>
-                                    <MudTh>Phase</MudTh>
-                                    <MudTh>Commenced</MudTh>
-                                    <MudTh>Completed</MudTh>
-                                    <MudTh>Status</MudTh>
-                                    <MudTh>Reason</MudTh>
-                                    <MudTh></MudTh>
+                                    <MudTh Style="width: 50px; padding: 4px;">Phase</MudTh>
+                                    <MudTh Style="width: 90px; padding: 4px;">Commenced</MudTh>
+                                    <MudTh Style="width: 90px; padding: 4px;">Completed</MudTh>
+                                    <MudTh Style="width: 100px; padding: 4px;">Status</MudTh>
+                                    <MudTh Style="padding: 4px;">Abandoned Reason</MudTh>
+                                    <MudTh Style="text-align:center; width: 120px; padding: 4px;">Actions</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="P">@context.Number</MudTd>
-                                    <MudTd DataLabel="S">@context.StartDate.ToShortDateString()</MudTd>
-                                    <MudTd DataLabel="E">@(context.CompletedDate.HasValue ? context.CompletedDate.Value.ToShortDateString() : string.Empty)</MudTd>
-                                    <MudTd DataLabel="F">@(context.Status.Name)</MudTd>
-                                    <MudTd DataLabel="G">
+                                    <MudTd DataLabel="Phase" Style="padding: 4px;">@context.Number</MudTd>
+                                    <MudTd DataLabel="Commenced" Style="padding: 4px;">@context.StartDate.ToShortDateString()</MudTd>
+                                    <MudTd DataLabel="Completed" Style="padding: 4px;">@(context.CompletedDate.HasValue ? context.CompletedDate.Value.ToShortDateString() : string.Empty)</MudTd>
+                                    <MudTd DataLabel="Status" Style="padding: 4px;">@(context.Status.Name)</MudTd>
+                                    <MudTd DataLabel="Abandoned Reason" Style="padding: 4px;">
                                         <MudTooltip Text="@context.AbandonJustification">
                                             @(context.AbandonReason?.Name)
                                         </MudTooltip>
                                     </MudTd>
-                                    <MudTd>
-                                        <MudFab Color="Color.Info"
-                                        StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
-                                        Size="Size.Small"
-                                                Disabled="@(context.CompletedDate is not null || !ParticipantIsActive)"
-                                        OnClick="() => CompletePhase(i)">
-                                        </MudFab>
-                                    </MudTd>
-                                    <MudTd>
-                                        <MudFab Color="Color.Info"
-                                        StartIcon="@Icons.Material.Filled.DeleteForever"
-                                        Size="Size.Small"
-                                                Disabled="@(context.CompletedDate is not null || !ParticipantIsActive)"
-                                        OnClick="() => AbandonPhase(i)">
-                                        </MudFab>
+                                    <MudTd DataLabel="Actions" Style="padding: 4px;">
+                                        <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                                            <MudTooltip Text="Complete Phase">
+                                                <MudFab Color="Color.Info"
+                                                        StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                                        Size="Size.Small"
+                                                        Disabled="@(context.CompletedDate is not null || !ParticipantIsActive)"
+                                                        OnClick="() => CompletePhase(i)" />
+                                            </MudTooltip>
+                                            <MudTooltip Text="Abandon Phase">
+                                                <MudFab Color="Color.Info"
+                                                        StartIcon="@Icons.Material.Filled.DeleteForever"
+                                                        Size="Size.Small"
+                                                        Disabled="@(context.CompletedDate is not null || !ParticipantIsActive)"
+                                                        OnClick="() => AbandonPhase(i)" />
+                                            </MudTooltip>
+                                        </MudStack>
                                     </MudTd>
                                 </RowTemplate>
                                 <FooterContent>
-                                    <MudTd col-span="5">
+                                    <MudTd col-span="6">
                                         <MudTooltip Text="Add Phase">
                                             <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="() => AddPhase(i)" Disabled="@(i.Phases.Any(c => c.CompletedDate is null) || !ParticipantIsActive)" />
                                         </MudTooltip>
