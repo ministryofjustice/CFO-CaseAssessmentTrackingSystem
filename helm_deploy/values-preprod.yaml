@@ -61,7 +61,11 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
-# todo: enable prometheus alerts (CCPM-41)
-# generic-prometheus-alerts:
-#   businessHoursOnly: true
-#   alertSeverity: <to-be-determined>
+generic-prometheus-alerts:
+  businessHoursOnly: true
+  alertSeverity: hmpps-cfo-alerts-nonprod
+  rdsAlertsDatabases:
+    hmpps-cfo-case-assessment-tracking-system-db-preproduction: preprod sql server
+  elastiCacheAlertsClusterIds:
+    cp-7aebb59f2ce13c44-001: preprod redis cluster node 1 (primary)
+    cp-7aebb59f2ce13c44-002: preprod redis cluster node 2 (replica)
