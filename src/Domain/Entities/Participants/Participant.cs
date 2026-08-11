@@ -146,13 +146,14 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant Archive(string? currentUserId, string? currentUserTenantId, string? reason, string? additionalInformation)
+    public Participant Archive(string? currentUserId, string? currentUserTenantId, string? reason, string? additionalInformation, bool hasActiveIncomingTransfer = false)
     {
         CheckRule(new ParticipantMustBeArchivableByUser(
             currentUserId,
             currentUserTenantId,
             OwnerId,
-            Owner?.TenantId));
+            Owner?.TenantId,
+            hasActiveIncomingTransfer));
 
         return TransitionTo(EnrolmentStatus.ArchivedStatus, reason, additionalInformation);
     }

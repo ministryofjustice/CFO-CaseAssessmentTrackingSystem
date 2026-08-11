@@ -82,4 +82,16 @@ public class ParticipantTransitionTests
 
         participant.EnrolmentStatus.ShouldBe(EnrolmentStatus.ArchivedStatus);
     }
+
+    [Test]
+    public void Archive_WhenParticipantHasActiveIncomingTransfer_ShouldThrowBusinessRuleException()
+    {
+        var participant = CreateParticipant();
+        participant.OwnerId = "owner-user";
+        participant.Owner = new ApplicationUser { Id = "owner-user", TenantId = "1.1.1." };
+
+        Should.Throw<BusinessRuleValidationException>(() =>
+                participant.Archive("owner-user", "1.1.1.", ArchiveReason.LicenceEnd.Name, null, hasActiveIncomingTransfer: true))
+            .Message.ShouldBe("Participant cannot be archived while there is an active incoming transfer");
+    }
 }

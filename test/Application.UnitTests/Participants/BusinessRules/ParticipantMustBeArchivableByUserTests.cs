@@ -17,7 +17,8 @@ public class ParticipantMustBeArchivableByUserTests
             currentUserId: OwnerId,
             currentUserTenantId: OwnerTenantId,
             participantOwnerId: OwnerId,
-            participantOwnerTenantId: OwnerTenantId);
+            participantOwnerTenantId: OwnerTenantId,
+            hasActiveIncomingTransfer: false);
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -29,7 +30,8 @@ public class ParticipantMustBeArchivableByUserTests
             currentUserId: "user-manager",
             currentUserTenantId: "1.1.",
             participantOwnerId: OwnerId,
-            participantOwnerTenantId: OwnerTenantId);
+            participantOwnerTenantId: OwnerTenantId,
+            hasActiveIncomingTransfer: false);
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -41,7 +43,8 @@ public class ParticipantMustBeArchivableByUserTests
             currentUserId: "user-peer",
             currentUserTenantId: OwnerTenantId,
             participantOwnerId: OwnerId,
-            participantOwnerTenantId: OwnerTenantId);
+            participantOwnerTenantId: OwnerTenantId,
+            hasActiveIncomingTransfer: false);
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -53,7 +56,8 @@ public class ParticipantMustBeArchivableByUserTests
             currentUserId: "user-junior",
             currentUserTenantId: OwnerTenantId + "1.",
             participantOwnerId: OwnerId,
-            participantOwnerTenantId: OwnerTenantId);
+            participantOwnerTenantId: OwnerTenantId,
+            hasActiveIncomingTransfer: false);
 
         rule.IsBroken().ShouldBeTrue();
         rule.Message.ShouldBe("You are not authorized to archive this participant");
@@ -66,7 +70,8 @@ public class ParticipantMustBeArchivableByUserTests
             currentUserId: "user-other-branch",
             currentUserTenantId: "1.1.3.",
             participantOwnerId: OwnerId,
-            participantOwnerTenantId: OwnerTenantId);
+            participantOwnerTenantId: OwnerTenantId,
+            hasActiveIncomingTransfer: false);
 
         rule.IsBroken().ShouldBeTrue();
     }
@@ -78,8 +83,23 @@ public class ParticipantMustBeArchivableByUserTests
             currentUserId: "user-any",
             currentUserTenantId: "1.1.3.",
             participantOwnerId: null,
-            participantOwnerTenantId: null);
+            participantOwnerTenantId: null,
+            hasActiveIncomingTransfer: false);
 
         rule.IsBroken().ShouldBeFalse();
+    }
+
+    [Test]
+    public void IsBroken_WhenParticipantHasActiveIncomingTransfer_ShouldReturnTrue()
+    {
+        var rule = new ParticipantMustBeArchivableByUser(
+            currentUserId: OwnerId,
+            currentUserTenantId: OwnerTenantId,
+            participantOwnerId: OwnerId,
+            participantOwnerTenantId: OwnerTenantId,
+            hasActiveIncomingTransfer: true);
+
+        rule.IsBroken().ShouldBeTrue();
+        rule.Message.ShouldBe("Participant cannot be archived while there is an active incoming transfer");
     }
 }

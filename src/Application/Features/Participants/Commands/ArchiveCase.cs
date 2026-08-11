@@ -33,11 +33,15 @@ public static class ArchiveCase
                 return Result.Failure("Participant does not exist");
             }
 
+            var hasActiveIncomingTransfer = await unitOfWork.DbContext.ParticipantIncomingTransferQueue
+                .AnyAsync(x => x.ParticipantId == request.ParticipantId && x.Completed == false, cancellationToken);
+
             participant.Archive(
                 currentUserService.UserId,
                 currentUserService.TenantId,
                 request.ArchiveReason.Name,
-                request.Justification);
+                request.Justification,
+                hasActiveIncomingTransfer);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
