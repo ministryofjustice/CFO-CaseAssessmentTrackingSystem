@@ -39,7 +39,26 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
         Chart = new Chart
         {
             Stacked = false,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "RecentlyApprovedActivities-Chart" },
+                    Png = new ExportPng { Filename = "RecentlyApprovedActivities-Chart" },
+                    Svg = new ExportSvg { Filename = "RecentlyApprovedActivities-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {
@@ -105,8 +124,6 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
         Colors = ["#5cb85c", "#d9534f"]
     };
 
-    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=recent-approved-activities");
-    
     private async Task OnExport()
     {
         try

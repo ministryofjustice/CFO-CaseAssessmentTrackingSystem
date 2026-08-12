@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponent<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto[]>
 
@@ -33,7 +32,7 @@
             }
             <MudSwitch T="bool" Value="ShowActiveOnly" ValueChanged="OnShowActiveOnlyChanged" Color="Color.Primary" Label="Show open objectives only" />
             <MudLoadingButton Variant="Variant.Filled"
-                                Size="MudBlazor.Size.Small"
+                                Size="Size.Small"
                                 Loading="@_downloading"
                                 Disabled="@Loading"
                                 OnClick="@OnExport"
@@ -51,8 +50,8 @@
                 <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
                                  Name="@($"Active ({TotalActive})")"
                                  Items="FilteredChartData"
-                                 XValue="@(x => new string[] { x.InitiativeCode, x.InitiativeDescription })"
-                                 YValue="@(x => (decimal)x.ActiveCount)"
+                                 XValue="@(x => new[] { x.InitiativeCode, x.InitiativeDescription })"
+                                 YValue="@(x => x.ActiveCount)"
                                  SeriesType="ApexCharts.SeriesType.Bar"
                                  ShowDataLabels="true"
                                  Color="#1976d2" />
@@ -61,8 +60,8 @@
                     <ApexCharts.ApexPointSeries TItem="InitiativeChartPoint"
                                      Name="@($"Completed ({TotalCompleted})")"
                                      Items="FilteredChartData"
-                                     XValue="@(x => new string[] { x.InitiativeCode, x.InitiativeDescription })"
-                                     YValue="@(x => (decimal)x.CompletedCount)"
+                                     XValue="@(x => new[] { x.InitiativeCode, x.InitiativeDescription })"
+                                     YValue="@(x => x.CompletedCount)"
                                      SeriesType="ApexCharts.SeriesType.Bar"
                                      ShowDataLabels="true"
                                      Color="#5cb85c" />
@@ -153,7 +152,7 @@
                 </MudTd>
                 <MudTd DataLabel="Initiative">
                     <MudTooltip Text="@context.InitiativeDescription">
-                        <MudChip T="string" Color="Color.Info" Size="MudBlazor.Size.Small">@context.InitiativeCode</MudChip>
+                        <MudChip T="string" Color="Color.Info" Size="Size.Small">@context.InitiativeCode</MudChip>
                     </MudTooltip>
                 </MudTd>
                 <MudTd DataLabel="Start Date">
@@ -167,20 +166,20 @@
                     {
                         @if (context.CompletedStatus == CompletionStatus.Done)
                         {
-                            <MudChip T="string" Text="@context.CompletedStatus.Name" Size="MudBlazor.Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                            <MudChip T="string" Text="@context.CompletedStatus.Name" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
                         }
                         else if (context.CompletedStatus == CompletionStatus.NotRequired)
                         {
-                            <MudChip T="string" Text="@context.CompletedStatus.Name" Size="MudBlazor.Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
+                            <MudChip T="string" Text="@context.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
                         }
                         else
                         {
-                            <MudChip T="string" Size="MudBlazor.Size.Small" Color="Color.Primary">Active</MudChip>
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">Active</MudChip>
                         }
                     }
                     else
                     {
-                        <MudChip T="string" Color="Color.Primary" Size="MudBlazor.Size.Small">Active</MudChip>
+                        <MudChip T="string" Color="Color.Primary" Size="Size.Small">Active</MudChip>
                     }
                 </MudTd>
                 <MudTd DataLabel="Task Status">
@@ -191,7 +190,7 @@
                 </MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 10, 20, 30 }" />
+                <MudTablePager PageSizeOptions="[10, 20, 30]" />
             </PagerContent>
         </MudTable>
     }

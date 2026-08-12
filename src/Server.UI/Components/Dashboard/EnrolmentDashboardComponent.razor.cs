@@ -35,7 +35,26 @@ public partial class EnrolmentDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "Enrolments-Chart" },
+                    Png = new ExportPng { Filename = "Enrolments-Chart" },
+                    Svg = new ExportSvg { Filename = "Enrolments-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {

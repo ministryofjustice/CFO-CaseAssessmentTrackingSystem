@@ -31,14 +31,33 @@ public partial class ActivityPayments
     {
         Chart = new Chart
         {
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "ActivityPayments-Chart"  },
+                    Png = new ExportPng { Filename = "ActivityPayments-Chart" },
+                    Svg = new ExportSvg { Filename = "ActivityPayments-Chart" }
+                }
+            }
         },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
         }
     };
-
+    
     private ActivityPaymentDto[] _payments = [];
     private List<ActivityPaymentSummaryDto> _summaryData = [];
 

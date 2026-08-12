@@ -30,7 +30,26 @@ public partial class ActivitiesInQaPots
         Chart = new Chart
         {
             Stacked = true,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "ActivitiesInQaPots-Chart" },
+                    Png = new ExportPng { Filename = "ActivitiesInQaPots-Chart" },
+                    Svg = new ExportSvg { Filename = "ActivitiesInQaPots-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {

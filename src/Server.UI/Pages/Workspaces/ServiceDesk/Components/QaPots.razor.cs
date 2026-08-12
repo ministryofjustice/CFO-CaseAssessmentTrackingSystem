@@ -31,20 +31,21 @@ public partial class QaPots
             Toolbar = new Toolbar
             {
                 Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
                 Export = new ExportOptions
                 {
-                    Csv = new ExportCSV
-                    {
-                        Filename = "Participants",
-                    },
-                    Png = new ExportPng
-                    {
-                        Filename = "Participants-Chart"
-                    },
-                    Svg = new ExportSvg
-                    {
-                        Filename = "Participants-Pie-Chart"
-                    }
+                    Csv = new ExportCSV { Filename = "Inductions-Chart" },
+                    Png = new ExportPng { Filename = "Inductions-Chart" },
+                    Svg = new ExportSvg { Filename = "Inductions-Chart" }
                 }
             },
         },
@@ -69,6 +70,8 @@ public partial class QaPots
         ],
         Legend = new Legend
         {
+            Show = true,
+            ShowForSingleSeries = true,
             Position = LegendPosition.Top,
             HorizontalAlign = Align.Center
         },

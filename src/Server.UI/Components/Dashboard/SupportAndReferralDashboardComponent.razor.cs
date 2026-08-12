@@ -49,7 +49,26 @@ public partial class SupportAndReferralDashboardComponent
             Chart = new Chart
             {
                 Stacked = true,
-                Toolbar = new Toolbar { Show = false },
+                Toolbar = new Toolbar
+                {
+                    Show = true,
+                    Tools = new Tools
+                    {
+                        Download = true,
+                        Selection = false,
+                        Zoom = false,
+                        Zoomin = false,
+                        Zoomout = false,
+                        Pan = false,
+                        Reset = false
+                    },
+                    Export = new ExportOptions
+                    {
+                        Csv = new ExportCSV { Filename = "SupportAndReferral-Chart" },
+                        Png = new ExportPng { Filename = "SupportAndReferral-Chart" },
+                        Svg = new ExportSvg { Filename = "SupportAndReferral-Chart" }
+                    }
+                },
                 Animations = new Animations { Enabled = true }
             },
             Legend = new Legend

@@ -22,12 +22,12 @@ public partial class InductionPayments
     [Parameter] public ContractDto? Contract { get; set; }
 
     [CascadingParameter]
-    public UserProfile CurrentUser { get; set; } = default!;
+    public UserProfile CurrentUser { get; set; } = null!;
 
     private InductionPaymentDto[] Payments { get; set; } = [];
-    private List<InductionPaymentSummaryDto> SummaryData = [];
+    private List<InductionPaymentSummaryDto> _summaryData = [];
 
-    private GetInductionPayments.Query? Query;
+    private GetInductionPayments.Query? _query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -36,7 +36,26 @@ public partial class InductionPayments
     {
         Chart = new Chart
         {
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "InductionPayments-Chart" },
+                    Png = new ExportPng { Filename = "InductionPayments-Chart" },
+                    Svg = new ExportSvg { Filename = "InductionPayments-Chart" }
+                }
+            }
         },
         Theme = new Theme
         {
@@ -52,7 +71,7 @@ public partial class InductionPayments
 
             var mediator = GetNewMediator();
 
-            var result = await mediator.Send(Query!);
+            var result = await mediator.Send(_query!);
 
             if (result is not { Succeeded: true })
             {
@@ -60,7 +79,7 @@ public partial class InductionPayments
             }
 
             Payments = result.Data?.Items ?? [];
-            SummaryData = result.Data?.ContractSummary ?? [];
+            _summaryData = result.Data?.ContractSummary ?? [];
 
         }
         catch (Exception ex)
@@ -72,7 +91,7 @@ public partial class InductionPayments
 
     protected override async Task OnInitializedAsync()
     {
-        Query = new()
+        _query = new()
         {
             ContractId = Contract?.Id,
             Month = Month,
@@ -87,7 +106,7 @@ public partial class InductionPayments
 
     private async Task OnSearch()
     {
-        Query!.Keyword = _searchString;
+        _query!.Keyword = _searchString;
         await OnRefresh();
     }
 
@@ -98,7 +117,7 @@ public partial class InductionPayments
             _downloading = true;
             var result = await GetNewMediator().Send(new ExportInductionPayments.Command()
             {
-                Query = Query!
+                Query = _query!
             });
 
             if (result.Succeeded)

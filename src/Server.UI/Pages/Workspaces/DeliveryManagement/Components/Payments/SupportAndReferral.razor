@@ -145,13 +145,13 @@
                            Title="Support &amp; Referral By Contract"
                            Options="@Options">
                     <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
-                                     Items="SummaryData"
+                                     Items="_summaryData"
                                      Name="Pre-Release Support"
                                      SeriesType="SeriesType.Bar"
                                      XValue="e => e.Contract"
                                      YValue="e => e.PreReleaseSupport" />
                     <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
-                                     Items="SummaryData"
+                                     Items="_summaryData"
                                      Name="Through the Gate"
                                      SeriesType="SeriesType.Bar"
                                      XValue="e => e.Contract"
@@ -160,7 +160,7 @@
             }
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Dense="true" Items="@SummaryData" 
+            <MudTable Dense="true" Items="@_summaryData" 
                       Hover="true" 
                       Breakpoint="Breakpoint.Sm" 
                       Loading="_loading" 

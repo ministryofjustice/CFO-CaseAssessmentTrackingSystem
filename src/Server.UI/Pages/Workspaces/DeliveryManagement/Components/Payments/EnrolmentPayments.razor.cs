@@ -26,12 +26,12 @@ public partial class EnrolmentPayments
     public ContractDto? Contract { get; set; }
 
     [CascadingParameter]
-    public UserProfile CurrentUser { get; set; } = default!;
+    public UserProfile CurrentUser { get; set; } = null!;
 
     private EnrolmentPaymentDto[] Payments { get; set; } = [];
-    private List<EnrolmentPaymentSummaryDto> SummaryData = [];
+    private List<EnrolmentPaymentSummaryDto> _summaryData = [];
 
-    private GetEnrolmentPayments.Query? Query;
+    private GetEnrolmentPayments.Query? _query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -40,7 +40,26 @@ public partial class EnrolmentPayments
     {
         Chart = new Chart
         {
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "EnrolmentPayments-Chart" },
+                    Png = new ExportPng { Filename = "EnrolmentPayments-Chart" },
+                    Svg = new ExportSvg { Filename = "EnrolmentPayments-Chart" }
+                }
+            }
         },
         Theme = new Theme
         {
@@ -56,7 +75,7 @@ public partial class EnrolmentPayments
 
             var mediator = GetNewMediator();
 
-            var result = await mediator.Send(Query!);
+            var result = await mediator.Send(_query!);
 
             if (result is not { Succeeded: true })
             {
@@ -64,7 +83,7 @@ public partial class EnrolmentPayments
             }
 
             Payments = result.Data?.Items ?? [];
-            SummaryData = result.Data?.ContractSummary ?? [];
+            _summaryData = result.Data?.ContractSummary ?? [];
 
         }
         catch (Exception ex)
@@ -76,7 +95,7 @@ public partial class EnrolmentPayments
 
     protected override async Task OnInitializedAsync()
     {
-        Query = new()
+        _query = new()
         {
             ContractId = Contract?.Id,
             Month = Month,
@@ -91,7 +110,7 @@ public partial class EnrolmentPayments
 
     private async Task OnSearch()
     {
-        Query!.Keyword = _searchString;
+        _query!.Keyword = _searchString;
         await OnRefresh();
     }
 
@@ -102,7 +121,7 @@ public partial class EnrolmentPayments
             _downloading = true;
             var result = await GetNewMediator().Send(new ExportEnrolmentPayments.Command()
             {
-                Query = Query!
+                Query = _query!
             });
 
             if (result.Succeeded)

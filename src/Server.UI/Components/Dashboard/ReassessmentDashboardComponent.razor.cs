@@ -39,7 +39,26 @@ public partial class ReassessmentDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "Reassessments-Chart" },
+                    Png = new ExportPng { Filename = "Reassessments-Chart" },
+                    Svg = new ExportSvg { Filename = "Reassessments-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {

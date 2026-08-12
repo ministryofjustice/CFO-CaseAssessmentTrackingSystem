@@ -7,16 +7,14 @@ using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Components.Locations;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using MudBlazor;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
 public partial class UnassignedCasesDashboardComponent
 {
     [Parameter]
-    public string TenantId { get; set; } = default!;
+    public string TenantId { get; set; } = null!;
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
@@ -40,13 +38,13 @@ public partial class UnassignedCasesDashboardComponent
     public bool IsDarkMode { get; set; }
 
     [CascadingParameter]
-    protected Task<AuthenticationState> AuthState { get; set; } = default!;
+    protected Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [Inject]
-    public ILocationService LocationService { get; set; } = default!;
+    public ILocationService LocationService { get; set; } = null!;
 
     private int _defaultPageSize = 15;
-    private MudDataGrid<UnassignedCaseDto> _table = default!;
+    private MudDataGrid<UnassignedCaseDto> _table = null!;
     private bool _canSearch;
     private bool _canReassign;
     
@@ -106,7 +104,7 @@ public partial class UnassignedCasesDashboardComponent
             }
         }
 
-        // Apply filter parameters pushed down from the parent (e.g. restored from session storage)
+        // Apply filter parameters pushed down from the parent (e.g., restored from session storage)
         if (filterParamsChanged && !tenantChanged)
         {
             _includeTransferIn = IncludeTransferIn;
@@ -167,7 +165,26 @@ public partial class UnassignedCasesDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "UnassignedCases-Chart" },
+                    Png = new ExportPng { Filename = "UnassignedCases-Chart" },
+                    Svg = new ExportSvg { Filename = "UnassignedCases-Chart" }
+                }
+            }
         },
         
         Legend = new Legend
@@ -241,8 +258,8 @@ public partial class UnassignedCasesDashboardComponent
             Query.TenantId = TenantId;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "LastModified";
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true 
-                ? SortDirection.Descending.ToString() 
-                : SortDirection.Ascending.ToString();
+                ? nameof(SortDirection.Descending) 
+                : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
             Query.IncludeTransferIn = _includeTransferIn;
@@ -251,7 +268,7 @@ public partial class UnassignedCasesDashboardComponent
 
             if (result is not { Succeeded: true, Data: { } data })
             {
-                ErrorMessage = result?.ErrorMessage ?? "Unable to load unassigned cases.";
+                ErrorMessage = result.ErrorMessage;
                 return new GridData<UnassignedCaseDto>
                 {
                     Items = [],

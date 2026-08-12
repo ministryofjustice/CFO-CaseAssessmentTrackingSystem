@@ -30,7 +30,26 @@ public partial class EducationPayments
     {
         Chart = new Chart
         {
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "EducationPayments-Chart"  },
+                    Png = new ExportPng { Filename = "EducationPayments-Chart" },
+                    Svg = new ExportSvg { Filename = "EducationPayments-Chart" }
+                }
+            }
         },
         Theme = new Theme
         {

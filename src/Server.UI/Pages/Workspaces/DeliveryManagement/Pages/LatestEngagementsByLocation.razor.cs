@@ -99,7 +99,26 @@ public partial class LatestEngagementsByLocation
         Chart = new Chart 
         { 
             Stacked = true,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "LatestEngagementsByLocation-Chart" },
+                    Png = new ExportPng { Filename = "LatestEngagementsByLocation-Chart" },
+                    Svg = new ExportSvg { Filename = "LatestEngagementsByLocation-Chart" }
+                }
+            }
         },
         Legend = new Legend 
         { 
@@ -183,8 +202,8 @@ public partial class LatestEngagementsByLocation
         Query.PageSize = state.PageSize;
         Query.OrderBy = string.IsNullOrWhiteSpace(state.SortLabel) ? "EngagedOn" : state.SortLabel;
         Query.SortDirection = state.SortDirection == SortDirection.Descending
-            ? SortDirection.Descending.ToString()
-            : SortDirection.Ascending.ToString();
+            ? nameof(SortDirection.Descending)
+            : nameof(SortDirection.Ascending);
 
         try
         {
@@ -248,7 +267,7 @@ public partial class LatestEngagementsByLocation
 
     private async Task OnEngagementTypeChanged(string engagementType)
     {
-        _selectedEngagementType = engagementType ?? string.Empty;
+        _selectedEngagementType = engagementType;
         Query.EngagementType = string.IsNullOrEmpty(engagementType) ? null : engagementType;
         await SaveSessionState();
         await OnRefresh();
@@ -282,7 +301,7 @@ public partial class LatestEngagementsByLocation
                 EngagementType = Query.EngagementType,
                 TenantId = Query.TenantId,
                 OrderBy = "EngagedOn",
-                SortDirection = SortDirection.Descending.ToString()
+                SortDirection = nameof(SortDirection.Descending)
             };
 
             var result = await GetNewMediator().Send(new ExportParticipantsLatestEngagement.Command

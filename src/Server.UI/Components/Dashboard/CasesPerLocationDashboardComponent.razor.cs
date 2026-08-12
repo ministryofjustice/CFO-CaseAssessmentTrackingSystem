@@ -29,7 +29,26 @@ public partial class CasesPerLocationDashboardComponent
         Chart = new Chart
         {
             Stacked = true,
-            Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "CasesPerLocation-Chart"  },
+                    Png = new ExportPng { Filename = "CasesPerLocation-Chart" },
+                    Svg = new ExportSvg { Filename = "CasesPerLocation-Chart" }
+                }
+            }
         },
         
         Legend = new Legend

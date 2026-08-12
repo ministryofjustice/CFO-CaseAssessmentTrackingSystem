@@ -106,7 +106,26 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
             Chart = new Chart
             {
                 Stacked = true,
-                Toolbar = new Toolbar { Show = false }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "ArchivedCases-Chart" },
+                    Png = new ExportPng { Filename = "ArchivedCases-Chart" },
+                    Svg = new ExportSvg { Filename = "ArchivedCases-Chart" }
+                }
+            }
             },
             Legend = new Legend
             {
@@ -141,14 +160,15 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
                     OffsetY = 5
                 }
             },
-            Yaxis = new List<YAxis>
-            {
+            Yaxis =
+            [
+
                 new()
                 {
                     Min = 0,
                     ForceNiceScale = true
                 }
-            },
+            ],
             Responsive =
             [
                 new()
