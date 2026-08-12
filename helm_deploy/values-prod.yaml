@@ -65,9 +65,8 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
-# todo: use hmpps-cfo-alerts-prod once it exists
 generic-prometheus-alerts:
-  alertSeverity: hmpps-cfo-alerts-nonprod
+  alertSeverity: hmpps-cfo-alerts
   rdsAlertsDatabases:
     hmpps-cfo-case-assessment-tracking-system-db-production: prod sql server
   elastiCacheAlertsClusterIds:
