@@ -4,10 +4,9 @@
 <MudStack>
     <!-- Header/Filter row -->
     <MudStack Row="true" Justify="Justify.FlexEnd">
-        <MudMenu Label="@($"Filters: {GetPriTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.All))">All</MudMenuItem>
-            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.Outgoing))">Outgoing Only</MudMenuItem>
-            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.Incoming))">Incoming Only</MudMenuItem>
+        <MudMenu Label="@($"Filters: {GetQuickFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(false))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(true))">My Active PRIs</MudMenuItem>
         </MudMenu>
         
         <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
@@ -58,6 +57,13 @@
 
         <MudSpacer />
 
+        <!-- Direction Filter (Outgoing/Incoming) -->
+        <MudMenu Size="Size.Small" Label="@($"Direction: {GetPriTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.All))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.Outgoing))">Outgoing Only</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.Incoming))">Incoming Only</MudMenuItem>
+        </MudMenu>
+
         <!-- Custody Support Worker Filter -->
         <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowCustodyWorkerDialog.InvokeAsync())" 
                    EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -99,18 +105,23 @@
 
         <!-- Active Status Filter -->
         <MudMenu Size="Size.Small" Label="@GetActiveStatusLabel()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem Label="All" OnClick="@(() => OnActiveStatusChanged.InvokeAsync(null))" />
-            <MudMenuItem Label="Active Only" OnClick="@(() => OnActiveStatusChanged.InvokeAsync(true))" />
-            <MudMenuItem Label="Inactive Only" OnClick="@(() => OnActiveStatusChanged.InvokeAsync(false))" />
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(null))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(true))">
+                <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
+            </MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(false))">
+                <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
+            </MudMenuItem>
         </MudMenu>
 
         <!-- Sort Menu -->
-        <MudMenu Size="Size.Small" Label="@($"Sort: {Query.OrderBy}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenu Size="Size.Small" Label="@($"Sort: {GetSortLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             <MudMenuItem Label="Id" OnClick="@(() => OnSortBy.InvokeAsync("Id"))"/>
-            <MudMenuItem Label="Participant Name" OnClick="@(() => OnSortBy.InvokeAsync("ParticipantName"))"/>
+            <MudMenuItem Label="First Name" OnClick="@(() => OnSortBy.InvokeAsync("FirstName"))"/>
+            <MudMenuItem Label="Last Name" OnClick="@(() => OnSortBy.InvokeAsync("LastName"))"/>
             <MudMenuItem Label="Expected Release Date" OnClick="@(() => OnSortBy.InvokeAsync("ExpectedReleaseDate"))"/>
             <MudMenuItem Label="Actual Release Date" OnClick="@(() => OnSortBy.InvokeAsync("ActualReleaseDate"))"/>
-            <MudMenuItem Label="Expected Release Region" OnClick="@(() => OnSortBy.InvokeAsync("ExpectedReleaseRegion"))"/>
+            <MudMenuItem Label="Expected Release Region" OnClick="@(() => OnSortBy.InvokeAsync("ExpectedReleaseRegionName"))"/>
         </MudMenu>
 
         <MudTooltip Text="Clear search parameters">
@@ -135,12 +146,15 @@
     [Parameter] public EventCallback OnCreatePriCode { get; set; }
     [Parameter] public EventCallback<bool?> OnTabularChanged { get; set; }
     [Parameter] public EventCallback<PriTypeFilter> OnSetPriType { get; set; }
+    [Parameter] public EventCallback<bool> OnQuickFilterChanged { get; set; }
     [Parameter] public EventCallback OnShowCustodyWorkerDialog { get; set; }
     [Parameter] public EventCallback OnShowCommunityWorkerDialog { get; set; }
     [Parameter] public EventCallback OnShowRegionDialog { get; set; }
     [Parameter] public EventCallback<bool?> OnActiveStatusChanged { get; set; }
     [Parameter] public EventCallback<string> OnSortBy { get; set; }
     [Parameter] public EventCallback OnClearSearch { get; set; }
+
+    private string GetQuickFilterLabel() => Query.JustMyPris ? "My Active PRIs" : "All";
 
     private string GetPriTypeLabel() =>
         PriTypeFilter switch
@@ -153,8 +167,20 @@
     private string GetActiveStatusLabel() =>
         Query.ActiveStatus switch
         {
-            true => "Active Only",
-            false => "Inactive Only",
-            _ => "All Status"
+            true => "Status: Active",
+            false => "Status: Inactive",
+            _ => "Status: All"
+        };
+
+    private string GetSortLabel() =>
+        Query.OrderBy switch
+        {
+            "Id" => "Id",
+            "FirstName" => "First Name",
+            "LastName" => "Last Name",
+            "ExpectedReleaseDate" => "Expected Release Date",
+            "ActualReleaseDate" => "Actual Release Date",
+            "ExpectedReleaseRegionName" => "Expected Release Region",
+            _ => Query.OrderBy
         };
 }

@@ -8,9 +8,21 @@ public static class PRIFilterExtensions
     public static IQueryable<PRI> ApplyTenantFilter(
         this IQueryable<PRI> query,
         UserProfile currentUser)
-        // All authorized users can see PRIs in their tenant hierarchy
-        // This matches the pattern used in ParticipantsWithPagination
         => query.Where(x => x.Participant!.Owner!.TenantId!.StartsWith(currentUser.TenantId!));
+
+    public static IQueryable<PRI> ApplyJustMyPrisFilter(
+        this IQueryable<PRI> query,
+        bool justMyPris,
+        string userId)
+    {
+        if (!justMyPris)
+        {
+            return query;
+        }
+
+        // Show only PRIs created by or assigned to the current user
+        return query.Where(p => p.CreatedBy == userId || p.AssignedTo == userId);
+    }
 
     public static IQueryable<PRI> ApplyUserFilter(
         this IQueryable<PRI> query,

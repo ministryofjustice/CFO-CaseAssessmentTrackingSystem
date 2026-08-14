@@ -8,7 +8,6 @@ using Cfo.Cats.Application.Features.PRIs.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.PRIs.Components;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 
@@ -25,6 +24,9 @@ public partial class ActivePRIs
     [Inject]
     public IUserService UserService { get; set; } = null!;
     
+    [Inject]
+    public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
+    
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
     [SupplyParameterFromQuery(Name = "ListView")]
@@ -40,7 +42,15 @@ public partial class ActivePRIs
     private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<int, string> _locations = new Dictionary<int, string>();
 
-    private ActivePRIsWithPagination.Query Query { get; set; } = null!;
+    private ActivePRIsWithPagination.Query Query { get; set; } = new()
+    {
+        IncludeOutgoing = true,
+        IncludeIncoming = true,
+        PageNumber = 1,
+        PageSize = DefaultPageSize,
+        OrderBy = "Id",
+        SortDirection = "Descending"
+    };
     private PriTypeFilter _priTypeFilter = PriTypeFilter.All;
 
     protected override async Task OnInitializedAsync()
@@ -53,16 +63,7 @@ public partial class ActivePRIs
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
-        Query = new ActivePRIsWithPagination.Query
-        {
-            CurrentUser = UserProfile,
-            IncludeOutgoing = true,
-            IncludeIncoming = true,
-            PageNumber = 1,
-            PageSize = DefaultPageSize,
-            OrderBy = "Id",
-            SortDirection = "Descending"
-        };
+        Query.CurrentUser = UserProfile;
         
         var cached = await SessionStorage.GetAsync<ActivePRIsSessionData>();
         
@@ -78,6 +79,7 @@ public partial class ActivePRIs
             Query.CommunitySupportWorker = sd.CommunitySupportWorker;
             Query.ExpectedReleaseRegionId = sd.ExpectedReleaseRegionId;
             Query.ActiveStatus = sd.ActiveStatus;
+            Query.JustMyPris = sd.JustMyPris;
             Tabular = sd.Tabular;
             _priTypeFilter = sd.PriTypeFilter;
         }
@@ -285,19 +287,11 @@ public partial class ActivePRIs
 
     private async Task ShowCustodyWorkerDialog()
     {
-        var parameters = new DialogParameters
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Custody Support Worker");
+        
+        if (user is not null)
         {
-            { "Users", _users },
-            { "Title", "Select Custody Support Worker" }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
-        var dialog = await DialogService.ShowAsync<UserSelectionDialog>("Select User", parameters, options);
-        var result = await dialog.Result;
-
-        if (result is { Canceled: false })
-        {
-            Query.CustodySupportWorker = result.Data as string;
+            Query.CustodySupportWorker = user.UserId == string.Empty ? null : user.UserId;
             Query.PageNumber = 1;
             await OnRefresh();
         }
@@ -305,19 +299,11 @@ public partial class ActivePRIs
 
     private async Task ShowCommunityWorkerDialog()
     {
-        var parameters = new DialogParameters
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Community Support Worker");
+        
+        if (user is not null)
         {
-            { "Users", _users },
-            { "Title", "Select Community Support Worker" }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
-        var dialog = await DialogService.ShowAsync<UserSelectionDialog>("Select User", parameters, options);
-        var result = await dialog.Result;
-
-        if (result is { Canceled: false })
-        {
-            Query.CommunitySupportWorker = result.Data as string;
+            Query.CommunitySupportWorker = user.UserId == string.Empty ? null : user.UserId;
             Query.PageNumber = 1;
             await OnRefresh();
         }
@@ -325,19 +311,11 @@ public partial class ActivePRIs
 
     private async Task ShowRegionDialog()
     {
-        var parameters = new DialogParameters
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile!, title: "Select Expected Release Region");
+        
+        if (location is not null)
         {
-            { "Locations", _locations },
-            { "Title", "Select Expected Release Region" }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
-        var dialog = await DialogService.ShowAsync<LocationSelectionDialog>("Select Region", parameters, options);
-        var result = await dialog.Result;
-
-        if (result is { Canceled: false })
-        {
-            Query.ExpectedReleaseRegionId = result.Data as int?;
+            Query.ExpectedReleaseRegionId = location.Id == 0 ? null : location.Id;
             Query.PageNumber = 1;
             await OnRefresh();
         }
@@ -346,6 +324,13 @@ public partial class ActivePRIs
     private async Task OnActiveStatusChanged(bool? activeStatus)
     {
         Query.ActiveStatus = activeStatus;
+        Query.PageNumber = 1;
+        await OnRefresh();
+    }
+
+    private async Task OnQuickFilterChanged(bool justMyPris)
+    {
+        Query.JustMyPris = justMyPris;
         Query.PageNumber = 1;
         await OnRefresh();
     }
@@ -371,7 +356,10 @@ public partial class ActivePRIs
         Query.CommunitySupportWorker = null;
         Query.ExpectedReleaseRegionId = null;
         Query.ActiveStatus = null;
+        Query.JustMyPris = false;
         Query.PageNumber = 1;
+        Query.OrderBy = "Id";
+        Query.SortDirection = "Descending";
         _priTypeFilter = PriTypeFilter.All;
         Query.IncludeOutgoing = true;
         Query.IncludeIncoming = true;

@@ -16,6 +16,12 @@ public static class ActivePRIsWithPagination
         /// </summary>
         public UserProfile? CurrentUser { get; set; }
 
+        /// <summary>
+        /// Filter to only show PRIs created by or assigned to the current user
+        /// </summary>
+        [Description("Just My PRIs")]
+        public bool JustMyPris { get; set; } = false;
+
         /// <summary>    
         /// Flag to indicate that you only want to see your incoming PRI's.
         /// </summary>
@@ -63,6 +69,7 @@ public static class ActivePRIsWithPagination
             var query = context.PRIs
                 .Where(x => PriStatus.ActiveList.Contains(x.Status))
                 .ApplyTenantFilter(request.CurrentUser!)
+                .ApplyJustMyPrisFilter(request.JustMyPris, request.CurrentUser!.UserId)
                 .ApplyUserFilter(request.IncludeOutgoing, request.IncludeIncoming, request.CurrentUser!.UserId, 
                     request.CustodySupportWorker, request.CommunitySupportWorker)
                 .ApplyKeywordSearch(request.Keyword)
