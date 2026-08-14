@@ -3,77 +3,34 @@
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
-@using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Features.PRIs.DTOs
 @using Humanizer
 
 @inject ICurrentUserService CurrentUser
-@inject IUserService UserService
 
 <ParticipantsPageHeader />
 
-<!-- Toolbar with filters and search -->
-<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-4">
-    <!-- PRI Type Toggle -->
-    <MudMenu Label="@($"Filters: {GetPriTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-        <MudMenuItem OnClick="@(() => SetPriType(PriTypeFilter.All))">All</MudMenuItem>
-        <MudMenuItem OnClick="@(() => SetPriType(PriTypeFilter.Outgoing))">Outgoing Only</MudMenuItem>
-        <MudMenuItem OnClick="@(() => SetPriType(PriTypeFilter.Incoming))">Incoming Only</MudMenuItem>
-    </MudMenu>
-    
-    <!-- Search Bar -->
-    <MudTextField T="string" Value="@Query!.Keyword" Placeholder="@ConstantString.Search"
-                  ValueChanged="@OnSearch" Clearable="true" ShrinkLabel="true"
-                  AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
-                  AdornmentColor="Color.Secondary">
-    </MudTextField>
-    
-    <MudSpacer />
-    
-    <!-- Action Buttons -->
-    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
-               StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefresh"
-               Disabled="@_loading">
-        @ConstantString.Refresh
-    </MudButton>
-    
-    <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@_downloading" 
-                      OnClick="@OnExport" StartIcon="@Icons.Material.Filled.CloudDownload" 
-                      Size="Size.Small" Disabled="@_loading">
-        @ConstantString.Export
-    </MudLoadingButton>
-    
-    <MudButton Variant="Variant.Filled"
-               Size="Size.Small"
-               Disabled="@_loading"
-               OnClick="@CreatePriCode"
-               StartIcon="@Icons.Material.Filled.Add"
-               Color="Color.Primary">
-        Generate PRI code
-    </MudButton>
-</MudStack>
-
-<!-- Pagination and record count -->
-<MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-    <MudPagination 
-        Rectangular="true"
-        Variant="Variant.Text"
-        Selected="@_currentPage"
-        Count="@_totalPages"
-        MiddleCount="2"
-        BoundaryCount="1"
-        SelectedChanged="@PageChanged"
-        Size="Size.Small"
-        Disabled="@_loading" />
-    
-    <MudText>@_totalItems records</MudText>
-    
-    <!-- Tabular Switch -->
-    <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@TabularChanged" T="bool?" />
-    
-    <MudSpacer />
-</MudStack>
+<PRIFilterBar 
+    Query="@Query"
+    PriTypeFilter="@_priTypeFilter"
+    TotalPages="@_totalPages"
+    TotalItems="@_totalItems"
+    Tabular="@Tabular"
+    IsDownloading="@_downloading"
+    Users="@_users"
+    Locations="@_locations"
+    OnSearchChanged="@OnSearch"
+    OnRefresh="@OnRefresh"
+    OnExport="@OnExport"
+    OnCreatePriCode="@CreatePriCode"
+    OnTabularChanged="@TabularChanged"
+    OnSetPriType="@SetPriType"
+    OnShowCustodyWorkerDialog="@ShowCustodyWorkerDialog"
+    OnShowCommunityWorkerDialog="@ShowCommunityWorkerDialog"
+    OnShowRegionDialog="@ShowRegionDialog"
+    OnActiveStatusChanged="@OnActiveStatusChanged"
+    OnSortBy="@(new EventCallback<string>(this, SortBy))"
+    OnClearSearch="@ClearSearch" />
 
 @if (Tabular)
 {

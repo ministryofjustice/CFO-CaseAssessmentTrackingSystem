@@ -1,0 +1,36 @@
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@Title</MudText>
+        <MudList T="string">
+            <MudListItem T="string" OnClick="@(() => SelectUser(null))">
+                <MudText>All Users</MudText>
+            </MudListItem>
+            @foreach (var user in Users.OrderBy(u => u.Value))
+            {
+                <MudListItem T="string" OnClick="@(() => SelectUser(user.Key))">
+                    <MudText>@user.Value</MudText>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+    
+    [Parameter] public IDictionary<string, string> Users { get; set; } = null!;
+    [Parameter] public string Title { get; set; } = "Select User";
+
+    void SelectUser(string? userId)
+    {
+        MudDialog.Close(DialogResult.Ok(userId));
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

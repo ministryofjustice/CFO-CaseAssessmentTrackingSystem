@@ -75,13 +75,13 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     /// <summary>
     ///     Indicates that a participant at this enrolment stage is allowed to have assessment access.
     /// </summary>
-    /// <returns>True if the current status allows user to add/continue/reassessment</returns>
+    /// <returns>True if the current status allows the user to add/continue/reassessment</returns>
     public virtual bool ParticipantIsActive() => true;
 
     /// <summary>
     ///     Indicates we can add right to work when the status is at this stage
     /// </summary>
-    /// <returns>True if we allow addition of Right to Work documentation</returns>
+    /// <returns>True if we allow the addition of Right to Work documentation</returns>
     public virtual bool AllowRightToWorkAddition() => false;
 
     private sealed class Identified() : EnrolmentStatus("Identified", 0, 0, "#EF4444")
@@ -120,6 +120,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class Dormant() : EnrolmentStatus("Dormant", 5, 6, "#64748B")
     {
+        public override bool ParticipantIsActive() => false;        
+
         protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, ApprovedStatus];
     }
 

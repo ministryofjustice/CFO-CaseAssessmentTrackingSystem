@@ -46,7 +46,7 @@ public class DocumentExportActivePrisIntegrationEventConsumer(
                 TenantId = context.TenantId
             };
 
-            var query = new GetActivePRIsByUserId.Query
+            var query = new ActivePRIsWithPagination.Query
             {
                 CurrentUser = stubUser,
                 Keyword = request.Keyword,
@@ -58,8 +58,8 @@ public class DocumentExportActivePrisIntegrationEventConsumer(
                 PageSize = int.MaxValue 
             };
 
-            // Call handler directly (skips Authorization pipeline, as we're outside of the HttpContext)
-            var data = await new GetActivePRIsByUserId.Handler(unitOfWork, mapper).Handle(query, CancellationToken.None);
+            // Call handler directly (skips Authorization pipeline, as we're outside the HttpContext)
+            var data = await new ActivePRIsWithPagination.Handler(unitOfWork, mapper).Handle(query, CancellationToken.None);
 
             if (data is not { Succeeded: true, Data: not null })
             {
@@ -68,8 +68,7 @@ public class DocumentExportActivePrisIntegrationEventConsumer(
 
             // Build lookup dictionary for user display names
             var userIds = data.Data.Items
-                .SelectMany(pri => new[] { pri.CreatedBy, pri.AssignedTo })
-                .Where(id => !string.IsNullOrEmpty(id))
+                .SelectMany(pri => new[] { pri.CreatedBy, pri.AssignedTo }.Where(id => !string.IsNullOrEmpty(id)))
                 .Distinct()
                 .ToList();
 
