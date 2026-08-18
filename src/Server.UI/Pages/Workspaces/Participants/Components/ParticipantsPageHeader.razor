@@ -2,6 +2,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
+@using Cfo.Cats.Server.UI.Models.Breadcrumb
 @using Microsoft.AspNetCore.WebUtilities
 
 <PageHeader Title="Participants" 
@@ -64,14 +65,16 @@
                 "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
                 "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
                 "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb(), participant],
-                "activities-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],
-                "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
+                "activities-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildQueueBreadcrumb(ServiceDeskLinks.ActivitiesQueue, parsedQuery), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],
+                "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildQueueBreadcrumb(ServiceDeskLinks.EnrolmentsQueue, parsedQuery), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
+                "enrolments-processing" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
+                "activities-processing" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],                
                 "activities-my-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(), participant],
                 "activities-team-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb(), participant],
                 "enrolments-my-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(), participant],
                 "enrolments-team-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(), participant],
-                "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
-                "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
+                "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildQueueBreadcrumb(ServiceDeskLinks.ActivitiesQueue, parsedQuery), participant],
+                "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildQueueBreadcrumb(ServiceDeskLinks.EnrolmentsQueue, parsedQuery), participant],
                 "activities-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb(), BuildPqaEntryBreadcrumb("Activity", "activities", parsedQuery), participant],
                 "enrolments-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb(), BuildPqaEntryBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
                 "engagements-by-location" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EngagementsByLocation.AsMudBreadcrumb(), participant],
@@ -89,6 +92,32 @@
         }
 
         return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
+    }
+
+    private static BreadcrumbItem BuildQueueBreadcrumb(BreadcrumbLinkModel queueLink, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
+    {
+        var tab = ResolveQueueTab(parsedQuery);
+        return new BreadcrumbItem(queueLink.Title, tab is null ? queueLink.Href : $"{queueLink.Href}?tab={tab}");
+    }
+
+    private static string? ResolveQueueTab(Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
+    {
+        if (parsedQuery.TryGetValue("tab", out var tabValue) && !string.IsNullOrWhiteSpace(tabValue.ToString()))
+        {
+            return tabValue.ToString().ToLowerInvariant();
+        }
+
+        if (parsedQuery.TryGetValue("stage", out var stageValue))
+        {
+            return stageValue.ToString().ToLowerInvariant() switch
+            {
+                "qa2" => "second-pass",
+                "escalation" => "escalation",
+                _ => null
+            };
+        }
+
+        return null;
     }
 
     private static BreadcrumbItem BuildPqaEntryBreadcrumb(string title, string queueType, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
@@ -111,7 +140,7 @@
             && parsedQuery.TryGetValue("id", out var escalationId)
             && Guid.TryParse(escalationId.ToString(), out var parsedEscalationId))
         {
-            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/escalation/{parsedEscalationId}");
+            return new BreadcrumbItem(title, $"{ServiceDeskLinks.Home.Href}/{queueType}/escalation/{parsedEscalationId}?from={queueType}-queue&tab=escalation");
         }
 
         if (parsedQuery.TryGetValue("queueEntryId", out var queueEntryId)

@@ -14,7 +14,7 @@ public partial class QA2List
 
     private ActivityQa2WithPagination.Query Query { get; } = new();
     
-    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=activities-queue");
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=activities-queue&tab=second-pass");
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state, CancellationToken cancellationToken)
     {
