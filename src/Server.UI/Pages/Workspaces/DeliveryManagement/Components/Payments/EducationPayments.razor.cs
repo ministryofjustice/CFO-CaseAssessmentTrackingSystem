@@ -21,23 +21,46 @@ public partial class EducationPayments
 
     [Parameter] public ContractDto? Contract { get; set; }
 
-    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
+    [CascadingParameter] public UserProfile CurrentUser { get; set; } = null!;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
     public ApexChartOptions<EducationPaymentSummaryDto> Options => new()
     {
+        Chart = new Chart
+        {
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "EducationPayments-Chart"  },
+                    Png = new ExportPng { Filename = "EducationPayments-Chart" },
+                    Svg = new ExportSvg { Filename = "EducationPayments-Chart" }
+                }
+            }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
         }
     };
 
-    private EducationPaymentDto[] Payments = [];
-    private List<EducationPaymentSummaryDto> SummaryData = [];
+    private EducationPaymentDto[] _payments = [];
+    private List<EducationPaymentSummaryDto> _summaryData = [];
 
-    private GetEducationPayments.Query? Query;
+    private GetEducationPayments.Query? _query;
 
     private async Task OnRefresh()
     {
@@ -47,15 +70,15 @@ public partial class EducationPayments
 
             var mediator = GetNewMediator();
 
-            var result = await mediator.Send(Query!);
+            var result = await mediator.Send(_query!);
 
             if (result is not { Succeeded: true })
             {
                 throw new Exception(result.ErrorMessage);
             }
 
-            Payments = result.Data?.Items ?? [];
-            SummaryData = result.Data?.ContractSummary ?? [];
+            _payments = result.Data?.Items ?? [];
+            _summaryData = result.Data?.ContractSummary ?? [];
 
         }
         catch (Exception ex)
@@ -67,7 +90,7 @@ public partial class EducationPayments
 
     protected override async Task OnInitializedAsync()
     {
-        Query = new()
+        _query = new()
         {
             ContractId = Contract?.Id,
             Month = Month,
@@ -82,7 +105,7 @@ public partial class EducationPayments
 
     private async Task OnSearch()
     {
-        Query!.Keyword = _searchString;
+        _query!.Keyword = _searchString;
         await OnRefresh();
     }
 
@@ -93,7 +116,7 @@ public partial class EducationPayments
             _downloading = true;
             var result = await GetNewMediator().Send(new ExportEducationPayments.Command()
             {
-                Query = Query!
+                Query = _query!
             });
 
             if (result.Succeeded)

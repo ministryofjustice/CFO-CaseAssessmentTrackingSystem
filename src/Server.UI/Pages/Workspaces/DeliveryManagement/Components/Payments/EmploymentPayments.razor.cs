@@ -21,18 +21,41 @@ public partial class EmploymentPayments
 
     [Parameter] public ContractDto? Contract { get; set; }
 
-    [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
+    [CascadingParameter] public UserProfile CurrentUser { get; set; } = null!;
 
     private EmploymentPaymentDto[] Payments { get; set; } = [];
-    private List<EmploymentPaymentSummaryDto> SummaryData = [];
+    private List<EmploymentPaymentSummaryDto> _summaryData = [];
 
-    private GetEmploymentPayments.Query? Query;
+    private GetEmploymentPayments.Query? _query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
     public ApexChartOptions<EmploymentPaymentSummaryDto> Options => new()
     {
+        Chart = new Chart
+        {
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "EmploymentPayments-Chart" },
+                    Png = new ExportPng { Filename = "EmploymentPayments-Chart" },
+                    Svg = new ExportSvg { Filename = "EmploymentPayments-Chart" }
+                }
+            }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
@@ -47,7 +70,7 @@ public partial class EmploymentPayments
 
             var mediator = GetNewMediator();
 
-            var result = await mediator.Send(Query!);
+            var result = await mediator.Send(_query!);
 
             if (result is not { Succeeded: true })
             {
@@ -55,7 +78,7 @@ public partial class EmploymentPayments
             }
 
             Payments = result.Data?.Items ?? [];
-            SummaryData = result.Data?.ContractSummary ?? [];
+            _summaryData = result.Data?.ContractSummary ?? [];
 
         }
         catch (Exception ex)
@@ -67,7 +90,7 @@ public partial class EmploymentPayments
 
     protected override async Task OnInitializedAsync()
     {
-        Query = new()
+        _query = new()
         {
             ContractId = Contract?.Id,
             Month = Month,
@@ -82,7 +105,7 @@ public partial class EmploymentPayments
 
     private async Task OnSearch()
     {
-        Query!.Keyword = _searchString;
+        _query!.Keyword = _searchString;
         await OnRefresh();
     }
 
@@ -93,7 +116,7 @@ public partial class EmploymentPayments
             _downloading = true;
             var result = await GetNewMediator().Send(new ExportEmploymentPayments.Command()
             {
-                Query = Query!
+                Query = _query!
             });
 
             if (result.Succeeded)

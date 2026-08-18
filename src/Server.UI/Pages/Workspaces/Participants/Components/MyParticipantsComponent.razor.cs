@@ -1,18 +1,15 @@
 ﻿using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
-using Cfo.Cats.Application.Features.Participants.Specifications;
-using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Enums;
-using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
 
 public partial class MyParticipantsComponent
 {
-    private ApexCharts.ApexChartOptions<DataItem>? _chartOptions;
+    private ApexChartOptions<DataItem>? _chartOptions;
 
-    private DataItem[]? _dataItems = null;
+    private DataItem[]? _dataItems;
 
     [CascadingParameter(Name="IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -25,20 +22,21 @@ public partial class MyParticipantsComponent
             Toolbar = new Toolbar
             {
                 Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
                 Export = new ExportOptions
                 {
-                    Csv = new ExportCSV()
-                    {
-                        Filename = "Participants",
-                    },
-                    Png = new ExportPng()
-                    {
-                        Filename = "Particpants-Chart"
-                    },
-                    Svg = new ExportSvg()
-                    {
-                        Filename = "Particpants-Chart"
-                    },
+                    Csv = new ExportCSV { Filename = "Participants-Chart" },
+                    Png = new ExportPng { Filename = "Participants-Chart" },
+                    Svg = new ExportSvg { Filename = "Participants-Chart" }
                 }
             }
         },
@@ -64,11 +62,7 @@ public partial class MyParticipantsComponent
     };
 
     private string PointColour(DataItem item) => item.Colour;    
-
-    private string GetParticipantsUrl(ParticipantListView listView) =>
-        $"/pages/workspace/participants?listView={listView}";
-
-    private void GotoParticipants() => Navigation.NavigateTo("/pages/workspace/participants");
+    
     protected override IQuery<Result<ParticipantCountSummaryDto>> CreateQuery() => 
        new GetMyParticipantsDashboard.Query()
        {
@@ -97,5 +91,4 @@ public partial class MyParticipantsComponent
 
         public int Order { get; } = order;
     }
-
 }

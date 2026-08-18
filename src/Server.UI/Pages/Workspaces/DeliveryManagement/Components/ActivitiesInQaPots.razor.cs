@@ -30,6 +30,33 @@ public partial class ActivitiesInQaPots
         Chart = new Chart
         {
             Stacked = true,
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "ActivitiesInQaPots-Chart" },
+                    Png = new ExportPng { Filename = "ActivitiesInQaPots-Chart" },
+                    Svg = new ExportSvg { Filename = "ActivitiesInQaPots-Chart" }
+                }
+            }
+        },
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true,
+            Position = LegendPosition.Top,
+            HorizontalAlign = ApexCharts.Align.Center
         },
         PlotOptions = new PlotOptions
         {
@@ -55,6 +82,20 @@ public partial class ActivitiesInQaPots
             {
                 Min = 0,
                 ForceNiceScale = true
+            }
+        ],
+        Responsive =
+        [
+            new()
+            {
+                Breakpoint = 768,
+                Options = new ApexChartOptions<QaPotPoint>
+                {
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Bottom
+                    }
+                }
             }
         ],
         Theme = new Theme

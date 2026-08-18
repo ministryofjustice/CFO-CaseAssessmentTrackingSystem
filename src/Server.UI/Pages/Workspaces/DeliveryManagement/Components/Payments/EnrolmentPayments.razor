@@ -36,7 +36,7 @@
                                    Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
-                                   OnClick="OnExport">
+                                   OnClick="@OnExport">
                             @ConstantString.Export
                         </MudLoadingButton>
                     </MudStack>
@@ -114,7 +114,7 @@
                            Title="Enrolments By Contract"
                            Options="@Options">
                     <ApexPointSeries TItem="EnrolmentPaymentSummaryDto"
-                                     Items="SummaryData"
+                                     Items="_summaryData"
                                      Name="Custody"
                                      SeriesType="SeriesType.Bar"
                                      XValue="e => e.Contract"
@@ -122,7 +122,7 @@
                                      ShowDataLabels="true" />
 
                     <ApexPointSeries TItem="EnrolmentPaymentSummaryDto"
-                                     Items="SummaryData"
+                                     Items="_summaryData"
                                      Name="Community"
                                      SeriesType="SeriesType.Bar"
                                      XValue="e => e.Contract"
@@ -132,7 +132,7 @@
             }
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Dense="true" Items="@SummaryData" 
+            <MudTable Dense="true" Items="@_summaryData" 
             Hover="true" 
             Breakpoint="Breakpoint.Sm" 
             Loading="_loading" 

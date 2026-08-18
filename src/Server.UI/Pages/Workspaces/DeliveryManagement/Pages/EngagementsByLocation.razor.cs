@@ -74,7 +74,30 @@ public partial class EngagementsByLocation
 
     private ApexChartOptions<EngagementLocationCategoryCountDto> BuildChartOptions() => new()
     {
-        Chart = new Chart { Stacked = true },
+        Chart = new Chart 
+        { 
+            Stacked = true,
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "EngagementsByLocation-Chart" },
+                    Png = new ExportPng { Filename = "EngagementsByLocation-Chart" },
+                    Svg = new ExportSvg { Filename = "EngagementsByLocation-Chart" }
+                }
+            }
+        },
         Legend = new Legend 
         { 
             Show = true, 
@@ -157,8 +180,8 @@ public partial class EngagementsByLocation
         Query.PageSize = state.PageSize;
         Query.OrderBy = string.IsNullOrWhiteSpace(state.SortLabel) ? "EngagedOn" : state.SortLabel;
         Query.SortDirection = state.SortDirection == SortDirection.Descending
-            ? SortDirection.Descending.ToString()
-            : SortDirection.Ascending.ToString();
+            ? nameof(SortDirection.Descending)
+            : nameof(SortDirection.Ascending);
 
         try
         {
@@ -265,7 +288,7 @@ public partial class EngagementsByLocation
                 Month = Query.Month,
                 Year = Query.Year,
                 OrderBy = "EngagedOn",
-                SortDirection = SortDirection.Descending.ToString()
+                SortDirection = nameof(SortDirection.Descending)
             };
 
             var result = await GetNewMediator().Send(new ExportEngagementsByLocation.Command

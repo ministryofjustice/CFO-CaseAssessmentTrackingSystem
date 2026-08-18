@@ -64,7 +64,26 @@ public partial class PaidActivityComponent
                 Type = ApexCharts.ChartType.Bar,
                 Stacked = true,
                 StackType = StackType.Normal,
-                Toolbar = new Toolbar { Show = true }
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "PaidActivities-Chart" },
+                    Png = new ExportPng { Filename = "PaidActivities-Chart" },
+                    Svg = new ExportSvg { Filename = "PaidActivities-Chart" }
+                }
+            }
             },
             PlotOptions = new PlotOptions
             {

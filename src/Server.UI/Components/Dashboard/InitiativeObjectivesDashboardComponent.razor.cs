@@ -48,7 +48,27 @@ public partial class InitiativeObjectivesDashboardComponent
     {
         Chart = new Chart
         {
-            Stacked = true
+            Stacked = true,
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "InitiativeObjectives-Chart" },
+                    Png = new ExportPng { Filename = "InitiativeObjectives-Chart" },
+                    Svg = new ExportSvg { Filename = "InitiativeObjectives-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {
@@ -76,14 +96,15 @@ public partial class InitiativeObjectivesDashboardComponent
                 },
             },
         },
-        Yaxis = new List<YAxis>
-        {
+        Yaxis =
+        [
+
             new YAxis
             {
                 Min = 0,
                 ForceNiceScale = true
             }
-        },
+        ],
         Xaxis = new XAxis
         {
             Labels = new XAxisLabels
@@ -111,7 +132,7 @@ public partial class InitiativeObjectivesDashboardComponent
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
-        Colors = new List<string> { "#1976d2", "#5cb85c" }
+        Colors = ["#1976d2", "#5cb85c"]
     };
 
     private IEnumerable<GetInitiativeObjectivesDashboard.InitiativeObjectiveRowDto> FilteredRows =>
@@ -143,7 +164,7 @@ public partial class InitiativeObjectivesDashboardComponent
     private InitiativeChartPoint[] FilteredChartData =>
         ShowActiveOnly && Data is not null
             ? ChartData.Where(x => x.ActiveCount > 0).ToArray()
-            : ChartData ?? Array.Empty<InitiativeChartPoint>();
+            : ChartData;
 
     private async Task OnShowActiveOnlyChanged(bool value)
     {

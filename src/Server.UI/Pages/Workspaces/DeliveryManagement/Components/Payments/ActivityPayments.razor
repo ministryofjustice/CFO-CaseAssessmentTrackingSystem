@@ -20,7 +20,7 @@
     @if (DataView)
     {
         <MudItem xs="12">
-            <MudTable Dense="true" Striped="true" Items="@Payments"
+            <MudTable Dense="true" Striped="true" Items="@_payments"
             Hover="true"
             Breakpoint="Breakpoint.Sm"
             Loading="@_loading"
@@ -149,7 +149,7 @@
     {
 
         <MudItem xs="12">
-            <MudTable Dense="true" Items="@SummaryData" 
+            <MudTable Dense="true" Items="@_summaryData" 
             Hover="true" 
             Breakpoint="Breakpoint.Sm" 
             Loading="_loading" 
@@ -216,25 +216,25 @@
             {
                 <ApexChart TItem="ActivityPaymentSummaryDto" Title="Activities By Contract" Options="@Options">
                     <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                                        Items="SummaryData"
+                                        Items="_summaryData"
                                         Name="@ActivityType.SupportWork.Name"
                                         SeriesType="SeriesType.Bar"
                                         XValue="e => e.Contract"
                                         YValue="e => e.SupportWork" />
                     <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                                        Items="SummaryData"
+                                        Items="_summaryData"
                                         Name="@ActivityType.HumanCitizenship.Name"
                                         SeriesType="SeriesType.Bar"
                                         XValue="e => e.Contract"
                                         YValue="e => e.HumanCitizenship" />
                     <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                                        Items="SummaryData"
+                                        Items="_summaryData"
                                         Name="@ActivityType.CommunityAndSocial.Name"
                                         SeriesType="SeriesType.Bar"
                                         XValue="e => e.Contract"
                                         YValue="e => e.CommunityAndSocial" />
                     <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                                        Items="SummaryData"
+                                        Items="_summaryData"
                                         Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
                                         SeriesType="SeriesType.Bar"
                                         XValue="e => e.Contract"

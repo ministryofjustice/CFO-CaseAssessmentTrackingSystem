@@ -38,7 +38,27 @@ public partial class EmploymentDashboardComponent
     {
         Chart = new Chart
         {
-            Stacked = true
+            Stacked = true,
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "Employment-Chart" },
+                    Png = new ExportPng { Filename = "Employment-Chart" },
+                    Svg = new ExportSvg { Filename = "Employment-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {

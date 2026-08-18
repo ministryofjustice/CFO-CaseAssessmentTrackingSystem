@@ -1,7 +1,5 @@
-@using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Domain.Common.Enums
-@using Humanizer
+
 
 @inherits CatsComponent<GetPathwayPlans.PathwayPlanDto>
 
@@ -102,7 +100,7 @@
                         <MudStack AlignItems="AlignItems.Start" Spacing="0">
                             <MudStack Row AlignItems="AlignItems.Center" Spacing="0">                
                                 <MudText>@context.ParticipantName</MudText>
-                                <MudChip T="string" Size="MudBlazor.Size.Small" Style="@($"background-color:{context.EnrolmentStatus!.Colour}; color:white;")">
+                                <MudChip T="string" Size="Size.Small" Style="@($"background-color:{context.EnrolmentStatus!.Colour}; color:white;")">
                                     @context.EnrolmentStatus
                                 </MudChip>
                             </MudStack>                    
@@ -128,14 +126,14 @@
                             @if (context.IsOverdue)
                             {
                                 <MudTooltip Text="Needs review - last reviewed 3+ months ago.">
-                                    <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="MudBlazor.Size.Small" />
+                                    <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="Size.Small" />
                                 </MudTooltip>
                             }                                
                             @if (string.IsNullOrEmpty(context.ReviewNotes) is false)
                             {
                                 <MudIconButton Icon="@Icons.Material.Rounded.Info" 
                                                Color="Color.Info" 
-                                               Size="MudBlazor.Size.Small" 
+                                               Size="Size.Small" 
                                                OnClick="@(() => ShowReviewNotes(context.ReviewNotes))" />
                             }
 
@@ -148,13 +146,13 @@
                 </MudTd>
             </RowTemplate>
 			<PagerContent>
-				<MudTablePager PageSizeOptions="new int[] { 10, 20, 30 }" />
+				<MudTablePager PageSizeOptions="[10, 20, 30]" />
 			</PagerContent>
         </MudTable>
     }
 }
 else
 {
-    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }
 

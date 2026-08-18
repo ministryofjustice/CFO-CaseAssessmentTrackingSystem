@@ -22,7 +22,7 @@ public partial class PathwayPlanReviewDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    private GetPathwayPlans.Query Query { get; set; } = default!;
+    private GetPathwayPlans.Query Query { get; set; } = null!;
 
     protected override IQuery<Result<GetPathwayPlans.PathwayPlanDto>> CreateQuery()
      => new GetPathwayPlans.Query()
@@ -32,30 +32,50 @@ public partial class PathwayPlanReviewDashboardComponent
          TenantId = TenantId
      };
 
-    private ApexCharts.ApexChartOptions<GetPathwayPlans.LocationDetail> Options => new()
+    private ApexChartOptions<GetPathwayPlans.LocationDetail> Options => new()
     {
-        Chart = new ApexCharts.Chart
+        Chart = new Chart
         {
-            Stacked = true
+            Stacked = true,
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "PathwayPlanReview-Chart" },
+                    Png = new ExportPng { Filename = "PathwayPlanReview-Chart" },
+                    Svg = new ExportSvg { Filename = "PathwayPlanReview-Chart" }
+                }
+            }
         },
-        Legend = new ApexCharts.Legend
+        Legend = new Legend
         {
             Show = true,
             ShowForSingleSeries = true,
-            Position = ApexCharts.LegendPosition.Top,
+            Position = LegendPosition.Top,
             HorizontalAlign = ApexCharts.Align.Center
         },
-        PlotOptions = new ApexCharts.PlotOptions
+        PlotOptions = new PlotOptions
         {
-            Bar = new ApexCharts.PlotOptionsBar
+            Bar = new PlotOptionsBar
             {
                 Horizontal=false,
-                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                DataLabels = new PlotOptionsBarDataLabels
                 {
-                    Total = new ApexCharts.BarTotalDataLabels
+                    Total = new BarTotalDataLabels
                     {
                         Enabled = true,
-                        Style = new ApexCharts.BarDataLabelsStyle
+                        Style = new BarDataLabelsStyle
                         {
                             FontWeight = "800",
                             Color = IsDarkMode ? "#FFFFFF" : "#000000",
@@ -64,9 +84,9 @@ public partial class PathwayPlanReviewDashboardComponent
                 },
             },
         },
-        Xaxis = new ApexCharts.XAxis
+        Xaxis = new XAxis
         {
-            Labels = new ApexCharts.XAxisLabels
+            Labels = new XAxisLabels
             {
                 Rotate = -45,
                 RotateAlways = true,
@@ -86,18 +106,18 @@ public partial class PathwayPlanReviewDashboardComponent
             new()
             {
                 Breakpoint = 768,
-                Options = new ApexCharts.ApexChartOptions<GetPathwayPlans.LocationDetail>
+                Options = new ApexChartOptions<GetPathwayPlans.LocationDetail>
                 {
-                    Legend = new ApexCharts.Legend
+                    Legend = new Legend
                     {
-                        Position = ApexCharts.LegendPosition.Bottom
+                        Position = LegendPosition.Bottom
                     }
                 }
             }
         ],
-        Theme = new ApexCharts.Theme
+        Theme = new Theme
         {
-            Mode = IsDarkMode ? ApexCharts.Mode.Dark : ApexCharts.Mode.Light
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
         Colors = new List<string> { "#5cb85c", "#d9534f" }
     };
@@ -154,5 +174,4 @@ public partial class PathwayPlanReviewDashboardComponent
         
         await DialogService.ShowAsync<ReviewNotesDialog>("Review Notes", parameters, options);
     }
-
 }

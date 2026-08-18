@@ -38,7 +38,27 @@ public partial class EducationAndTrainingDashboardComponent
     {
         Chart = new Chart
         {
-            Stacked = true
+            Stacked = true,
+            Toolbar = new Toolbar
+            {
+                Show = true,
+                Tools = new Tools
+                {
+                    Download = true,
+                    Selection = false,
+                    Zoom = false,
+                    Zoomin = false,
+                    Zoomout = false,
+                    Pan = false,
+                    Reset = false
+                },
+                Export = new ExportOptions
+                {
+                    Csv = new ExportCSV { Filename = "Education-Chart"  },
+                    Png = new ExportPng { Filename = "Education-Chart" },
+                    Svg = new ExportSvg { Filename = "Education-Chart" }
+                }
+            }
         },
         Legend = new Legend
         {
