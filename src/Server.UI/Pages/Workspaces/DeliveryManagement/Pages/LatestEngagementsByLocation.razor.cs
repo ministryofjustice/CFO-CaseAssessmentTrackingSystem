@@ -7,6 +7,7 @@ using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -33,6 +34,7 @@ public partial class LatestEngagementsByLocation
 
     [Inject] private ILocationService LocationService { get; set; } = null!;
     [Inject] private IParticipantDialogService ParticipantDialogService { get; set; } = null!;
+    [Inject] private CatsSessionStorage SessionStorage { get; set; } = null!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = null!;
@@ -65,6 +67,28 @@ public partial class LatestEngagementsByLocation
         if (typesResult is { Succeeded: true, Data: not null })
         {
             _engagementTypes = typesResult.Data;
+        }
+
+        var cached = await SessionStorage.GetAsync<LatestEngagementsByLocationSessionData>();
+        if (cached is { Succeeded: true, Data: { } sd })
+        {
+            _visualMode = sd.VisualMode;
+            Query.HideRecentEngagements = sd.HideRecentEngagements;
+            Query.EngagementType = string.IsNullOrEmpty(sd.EngagementType) ? null : sd.EngagementType;
+            _selectedEngagementType = sd.EngagementType ?? string.Empty;
+
+            if (sd.LocationId != 0 && sd.LocationName is not null)
+            {
+                _locations.TryAdd(sd.LocationId, sd.LocationName);
+                _selectedLocationId = sd.LocationId;
+                Query.LocationId = sd.LocationId;
+            }
+
+            if (_canFilterTenant && sd.TenantId is not null)
+            {
+                Query.TenantId = sd.TenantId;
+                _selectedTenantName = sd.TenantName;
+            }
         }
 
         await OnRefresh();
@@ -186,9 +210,16 @@ public partial class LatestEngagementsByLocation
         return new TableData<ParticipantEngagementDto> { TotalItems = 0, Items = [] };
     }
 
+    private async Task OnVisualModeChanged(bool value)
+    {
+        _visualMode = value;
+        await SaveSessionState();
+    }
+
     private async Task OnHideRecentChanged(bool value)
     {
         Query.HideRecentEngagements = value;
+        await SaveSessionState();
         await OnRefresh();
     }
 
@@ -196,6 +227,7 @@ public partial class LatestEngagementsByLocation
     {
         _selectedLocationId = locationId;
         Query.LocationId = locationId == 0 ? null : locationId;
+        await SaveSessionState();
         await OnRefresh();
     }
 
@@ -214,6 +246,7 @@ public partial class LatestEngagementsByLocation
     {
         _selectedEngagementType = engagementType ?? string.Empty;
         Query.EngagementType = string.IsNullOrEmpty(engagementType) ? null : engagementType;
+        await SaveSessionState();
         await OnRefresh();
     }
 
@@ -225,6 +258,7 @@ public partial class LatestEngagementsByLocation
         {
             Query.TenantId = tenant.TenantId;
             _selectedTenantName = tenant.DisplayName;
+            await SaveSessionState();
             await OnRefresh();
         }
     }
@@ -281,6 +315,20 @@ public partial class LatestEngagementsByLocation
         Query.EngagementType = null;
         Query.HideRecentEngagements = false;
 
+        await SaveSessionState();
         await OnRefresh();
+    }
+
+    private Task SaveSessionState()
+    {
+        var locationName = _selectedLocationId != 0 && _locations.TryGetValue(_selectedLocationId, out var name) ? name : null;
+        return SessionStorage.SetAsync(LatestEngagementsByLocationSessionData.FromState(
+            _visualMode,
+            Query.HideRecentEngagements,
+            _selectedLocationId,
+            locationName,
+            _selectedEngagementType == string.Empty ? null : _selectedEngagementType,
+            Query.TenantId,
+            _selectedTenantName));
     }
 }

@@ -13,19 +13,18 @@
 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="my-4">
     <MudText Typo="Typo.body1">
         This dashboard groups @( _isTenantLevel ? "every participant in your tenant" : "the participants assigned to you" )
-        by their <strong>current location</strong> and shows, for each location, how recently they last engaged.
+        by their <strong>current location</strong> and shows <strong>when & what their latest engagement was</strong> (regardless of payment status).
     </MudText>
     <MudText Typo="Typo.body1" Class="mt-1">
         <strong>Last 3 months</strong> counts participants whose most recent engagement was on or after
         @(GetParticipantsLatestEngagement.RecencyThreshold.ToString("d")).
         <strong>More than 3 months ago</strong> counts participants who last engaged before that date, or who have never engaged.
-        Use it to spot locations where engagement is lapsing.
     </MudText>
 </MudAlert>
 
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
-    <MudSwitch T="bool" @bind-Value="_visualMode" Color="Color.Info" Label="Visual Mode" />
+    <MudSwitch T="bool" Value="_visualMode" ValueChanged="OnVisualModeChanged" Color="Color.Info" Label="Visual Mode" />
     <MudSpacer />
 
     <MudSwitch T="bool" Value="Query.HideRecentEngagements" Color="Color.Info"
@@ -101,7 +100,7 @@ else
                                  ShowDataLabels
                                  Color="#2e7d32" />
                 <ApexPointSeries TItem="LocationEngagementSummaryDto"
-                                 Name="More than 3 months ago"
+                                 Name="3+ Month Inactive"
                                  Items="_data.Records"
                                  XValue="@(x => x.LocationName)"
                                  YValue="@(x => x.InactiveCount)"
