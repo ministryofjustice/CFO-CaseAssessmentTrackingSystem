@@ -65,6 +65,11 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
+# CatsDb backup - runs daily in prod, suspended in other environments
+sqlBackup:
+  enabled: true
+  suspend: false
+
 generic-prometheus-alerts:
   alertSeverity: hmpps-cfo-alerts
   rdsAlertsDatabases:
