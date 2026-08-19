@@ -65,6 +65,10 @@ rdsPortForward:
 redisPortForward:
   enabled: false
 
+# Cross-account CatsDb backup - only enabled in production
+sqlBackup:
+  enabled: true
+
 generic-prometheus-alerts:
   alertSeverity: hmpps-cfo-alerts
   rdsAlertsDatabases:

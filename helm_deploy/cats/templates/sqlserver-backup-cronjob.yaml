@@ -1,0 +1,91 @@
+{{- if .Values.sqlBackup.enabled }}
+# Cross-account backup: takes a native RDS full (.bak) backup of CatsDb and uploads it
+# directly to an S3 bucket outside the cloud-platform account, via AWS RDS's native
+# backup/restore stored procedures. This is in addition to (not a replacement for)
+# RDS's own automated backups/point-in-time-recovery.
+#
+# Note: AWS RDS's rds_backup_database procedure only supports @type='FULL' or
+# 'DIFFERENTIAL' - there is no way to export transaction log backups to S3 this way,
+# so only full backups are taken here.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sqlserver-backup
+  labels:
+    app: sqlserver-backup
+spec:
+  schedule: {{ .Values.sqlBackup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.sqlBackup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.sqlBackup.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.sqlBackup.backoffLimit }}
+      ttlSecondsAfterFinished: {{ .Values.sqlBackup.ttlSecondsAfterFinished }}
+      template:
+        metadata:
+          labels:
+            app: sqlserver-backup
+        spec:
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          restartPolicy: OnFailure
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+          containers:
+            - name: sqlserver-backup
+              image: {{ .Values.sqlBackup.image | quote }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                privileged: false
+                capabilities:
+                  drop: ["ALL"]
+              command: ["/bin/bash", "-c"]
+              args:
+                - |
+                  DATE=$(date +%Y%m%d-%H%M%S)
+                  S3_ARN="arn:aws:s3:::${BUCKET_NAME}/${S3_KEY_PREFIX}/${DATABASE_NAME}-${DATE}.bak"
+                  echo "Starting full backup of ${DATABASE_NAME} to ${S3_ARN}"
+                  /opt/mssql-tools18/bin/sqlcmd \
+                    -S "${DATABASE_ADDRESS}" \
+                    -U "${DATABASE_USERNAME}" \
+                    -P "${DATABASE_PASSWORD}" \
+                    -C \
+                    -Q "EXEC msdb.dbo.rds_backup_database
+                          @source_db_name='${DATABASE_NAME}',
+                          @s3_arn_to_backup_to='${S3_ARN}',
+                          @overwrite_s3_backup_file=1,
+                          @type='FULL';"
+                  echo "Backup task submitted. Polling for completion..."
+                  for i in $(seq 1 "${POLL_ATTEMPTS}"); do
+                    STATUS=$(/opt/mssql-tools18/bin/sqlcmd \
+                      -S "${DATABASE_ADDRESS}" \
+                      -U "${DATABASE_USERNAME}" \
+                      -P "${DATABASE_PASSWORD}" \
+                      -C -h -1 \
+                      -Q "SET NOCOUNT ON; SELECT TOP 1 lifecycle FROM msdb.dbo.rds_fn_task_status(NULL,0) ORDER BY task_id DESC;" \
+                      | tr -d '[:space:]')
+                    echo "Status: ${STATUS}"
+                    if [ "${STATUS}" = "SUCCESS" ]; then
+                      echo "Backup completed successfully."
+                      exit 0
+                    elif [ "${STATUS}" = "ERROR" ]; then
+                      echo "Backup failed."
+                      exit 1
+                    fi
+                    sleep "${POLL_INTERVAL_SECONDS}"
+                  done
+                  echo "Timed out waiting for backup to complete."
+                  exit 1
+              env:
+                - name: DATABASE_NAME
+                  value: {{ .Values.sqlBackup.databaseName | quote }}
+                - name: POLL_ATTEMPTS
+                  value: {{ .Values.sqlBackup.pollAttempts | quote }}
+                - name: POLL_INTERVAL_SECONDS
+                  value: {{ .Values.sqlBackup.pollIntervalSeconds | quote }}
+                {{- include "cats.namespaceSecretsEnv" .Values.sqlBackup.namespace_secrets | nindent 16 }}
+{{- end }}
