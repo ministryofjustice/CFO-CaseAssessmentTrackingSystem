@@ -3,6 +3,7 @@ using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
+using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.Entities.PRIs;
 
@@ -20,7 +21,8 @@ public class PRI : BaseAuditableEntity<Guid>
     public DateTime? AcceptedOn { get; private set; }
     public int ExpectedReleaseRegionId { get; private set; }
     public virtual Location ExpectedReleaseRegion { get; private set; }
-    public string? AssignedTo { get; private set; }    
+    public string? AssignedTo { get; private set; }
+    public virtual ApplicationUser? AssignedToUser { get; private set; }
     public DateOnly MeetingAttendedOn { get; private set; }
     public bool CustodyAttendedInPerson => ReasonCustodyDidNotAttendInPerson is null;
     public bool CommunityAttendedInPerson => ReasonCommunityDidNotAttendInPerson is null;

@@ -33,7 +33,7 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
             .HasForeignKey(p => p.CustodyLocationId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<ApplicationUser>()
+        builder.HasOne(p => p.AssignedToUser)
             .WithMany()
             .HasForeignKey(p => p.AssignedTo)
             .OnDelete(DeleteBehavior.Restrict);

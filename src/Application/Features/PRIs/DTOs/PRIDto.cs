@@ -23,6 +23,9 @@ public class PRIDto
     public required LocationDto CustodyLocation { get; set; }
 
     public string? AssignedTo { get; set; }
+    
+    [Description("Assigned To Display Name")]
+    public string? AssignedToDisplayName { get; set; }
 
     public PriStatus? Status { get; }
     public DateOnly MeetingAttendedOn { get; set; }
@@ -43,6 +46,8 @@ public class PRIDto
                 .ForMember(target => target.CustodyLocation,
                     options => options.MapFrom(source => source.CustodyLocation))
                 .ForMember(target => target.Status,
-                    options => options.MapFrom(source => source.Status));
+                    options => options.MapFrom(source => source.Status))
+                .ForMember(target => target.AssignedToDisplayName,
+                    options => options.MapFrom(source => source.AssignedToUser != null ? source.AssignedToUser.DisplayName : null));
     }
 }
