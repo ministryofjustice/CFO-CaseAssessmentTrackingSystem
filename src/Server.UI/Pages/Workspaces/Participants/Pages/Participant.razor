@@ -16,7 +16,7 @@
 
   @if (_participantCascading is not null && _participant is not null)
     {
-        <CascadingValue Value="_participant" IsFixed="true">
+        <CascadingValue Value="_participant">
         <CascadingValue Value="_participantCascading" Name="ParticipantDetails" IsFixed="true">
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
                 @if (_participant.PostLicenceCaseClosureEnd.HasValue)
