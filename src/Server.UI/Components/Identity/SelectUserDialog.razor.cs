@@ -5,7 +5,7 @@ namespace Cfo.Cats.Server.UI.Components.Identity;
 
 public partial class SelectUserDialog
 {
-    private bool saving = false;
+    private bool _saving;
 
     [CascadingParameter]
     private IMudDialogInstance Dialog { get; set; } = null!;
@@ -17,15 +17,14 @@ public partial class SelectUserDialog
 
     private void Submit()
     {
-        saving = true;
+        _saving = true;
         Dialog.Close(DialogResult.Ok(SelectedUser));
     }
 
-    private void OnUserSelectedChanged(ApplicationUserDto? dto) => SelectedUser = SelectedUser with
-    {
-        UserId = dto?.Id ?? string.Empty,
-        DisplayName = dto?.DisplayName ?? string.Empty
-    };
+    private void OnUserSelectedChanged(ApplicationUserDto? dto) => SelectedUser = new SelectedUser(
+        dto?.Id ?? string.Empty,
+        dto?.DisplayName ?? string.Empty
+    );
 }
 
 public record SelectedUser(string UserId, string DisplayName);

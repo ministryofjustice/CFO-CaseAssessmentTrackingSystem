@@ -8,7 +8,7 @@ using NetTools;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
-public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IOptions<AllowlistOptions> allowlistOptions, INetworkIpProvider networkIpAccessor, ISessionService sessionService)
+public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IOptions<AllowlistOptions> allowlistOptions, INetworkIpProvider networkIpAccessor, ISessionService sessionService, IUserService userService)
     : SignInManager<ApplicationUser>(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
 {    
     public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
@@ -53,7 +53,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
 
     public override async Task<SignInResult> PasswordSignInAsync(ApplicationUser user, string password, bool isPersistent, bool lockoutOnFailure)
     {
-        SignInResult result = await  base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
+        var result = await  base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         if (result.Succeeded)
         {
             await ActivateIfPendingAsync(user);
@@ -64,7 +64,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
 
     public override async Task<SignInResult> TwoFactorSignInAsync(string provider, string code, bool isPersistent, bool rememberClient)
     {
-        SignInResult result = await base.TwoFactorSignInAsync(provider, code, isPersistent, rememberClient);
+        var result = await base.TwoFactorSignInAsync(provider, code, isPersistent, rememberClient);
         if (result.Succeeded)
         {
             // Get user from two-factor info
@@ -111,6 +111,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         {
             user.Status = UserStatus.Active;
             await UserManager.UpdateAsync(user);
+            userService.Refresh();
         }
     }
 
