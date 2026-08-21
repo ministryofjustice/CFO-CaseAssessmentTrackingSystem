@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Exceptions;
+using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Users;
@@ -12,7 +13,8 @@ public partial class ResetPasswordDialog
     private bool _passwordReset;
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
     [EditorRequired] [Parameter] public ResetPasswordFormModel Model { get; set; } = null!;
-    private MudForm? form;
+    [Inject] private IUserService UserService { get; set; } = null!;
+    private MudForm? _form;
     private void Close() => MudDialog.Close(DialogResult.Ok(true));
 
     private async Task ResetPassword()
@@ -39,6 +41,8 @@ public partial class ResetPasswordDialog
 
                 user.RequiresPasswordReset = true;
                 await UserManager.UpdateAsync(user);
+                UserService.Refresh();
+                
                 _passwordReset = true;
             }
             else
