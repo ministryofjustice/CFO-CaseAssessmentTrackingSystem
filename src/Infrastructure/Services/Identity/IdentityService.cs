@@ -18,12 +18,14 @@ public class IdentityService : IIdentityService
     private readonly IMapper _mapper;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserService _userService;
 
     public IdentityService(
         IServiceScopeFactory scopeFactory,
         IFusionCache fusionCache,
         IMapper mapper,
-        IStringLocalizer<IdentityService> localizer)
+        IStringLocalizer<IdentityService> localizer,
+        IUserService userService)
     {
         var scope = scopeFactory.CreateScope();
         _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -34,6 +36,7 @@ public class IdentityService : IIdentityService
         _fusionCache = fusionCache;
         _mapper = mapper;
         _localizer = localizer;
+        _userService = userService;
     }
 
     private TimeSpan RefreshInterval => TimeSpan.FromMinutes(60);
@@ -42,7 +45,7 @@ public class IdentityService : IIdentityService
     {
         var key = $"GetUserNameAsync:{userId}";
         var user = await _fusionCache.GetOrSetAsync(key,
-             _ => _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId), RefreshInterval);
+             t => _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken: t), RefreshInterval, token: cancellation);
         return user?.UserName;
     }
 
@@ -89,11 +92,12 @@ public class IdentityService : IIdentityService
 
     public async Task UpdateLiveStatus(string userId, bool isLive, CancellationToken cancellation = default)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId && x.IsLive != isLive);
+        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId && x.IsLive != isLive, cancellationToken: cancellation);
         if (user is not null)
         {
             user.IsLive = isLive;
-            var result = await _userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);
+            _userService.Refresh();
         }
     }
 
@@ -104,7 +108,7 @@ public class IdentityService : IIdentityService
         var result = await _fusionCache.GetOrSetAsync(key,
             _ =>  _userManager.Users.Where(x => x.UserName == userName).Include(x => x.UserRoles)
                 .ThenInclude(x => x.Role).ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(cancellation), RefreshInterval);
+                .FirstOrDefaultAsync(cancellation), RefreshInterval, token: cancellation);
         return result;
     }
 
@@ -117,13 +121,13 @@ public class IdentityService : IIdentityService
                 if (string.IsNullOrEmpty(tenantId))
                 {
                     return await _userManager.Users.Include(x => x.UserRoles).ThenInclude(x => x.Role)
-                        .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider).ToListAsync();
+                        .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken: token);
                 }
                 return await _userManager.Users.Where(x => x.TenantId == tenantId).Include(x => x.UserRoles)
                     .ThenInclude(x => x.Role)
-                    .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider).ToListAsync();
+                    .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken: token);
             };
-        var result = await _fusionCache.GetOrSetAsync(key, _=>getUsersByTenantId(tenantId, cancellation), RefreshInterval);
+        var result = await _fusionCache.GetOrSetAsync(key, _=>getUsersByTenantId(tenantId, cancellation), RefreshInterval, token: cancellation);
         return result;
     }
 

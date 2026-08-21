@@ -358,6 +358,9 @@ public partial class Users
         if (identityResult.Succeeded)
         {
             item.LockoutEnd = null;
+            UserService.Refresh();
+            await OnRefresh();
+
             Snackbar.Add($"{L["The user has been unlocked."]}", Severity.Info);
         }
         else
@@ -406,8 +409,10 @@ public partial class Users
             var mediator = GetNewMediator();
             await mediator.Publish(audit);
 
-            // Drop any cached claims so the status change takes effect immediately.
+            // Drop any cached claim's so the status change takes effect immediately.
             await Cache.RemoveAsync(ApplicationUserClaimsPrincipalFactory.GetCacheKey(user.Id));
+            UserService.Refresh();
+            await OnRefresh();
 
             Snackbar.Add($"{L[successMessage]}", Severity.Info);
         }
