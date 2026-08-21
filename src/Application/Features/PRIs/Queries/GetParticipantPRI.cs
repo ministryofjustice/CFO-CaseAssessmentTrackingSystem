@@ -22,6 +22,7 @@ public static class GetParticipantPRI
             var pri = await unitOfWork.DbContext.PRIs
                 .Include(x => x.ExpectedReleaseRegion)
                 .Include(x => x.CustodyLocation)
+                .Include(x => x.AssignedToUser)
                 .Where(x => x.ParticipantId == request.ParticipantId)
                 .OrderByDescending(x => x.Created)
                 .FirstOrDefaultAsync(cancellationToken);
