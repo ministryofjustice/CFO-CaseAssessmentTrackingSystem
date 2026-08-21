@@ -13,16 +13,17 @@ public partial class Index
 
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = default!;
-
     private BreadcrumbLinkModel[] Links { get; set; } = [];
     
     private bool _showCaseWorkload;
     private bool _showUnassignedCases;
     private bool _showArchivedCaseBehaviour;
+    private bool _allowTransfers = false;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
+        _allowTransfers = (await AuthService.AuthorizeAsync(authState.User, SecurityPolicies.Transfers)).Succeeded;
 
         var hasAdditionalRoles = (await AuthService.AuthorizeAsync(authState.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
         var canViewCumulatives = authState.User.IsInRole(RoleNames.SystemSupport) || authState.User.IsInRole(RoleNames.Finance);
@@ -49,6 +50,10 @@ public partial class Index
             DeliveryManagementLinks.ActivitiesInQaPots,
         ];
 
+        if(_allowTransfers)
+        {
+            links.Add(DeliveryManagementLinks.Transfers);
+        }
         if (_showCaseWorkload)
         {
             links.Add(DeliveryManagementLinks.CaseWorkload);

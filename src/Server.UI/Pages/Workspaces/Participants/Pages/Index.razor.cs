@@ -14,14 +14,11 @@ public partial class Index
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = null!;
 
-    private bool _allowTransfers = false;
-
     private BreadcrumbLinkModel[] Links { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState;
-        _allowTransfers = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Transfers)).Succeeded;
 
         List<BreadcrumbLinkModel> links =
         [
@@ -30,11 +27,6 @@ public partial class Index
             ParticipantLinks.MovedParticipants,
             ParticipantLinks.AllPris
         ];
-
-        if(_allowTransfers)
-        {
-            links.Add(ParticipantLinks.Transfers);    
-        }
 
         Links = links.ToArray();        
     }

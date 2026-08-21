@@ -1,11 +1,11 @@
-@page "/pages/workspace/participants/transfers"
+@page "/pages/workspace/deliverymanagement/transfers"
 @inherits CatsComponentBase
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 @using Humanizer
 
-<ParticipantsPageHeader />
+<DeliveryManagementPageHeader />
 
 <MudStack Row="true" Justify="Justify.SpaceBetween">
     <MudText Typo="Typo.h4">Incoming Transfers</MudText>
@@ -46,7 +46,9 @@
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
                 <MudText Typo="Typo.body1">@context.ParticipantFullName</MudText>
-                <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
+                <MudLink Typo="Typo.body1" OnClick="() => View(context.ParticipantId)">
+                    @context.ParticipantId
+                </MudLink>
             </div>
         </MudTd>
         <MudTd DataLabel="Status">
@@ -121,7 +123,9 @@
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
                 <MudText Typo="Typo.body1">@context.ParticipantFullName</MudText>
-                <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
+                <MudLink Typo="Typo.body1" OnClick="() => View(context.ParticipantId)">
+                    @context.ParticipantId
+                </MudLink>
             </div>
         </MudTd>
         <MudTd DataLabel="Status">
