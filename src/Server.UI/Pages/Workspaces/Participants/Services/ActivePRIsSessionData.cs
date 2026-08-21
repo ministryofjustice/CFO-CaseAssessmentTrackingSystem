@@ -8,7 +8,7 @@ public record ActivePRIsSessionData
     {
     }
 
-    internal static ActivePRIsSessionData FromQuery(GetActivePRIsByUserId.Query query, bool tabular, PriTypeFilter priTypeFilter) 
+    internal static ActivePRIsSessionData FromQuery(ActivePRIsWithPagination.Query query, bool tabular, PriTypeFilter priTypeFilter) 
         => new()
         {
             Keyword = query.Keyword,
@@ -18,7 +18,12 @@ public record ActivePRIsSessionData
             IncludeOutgoing = query.IncludeOutgoing,
             IncludeIncoming = query.IncludeIncoming,
             Tabular = tabular,
-            PriTypeFilter = priTypeFilter
+            PriTypeFilter = priTypeFilter,
+            CustodySupportWorker = query.CustodySupportWorker,
+            CommunitySupportWorker = query.CommunitySupportWorker,
+            ExpectedReleaseRegionId = query.ExpectedReleaseRegionId,
+            ActiveStatus = query.ActiveStatus,
+            JustMyPris = query.JustMyPris
         };
 
     public required string? Keyword { get; init; }
@@ -29,6 +34,11 @@ public record ActivePRIsSessionData
     public required bool IncludeIncoming { get; init; }
     public required bool Tabular { get; init; }
     public required PriTypeFilter PriTypeFilter { get; init; }
+    public string? CustodySupportWorker { get; init; }
+    public string? CommunitySupportWorker { get; init; }
+    public int? ExpectedReleaseRegionId { get; init; }
+    public bool? ActiveStatus { get; init; }
+    public bool JustMyPris { get; init; }
 }
 
 public enum PriTypeFilter

@@ -9,7 +9,7 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 public class ParticipantDialogService(IDialogService dialogService) : IParticipantDialogService
 {
-    public async Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null)
+    public async Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null, string title = "Select a location")
     {
         var parameters = new DialogParameters<SelectLocationDialog>
         {
@@ -27,7 +27,7 @@ public class ParticipantDialogService(IDialogService dialogService) : IParticipa
         };
 
         var dialog = await dialogService.ShowAsync<SelectLocationDialog>(
-            "Select a location",
+            title,
             parameters,
             options);
 
@@ -38,7 +38,7 @@ public class ParticipantDialogService(IDialogService dialogService) : IParticipa
             : null;
     }
 
-    public async Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser)
+    public async Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee")
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
@@ -55,7 +55,7 @@ public class ParticipantDialogService(IDialogService dialogService) : IParticipa
         };
 
         var dialog = await dialogService.ShowAsync<SelectUserDialog>(
-            "Select an assignee",
+            title,
             parameters,
             options);
 

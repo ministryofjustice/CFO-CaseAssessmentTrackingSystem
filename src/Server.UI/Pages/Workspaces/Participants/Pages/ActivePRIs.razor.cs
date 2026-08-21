@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.PRIs.Commands;
@@ -15,40 +17,53 @@ public partial class ActivePRIs
 {
     [Inject]
     public CatsSessionStorage SessionStorage { get; set; } = null!;
+
+    [Inject]
+    public ILocationService LocationService { get; set; } = null!;
+
+    [Inject]
+    public IUserService UserService { get; set; } = null!;
+    
+    [Inject]
+    public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
     
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
     [SupplyParameterFromQuery(Name = "ListView")]
     public string? ListView { get; set; }
 
-    private string? Title { get; set; }
-    private int _defaultPageSize = 15;
-    private HashSet<PRIPaginationDto> _selectedItems = [];
+    private const int DefaultPageSize = 15;
     private bool _loading;
     private bool _downloading;
     private int _totalItems;
     private int _totalPages;
-    private int _currentPage = 1;
     private PRIPaginationDto[] _data = [];
     private bool Tabular { get; set; } = true;
+    private IDictionary<string, string> _users = new Dictionary<string, string>();
+    private IDictionary<int, string> _locations = new Dictionary<int, string>();
 
-    private GetActivePRIsByUserId.Query? Query { get; set; }
+    private ActivePRIsWithPagination.Query Query { get; set; } = new()
+    {
+        IncludeOutgoing = true,
+        IncludeIncoming = true,
+        PageNumber = 1,
+        PageSize = DefaultPageSize,
+        OrderBy = "Id",
+        SortDirection = "Descending"
+    };
     private PriTypeFilter _priTypeFilter = PriTypeFilter.All;
 
     protected override async Task OnInitializedAsync()
     {
-        Title = @ConstantString.ActivePreReleaseInventoryPRI;
+        // Initialise locations and users dictionaries
+        _locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
+            .ToDictionary(k => k.Id, e => e.Name);
 
-        Query = new GetActivePRIsByUserId.Query
-        {
-            CurrentUser = UserProfile,
-            IncludeOutgoing = true,
-            IncludeIncoming = true,
-            PageNumber = 1,
-            PageSize = _defaultPageSize,
-            OrderBy = "Id",
-            SortDirection = "Descending"
-        };
+        _users = UserService.DataSource
+            .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
+            .ToDictionary(a => a.Id, e => e.DisplayName);
+
+        Query.CurrentUser = UserProfile;
         
         var cached = await SessionStorage.GetAsync<ActivePRIsSessionData>();
         
@@ -60,6 +75,11 @@ public partial class ActivePRIs
             Query.PageNumber = sd.PageNumber;
             Query.IncludeOutgoing = sd.IncludeOutgoing;
             Query.IncludeIncoming = sd.IncludeIncoming;
+            Query.CustodySupportWorker = sd.CustodySupportWorker;
+            Query.CommunitySupportWorker = sd.CommunitySupportWorker;
+            Query.ExpectedReleaseRegionId = sd.ExpectedReleaseRegionId;
+            Query.ActiveStatus = sd.ActiveStatus;
+            Query.JustMyPris = sd.JustMyPris;
             Tabular = sd.Tabular;
             _priTypeFilter = sd.PriTypeFilter;
         }
@@ -73,7 +93,7 @@ public partial class ActivePRIs
         _loading = true;
         try
         {
-            Query!.CurrentUser = UserProfile;
+            Query.CurrentUser = UserProfile;
             var result = await GetNewMediator().Send(Query);
 
             if (result is { Succeeded: true, Data: not null })
@@ -81,7 +101,6 @@ public partial class ActivePRIs
                 _data = result.Data.Items.ToArray();
                 _totalPages = result.Data.TotalPages;
                 _totalItems = result.Data.TotalItems;
-                _currentPage = Query.PageNumber;
             }
             else
             {
@@ -108,13 +127,7 @@ public partial class ActivePRIs
         Tabular = tabular ?? true;
         
         // Save the updated tabular state
-        await SessionStorage.SetAsync(ActivePRIsSessionData.FromQuery(Query!, Tabular, _priTypeFilter));
-    }
-    
-    private async Task PageChanged(int page)
-    {
-        Query!.PageNumber = page;
-        await OnRefresh();
+        await SessionStorage.SetAsync(ActivePRIsSessionData.FromQuery(Query, Tabular, _priTypeFilter));
     }
     
     private async Task OnExport()
@@ -128,7 +141,7 @@ public partial class ActivePRIs
                 Request = new ExportActivePRIs.ActivePRIsExportRequest
                 {
                     UserId = UserProfile?.UserId,
-                    Keyword = Query!.Keyword,
+                    Keyword = Query.Keyword,
                     IncludeOutgoing = Query.IncludeOutgoing,
                     IncludeIncoming = Query.IncludeIncoming,
                     OrderBy = Query.OrderBy,
@@ -162,26 +175,17 @@ public partial class ActivePRIs
             return;
         }
         
-        _selectedItems = [];
-        Query!.Keyword = text ?? string.Empty;
+        Query.Keyword = text ?? string.Empty;
         Query.PageNumber = 1; // Reset to first page on search
         await OnRefresh();
     }
-
-    private string GetPriTypeLabel() =>
-        _priTypeFilter switch
-        {
-            PriTypeFilter.Outgoing => "Outgoing Only",
-            PriTypeFilter.Incoming => "Incoming Only",
-            _ => "All"
-        };
 
     private async Task SetPriType(PriTypeFilter filter)
     {
         _priTypeFilter = filter;
         
-        Query!.IncludeOutgoing = filter is PriTypeFilter.All or PriTypeFilter.Outgoing;
-        Query!.IncludeIncoming = filter is PriTypeFilter.All or PriTypeFilter.Incoming;
+        Query.IncludeOutgoing = filter is PriTypeFilter.All or PriTypeFilter.Outgoing;
+        Query.IncludeIncoming = filter is PriTypeFilter.All or PriTypeFilter.Incoming;
         Query.PageNumber = 1; // Reset to first page on filter change
         
         await OnRefresh();
@@ -279,6 +283,87 @@ public partial class ActivePRIs
         {
             await OnRefresh();
         }
+    }
+
+    private async Task ShowCustodyWorkerDialog()
+    {
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Custody Support Worker");
+        
+        if (user is not null)
+        {
+            Query.CustodySupportWorker = user.UserId == string.Empty ? null : user.UserId;
+            Query.PageNumber = 1;
+            await OnRefresh();
+        }
+    }
+
+    private async Task ShowCommunityWorkerDialog()
+    {
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Community Support Worker");
+        
+        if (user is not null)
+        {
+            Query.CommunitySupportWorker = user.UserId == string.Empty ? null : user.UserId;
+            Query.PageNumber = 1;
+            await OnRefresh();
+        }
+    }
+
+    private async Task ShowRegionDialog()
+    {
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile!, title: "Select Expected Release Region");
+        
+        if (location is not null)
+        {
+            Query.ExpectedReleaseRegionId = location.Id == 0 ? null : location.Id;
+            Query.PageNumber = 1;
+            await OnRefresh();
+        }
+    }
+
+    private async Task OnActiveStatusChanged(bool? activeStatus)
+    {
+        Query.ActiveStatus = activeStatus;
+        Query.PageNumber = 1;
+        await OnRefresh();
+    }
+
+    private async Task OnQuickFilterChanged(bool justMyPris)
+    {
+        Query.JustMyPris = justMyPris;
+        Query.PageNumber = 1;
+        await OnRefresh();
+    }
+
+    private async Task SortBy(string orderBy)
+    {
+        if (Query.OrderBy == orderBy)
+        {
+            Query.SortDirection = Query.SortDirection == "Ascending" ? "Descending" : "Ascending";
+        }
+        else
+        {
+            Query.OrderBy = orderBy;
+            Query.SortDirection = "Ascending";
+        }
+        await OnRefresh();
+    }
+
+    private async Task ClearSearch()
+    {
+        Query.Keyword = null;
+        Query.CustodySupportWorker = null;
+        Query.CommunitySupportWorker = null;
+        Query.ExpectedReleaseRegionId = null;
+        Query.ActiveStatus = null;
+        Query.JustMyPris = false;
+        Query.PageNumber = 1;
+        Query.OrderBy = "Id";
+        Query.SortDirection = "Descending";
+        _priTypeFilter = PriTypeFilter.All;
+        Query.IncludeOutgoing = true;
+        Query.IncludeIncoming = true;
+        await OnRefresh();
     }
 
 }

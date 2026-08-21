@@ -14,16 +14,17 @@ public interface IParticipantDialogService
     /// Shows the location selection dialog.
     /// </summary>
     /// <param name="currentUser">The current user profile for authorization.</param>
-    /// <p
+    /// <param name="title">Optional dialog title. Defaults to "Select a location".</param>
     /// <returns>The selected location, or null if canceled.</returns>
-    Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null);
+    Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null, string title = "Select a location");
 
     /// <summary>
     /// Shows the assignee (user) selection dialog.
     /// </summary>
     /// <param name="currentUser">The current user profile for authorization.</param>
+    /// <param name="title">Optional dialog title. Defaults to "Select an assignee".</param>
     /// <returns>The selected user, or null if canceled.</returns>
-    Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser);
+    Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee");
 
     /// <summary>
     /// Shows the tenant selection dialog.

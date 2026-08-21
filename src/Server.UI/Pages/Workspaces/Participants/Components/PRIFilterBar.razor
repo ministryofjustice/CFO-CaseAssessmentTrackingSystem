@@ -1,0 +1,186 @@
+@using Cfo.Cats.Application.Features.PRIs.Queries
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+
+<MudStack>
+    <!-- Header/Filter row -->
+    <MudStack Row="true" Justify="Justify.FlexEnd">
+        <MudMenu Label="@($"Filters: {GetQuickFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(false))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(true))">My Active PRIs</MudMenuItem>
+        </MudMenu>
+        
+        <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
+                      ValueChanged="@OnSearchChanged" Clearable="true" ShrinkLabel="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                      AdornmentColor="Color.Secondary">
+        </MudTextField>
+        
+        <MudSpacer />
+        
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                   StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(() => OnRefresh.InvokeAsync())">
+            @ConstantString.Refresh
+        </MudButton>
+        
+        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@IsDownloading" 
+                          OnClick="@(() => OnExport.InvokeAsync())" StartIcon="@Icons.Material.Filled.CloudDownload" 
+                          Size="Size.Small">
+            @ConstantString.Export
+        </MudLoadingButton>
+        
+        <MudButton Variant="Variant.Filled" Size="Size.Small" OnClick="@(() => OnCreatePriCode.InvokeAsync())"
+                   StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">
+            Generate PRI code
+        </MudButton>
+    </MudStack>
+
+    <!-- Additional filters row -->
+    <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+
+        <MudPagination 
+            Rectangular="true"
+            Variant="Variant.Text"
+            @bind-Selected="Query.PageNumber"
+            @bind-Selected:after="@(() => OnRefresh.InvokeAsync())"
+            Count="@TotalPages"
+            MiddleCount="2"
+            BoundaryCount="1"
+            Size="Size.Small">
+        </MudPagination>
+
+        <MudText>
+            @TotalItems records
+        </MudText>
+
+        <!-- Tabular Switch -->
+        <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@OnTabularChanged" T="bool?" />
+
+        <MudSpacer />
+
+        <!-- Direction Filter (Outgoing/Incoming) -->
+        <MudMenu Size="Size.Small" Label="@($"Direction: {GetPriTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.All))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.Outgoing))">Outgoing Only</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.Incoming))">Incoming Only</MudMenuItem>
+        </MudMenu>
+
+        <!-- Custody Support Worker Filter -->
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowCustodyWorkerDialog.InvokeAsync())" 
+                   EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(string.IsNullOrEmpty(Query.CustodySupportWorker))
+            {
+                @("All Custody Workers")
+            }
+            else
+            {
+                @(Users.TryGetValue(Query.CustodySupportWorker, out var custodyWorker) ? custodyWorker : Query.CustodySupportWorker)
+            }
+        </MudButton>
+
+        <!-- Community Support Worker Filter -->
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowCommunityWorkerDialog.InvokeAsync())" 
+                   EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(string.IsNullOrEmpty(Query.CommunitySupportWorker))
+            {
+                @("All Community Workers")
+            }
+            else
+            {
+                @(Users.TryGetValue(Query.CommunitySupportWorker, out var communityWorker) ? communityWorker : Query.CommunitySupportWorker)
+            }
+        </MudButton>
+
+        <!-- Expected Release Region Filter -->
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowRegionDialog.InvokeAsync())" 
+                   EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(!Query.ExpectedReleaseRegionId.HasValue)
+            {
+                @("All Regions")
+            }
+            else
+            {
+                @(Locations.TryGetValue(Query.ExpectedReleaseRegionId.Value, out var region) ? region : Query.ExpectedReleaseRegionId.Value.ToString())
+            }
+        </MudButton>
+
+        <!-- Active Status Filter -->
+        <MudMenu Size="Size.Small" Label="@GetActiveStatusLabel()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(null))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(true))">
+                <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
+            </MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(false))">
+                <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
+            </MudMenuItem>
+        </MudMenu>
+
+        <!-- Sort Menu -->
+        <MudMenu Size="Size.Small" Label="@($"Sort: {GetSortLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Id" OnClick="@(() => OnSortBy.InvokeAsync("Id"))"/>
+            <MudMenuItem Label="First Name" OnClick="@(() => OnSortBy.InvokeAsync("FirstName"))"/>
+            <MudMenuItem Label="Last Name" OnClick="@(() => OnSortBy.InvokeAsync("LastName"))"/>
+            <MudMenuItem Label="Expected Release Date" OnClick="@(() => OnSortBy.InvokeAsync("ExpectedReleaseDate"))"/>
+            <MudMenuItem Label="Actual Release Date" OnClick="@(() => OnSortBy.InvokeAsync("ActualReleaseDate"))"/>
+            <MudMenuItem Label="Expected Release Region" OnClick="@(() => OnSortBy.InvokeAsync("ExpectedReleaseRegionName"))"/>
+        </MudMenu>
+
+        <MudTooltip Text="Clear search parameters">
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => OnClearSearch.InvokeAsync())" />
+        </MudTooltip>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter] public ActivePRIsWithPagination.Query Query { get; set; } = null!;
+    [Parameter] public PriTypeFilter PriTypeFilter { get; set; }
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public int TotalItems { get; set; }
+    [Parameter] public bool Tabular { get; set; }
+    [Parameter] public bool IsDownloading { get; set; }
+    [Parameter] public IDictionary<string, string> Users { get; set; } = null!;
+    [Parameter] public IDictionary<int, string> Locations { get; set; } = null!;
+
+    [Parameter] public EventCallback<string?> OnSearchChanged { get; set; }
+    [Parameter] public EventCallback OnRefresh { get; set; }
+    [Parameter] public EventCallback OnExport { get; set; }
+    [Parameter] public EventCallback OnCreatePriCode { get; set; }
+    [Parameter] public EventCallback<bool?> OnTabularChanged { get; set; }
+    [Parameter] public EventCallback<PriTypeFilter> OnSetPriType { get; set; }
+    [Parameter] public EventCallback<bool> OnQuickFilterChanged { get; set; }
+    [Parameter] public EventCallback OnShowCustodyWorkerDialog { get; set; }
+    [Parameter] public EventCallback OnShowCommunityWorkerDialog { get; set; }
+    [Parameter] public EventCallback OnShowRegionDialog { get; set; }
+    [Parameter] public EventCallback<bool?> OnActiveStatusChanged { get; set; }
+    [Parameter] public EventCallback<string> OnSortBy { get; set; }
+    [Parameter] public EventCallback OnClearSearch { get; set; }
+
+    private string GetQuickFilterLabel() => Query.JustMyPris ? "My Active PRIs" : "All";
+
+    private string GetPriTypeLabel() =>
+        PriTypeFilter switch
+        {
+            PriTypeFilter.Outgoing => "Outgoing Only",
+            PriTypeFilter.Incoming => "Incoming Only",
+            _ => "All"
+        };
+
+    private string GetActiveStatusLabel() =>
+        Query.ActiveStatus switch
+        {
+            true => "Status: Active",
+            false => "Status: Inactive",
+            _ => "Status: All"
+        };
+
+    private string GetSortLabel() =>
+        Query.OrderBy switch
+        {
+            "Id" => "Id",
+            "FirstName" => "First Name",
+            "LastName" => "Last Name",
+            "ExpectedReleaseDate" => "Expected Release Date",
+            "ActualReleaseDate" => "Actual Release Date",
+            "ExpectedReleaseRegionName" => "Expected Release Region",
+            _ => Query.OrderBy
+        };
+}
