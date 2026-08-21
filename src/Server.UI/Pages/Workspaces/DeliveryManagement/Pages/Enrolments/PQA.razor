@@ -61,7 +61,7 @@ else if (_participantDto is not null)
                 <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
                     <ParticipantQaDetails Participant="_participantDto" QueueEntry="_queueEntry"
                                           ShowNationality="@(_participantDto.ConsentStatus == ConsentStatus.GrantedStatus)"
-                                          WorkspaceRef="enrolments-pqa-queue"/>
+                                          WorkspaceRef="@($"enrolments-pqa-queue&id={Id}")"/>
                 </MudItem>
 
                 <MudItem xs="8" Style="height: 100%; width: 100%;">

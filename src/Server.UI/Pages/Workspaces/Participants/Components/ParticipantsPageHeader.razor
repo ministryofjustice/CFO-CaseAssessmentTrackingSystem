@@ -72,8 +72,8 @@
                 "enrolments-team-feedback" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb(), participant],
                 "activities-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
                 "enrolments-queue" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb(), participant],
-                "activities-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb(), participant],
-                "enrolments-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb(), participant],
+                "activities-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.ActivitiesPqa.AsMudBreadcrumb(), BuildPqaEntryBreadcrumb("Activity", "activities", parsedQuery), participant],
+                "enrolments-pqa-queue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EnrolmentsPqa.AsMudBreadcrumb(), BuildPqaEntryBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
                 "engagements-by-location" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.EngagementsByLocation.AsMudBreadcrumb(), participant],
                 "recent-approved-activities" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.RecentApprovedActivities.AsMudBreadcrumb(), participant],
                 "servicedesk" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb(), participant],
@@ -89,6 +89,16 @@
         }
 
         return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
+    }
+
+    private static BreadcrumbItem BuildPqaEntryBreadcrumb(string title, string queueType, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
+    {
+        if (parsedQuery.TryGetValue("id", out var idValue) && Guid.TryParse(idValue.ToString(), out var parsedId))
+        {
+            return new BreadcrumbItem(title, $"{DeliveryManagementLinks.Home.Href}/{queueType}/pqa/{parsedId}");
+        }
+
+        return new BreadcrumbItem(title, href: null, disabled: true);
     }
 
     private static BreadcrumbItem BuildProcessingBreadcrumb(string title, string queueType, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
