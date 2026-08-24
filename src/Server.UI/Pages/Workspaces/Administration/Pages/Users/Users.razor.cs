@@ -9,7 +9,6 @@ using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services;
-using Cfo.Cats.Server.UI.Extensions;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -29,19 +28,19 @@ public partial class Users
 
     private ApplicationUser? _currentUser;
     private IEnumerable<string> _currentRoles = [];
-    private int _defaultPageSize = 15;
+    private int _defaultPageSize = 9;
     private readonly ApplicationUserDto _currentDto = new();
     private string _searchString = string.Empty;
     private string? _selectedTenantId;
     private string Title { get; set; } = "Users";
     private readonly List<PermissionModel> _permissions = new();
     private readonly IList<Claim> _assignedClaims = null!;
-    private MudDataGrid<ApplicationUserDto> _table = null!;
+    private List<ApplicationUserDto> _pagedUsers = new();
+    private HashSet<string> _expandedUsers = new();
     private bool _initialised;
     private bool _processing;
     private bool _showPermissionsDrawer;
     private bool _canCreate;
-    private bool _canSearch;
     private bool _canEdit;
     private bool _canArchive;
     private bool _canToggleActiveStatus;
@@ -54,8 +53,14 @@ public partial class Users
     private bool _downloading;
     private List<ApplicationRoleDto> _roles = new();
     private string? _searchRole;
+    private UserStatus? _selectedStatus;
     private Dictionary<string, bool>? _policies;
     private HashSet<string> _onlineUsers = new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, string> _tenants = new();
+    private IEnumerable<string> _roleNames = [];
+    private int _currentPage = 1;
+    private int _totalPages;
+    private int _totalItems;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,7 +87,6 @@ public partial class Users
         };
 
         _canCreate = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canSearch = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canEdit = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canArchive = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canToggleActiveStatus = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
@@ -96,8 +100,17 @@ public partial class Users
             .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
             .ToListAsync();
 
+        _roleNames = _roles.OrderBy(x => x.Name).Select(x => x.Name);
+
+        _tenants = TenantsService.DataSource
+            .Where(x => x.Id.StartsWith(_currentUser!.TenantId!))
+            .OrderBy(t => t.Id)
+            .ToDictionary(k => k.Id, v => v.Name);
+
         UsersStateContainer.OnChange += OnPresenceChanged;
         await RefreshOnlineUsersAsync();
+        
+        await LoadUsersAsync();
 
         _initialised = true;
     }
@@ -122,41 +135,38 @@ public partial class Users
              x.DisplayName!.Contains(_searchString) || x.PhoneNumber!.Contains(_searchString))
             && (_searchRole == null ||
                 (_searchRole != null && x.UserRoles.Any(userRole => userRole.Role.Name == _searchRole)))
-            && (_selectedTenantId == null || (_selectedTenantId != null && x.TenantId == _selectedTenantId));
+            && (_selectedTenantId == null || (_selectedTenantId != null && x.TenantId == _selectedTenantId))
+            && (_selectedStatus == null || x.Status == _selectedStatus);
 
-    private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state,
-        CancellationToken cancellationToken)
+    private async Task LoadUsersAsync()
     {
         try
         {
             _loading = true;
 
-            if (state.SortDefinitions.Count == 0)
-            {
-                state.SortDefinitions.Add(new SortDefinition<ApplicationUserDto>("Email", false, 1, x => x.Email));
-            }
-
             var query = _userManager.Users.Where(CreateSearchPredicate());
-            var items = await query
-                .Where(x => x.TenantId!.StartsWith(_currentUser!.TenantId!))
+            var filteredQuery = query.Where(x => x.TenantId!.StartsWith(_currentUser!.TenantId!));
+            
+            var items = await filteredQuery
                 .Include(x => x.UserRoles)
                 .Include(x => x.Superior)
-                .EfOrderBySortDefinitions(state)
-                .Skip(state.Page * state.PageSize).Take(state.PageSize)
-                .ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider).ToListAsync(cancellationToken);
-            var total = await _userManager.Users.CountAsync(CreateSearchPredicate(), cancellationToken);
-            return new GridData<ApplicationUserDto> { TotalItems = total, Items = items };
+                .OrderBy(x => x.Email)
+                .Skip((_currentPage - 1) * _defaultPageSize)
+                .Take(_defaultPageSize)
+                .ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider)
+                .ToListAsync();
+            
+            var total = await filteredQuery.CountAsync();
+            
+            _totalPages = (int)Math.Ceiling(total / (double)_defaultPageSize);
+            _totalItems = total;
+            _pagedUsers = items;
         }
         finally
         {
             _loading = false;
+            StateHasChanged();
         }
-    }
-
-    private async Task OnChangedListView(string? tenantId)
-    {
-        _selectedTenantId = tenantId;
-        await _table.ReloadServerData();
     }
 
     private async Task OnSearch(string? text)
@@ -167,24 +177,14 @@ public partial class Users
         }
 
         _searchString = text!.ToLower();
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnSearchRole(string? role)
-    {
-        if (_loading)
-        {
-            return;
-        }
-
-        _searchRole = role;
-        await _table.ReloadServerData();
+        _currentPage = 1;
+        await LoadUsersAsync();
     }
 
     private async Task OnRefresh()
     {
         TenantsService.Refresh();
-        await _table.ReloadServerData();
+        await LoadUsersAsync();
     }
 
     private async Task OnExport()
@@ -553,6 +553,91 @@ public partial class Users
         }
     }
 
+    private async Task ShowTenantDialog()
+    {
+        var parameters = new DialogParameters<Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog>
+        {
+            { nameof(Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog.CurrentUser), UserProfile }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = false,
+            BackdropClick = false,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog>(
+            "Select a tenant",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: Cfo.Cats.Server.UI.Components.Identity.SelectedTenant tenant })
+        {
+            _selectedTenantId = tenant.TenantId;
+            _currentPage = 1;
+            await LoadUsersAsync();
+        }
+    }
+
+    private async Task ShowRoleDialog()
+    {
+        var parameters = new DialogParameters<SelectRoleDialog>
+        {
+            { nameof(SelectRoleDialog.Roles), _roleNames }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = false,
+            BackdropClick = false,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SelectRoleDialog>(
+            "Select a role",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: string role })
+        {
+            _searchRole = role;
+            _currentPage = 1;
+            await LoadUsersAsync();
+        }
+    }
+
+    private async Task OnStatusChanged(UserStatus? status)
+    {
+        _selectedStatus = status;
+        _currentPage = 1;
+        await LoadUsersAsync();
+    }
+
+    private async Task ClearSearch()
+    {
+        _searchString = string.Empty;
+        _selectedTenantId = null;
+        _searchRole = null;
+        _selectedStatus = null;
+        _currentPage = 1;
+        await LoadUsersAsync();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadUsersAsync();
+    }
+
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -572,4 +657,17 @@ public partial class Users
         StateHasChanged();
     }
 
+    private void ToggleUserExpansion(string userId)
+    {
+        if (_expandedUsers.Contains(userId))
+        {
+            _expandedUsers.Remove(userId);
+        }
+        else
+        {
+            _expandedUsers.Add(userId);
+        }
+    }
+
+    private bool IsUserExpanded(string userId) => _expandedUsers.Contains(userId);
 }

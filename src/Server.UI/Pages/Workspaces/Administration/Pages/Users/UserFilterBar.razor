@@ -1,0 +1,83 @@
+<MudStack>
+    <!-- Header/Filter row -->
+    <MudStack Row="true" Justify="Justify.FlexEnd">
+        <MudTextField T="string" Value="@SearchString" Placeholder="@ConstantString.Search"
+                      ValueChanged="@OnSearchChanged" Clearable="true" ShrinkLabel="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                      AdornmentColor="Color.Secondary">
+        </MudTextField>
+        <MudSpacer />
+        
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Secondary"
+                   StartIcon="@Icons.Material.Filled.Refresh" OnClick="@(() => OnRefresh.InvokeAsync())">
+            @ConstantString.Refresh
+        </MudButton>
+        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@IsDownloading" OnClick="@(() => OnExport.InvokeAsync())"
+                          StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
+            @ConstantString.Export
+        </MudLoadingButton>
+        @if (CanCreate)
+        {
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => OnCreate.InvokeAsync())">
+                @ConstantString.AddUser
+            </MudButton>
+        }
+    </MudStack>
+
+    <!-- Additional filters row -->
+    <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+        
+        <MudPagination 
+            Rectangular="true"
+            Variant="Variant.Text"
+            Selected="@CurrentPage"
+            SelectedChanged="@OnPageChanged"
+            Count="@TotalPages"
+            MiddleCount="2"
+            BoundaryCount="1"
+            Size="Size.Small">
+        </MudPagination>
+
+        <MudText>
+            @TotalItems records
+        </MudText>
+
+        <MudSpacer />
+        
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowTenantDialog.InvokeAsync())" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(string.IsNullOrEmpty(SelectedTenantId))
+            {
+                @("All Tenants")
+            }
+            else
+            {
+                @Tenants[SelectedTenantId]
+            }
+        </MudButton>
+        
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowRoleDialog.InvokeAsync())" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if(string.IsNullOrEmpty(SelectedRole))
+            {
+                @("All Roles")
+            }
+            else
+            {
+                @SelectedRole
+            }
+        </MudButton>
+
+        <MudMenu Size="Size.Small" Label="@GetStatusLabel()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="All Statuses" OnClick="@(() => OnStatusChanged.InvokeAsync(null))" />
+            <MudMenuItem Label="Active" OnClick="@(() => OnStatusChanged.InvokeAsync(UserStatus.Active))" />
+            <MudMenuItem Label="Inactive" OnClick="@(() => OnStatusChanged.InvokeAsync(UserStatus.Inactive))" />
+            <MudMenuItem Label="In-Review" OnClick="@(() => OnStatusChanged.InvokeAsync(UserStatus.MarkAsInReview))" />
+            <MudMenuItem Label="Left" OnClick="@(() => OnStatusChanged.InvokeAsync(UserStatus.Left))" />
+            <MudMenuItem Label="Pending Activation" OnClick="@(() => OnStatusChanged.InvokeAsync(UserStatus.PendingActivation))" />
+        </MudMenu>
+        
+        <MudTooltip Text="Clear search parameters">
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => OnClearSearch.InvokeAsync())" />
+        </MudTooltip>
+    </MudStack>
+</MudStack>
