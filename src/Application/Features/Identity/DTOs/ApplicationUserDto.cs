@@ -45,6 +45,8 @@ public class ApplicationUserDto
 
     [Description("Notes")] public List<ApplicationUserNoteDto> Notes { get; set; } = [];
 
+    [Description("Last Login")] public DateTime? LastLogin { get; set; }
+    
     public UserProfile ToUserProfile() =>
         new()
         {
@@ -73,11 +75,15 @@ public class ApplicationUserDto
                 .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
                 .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
                 .ForMember(x => x.PhoneNumber, s => s.MapFrom(x => x.PhoneNumber))
+                .ForMember(x => x.LastLogin, s => s.MapFrom(y => y.LastLogin))
+
                 .ReverseMap()
+                
                 .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
                 .ForMember(x => x.Notes, s => s.Ignore())
                 .ForMember(x => x.Tenant, s => s.Ignore())
                 .ForMember(x => x.Superior, s => s.Ignore())
+                
                 .AfterMap((dto, entity, context) =>
                 {
                     foreach(var noteDto in dto.Notes)
