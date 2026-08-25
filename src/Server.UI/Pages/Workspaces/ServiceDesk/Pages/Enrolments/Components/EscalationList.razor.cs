@@ -14,9 +14,9 @@ public partial class EscalationList
 
     private QaEscalationWithPagination.Query Query { get; } = new();
       
-    private void ViewEnrolment(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/servicedesk/enrolments/escalation/{dto.Id}?from=enrolments-queue");
+    private void ViewEnrolment(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/servicedesk/enrolments/escalation/{dto.Id}?from=enrolments-queue&tab=escalation");
 
-    private void ViewParticipant(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=enrolments-queue");
+    private void ViewParticipant(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=enrolments-queue&tab=escalation");
 
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state, CancellationToken cancellationToken)
     {

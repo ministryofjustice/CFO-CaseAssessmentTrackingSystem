@@ -43,7 +43,7 @@ public partial class QA1List
         }
     }
 
-    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=activities-queue");
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/workspace/participants/{dto.ParticipantId}?from=activities-queue&tab=first-pass");
 
     private async Task OnSearch(string text)
     {
