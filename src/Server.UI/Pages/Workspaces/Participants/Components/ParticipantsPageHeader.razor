@@ -136,6 +136,9 @@
             ? stageValue.ToString().ToLowerInvariant()
             : "qa1";
 
+        var stageTitle = stage == "escalation" ? "Escalation" : stage.ToUpperInvariant();
+        title = string.Format("{0} - {1}", title, stageTitle);
+
         if (stage == "escalation"
             && parsedQuery.TryGetValue("id", out var escalationId)
             && Guid.TryParse(escalationId.ToString(), out var parsedEscalationId))

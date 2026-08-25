@@ -38,7 +38,7 @@
         };
     }
 
-    private static IReadOnlyList<BreadcrumbItem> BuildServiceDeskBreadcrumbs(BreadcrumbItem home, string segment, Uri uri)
+    private IReadOnlyList<BreadcrumbItem> BuildServiceDeskBreadcrumbs(BreadcrumbItem home, string segment, Uri uri)
     {
         // For deeper pages, keep Service Desk as the root crumb and infer a middle
         // crumb so users can easily navigate back to the nearest main area.
@@ -46,13 +46,14 @@
 
         var normalizedSegment = segment.ToLowerInvariant();
 
-        if (normalizedSegment.StartsWith("activities/", StringComparison.Ordinal))
+        if (TryGetQueueRoute(normalizedSegment, out var title, out var queueType, out var stage))
         {
-            middle = BuildProcessingBreadcrumb("Activity", "activities", normalizedSegment, uri);
-        }
-        else if (normalizedSegment.StartsWith("enrolments/", StringComparison.Ordinal))
-        {
-            middle = BuildProcessingBreadcrumb("Enrolment", "enrolments", normalizedSegment, uri);
+            if (stage is "qa1" or "qa2" && normalizedSegment == $"{queueType}/{stage}")
+            {
+                return [home, new BreadcrumbItem($"{title} - {stage.ToUpperInvariant()}", href: Navigation.Uri)];
+            }
+
+            middle = BuildProcessingBreadcrumb(title, queueType, normalizedSegment, uri);
         }
 
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("from", out var from))
@@ -69,6 +70,11 @@
             };
         }
 
+        if (stage == "escalation" && normalizedSegment.StartsWith($"{queueType}/escalation/", StringComparison.Ordinal))
+        {
+            return [home, middle, new BreadcrumbItem($"{title} - Escalation", href: Navigation.Uri)];
+        }
+
         var currentTitle = normalizedSegment switch
         {
             var s when s.Contains("qa/activities/", StringComparison.Ordinal) => "Activity",
@@ -76,7 +82,22 @@
             _ => BuildFallbackTitle(segment)
         };
 
-        return [home, middle, new BreadcrumbItem(currentTitle, href: null, disabled: true)];
+        return [home, middle, new BreadcrumbItem(currentTitle, href: Navigation.Uri)];
+    }
+
+    private static bool TryGetQueueRoute(string segment, out string title, out string queueType, out string stage)
+    {
+        var parts = segment.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        queueType = parts.FirstOrDefault() ?? string.Empty;
+        stage = parts.Skip(1).FirstOrDefault() ?? string.Empty;
+        title = queueType switch
+        {
+            "activities" => "Activity",
+            "enrolments" => "Enrolment",
+            _ => string.Empty
+        };
+
+        return title.Length > 0;
     }
 
     private static BreadcrumbItem BuildQueueBreadcrumbFromQuery(BreadcrumbLinkModel queueLink, string queryString)
