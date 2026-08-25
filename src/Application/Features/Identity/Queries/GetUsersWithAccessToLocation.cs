@@ -29,13 +29,14 @@ public static class GetUsersWithAccessToLocation
 
             // Filter based on current user id
             var users = await unitOfWork.DbContext.Users
-                .Where(u => u.TenantId!.StartsWith(userService.TenantId!))
+                .Where(u => u.TenantId!.StartsWith(userService.TenantId!)
+                            && u.Status == UserStatus.Active)
                 .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             // Note: This query seems to be non-EF-translatable :(
             // This resolves an issue where someone higher in the multitenancy tree (who has access to a given location)
-            // assigns it someone else lower in the tree (who may not neccessarily have access to that same location).
+            // assigns it to someone else lower in the tree (who may not necessarily have access to that same location).
             users = users
                 .Where(user => location.Tenants
                     .Any(tenant => tenant.Id.StartsWith(user.TenantId!))
@@ -48,11 +49,11 @@ public static class GetUsersWithAccessToLocation
 
     public class Validator : AbstractValidator<Query>
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
 
             RuleFor(q => q.LocationId)
                 .NotEmpty();
@@ -65,7 +66,7 @@ public static class GetUsersWithAccessToLocation
         }
 
         private async Task<bool> Exist(int locationId, CancellationToken cancellationToken) =>
-            await unitOfWork.DbContext.Locations
+            await _unitOfWork.DbContext.Locations
                 .SingleOrDefaultAsync(l => l.Id == locationId, cancellationToken) is not null;
     }
 }

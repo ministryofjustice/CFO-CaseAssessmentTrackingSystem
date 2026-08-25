@@ -1,12 +1,9 @@
-using AutoMapper;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
-using Cfo.Cats.Domain.Identity;
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
+
 public partial class ReassignParticipantDialog
 {
     private MudForm? _form;
@@ -15,7 +12,8 @@ public partial class ReassignParticipantDialog
     [Parameter]
     public ReassignParticipants.Command Model { get; set; } = null!;
 
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+    
     [Parameter] public UserProfile? UserProfile { get; set; }
 
     private bool _saving;
@@ -36,7 +34,7 @@ public partial class ReassignParticipantDialog
                 if (result.Succeeded)
                 {
                     MudDialog.Close(DialogResult.Ok(true));
-                    Snackbar.Add("Participants reassigned", Severity.Info);
+                    Snackbar.Add($"{Model.ParticipantIdsToReassign.Length} {(Model.ParticipantIdsToReassign.Length == 1 ? "participant" : "participants")} reassigned successfully", Severity.Success);
                 }
                 else
                 {
@@ -50,6 +48,15 @@ public partial class ReassignParticipantDialog
         }
     }
 
-    private void OnUserSelectedChanged(ApplicationUserDto user) => Model.AssigneeId = user.Id;
-
+    private void OnUserSelectedChanged(ApplicationUserDto? dto)
+    {
+        if (dto != null)
+        {
+            Model.AssigneeId = dto.Id;
+        }
+        else
+        {
+            Model.AssigneeId = null; 
+        }
+    }
 }

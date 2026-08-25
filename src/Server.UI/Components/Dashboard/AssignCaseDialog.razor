@@ -18,7 +18,7 @@
                 </MudItem>
                 <MudItem xs="12">
                     <div style="min-width: 600px;">
-                        <UserSelectComponent ValueChanged="OnUserSelectedChanged" TenantId="@TenantId" Required="true" />
+                        <UserSelectComponent ValueChanged="OnUserSelectedChanged" TenantId="@TenantId" Required="true" ActiveOnly="true" />
                     </div>
                 </MudItem>
             </MudGrid>
@@ -28,14 +28,14 @@
         <MudButton Color="Color.Secondary" 
                    Variant="Variant.Filled" 
                    StartIcon="@Icons.Material.Filled.Cancel" 
-                   OnClick="Cancel">
+                   OnClick="@Cancel">
             @ConstantString.Cancel
         </MudButton>
         <MudLoadingButton Color="Color.Primary" 
                           Variant="Variant.Filled" 
                           StartIcon="@Icons.Material.Filled.Save" 
                           Loading="@_saving" 
-                          OnClick="Submit">
+                          OnClick="@Submit">
             @ConstantString.Submit
         </MudLoadingButton>
     </DialogActions>
@@ -43,13 +43,13 @@
 
 @code {
     [CascadingParameter] 
-    private IMudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public UnassignedCaseDto Participant { get; set; } = default!;
+    public UnassignedCaseDto Participant { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public string TenantId { get; set; } = default!;
+    public string TenantId { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public AssignUnassignedCase.Command Model { get; set; } = null!;
