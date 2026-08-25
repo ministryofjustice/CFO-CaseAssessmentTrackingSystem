@@ -56,11 +56,11 @@ public partial class Index
         {
             links.Add(AdministrationLinks.AuditTrails);
             links.Add(AdministrationLinks.Outbox);
+            links.Add(AdministrationLinks.PickList);
         }
         
         if (_showSystemFunctions)
         {
-            links.Add(AdministrationLinks.PickList);
             links.Add(AdministrationLinks.Tenants);
             links.Add(AdministrationLinks.Users);
             links.Add(AdministrationLinks.UserAudit);
