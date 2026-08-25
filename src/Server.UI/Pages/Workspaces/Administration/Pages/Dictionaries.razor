@@ -2,7 +2,8 @@
 @using Cfo.Cats.Application.Features.KeyValues.DTOs
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
 
-@attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
+@attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
+
 @inject IStringLocalizer<Dictionaries> L
 
 @inherits CatsComponentBase
