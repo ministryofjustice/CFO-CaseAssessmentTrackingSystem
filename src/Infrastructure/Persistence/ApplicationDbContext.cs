@@ -111,6 +111,8 @@ public class ApplicationDbContext
 
     public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
 
+    public DbSet<ContractTarget> ContractTargets => Set<ContractTarget>();
+
     public DbSet<ParticipantEngagement> ParticipantEngagements => Set<ParticipantEngagement>();
 
     public DbSet<SupportAndReferralPayment> SupportAndReferralPayments => Set<SupportAndReferralPayment>();

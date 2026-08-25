@@ -45,6 +45,7 @@ public partial class Index
         if (_showSeniorInternal)
         {
             links.Add(AdministrationLinks.Labels);
+            links.Add(AdministrationLinks.ContractTargets);
         }
         
         if (_showInitiatives)

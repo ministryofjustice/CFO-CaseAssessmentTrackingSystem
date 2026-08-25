@@ -50,7 +50,7 @@ public class CumulativeProvider(IUnitOfWork unitOfWork, ITargetsProvider targets
             .TakeWhile(date => date <= endDate)
             .ToArray();
         
-        ContractTargetDto target = new ContractTargetDto("", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ContractTargetDto target = ContractTargetDto.EmptyTarget(string.Empty);
         
         foreach (var contract in contracts)
         {

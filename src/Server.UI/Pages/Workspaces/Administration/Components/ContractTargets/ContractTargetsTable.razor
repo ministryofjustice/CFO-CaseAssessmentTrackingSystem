@@ -1,0 +1,91 @@
+@using Cfo.Cats.Application.Features.ManagementInformation.ContractTargets.DTOs
+@inherits CatsComponent<Cfo.Cats.Application.Features.ManagementInformation.ContractTargets.DTOs.ContractTargetListItemDto[]>
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+<MudTable Items="@Data"
+          Hover="true"
+          Striped="true"
+          Dense="true"
+          Loading="@Loading"
+          SortLabel="Sort By">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Contract Targets</MudText>
+        <MudSpacer />
+        <MudSelect T="int?"
+                   Label="Year"
+                   Value="_year"
+                   ValueChanged="OnYearChanged"
+                   Clearable="true"
+                   Dense="true"
+                   Class="mr-2"
+                   Style="min-width: 120px;">
+            @foreach (var year in Years)
+            {
+                <MudSelectItem T="int?" Value="@year">@year</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="int?"
+                   Label="Month"
+                   Value="_month"
+                   ValueChanged="OnMonthChanged"
+                   Clearable="true"
+                   Dense="true"
+                   Style="min-width: 140px;">
+            @foreach (var month in Months)
+            {
+                <MudSelectItem T="int?" Value="@month">@MonthName(month)</MudSelectItem>
+            }
+        </MudSelect>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ContractTargetListItemDto, object>(x => x.ContractName)">Contract</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ContractTargetListItemDto, object>(x => x.Year * 100 + x.Month)">Period</MudTableSortLabel></MudTh>
+        <MudTh>Prison</MudTh>
+        <MudTh>Community</MudTh>
+        <MudTh>Wings</MudTh>
+        <MudTh>Hubs</MudTh>
+        <MudTh>Pre-Release</MudTh>
+        <MudTh>Through the Gate</MudTh>
+        <MudTh>Support Work</MudTh>
+        <MudTh>Human Citizenship</MudTh>
+        <MudTh>Community &amp; Social</MudTh>
+        <MudTh>Interventions</MudTh>
+        <MudTh>Employment</MudTh>
+        <MudTh>Training &amp; Education</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                           Size="Size.Small"
+                           Color="Color.Info"
+                           OnClick="@(() => OnEdit(context))" />
+        </MudTd>
+        <MudTd DataLabel="Contract">@context.ContractName</MudTd>
+        <MudTd DataLabel="Period">@context.MonthName @context.Year</MudTd>
+        <MudTd DataLabel="Prison">@context.Prison</MudTd>
+        <MudTd DataLabel="Community">@context.Community</MudTd>
+        <MudTd DataLabel="Wings">@context.Wings</MudTd>
+        <MudTd DataLabel="Hubs">@context.Hubs</MudTd>
+        <MudTd DataLabel="Pre-Release">@context.PreReleaseSupport</MudTd>
+        <MudTd DataLabel="Through the Gate">@context.ThroughTheGate</MudTd>
+        <MudTd DataLabel="Support Work">@context.SupportWork</MudTd>
+        <MudTd DataLabel="Human Citizenship">@context.HumanCitizenship</MudTd>
+        <MudTd DataLabel="Community &amp; Social">@context.CommunityAndSocial</MudTd>
+        <MudTd DataLabel="Interventions">@context.Interventions</MudTd>
+        <MudTd DataLabel="Employment">@context.Employment</MudTd>
+        <MudTd DataLabel="Training &amp; Education">@context.TrainingAndEducation</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No targets found for the selected period.</MudText>
+    </NoRecordsContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100 }" />
+    </PagerContent>
+</MudTable>

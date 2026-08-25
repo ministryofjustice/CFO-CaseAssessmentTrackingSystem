@@ -8,6 +8,9 @@ public record ContractTargetDto
     {
     }
 
+    public static ContractTargetDto EmptyTarget(string contract) => new(contract, contract,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    
+
     public static ContractTargetDto operator +(ContractTargetDto a, ContractTargetDto b) =>
         a with
         {
@@ -26,7 +29,7 @@ public record ContractTargetDto
         };
 
     [SetsRequiredMembers]
-    public ContractTargetDto(string contract, int prison, int community, int wings, int hubs, int preReleaseSupport, int throughTheGate, int supportWork,  int humanCitizenship, int communityAndSocial, int interventions, int employment, int trainingAndEducation)
+    public ContractTargetDto(string contract, string contractId, int year, int month ,int prison, int community, int wings, int hubs, int preReleaseSupport, int throughTheGate, int supportWork,  int humanCitizenship, int communityAndSocial, int interventions, int employment, int trainingAndEducation)
     {
         Contract = contract;
         Prison = prison;
@@ -41,6 +44,9 @@ public record ContractTargetDto
         Interventions = interventions;
         Employment = employment;
         TrainingAndEducation = trainingAndEducation;
+        ContractId = contractId;
+        Year = year;
+        Month = month;
     }
 
     
@@ -58,4 +64,8 @@ public record ContractTargetDto
     public required int Interventions { get; init; }
     public required int Employment { get; init; }
     public required int TrainingAndEducation { get;init; }
+    public required string ContractId { get; set; }
+    public required int Month { get; set; }
+    public required int Year { get; set; }
+
 }

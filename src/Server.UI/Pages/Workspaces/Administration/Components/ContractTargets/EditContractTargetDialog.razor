@@ -1,0 +1,76 @@
+@using System.Diagnostics.Contracts
+@using Cfo.Cats.Application.Features.ManagementInformation.ContractTargets.Commands.UpdateContractTarget
+@inherits OwningComponentBase<IMediator>
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.subtitle1">Edit Contract Target</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Elevation="0" Class="pa-4">
+            <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudTextField Label="Contract" Value="@ContractName" ReadOnly="true" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Period" Value="@Period" ReadOnly="true"/>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.Prison" For="@(() => Model.Prison)"
+                                         Label="@Model.LabelFor(x => x.Prison)" HelperText="@Model.HelperTextFor(x => x.Prison)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.Community" For="@(() => Model.Community)"
+                                         Label="@Model.LabelFor(x => x.Community)" HelperText="@Model.HelperTextFor(x => x.Community)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.Wings" For="@(() => Model.Wings)"
+                                         Label="@Model.LabelFor(x => x.Wings)" HelperText="@Model.HelperTextFor(x => x.Wings)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.Hubs" For="@(() => Model.Hubs)"
+                                         Label="@Model.LabelFor(x => x.Hubs)" HelperText="@Model.HelperTextFor(x => x.Hubs)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.PreReleaseSupport" For="@(() => Model.PreReleaseSupport)"
+                                         Label="@Model.LabelFor(x => x.PreReleaseSupport)" HelperText="@Model.HelperTextFor(x => x.PreReleaseSupport)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.ThroughTheGate" For="@(() => Model.ThroughTheGate)"
+                                         Label="@Model.LabelFor(x => x.ThroughTheGate)" HelperText="@Model.HelperTextFor(x => x.ThroughTheGate)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.SupportWork" For="@(() => Model.SupportWork)"
+                                         Label="@Model.LabelFor(x => x.SupportWork)" HelperText="@Model.HelperTextFor(x => x.SupportWork)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.HumanCitizenship" For="@(() => Model.HumanCitizenship)"
+                                         Label="@Model.LabelFor(x => x.HumanCitizenship)" HelperText="@Model.HelperTextFor(x => x.HumanCitizenship)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.CommunityAndSocial" For="@(() => Model.CommunityAndSocial)"
+                                         Label="@Model.LabelFor(x => x.CommunityAndSocial)" HelperText="@Model.HelperTextFor(x => x.CommunityAndSocial)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.Interventions" For="@(() => Model.Interventions)"
+                                         Label="@Model.LabelFor(x => x.Interventions)" HelperText="@Model.HelperTextFor(x => x.Interventions)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.Employment" For="@(() => Model.Employment)"
+                                         Label="@Model.LabelFor(x => x.Employment)" HelperText="@Model.HelperTextFor(x => x.Employment)" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField T="int" @bind-Value="Model.TrainingAndEducation" For="@(() => Model.TrainingAndEducation)"
+                                         Label="@Model.LabelFor(x => x.TrainingAndEducation)" HelperText="@Model.HelperTextFor(x => x.TrainingAndEducation)" Min="0" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Save">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
