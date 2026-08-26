@@ -17,15 +17,7 @@
                         if(item is NavigationMenuItemLinkModel link)
                         {
 
-                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width: 100%;">
-                                    <MudLink
-                                        Href="@link.Href"
-                                        Target="@link.Target"
-                                        aria-description="@link.AccessibilityText"
-                                        Class="pa-1"
-                                        Underline="Underline.Always">
-                                        @L[@link.DisplayText]
-                                    </MudLink>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Style="width: 100%;">
                                 @if (section.IsBookmarkable)
                                 {                                    
                                     <MudIconButton 
@@ -35,6 +27,14 @@
                                         OnClick="@(async () => await ToggleWorkspaceBookmark(link.Href!))"
                                         aria-label="@(link.Href == _defaultWorkspace ? "Remove bookmark" : "Set as default workspace")" />
                                 }
+                                    <MudLink
+                                        Href="@link.Href"
+                                        Target="@link.Target"
+                                        aria-description="@link.AccessibilityText"
+                                        Class="pa-1"
+                                        Underline="Underline.Always">
+                                        @L[@link.DisplayText]
+                                    </MudLink>
                             </MudStack>
                             
                         }
