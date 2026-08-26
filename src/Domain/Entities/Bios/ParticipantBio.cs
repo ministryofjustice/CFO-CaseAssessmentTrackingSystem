@@ -6,7 +6,7 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Bios;
 
-public class ParticipantBio : BaseAuditableEntity<Guid>, IAuditTrial
+public class ParticipantBio : BaseAuditableEntity<Guid>, IAuditTrial, IShallowAuditable
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ParticipantBio()
