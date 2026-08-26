@@ -223,7 +223,7 @@ consumers:
       NO_PROXY: "NO_PROXY"
 
 rabbitmq:
-  image: "rabbitmq:4.3-management-alpine@sha256:e6862a7d804c80fc72d2265aed3b725fd9a6afd330b735363eeecc4b6ec4dd3d"
+  image: "rabbitmq:4.3-management-alpine@sha256:a1a5dd841347af3e32355fd58ac530e831fd394c49e299f862e2fd4ab331cd79"
 
 migrator:
   image:
