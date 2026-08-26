@@ -202,6 +202,10 @@ public static class ConstantString
 
     public static string Active =>
      Localize("Active");
+    
+    public static string Inactive =>
+        Localize("Inactive");
+     
     public static string AdjustDate =>
         Localize("Adjust Date");
 

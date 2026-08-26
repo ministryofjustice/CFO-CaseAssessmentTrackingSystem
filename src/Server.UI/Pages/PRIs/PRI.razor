@@ -33,13 +33,13 @@
 
                                     <FilterLocationAutoComplete Locations="_communityLocations" 
                                                                 @bind-Value="_model.Release.ExpectedRegion"
-                                                                Label="Expected release region"
+                                                                Label=@ConstantString.ExpectedReleaseRegion
                                                                 @bind-Value:after="LocationChanged"
                                                                 For="() => _model.Release.ExpectedRegion!" />
                                     
                                     <MudDatePicker @bind-Date="_model.Release.ExpectedOn"
                                                    For="() => _model.Release.ExpectedOn"
-                                                   Label="Expected date of release"
+                                                   Label=@ConstantString.ExpectedDateOfRelease
                                                    MinDate="DateTime.Today"
                                                    MaxDate="DateTime.Today.AddMonths(3)"
                                                    PickerVariant="PickerVariant.Dialog"
