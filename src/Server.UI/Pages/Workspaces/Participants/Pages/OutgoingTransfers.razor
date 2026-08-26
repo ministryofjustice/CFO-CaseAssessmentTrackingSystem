@@ -1,0 +1,79 @@
+@page "/pages/workspace/participants/outgoing-transfers"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Humanizer
+
+<ParticipantsPageHeader />
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4">Outgoing Transfers</MudText>
+    <MudSpacer />
+    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+</MudStack>
+
+<MudTable Dense="true" Striped="true" Items="@_transfers"
+          Hover="true"
+          Breakpoint="Breakpoint.Sm"
+          Loading="@_isLoading"
+          LoadingProgressColor="Color.Info"
+          Class="mb-8 pa-4"
+          Filter="Filter">
+    <HeaderContent>
+        <MudTh>@ConstantString.Actions</MudTh>
+        <MudTh>Participant</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh>Occurred</MudTh>
+        <MudTh>From</MudTh>
+        <MudTh>To</MudTh>
+        <MudTh>Type</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@ConstantString.Actions">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
+            </MudMenu>
+        </MudTd>
+        <MudTd DataLabel="Participant">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body1">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            @if (context.EnrolmentStatus is not null)
+            {
+                <MudChip T="string" Size="Size.Small" Style="@($"background-color: {context.EnrolmentStatus.Colour}; color: white;")">@context.EnrolmentStatus.Name</MudChip>
+            }
+        </MudTd>
+        <MudTd DataLabel="Occurred">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body1">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body1">@context.MoveOccured.Humanize()</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="From">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body1">@context.FromLocation.Name</MudText>
+                @if (context.FromContract is not null)
+                {
+                    <MudText Typo="Typo.body1">@context.FromContract</MudText>
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="To">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body1">@context.ToLocation.Name</MudText>
+                @if (context.ToContract is not null)
+                {
+                    <MudText Typo="Typo.body1">@context.ToContract</MudText>
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Type">@context.TransferType.Name</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
