@@ -103,6 +103,8 @@ public interface IApplicationDbContext
 
     DbSet<DateDimension> DateDimensions { get; }
 
+    DbSet<ContractTarget> ContractTargets { get; }
+
     DbSet<ParticipantEngagement> ParticipantEngagements { get; }
 
     DbSet<PriCode> PriCodes { get; }

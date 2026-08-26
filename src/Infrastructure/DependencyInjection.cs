@@ -59,6 +59,8 @@ using Cfo.Cats.Application.Features.Identity.MessageBus;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Cfo.Cats.Infrastructure.Services.Targets;
+using Cfo.Cats.Application.Features.ManagementInformation;
 
 namespace Cfo.Cats.Infrastructure;
 
@@ -82,6 +84,8 @@ public static class DependencyInjection
         {
             services.AddMessageConsumers();
         }
+
+        services.AddCatsConsumer();
 
         services.AddSingleton<ISessionService, SessionService>();
 
@@ -200,6 +204,17 @@ public static class DependencyInjection
         services.AddHostedService<PaymentBackgroundService>();
         services.AddHostedService<DocumentsBackgroundService>();
 
+        return services;
+    }
+
+    /// <summary>
+    /// This is a special consumer that should always run in CATS.
+    /// It allows the UI to react to integration events (and each copy of CATS will react).
+    /// </summary>
+    public static IServiceCollection AddCatsConsumer(this IServiceCollection services)
+    {
+        services.AddScoped<ContractTargetsChangedConsumer>();
+        services.AddHostedService<CatsBackgroundService>();
         return services;
     }
 
@@ -358,7 +373,16 @@ public static class DependencyInjection
 
                 return new CachingInitiativeService(cache, service, logger);
             });
-            
+
+        services.AddSingleton<EfTargetsProvider>();
+        services.AddSingleton<ITargetsProvider>( sp =>
+        {
+           var service = sp.GetRequiredService<EfTargetsProvider>(); 
+           var cache = sp.GetRequiredService<IFusionCache>();
+           var logger = sp.GetRequiredService<ILogger<CachingTargetsProvider>>();
+
+           return new CachingTargetsProvider(cache, service, logger);
+        }); 
 
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 

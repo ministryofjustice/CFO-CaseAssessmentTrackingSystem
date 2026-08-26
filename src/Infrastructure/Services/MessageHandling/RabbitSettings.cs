@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
+﻿using Amazon.SecurityToken.Model;
+
+namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
 
 public class RabbitSettings
 {
@@ -9,4 +11,6 @@ public class RabbitSettings
     public required string PaymentService { get; set; } = "payment-service";
     public required string TasksService { get; set; } = "tasks-service";
     public required string OvernightService { get; set; } = "overnight-service";
+
+    public required string CatsService { get; set; } = "cats-service";
 }

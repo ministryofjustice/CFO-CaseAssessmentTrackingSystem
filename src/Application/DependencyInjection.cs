@@ -53,21 +53,6 @@ public static class DependencyInjection
                 return scope.ServiceProvider.GetRequiredService<IMediator>();
             };
         });
-        services.AddSingleton<InMemoryTargetsProvider>();
-        services.AddSingleton<InMemoryTargetsProviderReprofiled>();
-        
-        services.AddSingleton<ITargetsProvider>(sp =>
-        {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-
-            if (Convert.ToBoolean(configuration["Features:InMemoryTargetsProviderReprofiled"]))
-            {
-                var inMemory = sp.GetRequiredService<InMemoryTargetsProvider>();
-                return new InMemoryTargetsProviderReprofiled(inMemory);
-            }
-
-            return sp.GetRequiredService<InMemoryTargetsProvider>();
-        });
 
         services.AddLazyCache();
 
