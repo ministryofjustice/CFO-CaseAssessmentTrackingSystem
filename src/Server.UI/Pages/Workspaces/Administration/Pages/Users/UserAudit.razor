@@ -13,40 +13,65 @@
 
 <AdministrationPageHeader />
 
-<MudDataGrid Striped="true" Dense="true"
-    ServerData="@(ServerReload)"
-    T="IdentityAuditTrailDto"
+<MudTable T="IdentityAuditTrailDto"
+    ServerData="ServerReload"
     FixedHeader="true"
-    FixedFooter="true"
-    Virtualize="true"
-    @bind-RowsPerPage="_defaultPageSize"
-    Height="calc(100vh - 300px)"
     Loading="@_loading"
     Hover="true"
+    Striped="true"
+    Dense="true"
     @ref="_table"
-    BreakPoint="Breakpoint.Sm">
+    RowsPerPage="@_defaultPageSize">
     <ToolBarContent>
-        <MudEnumSelect Style="min-width:120px" TEnum="IdentityAuditTrailListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+        <MudEnumSelect 
+            TEnum="IdentityAuditTrailListView" 
+            ValueChanged="OnChangedListView" 
+            Value="Query.ListView" 
+            Dense="true" 
+            Label="List View"
+            Style="min-width:120px">
         </MudEnumSelect>
         <MudSpacer />
-        <MudStack Row="true" AlignItems="AlignItems.Stretch">
-            <MudEnumSelect TEnum="IdentityActionType?" Placeholder="Search for audit type" Value="@Query.IdentityActionType" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="min-width:140px" FullWidth="true"> </MudEnumSelect>
+        <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexEnd" Spacing="2">
+            <MudEnumSelect 
+                TEnum="IdentityActionType?" 
+                Placeholder="Search for audit type" 
+                Value="@Query.IdentityActionType" 
+                Clearable="true" 
+                ValueChanged="@(s => OnSearch(s))" 
+                Style="min-width:140px"> 
+            </MudEnumSelect>
+
+            <MudLoadingButton 
+                    Color="Color.Secondary" 
+                    Variant="Variant.Filled" 
+                    Loading="@_downloading" 
+                    OnClick="OnExport"
+                    StartIcon="@Icons.Material.Filled.CloudDownload" 
+                    Size="Size.Small">
+            @ConstantString.Export
+            </MudLoadingButton>            
         </MudStack>
     </ToolBarContent>
-    <Columns>
-        <PropertyColumn Property="x => x.DateTime" Title="@_currentDto.GetMemberDescription(x => x.DateTime)" />
-        <PropertyColumn Property="x => x.ActionType" Title="@_currentDto.GetMemberDescription(x => x.ActionType)">
-            <CellTemplate>
-                @if (context.Item.ActionType is not null)
-                {
-                    @context.Item.ActionType.Value.Humanize()    
-                }
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.UserName" Title="@_currentDto.GetMemberDescription(x => x.UserName)" />
-        <PropertyColumn Property="x => x.PerformedBy" Title="@_currentDto.GetMemberDescription(x => x.PerformedBy)" />
-        <PropertyColumn Property="x => x.IpAddress" Title="@_currentDto.GetMemberDescription(x => x.IpAddress)" />
-    </Columns>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="DateTime">@_currentDto.GetMemberDescription(x => x.DateTime)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="ActionType">@_currentDto.GetMemberDescription(x => x.ActionType)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="UserName">@_currentDto.GetMemberDescription(x => x.UserName)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="PerformedBy">@_currentDto.GetMemberDescription(x => x.PerformedBy)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="IpAddress">@_currentDto.GetMemberDescription(x => x.IpAddress)</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@_currentDto.GetMemberDescription(x => x.DateTime)">@context.DateTime</MudTd>
+        <MudTd DataLabel="@_currentDto.GetMemberDescription(x => x.ActionType)">
+            @if (context.ActionType is not null)
+            {
+                @context.ActionType.Value.Humanize()
+            }
+        </MudTd>
+        <MudTd DataLabel="@_currentDto.GetMemberDescription(x => x.UserName)">@context.UserName</MudTd>
+        <MudTd DataLabel="@_currentDto.GetMemberDescription(x => x.PerformedBy)">@context.PerformedBy</MudTd>
+        <MudTd DataLabel="@_currentDto.GetMemberDescription(x => x.IpAddress)">@context.IpAddress</MudTd>
+    </RowTemplate>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>
     </NoRecordsContent>
@@ -54,6 +79,6 @@
         <MudText>@ConstantString.Loading</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@([10, 15, 30, 50])"/>
+        <MudTablePager PageSizeOptions="@([10, 15, 30, 50])" />
     </PagerContent>
-</MudDataGrid>
+</MudTable>
