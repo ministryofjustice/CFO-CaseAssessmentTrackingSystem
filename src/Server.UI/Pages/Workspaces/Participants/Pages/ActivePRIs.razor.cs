@@ -311,7 +311,7 @@ public partial class ActivePRIs
 
     private async Task ShowRegionDialog()
     {
-        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile!, title: "Select Expected Release Region");
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile!, l => l.LocationType.IsHub == false && l.LocationType.IsCustody == false, title: "Select Expected Release Region");
         
         if (location is not null)
         {

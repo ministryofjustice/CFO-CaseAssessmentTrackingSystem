@@ -9,7 +9,7 @@
 
 @if (_notFound)
 {
-    <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Square="true" Class="my-2">No PRI found.</MudAlert>
+    <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Square="true" Class="my-2"> No PRI found.</MudAlert>
 }
 @if (_model is not null)
 {
@@ -30,13 +30,13 @@
                         <MudSelectItem Value="@_priRelease!.CustodyLocation">@_priRelease!.CustodyLocation!.Name</MudSelectItem>
                     </MudSelect>
                     <MudSelect @bind-Value="_priRelease!.ExpectedRegion"
-                                    Label="Expected release region"
+                                    Label=@ConstantString.ExpectedReleaseRegion
                                     For="() => _priRelease!.ExpectedRegion">    
                                             <MudSelectItem Value="@_priRelease!.ExpectedRegion">@_priRelease!.ExpectedRegion!.Name</MudSelectItem>
                                     </MudSelect>
                     <MudDatePicker @bind-Date="_priRelease!.ExpectedOn"
                     For="() => _priRelease!.ExpectedOn"
-                    Label="Expected date of release"
+                    Label=@ConstantString.ExpectedDateOfRelease
                     MinDate="DateTime.Today"
                     MaxDate="DateTime.Today.AddMonths(3)"
                     Class="mt-2" />
@@ -55,7 +55,7 @@
                 <MudForm ReadOnly Disabled>
                     <MudTextField Value="_model!.AssignedToDisplayName"
                     For="() => _model!.AssignedToDisplayName"
-                    Label="Community Support Worker"
+                    Label=@ConstantString.CommunitySupportWorker
                     MaxLength="6"
                     Class="mb-2" />
                 </MudForm>

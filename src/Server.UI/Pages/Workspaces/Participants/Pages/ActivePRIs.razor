@@ -8,9 +8,9 @@
 
 @inject ICurrentUserService CurrentUser
 
-<ParticipantsPageHeader />
+<ParticipantsPageHeader/>
 
-<PRIFilterBar 
+<PRIFilterBar
     Query="@Query"
     PriTypeFilter="@_priTypeFilter"
     TotalPages="@_totalPages"
@@ -31,7 +31,7 @@
     OnShowRegionDialog="@ShowRegionDialog"
     OnActiveStatusChanged="@OnActiveStatusChanged"
     OnSortBy="@(new EventCallback<string>(this, SortBy))"
-    OnClearSearch="@ClearSearch" />
+    OnClearSearch="@ClearSearch"/>
 
 @if (Tabular)
 {
@@ -50,16 +50,18 @@
             <MudTd>
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                    <MudMenuItem OnClick="@(()=> ViewParticipant(context))">
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info"
+                         AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(() => ViewParticipant(context))">
                         @ConstantString.ViewParticipant
                     </MudMenuItem>
 
-                    @if(context.ParticipantIsActive)
+                    @if (context.ParticipantIsActive)
                     {
-                        @if (context.ActualReleaseDate == null)
+                        @if (context.ActualReleaseDate == null
+                             && (CurrentUser.UserId == context.AssignedTo || CurrentUser.UserId == context.CreatedBy))
                         {
-                            <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context))">
+                            <MudMenuItem OnClick="@(() => AddActualReleaseDate(context))">
                                 @ConstantString.AddActualReleaseDate
                             </MudMenuItem>
                         }
@@ -67,14 +69,18 @@
                         {
                             if (CurrentUser.UserId == context.AssignedTo)
                             {
-                                <MudMenuItem OnClick="@(()=> CompletePri(context))">
+                                <MudMenuItem OnClick="@(() => CompletePri(context))">
                                     @ConstantString.CompletePRI
                                 </MudMenuItem>
                             }
                         }
-                        <MudMenuItem OnClick="@(()=> AbandonPri(context))">
-                            @ConstantString.AbandonPRI
-                        </MudMenuItem>
+
+                        @if (CurrentUser.UserId == context.AssignedTo || CurrentUser.UserId == context.CreatedBy)
+                        {
+                            <MudMenuItem OnClick="@(() => AbandonPri(context))">
+                                @ConstantString.AbandonPRI
+                            </MudMenuItem>
+                        }
                     }
                 </MudMenu>
             </MudTd>
@@ -85,13 +91,17 @@
                 </div>
             </MudTd>
             <MudTd>
-                @if(context.ParticipantIsActive)
+                @if (context.ParticipantIsActive)
                 {
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success"
+                             Icon="@Icons.Material.Filled.CheckCircle"> @ConstantString.Active
+                    </MudChip>
                 }
                 else
                 {
-                    <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">
+                        @ConstantString.Inactive
+                    </MudChip>
                 }
             </MudTd>
             <MudTd>
@@ -113,7 +123,7 @@
             </MudTd>
             <MudTd>
                 <div class="d-flex flex-column">
-                    @if(context.ActualReleaseDate is not null)
+                    @if (context.ActualReleaseDate is not null)
                     {
                         <MudText Typo="Typo.body1">@context.ActualReleaseDate</MudText>
                         <MudText Typo="Typo.body1" Class="mud-text-secondary">
@@ -137,77 +147,83 @@ else
             @foreach (var item in _data)
             {
                 <MudPaper Outlined="true" Class="pa-3">
-                <MudStack Spacing="2">
-                    <!-- Header: Name, ID and Status -->
-                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                        <MudText Typo="Typo.subtitle1" Style="font-weight: 500">@item.ParticipantName</MudText>
-                        <MudText Typo="Typo.body2" Class="mud-text-secondary">(@item.ParticipantId)</MudText>
-                        @if(item.ParticipantIsActive)
-                        {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
-                        }
-                        else
-                        {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
-                        }
-                    </MudStack>
-                        
-                    <MudGrid Spacing="2">
-                        <MudItem xs="4">
-                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Custody Support Worker</MudText>
-                            <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
-                        </MudItem>
-                            
-                        <MudItem xs="4">
-                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Community Support Worker</MudText>
-                            <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
-                        </MudItem>
-                            
-                        <MudItem xs="4">
-                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Expected Release Region</MudText>
-                            <MudText Typo="Typo.body2">@item.ExpectedReleaseRegion!.Name</MudText>
-                        </MudItem>
-                        
-                        <MudItem xs="4">
-                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Expected Release Date</MudText>
-                            <MudText Typo="Typo.body2">@item.ExpectedReleaseDate</MudText>
-                            <MudText Typo="Typo.caption" Class="mud-text-secondary">
-                                @(item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ExpectedReleaseDate.Humanize())
-                            </MudText>
-                        </MudItem>
-  
-                        <MudItem xs="4">
-                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Actual Release Date</MudText>
-                            @if(item.ActualReleaseDate is not null)
+                    <MudStack Spacing="2">
+                        <!-- Header: Name, ID and Status -->
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                            <MudText Typo="Typo.subtitle1" Style="font-weight: 500">@item.ParticipantName</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">(@item.ParticipantId)</MudText>
+                            @if (item.ParticipantIsActive)
                             {
-                                <MudText Typo="Typo.body2">@item.ActualReleaseDate</MudText>
-                                <MudText Typo="Typo.caption" Class="mud-text-secondary">
-                                    @(item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ActualReleaseDate.Humanize())
-                                </MudText>
-                        
-                       
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success"
+                                         Icon="@Icons.Material.Filled.CheckCircle">@ConstantString.Active
+                                </MudChip>
                             }
                             else
                             {
-                                <MudText Typo="Typo.body2" Class="mud-text-secondary">Not set</MudText>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Default"
+                                         Icon="@Icons.Material.Filled.Cancel">@ConstantString.Inactive
+                                </MudChip>
                             }
-                        </MudItem>
-                    </MudGrid>
-                </MudStack>
-                 <MudDivider Class="mt-3 mb-2" />
-                    
+                        </MudStack>
+
+                        <MudGrid Spacing="2">
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Custody Support Worker</MudText>
+                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
+                            </MudItem>
+
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Community Support Worker
+                                </MudText>
+                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
+                            </MudItem>
+
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Expected Release Region
+                                </MudText>
+                                <MudText Typo="Typo.body2">@item.ExpectedReleaseRegion!.Name</MudText>
+                            </MudItem>
+
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Expected Release Date</MudText>
+                                <MudText Typo="Typo.body2">@item.ExpectedReleaseDate</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                    @(item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ExpectedReleaseDate.Humanize())
+                                </MudText>
+                            </MudItem>
+
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Actual Release Date</MudText>
+                                @if (item.ActualReleaseDate is not null)
+                                {
+                                    <MudText Typo="Typo.body2">@item.ActualReleaseDate</MudText>
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                        @(item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ActualReleaseDate.Humanize())
+                                    </MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">Not set</MudText>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudStack>
+                    <MudDivider Class="mt-3 mb-2"/>
+
                     <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
                         <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
-                                   StartIcon="@Icons.Material.Filled.Visibility" OnClick="@(()=> ViewParticipant(item))">
+                                   StartIcon="@Icons.Material.Filled.Visibility"
+                                   OnClick="@(() => ViewParticipant(item))">
                             @ConstantString.ViewParticipant
                         </MudButton>
-                        
-                        @if(item.ParticipantIsActive)
+
+                        @if (item.ParticipantIsActive)
                         {
                             @if (item.ActualReleaseDate == null)
                             {
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
-                                           StartIcon="@Icons.Material.Filled.CalendarToday" OnClick="@(()=> AddActualReleaseDate(item))">
+                                           StartIcon="@Icons.Material.Filled.CalendarToday"
+                                           OnClick="@(() => AddActualReleaseDate(item))">
                                     @ConstantString.AddActualReleaseDate
                                 </MudButton>
                             }
@@ -216,13 +232,15 @@ else
                                 @if (CurrentUser.UserId == item.AssignedTo)
                                 {
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small"
-                                               StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(()=> CompletePri(item))">
+                                               StartIcon="@Icons.Material.Filled.CheckCircle"
+                                               OnClick="@(() => CompletePri(item))">
                                         @ConstantString.CompletePRI
                                     </MudButton>
                                 }
                             }
+
                             <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"
-                                       StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(()=> AbandonPri(item))">
+                                       StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => AbandonPri(item))">
                                 @ConstantString.AbandonPRI
                             </MudButton>
                         }

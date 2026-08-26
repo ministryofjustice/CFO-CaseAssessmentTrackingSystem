@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Entities.PRIs;
+using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Application.Features.PRIs.Queries.Extensions;
 
@@ -8,7 +9,9 @@ public static class PRIFilterExtensions
     public static IQueryable<PRI> ApplyTenantFilter(
         this IQueryable<PRI> query,
         UserProfile currentUser)
-        => query.Where(x => x.Participant!.Owner!.TenantId!.StartsWith(currentUser.TenantId!));
+        => query.Where(x => 
+            x.Participant!.Owner!.TenantId!.StartsWith(currentUser.TenantId!) ||
+            (x.AssignedToUser != null && x.AssignedToUser.TenantId!.StartsWith(currentUser.TenantId!)));
 
     public static IQueryable<PRI> ApplyJustMyPrisFilter(
         this IQueryable<PRI> query,
