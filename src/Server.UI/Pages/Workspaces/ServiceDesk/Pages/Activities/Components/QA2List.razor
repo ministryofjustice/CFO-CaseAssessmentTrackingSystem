@@ -59,7 +59,9 @@
                     <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
                         @ConstantString.View Participant
                     </MudMenuItem>
-
+                    <MudMenuItem OnClick="@(() => Reassign(context.Item))">
+                        @ConstantString.Reassign
+                    </MudMenuItem>
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>        

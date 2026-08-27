@@ -2,6 +2,7 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.Participants.Rules;
 
 namespace Cfo.Cats.Domain.Entities.Activities;
 
@@ -44,20 +45,29 @@ public abstract class ActivityQueueEntry : OwnerPropertyEntity<Guid>
     public abstract ActivityQueueEntry Return();
 
     public ActivityQueueEntry AddNote(string? message, bool isExternal = false, FeedbackType? feedbackType = null, string? returnReason = null)
-     {
-         if (string.IsNullOrWhiteSpace(message) == false)
-         {
-             _notes.Add(new ActivityQueueEntryNote()
-             {
-                 TenantId = TenantId,
-                 Message = message,
-                 IsExternal = isExternal,
-                 FeedbackType = feedbackType,
-                 ReturnReason = returnReason
-             });
-         }
-         return this;
-     }
+    {
+        if (string.IsNullOrWhiteSpace(message) == false)
+        {
+            _notes.Add(new ActivityQueueEntryNote()
+            {
+                TenantId = TenantId,
+                Message = message,
+                IsExternal = isExternal,
+                FeedbackType = feedbackType,
+                ReturnReason = returnReason
+            });
+        }
+        return this;
+    }
+
+    public ActivityQueueEntry Reassign(string newUserId)
+    {
+        CheckRule(new QueueEntryMustBeOpenToReassignRule(IsCompleted));
+        CheckRule(new NewAssigneeMustBeDifferentRule(OwnerId, newUserId));
+        
+        OwnerId = newUserId;
+        return this;
+    }
 
     public string TenantId { get; set; } = default!;
 
