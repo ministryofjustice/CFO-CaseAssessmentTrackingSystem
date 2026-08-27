@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
+using MudBlazor.State;
 
 namespace Cfo.Cats.Server.UI.Components.Users;
 
@@ -15,6 +16,9 @@ public partial class UserSelectComponent
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public Variant Variant { get; set; } = Variant.Filled;
     [Parameter] public bool ActiveOnly { get; set; }
+
+    [Parameter] public Func<ApplicationUserDto, bool>? Filter { get; set; }
+    
     private ApplicationUserDto[] _users = [];
     
     protected override void OnInitialized()
@@ -25,6 +29,11 @@ public partial class UserSelectComponent
         if (ActiveOnly)
         {
             users = users.Where(u => u.Status == UserStatus.Active);
+        }
+
+        if(Filter is not null)
+        {
+            users = users.Where(Filter);
         }
         
         _users = users.OrderBy(u => u.DisplayName).ToArray();

@@ -1,12 +1,17 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Application.Features.Activities.Commands;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components;
 
 public partial class EscalationList
 {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
+
+    [Inject]
+    public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
 
     private bool _loading;
     private int _defaultPageSize = 30;
@@ -43,6 +48,34 @@ public partial class EscalationList
         finally
         {
             _loading = false;
+        }
+    }
+    
+    public async Task Reassign(ActivityQueueEntryDto dto)
+    {
+        string[] tenants = ["1.", "1.1."];
+
+        var newAssingee = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, filter: x => tenants.Contains(x.TenantId!));
+
+        if(newAssingee is not null)
+        {
+            var command = new ReassignQaEntry.Command()
+            {
+                NewUserId = newAssingee.UserId,
+                QueueEntryId = dto.Id  
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if(result.Succeeded)
+            {
+                Snackbar.Add($"Reassigned to {newAssingee.DisplayName}");
+                await OnRefresh();   
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, severity: MudBlazor.Severity.Error);
+            }
         }
     }
 

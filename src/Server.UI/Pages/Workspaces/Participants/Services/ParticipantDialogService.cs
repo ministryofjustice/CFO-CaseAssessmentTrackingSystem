@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Server.UI.Components.Identity;
@@ -38,11 +39,12 @@ public class ParticipantDialogService(IDialogService dialogService) : IParticipa
             : null;
     }
 
-    public async Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee")
+    public async Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee", Func<ApplicationUserDto, bool>? filter = null)
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", currentUser }
+            { "CurrentUser", currentUser },
+            { "Filter", filter }
         };
 
         var options = new DialogOptions
