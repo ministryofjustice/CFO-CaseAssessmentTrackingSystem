@@ -13,6 +13,9 @@ public partial class SelectUserDialog
     [Parameter]
     public UserProfile CurrentUser { get; set; } = null!;
 
+    [Parameter]
+    public Func<ApplicationUserDto, bool>? Filter { get; set; }
+
     private SelectedUser SelectedUser { get; set; } = new SelectedUser(string.Empty, string.Empty);
 
     private void Submit()

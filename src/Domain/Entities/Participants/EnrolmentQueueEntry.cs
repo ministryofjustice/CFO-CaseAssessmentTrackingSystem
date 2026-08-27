@@ -5,6 +5,7 @@ using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.ValueObjects;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Participants.Rules;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -56,6 +57,15 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>
                 ReturnReason = returnReason
             });
         }
+        return this;
+    }
+
+    public EnrolmentQueueEntry Reassign(string newUserId)
+    {
+        CheckRule(new QueueEntryMustBeOpenToReassignRule(IsCompleted));
+        CheckRule(new NewAssigneeMustBeDifferentRule(OwnerId, newUserId));
+        
+        OwnerId = newUserId;
         return this;
     }
 

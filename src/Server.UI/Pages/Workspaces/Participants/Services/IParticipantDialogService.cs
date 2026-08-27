@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Server.UI.Components.Identity;
 
@@ -24,7 +25,7 @@ public interface IParticipantDialogService
     /// <param name="currentUser">The current user profile for authorization.</param>
     /// <param name="title">Optional dialog title. Defaults to "Select an assignee".</param>
     /// <returns>The selected user, or null if canceled.</returns>
-    Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee");
+    Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee", Func<ApplicationUserDto, bool>? filter = null);
 
     /// <summary>
     /// Shows the tenant selection dialog.

@@ -3,7 +3,7 @@
 <MudDialog>
 	<DialogContent>
 		<div style="min-width: 600px;">
-			<UserSelectComponent ValueChanged="OnUserSelectedChanged" TenantId="@(CurrentUser.TenantId ?? string.Empty)" ActiveOnly="true" />
+			<UserSelectComponent ValueChanged="OnUserSelectedChanged" TenantId="@(CurrentUser.TenantId ?? string.Empty)" Filter="Filter" ActiveOnly="true" />
 		</div>
 	</DialogContent>
 	<DialogActions>

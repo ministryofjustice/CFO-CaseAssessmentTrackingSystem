@@ -5,6 +5,7 @@
         <IsAspireHost>true</IsAspireHost>
         <UserSecretsId>438e0658-688c-449c-b0b7-c8940c972575</UserSecretsId>
         <NoWarn>$(NoWarn);ASPIRE004</NoWarn>
+        <AspireUseCliBundle>true</AspireUseCliBundle>
     </PropertyGroup>
 
     <ItemGroup>

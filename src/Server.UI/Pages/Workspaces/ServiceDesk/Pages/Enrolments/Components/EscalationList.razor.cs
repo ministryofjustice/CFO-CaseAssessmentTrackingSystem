@@ -1,12 +1,17 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Enrolments.Components;
 
 public partial class EscalationList
 {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
+
+    [Inject]
+    public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
 
     private bool _loading;
     private int _defaultPageSize = 30;
@@ -54,6 +59,34 @@ public partial class EscalationList
         
         Query.Keyword = text;
         await _table.ReloadServerData();
+    }
+
+    private async Task Reassign(EnrolmentQueueEntryDto dto)
+    {
+        string[] tenants = ["1.", "1.1."];
+
+        var newAssingee = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, filter: x => tenants.Contains(x.TenantId!));
+
+        if(newAssingee is not null)
+        {
+            var command = new ReassignQaEntry.Command()
+            {
+                NewUserId = newAssingee.UserId,
+                QueueEntryId = dto.Id  
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if(result.Succeeded)
+            {
+                Snackbar.Add($"Reassigned to {newAssingee.DisplayName}");
+                await OnRefresh();   
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, severity: MudBlazor.Severity.Error);
+            }
+        }
     }
 
     private async Task OnRefresh()
