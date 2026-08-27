@@ -10,9 +10,9 @@
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.4.6-preview.1.26319.6" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.5.0" />
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.5.0" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.5.0" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.5.2" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.5.2" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.5.2" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.102.3" />
@@ -86,7 +86,7 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.3" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.2.1" />
-    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.7.0" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.7.1" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.7.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.7.0" />
   </ItemGroup>
