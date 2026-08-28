@@ -1,4 +1,5 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
@@ -16,6 +17,7 @@ public abstract class ActivityStatus : SmartEnum<ActivityStatus>
         AllowsChanges = allowsChanges;
     }
 
+    [JsonIgnore]
     public bool AllowsChanges { get; }
 
     /// <summary>

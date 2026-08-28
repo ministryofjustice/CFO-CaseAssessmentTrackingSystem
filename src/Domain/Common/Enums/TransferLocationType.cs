@@ -1,4 +1,5 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Domain.Common.Enums;
@@ -59,8 +60,8 @@ public class TransferLocationType(string name, int value, IEnumerable<LocationTy
         fromTranslations: LocationType.List.Where(location => location is { IsMapped: false }),
         toTranslations: LocationType.List.Where(location => location is { IsMapped: false }));
 
-    public IEnumerable<LocationType> FromTranslations { get; private set; } = fromTranslations;
-    public IEnumerable<LocationType> ToTranslations { get; private set; } = toTranslations;
+    [JsonIgnore] public IEnumerable<LocationType> FromTranslations { get; private set; } = fromTranslations;
+    [JsonIgnore] public IEnumerable<LocationType> ToTranslations { get; private set; } = toTranslations;
 
     public static TransferLocationType DetermineFromLocationTypes(Location from, Location to)
     {

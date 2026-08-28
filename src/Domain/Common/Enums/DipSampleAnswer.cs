@@ -1,10 +1,11 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
 public class DipSampleAnswer : SmartEnum<DipSampleAnswer>
 {
-    public bool IsAnswer { get; }
+    [JsonIgnore] public bool IsAnswer { get; }
     
     public static readonly DipSampleAnswer NotAnswered = new("Not Answered", 0, isAnswer: false);
     public static readonly DipSampleAnswer Yes = new("Yes", 1);

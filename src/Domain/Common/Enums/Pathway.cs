@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
 public class Pathway : SmartEnum<Pathway>
 {
+    [JsonIgnore]
     public string Icon { get; }
 
     public static readonly Pathway WellbeingAndMentalHealth = new("Wellbeing & Mental Health", 0, CatsIcons.Wellbeing);
@@ -40,4 +42,3 @@ public static class CatsIcons
     public const string RecentExperiences = "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/>";
 
 }
-

@@ -1,4 +1,5 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
@@ -13,5 +14,5 @@ public class CompletionStatus : SmartEnum<CompletionStatus>
         RequiresJustification = requiresJustification;
     }
 
-    public bool RequiresJustification { get; private set; }
+    [JsonIgnore] public bool RequiresJustification { get; private set; }
 }
