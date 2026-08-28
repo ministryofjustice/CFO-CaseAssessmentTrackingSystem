@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
@@ -16,7 +17,9 @@ public class UserStatus : SmartEnum<UserStatus>
         DisplayName = displayName;
     }
 
+    [JsonIgnore]
     public string DisplayName { get; }
 
+    [JsonIgnore]
     public bool CanSignIn => this == Active || this == PendingActivation;
 }

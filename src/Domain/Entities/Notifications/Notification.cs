@@ -1,9 +1,10 @@
+using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Notifications;
 
-public class Notification : OwnerPropertyEntity<Guid>
+public class Notification : OwnerPropertyEntity<Guid>, IShallowAuditable
 {
     #pragma warning disable CS8618
     private Notification()

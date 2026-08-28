@@ -1,12 +1,13 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
 public class ComplianceAnswer : SmartEnum<ComplianceAnswer>
 {
-    public bool IsAnswer { get; }
-    public bool IsAccepted { get; }
-    public bool IsAuto { get; }
+    [JsonIgnore] public bool IsAnswer { get; }
+    [JsonIgnore] public bool IsAccepted { get; }
+    [JsonIgnore] public bool IsAuto { get; }
 
     public static readonly ComplianceAnswer NotAnswered = new("Not Answered", 0, isAnswer: false);
     public static readonly ComplianceAnswer Compliant = new("Compliant", 1, isAccepted: true);

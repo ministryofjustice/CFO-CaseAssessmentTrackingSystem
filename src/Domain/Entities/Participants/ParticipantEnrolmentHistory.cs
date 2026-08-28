@@ -1,10 +1,11 @@
+using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
-public class ParticipantEnrolmentHistory : BaseAuditableEntity<int>
+public class ParticipantEnrolmentHistory : BaseAuditableEntity<int>, IShallowAuditable
 {
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

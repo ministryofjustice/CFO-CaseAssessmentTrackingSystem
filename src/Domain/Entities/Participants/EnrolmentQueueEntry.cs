@@ -11,7 +11,7 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 /* ef core does not support the same type being in two tables. need explicit types */
 
-public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>
+public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IShallowAuditable
 {
     private readonly List<EnrolmentQueueEntryNote> _notes = [];
     

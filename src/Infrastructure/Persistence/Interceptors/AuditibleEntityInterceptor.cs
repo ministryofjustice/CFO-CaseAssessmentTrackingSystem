@@ -93,6 +93,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
         var changes = context.ChangeTracker.Entries<IAuditable>().ToList();
 
+        changes.RemoveAll(c => c.Entity is IShallowAuditable);
+
         foreach (var entry in changes)
         {
             if (entry.State is EntityState.Detached or EntityState.Unchanged)
@@ -125,6 +127,11 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
   
             foreach (var property in entry.Properties)
             {
+                if (property.Metadata.PropertyInfo?.IsDefined(typeof(AuditIgnoreAttribute), inherit: true) == true)
+                {
+                    continue;
+                }
+
                 if (property.IsTemporary)
                 {
                     auditEntry.TemporaryProperties.Add(property);

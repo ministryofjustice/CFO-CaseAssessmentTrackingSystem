@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
@@ -26,11 +27,13 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     /// <summary>
     /// The logical order (i.e. where in the expected workflow this status stands)
     /// </summary>
+    [JsonIgnore]
     public int LogicalOrder { get;}
     
     /// <summary>
     /// The colour associated with this status.
     /// </summary>
+    [JsonIgnore]
     public string Colour { get; }
 
     /// <summary>

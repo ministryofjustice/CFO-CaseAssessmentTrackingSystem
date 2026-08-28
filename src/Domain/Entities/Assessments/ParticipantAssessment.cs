@@ -5,7 +5,7 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Assessments;
 
-public class ParticipantAssessment : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
+public class ParticipantAssessment : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial, IShallowAuditable
 {
 
  #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

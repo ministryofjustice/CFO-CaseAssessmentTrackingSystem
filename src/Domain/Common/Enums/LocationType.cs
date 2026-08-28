@@ -1,4 +1,5 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
@@ -34,8 +35,8 @@ public class LocationType : SmartEnum<LocationType>
 
     }
 
-    public bool IsCustody { get; private set; }
-    public bool IsCommunity { get; private set; }
-    public bool IsHub { get; private set; }
-    public bool IsMapped { get; private set; }
+    [JsonIgnore] public bool IsCustody { get; private set; }
+    [JsonIgnore] public bool IsCommunity { get; private set; }
+    [JsonIgnore] public bool IsHub { get; private set; }
+    [JsonIgnore] public bool IsMapped { get; private set; }
 }

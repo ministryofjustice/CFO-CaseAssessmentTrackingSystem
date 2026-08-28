@@ -1,4 +1,5 @@
-﻿using Ardalis.SmartEnum;
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
@@ -15,7 +16,7 @@ public class PriStatus : SmartEnum<PriStatus>
         IsActive = isActive;
     }
 
-    public bool IsActive { get; private set; }
+    [JsonIgnore] public bool IsActive { get; private set; }
 
     public static IReadOnlyCollection<PriStatus> ActiveList => List.Where(p => p.IsActive).ToList();
 }

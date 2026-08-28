@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
@@ -12,13 +13,14 @@ public class ActivityDefinition(
     ExpectedClaims expectedClaims,
     CheckType? checkType = null) : SmartEnum<ActivityDefinition>(name, value)
 {
-    public DeliveryLocationType DeliveryLocationType { get; private set; } = deliveryLocationType;
-    public ActivityType Type { get; private set; } = type;
-    public ClassificationType Classification { get; private set; } = classification;
-    public ActivityCategory Category { get; private set; } = category;
-    public ExpectedClaims ExpectedClaims { get; private set; } = expectedClaims;
-    public CheckType CheckType { get; private set; } = checkType ?? CheckType.Dip;
+    [JsonIgnore] public DeliveryLocationType DeliveryLocationType { get; private set; } = deliveryLocationType;
+    [JsonIgnore] public ActivityType Type { get; private set; } = type;
+    [JsonIgnore] public ClassificationType Classification { get; private set; } = classification;
+    [JsonIgnore] public ActivityCategory Category { get; private set; } = category;
+    [JsonIgnore] public ExpectedClaims ExpectedClaims { get; private set; } = expectedClaims;
+    [JsonIgnore] public CheckType CheckType { get; private set; } = checkType ?? CheckType.Dip;
 
+    [JsonIgnore]
     public bool RequiresQa => CheckType == CheckType.QA;
 
     public static IEnumerable<ActivityDefinition> GetActivitiesForLocation(LocationType locationType)
@@ -379,6 +381,7 @@ public class ActivityType : SmartEnum<ActivityType>
     /// <summary>
     /// Indicates whether the owner can have exactly one (exclusive), or multiple (inclusive) of each type of identifier.
     /// </summary>
+    [JsonIgnore]
     public string Colour { get; private set; }
 }
 
