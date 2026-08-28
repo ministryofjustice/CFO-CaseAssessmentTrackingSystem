@@ -7,9 +7,17 @@ public class Note : ValueObject, IAuditable, IMustHaveTenant
 {
     public required string Message { get; set; }
     public string? CallReference { get; set; }
+
+    [AuditIgnore]
     public DateTime? Created { get; set; }
+
+    [AuditIgnore]
     public string? CreatedBy { get; set; }
+
+    [AuditIgnore]
     public DateTime? LastModified { get; set; }
+
+    [AuditIgnore]
     public string? LastModifiedBy { get; set; }
     public virtual ApplicationUser? CreatedByUser { get; set; }
     
