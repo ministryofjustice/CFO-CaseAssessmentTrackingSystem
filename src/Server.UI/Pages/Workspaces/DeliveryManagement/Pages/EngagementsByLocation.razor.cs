@@ -272,7 +272,7 @@ public partial class EngagementsByLocation
 
     private async Task ShowLocationDialog()
     {
-        var location = await ParticipantDialogService.PromptForLocationAsync(CurrentUser);
+        var location = await ParticipantDialogService.PromptForLocationAsync(CurrentUser, showAllOption: _selectedLocationId != 0);
 
         if (location is not null)
         {
@@ -295,12 +295,12 @@ public partial class EngagementsByLocation
     }
     private async Task ShowTenantDialog()
     {
-        var tenant = await ParticipantDialogService.PromptForTenantAsync(CurrentUser);
+        var tenant = await ParticipantDialogService.PromptForTenantAsync(CurrentUser, showAllOption: !string.IsNullOrEmpty(Query.TenantId));
 
         if (tenant is not null)
         {
-            Query.TenantId = tenant.TenantId;
-            _selectedTenantName = tenant.DisplayName;
+            Query.TenantId = string.IsNullOrEmpty(tenant.TenantId) ? null : tenant.TenantId;
+            _selectedTenantName = string.IsNullOrEmpty(tenant.TenantId) ? null : tenant.DisplayName;
             await SaveSessionState();
             await OnRefresh();
         }

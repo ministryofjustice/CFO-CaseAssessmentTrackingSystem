@@ -66,7 +66,8 @@ public partial class ProviderDashboardFilter
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", CurrentUser }
+            { "CurrentUser", CurrentUser },
+            { "ShowAllOption", !string.IsNullOrEmpty(SelectedTenantId) }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -83,7 +84,8 @@ public partial class ProviderDashboardFilter
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", GetEffectiveUserProfile() }
+            { "CurrentUser", GetEffectiveUserProfile() },
+            { "ShowAllOption", !string.IsNullOrEmpty(SelectedUserId) }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };

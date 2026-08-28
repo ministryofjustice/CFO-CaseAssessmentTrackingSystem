@@ -310,7 +310,8 @@ public partial class UnassignedCasesDashboardComponent
         {
             { "CurrentUser", CurrentUser },
             { "TenantId", TenantId },
-            { "Filter", filter }
+            { "Filter", filter },
+            { "ShowAllOption", SelectedLocationId.HasValue }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -319,7 +320,7 @@ public partial class UnassignedCasesDashboardComponent
 
         if (result is { Canceled: false, Data: LocationDto location })
         {
-            Query.Locations = [location.Id];
+            Query.Locations = location.Id == 0 ? [] : [location.Id];
             await NotifyFiltersChanged();
             await _table.ReloadServerData();
         }
