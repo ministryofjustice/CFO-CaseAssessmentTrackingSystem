@@ -54,7 +54,7 @@
         </MudStack>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="DateTime">@_currentDto.GetMemberDescription(x => x.DateTime)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="DateTime" InitialDirection="SortDirection.Descending">@_currentDto.GetMemberDescription(x => x.DateTime)</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="ActionType">@_currentDto.GetMemberDescription(x => x.ActionType)</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="UserName">@_currentDto.GetMemberDescription(x => x.UserName)</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel T="IdentityAuditTrailDto" SortLabel="PerformedBy">@_currentDto.GetMemberDescription(x => x.PerformedBy)</MudTableSortLabel></MudTh>
