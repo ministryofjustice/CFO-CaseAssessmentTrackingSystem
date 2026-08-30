@@ -1,5 +1,6 @@
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Entities.Notifications.Rules;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Notifications;
@@ -28,6 +29,7 @@ public class Notification : OwnerPropertyEntity<Guid>, IShallowAuditable
 
     public Notification SetLink(string url)
     {
+        CheckRule(new NotificationLinkMustStartWithForwardSlash(url));
         Link = url;
         return this;
     }
