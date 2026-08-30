@@ -720,6 +720,24 @@ public static class DependencyInjection
                         .WithCronSchedule(schedule.Chron));
                 }
             }
+
+            if (options.GetSection(DeleteNotificationsJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } deleteNotificationsJob)
+            {
+                quartz.AddJob<DeleteNotificationsJob>(opts =>
+                    opts.WithIdentity(DeleteNotificationsJob.Key)
+                        .WithDescription(DeleteNotificationsJob.Description)
+                );
+
+                foreach (var schedule in deleteNotificationsJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(DeleteNotificationsJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
+            }
+        
         });
 
         services.AddQuartzServer(options =>
