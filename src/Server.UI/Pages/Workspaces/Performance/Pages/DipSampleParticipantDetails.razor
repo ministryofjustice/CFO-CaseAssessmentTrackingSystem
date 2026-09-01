@@ -41,6 +41,10 @@ else
             </MudItem>
 
             <MudItem xs="10">
+                <MudStack Row="true" Justify="Justify.FlexStart" Class="mb-2">
+                    <RagBar Model="@_latestParticipantAssessment" />
+                </MudStack>
+
                 <MudTabs KeepPanelsAlive="true">
                     <MudTabPanel Text="Events">
                         <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
