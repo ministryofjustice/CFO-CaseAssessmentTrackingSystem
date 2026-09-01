@@ -17,6 +17,6 @@ public partial class RagComponent
             > 25 => ("#00703C", "white"), // GOV.UK green
             >= 10 => ("#FFBF00", "black"), // amber
             < 0 => ("#B1B4B6", "black"), // GOV.UK grey
-            _ => ("#D4351C", "white"), // GOV.UK red
+            _ => ("#D52307", "white"), // GOV.UK red
         };
 }

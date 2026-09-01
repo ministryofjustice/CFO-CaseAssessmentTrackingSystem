@@ -1,3 +1,5 @@
+using Humanizer;
+
 namespace Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 
 public class IdentityAuditNotification : INotification
@@ -53,6 +55,9 @@ public class IdentityAuditNotification : INotification
 
     public static IdentityAuditNotification MarkAccountAsLeft(string userName, string ipAddress, string performedBy)
         => new(IdentityActionType.AccountMarkedAsLeft, ipAddress, userName, performedBy);
+
+    public static IdentityAuditNotification AccountUnlocked(string userName, string ipAddress, string performedBy)
+        => new(IdentityActionType.UserAccountUnlocked, ipAddress, userName, performedBy);
 
 }
 

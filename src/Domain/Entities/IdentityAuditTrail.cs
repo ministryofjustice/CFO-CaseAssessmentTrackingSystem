@@ -83,5 +83,8 @@ public enum IdentityActionType
     [Description("Account Marked As In Review")]
     AccountMarkedAsInReview,
     [Description("Account Marked As Left")]
-    AccountMarkedAsLeft
+    AccountMarkedAsLeft,
+
+    [Description("Account Unlocked")]
+    UserAccountUnlocked
 }

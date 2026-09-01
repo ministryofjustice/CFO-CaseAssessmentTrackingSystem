@@ -22,4 +22,8 @@ public class UserStatus : SmartEnum<UserStatus>
 
     [JsonIgnore]
     public bool CanSignIn => this == Active || this == PendingActivation;
+
+    [JsonIgnore]
+    public bool SupportsReactivation => this == Left || this == Inactive || this == MarkAsInReview;
+
 }

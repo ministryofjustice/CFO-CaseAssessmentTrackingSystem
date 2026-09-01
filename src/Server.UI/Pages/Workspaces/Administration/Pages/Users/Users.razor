@@ -79,45 +79,32 @@
                 <MudTd DataLabel="@ConstantString.Actions">
                     @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canUnlock)
                     {
-                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                        Dense="true"
-                        EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        <MudMenu Icon="@Icons.Material.Filled.Edit" 
+                                 Variant="Variant.Filled" Size="Size.Small"
+                                 Dense="true"
+                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" 
+                                 IconColor="Color.Info" 
+                                 AnchorOrigin="Origin.CenterLeft">
 
                             <MudMenuItem OnClick="@(() => ShowIdentityAuditDialog(context, "History"))">Audit</MudMenuItem>
-                            @if (_canEdit)
-                            {
-                                <MudMenuItem OnClick="@(() => OnEdit(context))">@ConstantString.Edit</MudMenuItem>
-                            }
-
-                            @if (_canToggleActiveStatus)
-                            {
-                                @if (_canMarkUserInReview)
-                                {
-                                    @if (context.Status == UserStatus.Active)
-                                    {
-                                        <MudMenuItem OnClick="@(() => OnMarkAsInReview(context))">@L["Mark as In-Review"]</MudMenuItem>
-                                    }
-                                    @if (context.Status == UserStatus.MarkAsInReview || context.Status == UserStatus.Inactive || context.Status == UserStatus.Left)
-                                    {
-                                        <MudMenuItem OnClick="@(() => OnReactivate(context))">@L["Reactivate"]</MudMenuItem>
-                                    }
-                                }
-                                @if (context.Status != UserStatus.Left)
-                                {
-                                    <MudMenuItem OnClick="@(() => OnMarkAsLeft(context))">@L["Mark as Left"]</MudMenuItem>
-                                }
-                            }
+                            
+                            <MudMenuItem OnClick="@(() => OnEdit(context))" Disabled="@(_canEdit is false)">@L["Edit"]</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnMarkAsInReview(context))" Disabled="@(_canToggleActiveStatus is false || _canMarkUserInReview is false)">@L["Mark as In-Review"]</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnMarkAsLeft(context))" Disabled="@(_canToggleActiveStatus is false)">@L["Mark as Left"]</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnReactivate(context))" Disabled="@(context.Status.SupportsReactivation == false || (context.Status != UserStatus.Inactive && _canToggleActiveStatusAdvanced == false))">
+                                @L["Reactivate"]
+                            </MudMenuItem>
+                            
                             @if(CanResetPassword(context.AssignedRoles))
                             {
                                 <MudMenuItem Disabled="@(context.Status != UserStatus.Active && context.Status != UserStatus.PendingActivation)" OnClick="@(() => OnResetPassword(context))">@L["Reset Password"]</MudMenuItem>
                             }
-                            @if (_canUnlock)
+
+                            @if (context.LockoutEnd is not null)
                             {
-                                @if (context.LockoutEnd is not null && context.Status != UserStatus.MarkAsInReview && context.Status != UserStatus.Left)
-                                {
-                                    <MudMenuItem OnClick="@(() => OnUnlock(context))">@L["Unlock"]</MudMenuItem>
-                                }                          
-                            }
+                                <MudMenuItem OnClick="@(() => OnUnlock(context))">@L["Unlock"]</MudMenuItem>
+                            }                          
+
                         </MudMenu>
                     }
                     else
@@ -184,7 +171,7 @@
                     @if (context.LockoutEnd is not null)
                     {
                         <div>
-                            <MudChip T="string" OnClick="@(() => OnUnlock(context))" Class="flex-grow-0" Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Locked"]</MudChip>
+                            <MudChip T="string" Class="flex-grow-0" Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Locked"]</MudChip>
                         </div>
                     }
                 </MudTd>
