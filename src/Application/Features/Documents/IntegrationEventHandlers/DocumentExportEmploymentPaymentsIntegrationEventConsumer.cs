@@ -49,6 +49,7 @@ public class DocumentExportEmploymentPaymentsIntegrationEventConsumer(
                 new Dictionary<string, Func<EmploymentPaymentDto, object?>>
                 {
                     { "Contract", item => item.Contract },
+                    { "Tenant", item => item.TenantName },
                     { "Created", item => item.CreatedOn },
                     { "Commenced On", item => item.CommencedOn },
                     { "Approved", item => item.ActivityApproved },

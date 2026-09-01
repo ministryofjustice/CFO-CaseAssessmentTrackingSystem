@@ -49,6 +49,7 @@ public class DocumentExportInductionPaymentsIntegrationEventConsumer(
                 new Dictionary<string, Func<InductionPaymentDto, object?>>
                 {
                     { "Contract", item => item.Contract },
+                    { "Tenant", item => item.TenantName },
                     { "Created", item => item.CreatedOn },
                     { "Commenced On", item => item.CommencedOn },
                     { "Approved", item => item.Approved },

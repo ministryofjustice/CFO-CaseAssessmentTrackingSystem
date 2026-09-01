@@ -15,6 +15,7 @@ public class EmploymentPaymentDto
     public required DateTime ActivityApproved { get; set; }
     public required DateTime PaymentPeriod { get; set; }
     public required string Contract { get; set; }
+    public required string TenantName { get; set; }
     public required string LocationType { get; set; }
     public required string Location { get; set; }
     public required string ParticipantId { get; set; }

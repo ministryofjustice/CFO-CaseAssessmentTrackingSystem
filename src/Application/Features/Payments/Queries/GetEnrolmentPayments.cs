@@ -42,6 +42,7 @@ public static class GetEnrolmentPayments
                             Location = l.Name,
                             ep.IneligibilityReason,
                             TenantId = c!.Tenant!.Id!,
+                            TenantName = c.Tenant!.Name!,
                             ParticipantName = p.FirstName + " " + p.LastName,
                             ep.SubmissionToAuthority,
                             SupportWorkerName = u.DisplayName ?? ""
@@ -70,6 +71,7 @@ public static class GetEnrolmentPayments
                     ParticipantId = x.ParticipantId,
                     EligibleForPayment = x.EligibleForPayment,
                     Contract = x.Contract,
+                    TenantName = x.TenantName,
                     Location = x.Location,
                     LocationType = x.LocationType,
                     IneligibilityReason = x.IneligibilityReason,

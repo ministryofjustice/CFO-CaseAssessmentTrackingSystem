@@ -13,6 +13,7 @@ public record SupportAndReferralPaymentDto
     public required DateTime CreatedOn { get; set; }
     public required DateTime Approved { get; set; }
     public required string Contract { get; set; } = "";
+    public required string TenantName { get; set; } = "";
     public required string ParticipantId { get; set; } = "";
     public required bool EligibleForPayment { get; set; }
     public required string SupportType { get; set; } = "";
