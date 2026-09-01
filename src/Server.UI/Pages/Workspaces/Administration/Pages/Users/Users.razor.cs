@@ -44,6 +44,7 @@ public partial class Users
     private bool _canEdit;
     private bool _canArchive;
     private bool _canToggleActiveStatus;
+    private bool _canToggleActiveStatusAdvanced;
     private bool _canUnlock;
     private bool _canManageRoles;
     private bool _canResetPassword;
@@ -89,7 +90,8 @@ public partial class Users
         _canCreate = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canEdit = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canArchive = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canToggleActiveStatus = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canToggleActiveStatus = _policies.GetValueOrDefault(SecurityPolicies.Qa1);
+        _canToggleActiveStatusAdvanced = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canUnlock = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManageRoles = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canResetPassword = _policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
@@ -357,6 +359,9 @@ public partial class Users
 
         if (identityResult.Succeeded)
         {
+            var mediator = GetNewMediator();
+            await mediator.Publish( IdentityAuditNotification.AccountUnlocked(item.UserName, NetworkIpProvider.IpAddress, _currentUser!.UserName!));
+                        
             item.LockoutEnd = null;
             UserService.Refresh();
             await OnRefresh();
