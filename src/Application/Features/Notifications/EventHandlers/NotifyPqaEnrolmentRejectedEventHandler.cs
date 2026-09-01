@@ -29,7 +29,7 @@ public class NotifyPqaEnrolmentRejectedEventHandler(IUnitOfWork unitOfWork) : IN
             }
 
             // Use the entity ID directly from the event for the link
-            var link = $"pages/workspace/deliverymanagement/enrolments/pqa/{notification.Entity.Id}";
+            var link = $"/pages/workspace/deliverymanagement/enrolments/pqa/{notification.Entity.Id}";
 
             var previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading

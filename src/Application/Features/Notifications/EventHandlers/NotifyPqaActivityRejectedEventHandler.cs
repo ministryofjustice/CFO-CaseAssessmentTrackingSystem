@@ -41,7 +41,7 @@ public class NotifyPqaActivityRejectedEventHandler(IUnitOfWork unitOfWork) : INo
             }
 
             // Use the entity ID directly from the event for the link
-            var link = $"pages/workspace/deliverymanagement/activities/pqa/{notification.Entity.Id}";
+            var link = $"/pages/workspace/deliverymanagement/activities/pqa/{notification.Entity.Id}";
 
             var previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
