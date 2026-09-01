@@ -10,19 +10,19 @@
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.4.6-preview.1.26319.6" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.5.2" />
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.5.2" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.5.2" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.5.3" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.5.3" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.5.3" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.3" />
-    <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.100.10" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.1" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.4" />
+    <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.100.11" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
     <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="9.1.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="13.4.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="13.5.0" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
@@ -61,18 +61,18 @@
     <PackageVersion Include="Microsoft.SqlServer.DacFx" Version="170.4.83" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Moq.Dapper" Version="1.0.7" />
-    <PackageVersion Include="MudBlazor" Version="9.8.0" />
+    <PackageVersion Include="MudBlazor" Version="9.9.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="NUnit" Version="4.6.1" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.3.0" />
     <PackageVersion Include="NunitXml.TestLogger" Version="8.0.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.16.0-beta.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
     <PackageVersion Include="Quartz" Version="3.19.1" />
     <PackageVersion Include="Quartz.AspNetCore" Version="3.19.1" />
     <PackageVersion Include="Rebus" Version="8.9.3" />
@@ -86,8 +86,8 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.3" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.2.1" />
-    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.7.1" />
-    <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.7.0" />
-    <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.7.0" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.7.2" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.7.2" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.7.2" />
   </ItemGroup>
 </Project>
