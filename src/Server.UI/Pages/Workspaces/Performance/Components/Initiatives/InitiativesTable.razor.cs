@@ -7,7 +7,7 @@ using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.Initiatives.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Initiatives;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components.Initiatives;
 
 public partial class InitiativesTable
 {

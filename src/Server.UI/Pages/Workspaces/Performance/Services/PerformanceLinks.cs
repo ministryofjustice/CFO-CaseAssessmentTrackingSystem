@@ -11,4 +11,6 @@ public static class PerformanceLinks
     public static BreadcrumbLinkModel OutcomeQualityDipSample(Guid sampleId) => new("Outcome Quality", "Link for specific sample", $"{OutcomeQualityDipSamples.Href}/{sampleId}");
 
     public static BreadcrumbLinkModel OutcomeQualityDipSampleParticipant(Guid sampleId, string participantId) => new(participantId, "Link for specific participant" , $"{OutcomeQualityDipSamples.Href}/{sampleId}/{participantId}");
+
+    public static BreadcrumbLinkModel Initiatives = new("Initiatives", "Manage initiatives (innovation funds etc)", $"{Home.Href}/initiatives");
 }

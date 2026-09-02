@@ -1,0 +1,12 @@
+@page "/pages/workspace/performance/initiatives"
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components.Initiatives
+
+@attribute [Authorize(Policy = SecurityPolicies.Initiatives)]
+
+<PageTitle>Initiatives</PageTitle>
+
+<PerformancePageHeader />
+
+<InitiativesTable />
