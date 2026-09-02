@@ -16,6 +16,7 @@
     private static class RouteSegments
     {
         public const string OutcomeQualityDipSampling = "outcome-quality-dip-sampling";
+        public const string Initiatives = "initiatives";
     }
     
     protected override void OnParametersSet()
@@ -44,6 +45,12 @@
         List<BreadcrumbItem> crumbs = [
             home
         ];
+
+        if (segments[0].Equals(RouteSegments.Initiatives, StringComparison.OrdinalIgnoreCase))
+        {
+            crumbs.Add(PerformanceLinks.Initiatives.AsMudBreadcrumb());
+            return crumbs;
+        }
 
         if(segments[0].Equals(RouteSegments.OutcomeQualityDipSampling, StringComparison.OrdinalIgnoreCase))
         {

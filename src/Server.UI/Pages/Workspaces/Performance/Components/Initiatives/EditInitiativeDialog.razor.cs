@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Initiatives.Commands.EditInitiative;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Initiatives;
+namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components.Initiatives;
 
 public partial class EditInitiativeDialog
 {

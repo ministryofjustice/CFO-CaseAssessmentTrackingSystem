@@ -36,7 +36,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             items.Add(new NavigationMenuItemLinkModel("Service Desk", "/pages/workspace/servicedesk", "Navigates to the root workspace for accessing service desk functions"));
         }
 
-        if(await PassesPolicy(principal, SecurityPolicies.OutcomeQualityDipChecks))
+        if(await PassesPolicy(principal, SecurityPolicies.OutcomeQualityDipChecks) || await PassesPolicy(principal, SecurityPolicies.Initiatives))
         {
             items.Add(new NavigationMenuItemLinkModel("Performance Management", "/pages/workspace/performance", "Navigates to the root workspace for accessing performance function"));    
         }
