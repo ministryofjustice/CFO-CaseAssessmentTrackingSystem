@@ -221,7 +221,7 @@ public static class DependencyInjection
     private static IServiceCollection AddSettings(
         this IServiceCollection services,
         IConfiguration configuration,
-        IHostEnvironment environment)
+        IHostEnvironment _)
     {
         services
             .Configure<IdentitySettings>(configuration.GetSection(IdentitySettings.Key))
@@ -255,7 +255,7 @@ public static class DependencyInjection
 
         services.Configure<DocumentExportOptions>(options => {
             options.TemplateDirectory = Path.Combine(
-                    environment.ContentRootPath,
+                    AppContext.BaseDirectory,
                     "Files",
                     "Templates"
                 );
