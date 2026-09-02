@@ -4,6 +4,15 @@ namespace Cfo.Cats.Application.Features.Timelines.EventHandlers;
 
 public class ParticipantAssignedDomainEventHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork) : TimelineNotificationHandler<ParticipantAssignedDomainEvent>(currentUserService, unitOfWork)
 {
+    public override Task Handle(ParticipantAssignedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        if (notification.FromOwner == notification.NewOwner)
+        {
+            return Task.CompletedTask;
+        }
+
+        return base.Handle(notification, cancellationToken);
+    }
 
     protected override string GetLine1(ParticipantAssignedDomainEvent notification) => notification.FromOwner is null ? "Caseworker assigned" : "Caseworker reassigned";
 
