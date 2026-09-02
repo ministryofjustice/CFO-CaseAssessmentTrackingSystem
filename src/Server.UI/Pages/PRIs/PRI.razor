@@ -156,7 +156,7 @@
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
-                        <StatusResultStep Upci="@Upci" Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="PRI Created" FailureText="PRI failed to submit">
+                        <StatusResultStep Upci="@Upci" Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="PRI Created" FailureText="PRI failed to submit" Errors="@_submissionErrors">
                             <MudText Typo="Typo.body1">A new objective has been automatically created in the Pathway Plan. Please visit the Pathway Plan to add any additional tasks identified in the meeting</MudText>
                         </StatusResultStep>
                     </MudCard>
@@ -177,6 +177,7 @@
 
     bool Processing { get; set; }
     bool SubmissionSuccess { get; set; }
+    string[]? _submissionErrors;
 
     LocationDto[] _communityLocations = [];
     LocationDto[] _custodyLocations = [];
@@ -239,9 +240,16 @@
                 var response = await GetNewMediator().Send(_model!);
                 Processing = false;
                 SubmissionSuccess = response.Succeeded;
+
+                if (!response.Succeeded)
+                {
+                    _submissionErrors = response.Errors;
+                    Snackbar.Add($"{response.ErrorMessage}", Severity.Error);
+                }
             }
             else
             {
+                _submissionErrors = null;
                 Snackbar.Add(string.Join(", ", result.Errors), Severity.Error);
             }
         }

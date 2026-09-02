@@ -20,9 +20,23 @@
         }
         else
         {
-            <MudStack Row="true">
-                <MudText Typo="Typo.h4">@FailureText</MudText>
-                <MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
+            <MudStack Row="false">
+                <MudStack Row="true">
+                    <MudText Typo="Typo.h4">@FailureText</MudText>
+                    <MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
+                </MudStack>
+
+                @if (Errors is { Length: > 0 })
+                {
+                    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+                        <MudList T="string">
+                            @foreach (var error in Errors)
+                            {
+                                <MudListItem T="string">@error</MudListItem>
+                            }
+                        </MudList>
+                    </MudAlert>
+                }
             </MudStack>
         }
     </MudItem>
@@ -41,7 +55,10 @@
     
     [Parameter, EditorRequired]
     public required string Upci { get; set; }
-    
+
+    [Parameter]
+    public string[]? Errors { get; set; }
+
     private void GotoParticipant() => Navigation.NavigateTo($"/pages/workspace/participants/{Upci}");
 
     
