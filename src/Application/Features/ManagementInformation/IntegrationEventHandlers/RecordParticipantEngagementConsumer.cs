@@ -16,6 +16,7 @@ public class RecordParticipantEngagementConsumer(IUnitOfWork unitOfWork)
         engagement.Category = message.Category;
         engagement.EngagedOn = message.EngagedOn;
         engagement.EngagedAtLocation = message.EngagedAtLocation;
+        engagement.EngagedAtLocationType = message.EngagedAtLocationType;
         engagement.EngagedAtContract = message.EngagedAtContract;
         engagement.EngagedWith = message.EngagedWith;
         engagement.EngagedWithTenant = message.EngagedWithTenant;

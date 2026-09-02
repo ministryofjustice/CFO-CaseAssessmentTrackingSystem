@@ -11,7 +11,9 @@ public record ParticipantEngagementDto(
     string? EngagedWithTenantName,
     string SupportWorkerDisplayName,
     string CurrentLocationName,
-    DateOnly? EngagedOn)
+    DateOnly? EngagedOn,
+    string? EngagedAtLocationType
+    )
 {
     public bool HasEngaged => EngagedOn.HasValue;
     public bool HasEngagedRecently => EngagedOn > DateOnly.FromDateTime(DateTime.Today).AddMonths(-3);

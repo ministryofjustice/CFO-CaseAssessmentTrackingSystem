@@ -23,6 +23,7 @@ public class ParticipantEngagement : BaseEntity<Guid>
     public string EngagedWith { get; set; }
     public string EngagedWithTenant { get; set; }
     public DateTime CreatedOn { get; set; }
+    public string EngagedAtLocationType { get; set; }
 }
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.

@@ -63,7 +63,8 @@ public static class GetLatestEngagementsByLocation
                     engagement.EngagedWithTenant,
                     SupportWorkerDisplayName = owner.DisplayName,
                     CurrentLocationName = currentLocation.Name,
-                    EngagedOn = (DateOnly?)engagement.EngagedOn
+                    EngagedOn = (DateOnly?)engagement.EngagedOn,
+                    engagement.EngagedAtLocationType
                 };
 #pragma warning restore CS8602, CS8604
 
@@ -98,7 +99,8 @@ public static class GetLatestEngagementsByLocation
                     e.EngagedWithTenant,
                     e.SupportWorkerDisplayName,
                     e.CurrentLocationName,
-                    e.EngagedOn))
+                    e.EngagedOn,
+                    e.EngagedAtLocationType))
                 .ToListAsync(cancellationToken);
 
             var details = new PaginatedData<ParticipantEngagementDto>(items, count, request.PageNumber, request.PageSize);

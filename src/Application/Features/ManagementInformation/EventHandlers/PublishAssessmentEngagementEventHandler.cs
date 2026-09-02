@@ -9,14 +9,9 @@ public class PublishAssessmentEngagementEventHandler(IUnitOfWork unitOfWork, ICu
 {
     public async Task Handle(AssessmentScoredDomainEvent notification, CancellationToken cancellationToken)
     {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-        var query = from l in unitOfWork.DbContext.Locations
-                    join c in unitOfWork.DbContext.Contracts on l.Contract.Id equals c.Id
-                    where l.Id == notification.Entity.LocationId
-                    select new { l.Name, Contract = c.Description };
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
-        var location = await query.SingleAsync(cancellationToken);
+        var location = await unitOfWork.DbContext.Locations
+            .Include(l => l.Contract)
+            .SingleAsync(l => l.Id == notification.Entity.LocationId, cancellationToken);
 
         var e = new ParticipantEngagedIntegrationEvent(
             ParticipantId: notification.Entity.ParticipantId,
@@ -24,7 +19,8 @@ public class PublishAssessmentEngagementEventHandler(IUnitOfWork unitOfWork, ICu
             Category: "Assessment",
             EngagedOn: DateOnly.FromDateTime(notification.Entity.Completed!.Value),
             EngagedAtLocation: location.Name,
-            EngagedAtContract: location.Contract,
+            EngagedAtLocationType: location.LocationType.Name,
+            EngagedAtContract: location.Contract!.Description,
             EngagedWith: currentUserService.DisplayName!,
             EngagedWithTenant: currentUserService.TenantName!);
 

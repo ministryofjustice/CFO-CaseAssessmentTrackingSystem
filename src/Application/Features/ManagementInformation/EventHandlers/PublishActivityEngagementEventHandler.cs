@@ -15,6 +15,7 @@ public class PublishActivityEngagementEventHandler(IUnitOfWork unitOfWork, ICurr
             Category: notification.Entity.Definition.Type.Name,
             EngagedOn: DateOnly.FromDateTime(notification.Entity.CommencedOn),
             EngagedAtLocation: notification.Entity.TookPlaceAtLocation.Name,
+            EngagedAtLocationType: notification.Entity.TookPlaceAtLocation.LocationType.Name,
             EngagedAtContract: notification.Entity.TookPlaceAtContract.Description,
             EngagedWith: currentUserService.DisplayName!,
             EngagedWithTenant: currentUserService.TenantName!);

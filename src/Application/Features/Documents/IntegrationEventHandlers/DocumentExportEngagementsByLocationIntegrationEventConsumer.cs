@@ -37,7 +37,7 @@ public class DocumentExportEngagementsByLocationIntegrationEventConsumer(
 
             request.PageSize = int.MaxValue;
 
-            // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
+            // Hack: call handler directly (skips Authorization pipeline, as we're outside the HttpContext).
             var data = await new GetEngagementsByLocation.Handler(unitOfWork).Handle(request, CancellationToken.None);
 
             if (data is not { Succeeded: true })
@@ -53,6 +53,7 @@ public class DocumentExportEngagementsByLocationIntegrationEventConsumer(
                     { "Category", item => item.Category },
                     { "Description", item => item.Description },
                     { "Engaged at (Location)", item => item.EngagedAtLocationName },
+                    { "Engaged at (Location Type)", item => item.EngagedAtLocationType },
                     { "Engaged at (Contract)", item => item.EngagedAtContractName },
                     { "Engaged With", item => item.EngagedWithDisplayName },
                     { "Engaged With (Tenant)", item => item.EngagedWithTenantName },
