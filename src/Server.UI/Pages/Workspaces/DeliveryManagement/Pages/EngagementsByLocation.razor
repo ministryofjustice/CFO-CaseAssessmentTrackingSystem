@@ -18,6 +18,20 @@
 
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
+    @if (_visualMode is false && _data is not null)
+    {
+        <MudPagination Rectangular="true"
+                       Variant="Variant.Text"
+                       Selected="@(_currentTablePage + 1)"
+                       SelectedChanged="OnPageChanged"
+                       Count="@_data.Details.TotalPages"
+                       MiddleCount="2"
+                       BoundaryCount="1"
+                       Size="MudBlazor.Size.Small" />
+
+        <MudText>@_data.Details.TotalItems records</MudText>
+    }
+
     <MudSwitch T="bool" Value="_visualMode" ValueChanged="OnVisualModeChanged" Color="Color.Info" Label="Visual Mode" />
 
     <MudSpacer />
@@ -54,6 +68,16 @@
         @foreach (var type in _engagementTypes)
         {
             <MudMenuItem OnClick="@(() => OnEngagementTypeChanged(type))">@type</MudMenuItem>
+        }
+    </MudMenu>
+
+    <MudMenu Size="MudBlazor.Size.Small" Variant="Variant.Text"
+             Label="@(_selectedLocationType == string.Empty ? "All Location Types" : _selectedLocationType)"
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenuItem OnClick="@(() => OnLocationTypeChanged(string.Empty))">All Location Types</MudMenuItem>
+        @foreach (var locationType in _locationTypes)
+        {
+            <MudMenuItem OnClick="@(() => OnLocationTypeChanged(locationType))">@locationType</MudMenuItem>
         }
     </MudMenu>
 
@@ -116,6 +140,7 @@ else
     else
     {
         <MudTable @ref="_table" ServerData="ServerReload" Hover="true" Striped="true"
+                    @bind-CurrentPage="_currentTablePage" RowsPerPage="Query.PageSize"
                     Class="mt-4" Dense="true">
             <HeaderContent>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
@@ -161,9 +186,6 @@ else
             <NoRecordsContent>
                 <MudText>@ConstantString.NoRecords</MudText>
             </NoRecordsContent>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="[10, 25, 50]" />
-            </PagerContent>
         </MudTable>
     }
 }

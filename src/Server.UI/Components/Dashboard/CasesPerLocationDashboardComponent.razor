@@ -64,7 +64,7 @@
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetCasesPerLocation.LocationDetail, object>(x => x.LocationType.Name)">
-                        LocationType
+                        Location Type
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -80,7 +80,7 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Location">@context.LocationName</MudTd>
-                <MudTd DataLabel="LocationType">@context.LocationType</MudTd>
+                <MudTd DataLabel="Location Type">@context.LocationType</MudTd>
                 <MudTd DataLabel="Status">@context.Status</MudTd>
                 <MudTd DataLabel="Count">@context.Count</MudTd>
             </RowTemplate>

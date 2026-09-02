@@ -13,6 +13,7 @@ public static class GetEngagementsByLocation
         public bool JustMyCases { get; init; }
         public int? LocationId { get; set; }
         public string? EngagementType { get; set; }
+        public string? LocationType { get; set; }
         public string? TenantId { get; set; }
         public required int Month { get; set; }
         public required int Year { get; set; }
@@ -38,6 +39,7 @@ public static class GetEngagementsByLocation
                 join engagementLocation in db.Locations on engagement.EngagedAtLocation equals engagementLocation.Name
                 where request.LocationId == null || engagementLocation.Id == request.LocationId
                 where string.IsNullOrWhiteSpace(request.EngagementType) || (engagement != null && engagement.Category == request.EngagementType)
+                where string.IsNullOrWhiteSpace(request.LocationType) || engagement.EngagedAtLocationType == request.LocationType
                 where engagement.EngagedOn.Month == request.Month && engagement.EngagedOn.Year == request.Year
                 select new
                 {
