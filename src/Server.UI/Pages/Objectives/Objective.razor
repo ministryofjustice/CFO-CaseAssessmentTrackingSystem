@@ -4,7 +4,7 @@
 
 @inherits CatsComponentBase
 
-<MudListItem T="ObjectiveDto" Ripple="false" Expanded>
+<MudListItem T="ObjectiveDto" Ripple="false" @bind-Expanded="Expanded">
     <ChildContent>
         <div class="d-flex gap-2 align-center">
             @if(Model.IsCompleted)

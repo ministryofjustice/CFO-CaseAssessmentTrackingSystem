@@ -5,6 +5,8 @@ using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
+using Cfo.Cats.Server.UI.Pages.Participants.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
@@ -24,6 +26,40 @@ public partial class DipSampleParticipantDetails
     public IUserService UserService { get; set; } = null!;
 
     private string? SampleLabel => _participant is null ? null : $"{_participant.ContractName} ({_participant.PeriodFromDesc})";
+
+    private OutcomeQualityDipSamplePathwayPlanComponent? _pathwayPlanObjectives;
+    private PathwayPlanReviewHistory? _pathwayPlanReviewHistory;
+
+    private const int PathwayPlanDetailsTabIndex = 1;
+    private const int PathwayPlanReviewTabIndex = 2;
+
+    private int _activeTabIndex;
+
+    private async Task ExpandAllPathwayPlan()
+    {
+        if (_pathwayPlanObjectives is not null)
+        {
+            await _pathwayPlanObjectives.ExpandAll();
+        }
+
+        if (_pathwayPlanReviewHistory is not null)
+        {
+            await _pathwayPlanReviewHistory.ExpandAll();
+        }
+    }
+
+    private async Task CollapseAllPathwayPlan()
+    {
+        if (_pathwayPlanObjectives is not null)
+        {
+            await _pathwayPlanObjectives.CollapseAll();
+        }
+
+        if (_pathwayPlanReviewHistory is not null)
+        {
+            await _pathwayPlanReviewHistory.CollapseAll();
+        }
+    }
 
     private SubmitCsoResponse.Command? _csoCommand;
 

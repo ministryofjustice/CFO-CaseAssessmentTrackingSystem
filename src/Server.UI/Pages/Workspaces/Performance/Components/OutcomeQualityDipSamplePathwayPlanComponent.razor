@@ -17,8 +17,7 @@ else if (PathwayPlan is null)
 }
 else
 {
-
-    <MudExpansionPanels MultiExpansion="true" Elevation="2" Outlined="true">
+    <MudExpansionPanels @ref="_objectivePanels" MultiExpansion="true" Elevation="2" Outlined="true">
         @foreach (var objective in PathwayPlan.Objectives)
         {
             <MudExpansionPanel>
@@ -79,7 +78,7 @@ else
                         Tasks
                     </MudText>
 
-                    <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanels @ref="_taskPanelsByObjective[objective.Index]" MultiExpansion="true">
                         @foreach (var task in objective.Tasks)
                         {
                             <MudExpansionPanel>

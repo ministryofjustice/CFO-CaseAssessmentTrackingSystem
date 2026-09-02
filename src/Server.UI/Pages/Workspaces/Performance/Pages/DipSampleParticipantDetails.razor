@@ -5,7 +5,16 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 
-<PerformancePageHeader SampleLabel="@SampleLabel" />
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+    <PerformancePageHeader SampleLabel="@SampleLabel" />
+    @if (_activeTabIndex is PathwayPlanDetailsTabIndex or PathwayPlanReviewTabIndex)
+    {
+        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small">
+            <MudButton StartIcon="@Icons.Material.Filled.UnfoldMore" OnClick="@ExpandAllPathwayPlan">Expand All</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.UnfoldLess" OnClick="@CollapseAllPathwayPlan">Collapse All</MudButton>
+        </MudButtonGroup>
+    }
+</MudStack>
 
 @if (_isLoading)
 {
@@ -45,15 +54,15 @@ else
                     <RagBar Model="@_latestParticipantAssessment" />
                 </MudStack>
 
-                <MudTabs KeepPanelsAlive="true">
+                <MudTabs KeepPanelsAlive="true" @bind-ActivePanelIndex="_activeTabIndex">
                     <MudTabPanel Text="Events">
                         <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Details">
-                        <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
+                        <OutcomeQualityDipSamplePathwayPlanComponent @ref="_pathwayPlanObjectives" ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Pathway Plan Review">
-                        <PathwayPlanReviewHistory ParticipantId="@_participant.ParticipantId"/>
+                        <PathwayPlanReviewHistory @ref="_pathwayPlanReviewHistory" ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Assessments">
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId"/>
