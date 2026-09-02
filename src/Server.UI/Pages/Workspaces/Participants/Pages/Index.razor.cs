@@ -33,7 +33,8 @@ public partial class Index
 
         if(_allowTransfers)
         {
-            links.Add(ParticipantLinks.Transfers);    
+            links.Add(ParticipantLinks.IncomingTransfers);
+            links.Add(ParticipantLinks.OutgoingTransfers);
         }
 
         Links = links.ToArray();        

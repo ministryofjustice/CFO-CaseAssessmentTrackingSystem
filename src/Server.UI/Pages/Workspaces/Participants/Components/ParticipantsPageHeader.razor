@@ -34,21 +34,22 @@
             "" => [home],
             "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],
             "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb()],
-            "transfers" => BuildTransfersBreadcrumbs(home, uri),
+            "incoming-transfers" => BuildIncomingTransfersBreadcrumbs(home, uri),
+            "outgoing-transfers" => [home, ParticipantLinks.OutgoingTransfers.AsMudBreadcrumb()],
             "pre-release-inventory" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb()],
             "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb()],
             _ => BuildParticipantBreadcrumbs(home, segment, uri)
         };
     }
 
-    private static IReadOnlyList<BreadcrumbItem> BuildTransfersBreadcrumbs(BreadcrumbItem home, Uri uri)
+    private static IReadOnlyList<BreadcrumbItem> BuildIncomingTransfersBreadcrumbs(BreadcrumbItem home, Uri uri)
     {
         var parsedQuery = QueryHelpers.ParseQuery(uri.Query);
         if (parsedQuery.TryGetValue("from", out var from) && from.ToString().ToLowerInvariant() == "unassigned-cases")
         {
-            return [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb(), ParticipantLinks.Transfers.AsMudBreadcrumb()];
+            return [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.UnassignedCases.AsMudBreadcrumb(), ParticipantLinks.IncomingTransfers.AsMudBreadcrumb()];
         }
-        return [home, ParticipantLinks.Transfers.AsMudBreadcrumb()];
+        return [home, ParticipantLinks.IncomingTransfers.AsMudBreadcrumb()];
     }
 
     private static IReadOnlyList<BreadcrumbItem> BuildParticipantBreadcrumbs(BreadcrumbItem home, string id, Uri uri)
@@ -64,7 +65,8 @@
                 "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
                 "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
                 "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
-                "transfers" => [home, ParticipantLinks.Transfers.AsMudBreadcrumb(), participant],
+                "incoming-transfers" => [home, ParticipantLinks.IncomingTransfers.AsMudBreadcrumb(), participant],
+                "outgoing-transfers" => [home, ParticipantLinks.OutgoingTransfers.AsMudBreadcrumb(), participant],
                 "activities-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildQueueBreadcrumb(ServiceDeskLinks.ActivitiesQueue, parsedQuery), BuildProcessingBreadcrumb("Activity", "activities", parsedQuery), participant],
                 "enrolments-item" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildQueueBreadcrumb(ServiceDeskLinks.EnrolmentsQueue, parsedQuery), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
                 "enrolments-processing" => [ServiceDeskLinks.Home.AsMudBreadcrumb(), BuildProcessingBreadcrumb("Enrolment", "enrolments", parsedQuery), participant],
