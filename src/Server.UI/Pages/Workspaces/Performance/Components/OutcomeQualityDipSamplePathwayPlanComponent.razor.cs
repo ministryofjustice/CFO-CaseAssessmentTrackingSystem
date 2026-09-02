@@ -10,6 +10,9 @@ public partial class OutcomeQualityDipSamplePathwayPlanComponent
 {
     private bool _isLoading = true;
 
+    private MudExpansionPanels? _objectivePanels;
+    private readonly Dictionary<int, MudExpansionPanels> _taskPanelsByObjective = new();
+
     [Parameter, EditorRequired] public string ParticipantId { get; set; } = null!;
 
     private ParticipantDipSamplePathwayPlanDto? PathwayPlan { get; set; }
@@ -36,6 +39,32 @@ public partial class OutcomeQualityDipSamplePathwayPlanComponent
         finally
         {
             _isLoading = false;
+        }
+    }
+
+    public async Task ExpandAll()
+    {
+        if (_objectivePanels is not null)
+        {
+            await _objectivePanels.ExpandAllAsync();
+        }
+
+        foreach (var panels in _taskPanelsByObjective.Values)
+        {
+            await panels.ExpandAllAsync();
+        }
+    }
+
+    public async Task CollapseAll()
+    {
+        if (_objectivePanels is not null)
+        {
+            await _objectivePanels.CollapseAllAsync();
+        }
+
+        foreach (var panels in _taskPanelsByObjective.Values)
+        {
+            await panels.CollapseAllAsync();
         }
     }
 

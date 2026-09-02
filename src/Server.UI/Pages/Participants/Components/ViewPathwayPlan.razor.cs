@@ -15,6 +15,8 @@ public partial class ViewPathwayPlan
     private bool _hideCompletedObjectives;
     private bool _hideCompletedTasks;
 
+    private readonly Dictionary<Guid, bool> _expandedStates = new();
+
     private string _selector = "Created";
     private readonly Dictionary<string, Func<ObjectiveDto, dynamic>> _selectors = new()
     {
@@ -65,6 +67,41 @@ public partial class ViewPathwayPlan
         {
             _loading = false;
         }
+    }
+
+    private bool GetExpanded(Guid objectiveId) =>
+        _expandedStates.TryGetValue(objectiveId, out var expanded) ? expanded : true;
+
+    private void SetExpanded(Guid objectiveId, bool expanded) => _expandedStates[objectiveId] = expanded;
+
+    public void ExpandAll()
+    {
+        if (Model is null)
+        {
+            return;
+        }
+
+        foreach (var objective in Model.Objectives)
+        {
+            _expandedStates[objective.Id] = true;
+        }
+
+        StateHasChanged();
+    }
+
+    public void CollapseAll()
+    {
+        if (Model is null)
+        {
+            return;
+        }
+
+        foreach (var objective in Model.Objectives)
+        {
+            _expandedStates[objective.Id] = false;
+        }
+
+        StateHasChanged();
     }
 
     private async Task AddObjective()

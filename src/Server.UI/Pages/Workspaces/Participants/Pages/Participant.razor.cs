@@ -7,7 +7,9 @@ using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Participants;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Models;
+using Cfo.Cats.Server.UI.Pages.Participants.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
@@ -23,10 +25,54 @@ public partial class Participant
 
     private bool _pathwaySummaryView = false;
 
+    private CasePathwayPlan? _casePathwayPlan;
+    private OutcomeQualityDipSamplePathwayPlanComponent? _summaryObjectives;
+    private PathwayPlanReviewHistory? _summaryReviewHistory;
+
     private bool _showRightToWorkWarning;
     private readonly string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 
     private readonly string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
+
+    private async Task ExpandAllPathwayPlan()
+    {
+        if (_pathwaySummaryView)
+        {
+            if (_summaryObjectives is not null)
+            {
+                await _summaryObjectives.ExpandAll();
+            }
+
+            if (_summaryReviewHistory is not null)
+            {
+                await _summaryReviewHistory.ExpandAll();
+            }
+        }
+        else if (_casePathwayPlan is not null)
+        {
+            await _casePathwayPlan.ExpandAll();
+        }
+    }
+
+    private async Task CollapseAllPathwayPlan()
+    {
+        if (_pathwaySummaryView)
+        {
+            if (_summaryObjectives is not null)
+            {
+                await _summaryObjectives.CollapseAll();
+            }
+
+            if (_summaryReviewHistory is not null)
+            {
+                await _summaryReviewHistory.CollapseAll();
+            }
+        }
+        else if (_casePathwayPlan is not null)
+        {
+            await _casePathwayPlan.CollapseAll();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -94,26 +94,32 @@
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                             <MudSwitch T="bool" @bind-Value="_pathwaySummaryView" Color="Color.Secondary" ThumbIcon="@Icons.Material.Filled.Summarize">
-                                Summary View
-                             </MudSwitch>
+                             <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+                                 <MudSwitch T="bool" @bind-Value="_pathwaySummaryView" Color="Color.Secondary" ThumbIcon="@Icons.Material.Filled.Summarize">
+                                    Summary View
+                                 </MudSwitch>
+                                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small">
+                                     <MudButton StartIcon="@Icons.Material.Filled.UnfoldMore" OnClick="@ExpandAllPathwayPlan">Expand All</MudButton>
+                                     <MudButton StartIcon="@Icons.Material.Filled.UnfoldLess" OnClick="@CollapseAllPathwayPlan">Collapse All</MudButton>
+                                 </MudButtonGroup>
+                             </MudStack>
                              @if(_pathwaySummaryView)
                              {
                                 <MudStack Spacing="3">
                                     <MudText Typo="Typo.h4">
                                         Pathway Plan
                                     </MudText>
-                                    <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.Id" />
+                                    <OutcomeQualityDipSamplePathwayPlanComponent @ref="_summaryObjectives" ParticipantId="@_participant.Id" />
                                     <MudText Typo="Typo.h4">
                                         Reviews
                                     </MudText>
-                                    <PathwayPlanReviewHistory ParticipantId="@_participant.Id"/>   
+                                    <PathwayPlanReviewHistory @ref="_summaryReviewHistory" ParticipantId="@_participant.Id"/>   
                                 </MudStack>
                                 
                              }
                              else
                              {
-                                <CasePathwayPlan/>
+                                <CasePathwayPlan @ref="_casePathwayPlan"/>
                              }
                         </MudTabPanel>
                         <MudTabPanel Text="PRI">
