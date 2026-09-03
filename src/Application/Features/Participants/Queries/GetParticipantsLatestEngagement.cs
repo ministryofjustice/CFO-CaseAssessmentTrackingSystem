@@ -25,8 +25,11 @@ public static class GetParticipantsLatestEngagement
         /// <summary>Optional filter to a specific engagement type (the engagement category).</summary>
         public string? EngagementType { get; set; }
 
-        /// <summary>Optional narrowing to a sub-tenant within the current user's visible hierarchy.</summary>
+        /// <summary>Optional narrowing to a sub tenant within the current user's visible hierarchy.</summary>
         public string? TenantId { get; set; }
+
+        /// <summary>Optional filter by the engaged with display name.</summary>
+        public string? EngagedWith { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<PaginatedData<ParticipantEngagementDto>>>
@@ -54,6 +57,7 @@ public static class GetParticipantsLatestEngagement
                 join currentLocation in db.Locations on participant.CurrentLocation.Id equals currentLocation.Id
                 where request.LocationId == null || currentLocation.Id == request.LocationId
                 where string.IsNullOrWhiteSpace(request.EngagementType) || (engagement != null && engagement.Category == request.EngagementType)
+                where string.IsNullOrWhiteSpace(request.EngagedWith) || (engagement != null && engagement.EngagedWith == request.EngagedWith)
                 where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < threeMonthsAgo)
                 where string.IsNullOrWhiteSpace(request.Keyword)
                       || participant.FirstName.Contains(request.Keyword)
