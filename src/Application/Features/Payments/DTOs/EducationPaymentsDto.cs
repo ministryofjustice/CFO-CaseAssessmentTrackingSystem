@@ -17,6 +17,7 @@ public class EducationPaymentDto
     public DateTime PaymentPeriod { get; set; }
 
     public string Contract { get; set; } = "";
+    public string TenantName { get; set; } = "";
     public string ParticipantId { get; set; } = "";
     public bool EligibleForPayment { get; set; }
     public string LocationType { get; set; } = "";

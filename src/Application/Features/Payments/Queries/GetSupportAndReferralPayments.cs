@@ -45,6 +45,7 @@ public static class GetSupportAndReferralPayments
                             Location = l.Name,
                             ep.IneligibilityReason,
                             TenantId = c!.Tenant!.Id!,
+                            TenantName = c.Tenant!.Name!,
                             ParticipantName = p.FirstName + " " + p.LastName,
                             SupportWorkerName = u.DisplayName ?? ""
                         };
@@ -72,6 +73,7 @@ public static class GetSupportAndReferralPayments
                     ParticipantId = x.ParticipantId,
                     EligibleForPayment = x.EligibleForPayment,
                     Contract = x.Contract,
+                    TenantName = x.TenantName,
                     SupportType = x.SupportType,
                     Location = x.Location,
                     LocationType = x.LocationType,

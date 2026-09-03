@@ -49,6 +49,7 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
                 new Dictionary<string, Func<SupportAndReferralPaymentDto, object?>>
                 {
                     { "Contract", item => item.Contract },
+                    { "Tenant", item => item.TenantName },
                     { "Created", item => item.CreatedOn },
                     { "Approved", item => item.Approved },
                     { "Payment Period", item => item.PaymentPeriod },

@@ -115,7 +115,12 @@
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
                         </div>
                     </MudTd>
-                    <MudTd DataLabel="Support Worker">@context.SupportWorkerName</MudTd>
+                    <MudTd DataLabel="Support Worker">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body1">@context.SupportWorkerName</MudText>
+                            <MudText Typo="Typo.body1">@context.TenantName</MudText>
+                        </div>
+                    </MudTd>
                     <MudTd DataLabel="">
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.Type</MudText>

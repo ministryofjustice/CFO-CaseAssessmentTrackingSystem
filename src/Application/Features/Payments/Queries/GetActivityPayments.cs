@@ -26,6 +26,7 @@ public static class GetActivityPayments
             (
                 from ep in unitOfWork.DbContext.ActivityPayments
                 join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
+                join t in unitOfWork.DbContext.Tenants on ep.TenantId equals t.Id
                 join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
                 join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
                 join p in unitOfWork.DbContext.Participants on ep.ParticipantId equals p.Id
@@ -49,7 +50,8 @@ public static class GetActivityPayments
                     Location = l.Name,
                     ep.IneligibilityReason,
                     ep.PaymentPeriod,
-                    TenantId = c!.Tenant!.Id!,
+                    ContractTenantId = c!.Tenant!.Id!,
+                    TenantName = t.Name!,
                     ParticipantName = p.FirstName + " " + p.LastName,
                     SupportWorkerName = u.DisplayName ?? ""
                 }
@@ -80,14 +82,15 @@ public static class GetActivityPayments
                         Location = l.Name,
                         re.IneligibilityReason,
                         re.PaymentPeriod,
-                        TenantId = c!.Tenant!.Id!,
+                        ContractTenantId = c!.Tenant!.Id!,
+                        TenantName = c.Tenant!.Name!,
                         ParticipantName = p.FirstName + " " + p.LastName,
                         SupportWorkerName = u.DisplayName ?? ""
                     }
             );
 
             query = request.ContractId is null
-                ? query.Where(q => q.TenantId.StartsWith(request.TenantId))
+                ? query.Where(q => q.ContractTenantId.StartsWith(request.TenantId))
                 : query.Where(q => q.ContractId == request.ContractId);
 
             if(string.IsNullOrWhiteSpace(request.Keyword) is false)
@@ -111,6 +114,7 @@ public static class GetActivityPayments
                     ParticipantId = x.ParticipantId,
                     EligibleForPayment = x.EligibleForPayment,
                     Contract = x.Contract,
+                    TenantName = x.TenantName,
                     Category = x.ActivityCategory,
                     Type = x.ActivityType,
                     Location = x.Location,

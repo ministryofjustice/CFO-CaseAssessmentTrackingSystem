@@ -15,6 +15,7 @@ public class EnrolmentPaymentDto
     public DateTime SubmissionToAuthority { get; set; }
     public DateTime? Approved { get; set; }
     public string Contract { get; set; } = "";
+    public string TenantName { get; set; } = "";
     public string ParticipantId { get; set; } = "";
     public bool EligibleForPayment { get; set; }
     public string LocationType { get; set; } = "";
