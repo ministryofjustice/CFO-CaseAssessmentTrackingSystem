@@ -40,7 +40,7 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
 
         builder.HasIndex(q => q.IsReplaced);
 
-        builder.HasOne<ApplicationUser>()
+        builder.HasOne(q => q.PreviousOwner)
             .WithMany()
             .HasForeignKey(q => q.PreviousOwnerId)
             .OnDelete(DeleteBehavior.Restrict);

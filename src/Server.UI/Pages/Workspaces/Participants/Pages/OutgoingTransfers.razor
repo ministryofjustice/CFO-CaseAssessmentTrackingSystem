@@ -24,6 +24,7 @@
         <MudTh>@ConstantString.Actions</MudTh>
         <MudTh>Participant</MudTh>
         <MudTh>Status</MudTh>
+        <MudTh>Previous Support Worker</MudTh>
         <MudTh>Occurred</MudTh>
         <MudTh>From</MudTh>
         <MudTh>To</MudTh>
@@ -47,6 +48,7 @@
                 <MudChip T="string" Size="Size.Small" Style="@($"background-color: {context.EnrolmentStatus.Colour}; color: white;")">@context.EnrolmentStatus.Name</MudChip>
             }
         </MudTd>
+        <MudTd DataLabel="Previous Support Worker">@context.PreviousSupportWorkerName</MudTd>
         <MudTd DataLabel="Occurred">
             <div class="d-flex flex-column">
                 <MudText Typo="Typo.body1">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
