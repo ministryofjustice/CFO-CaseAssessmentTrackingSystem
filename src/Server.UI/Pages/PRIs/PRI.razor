@@ -212,6 +212,10 @@
     
     private async Task LocationChanged()
     {
+        // Keep the Assignment step's copy of the expected region in sync so it can validate
+        // code/self-assign region access as soon as both are known, instead of only at final submit.
+        _model!.Code.ExpectedRegion = _model.Release.ExpectedRegion;
+
         if(_model is { Release.ExpectedRegion: not null} )
         {
             // Allow self assignment if user has access to expected release region

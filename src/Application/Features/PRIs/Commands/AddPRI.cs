@@ -102,40 +102,62 @@ public static class AddPRI
 
         private async Task<bool> BeAuthorised(Command command, CancellationToken cancellationToken)
         {
-            string? assigneeTenantId;
+            var assigneeTenantId = await ResolveAssigneeTenantId(
+                _unitOfWork, _currentUserService, command.ParticipantId, command.Code.PriCode, command.Code.SelfAssign, cancellationToken);
 
-            if(command.Code.SelfAssign)
-            {
-                assigneeTenantId = _currentUserService.TenantId;
-            }
-            else if (!string.IsNullOrWhiteSpace(command.Code.PriCode))
-            {
-                var code = int.Parse(command.Code.PriCode.Trim());
-
-                var createdBy = await _unitOfWork.DbContext.PriCodes
-                    .Where(p => p.ParticipantId == command.ParticipantId && p.Code == code)
-                    .Select(p => p.CreatedBy)
-                    .SingleAsync(cancellationToken);
-
-                var tenantId = await _unitOfWork.DbContext.Users.Where(u => u.Id == createdBy)
-                    .Select(u => u.TenantId)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-                assigneeTenantId = tenantId;
-            }
-            else
+            if (assigneeTenantId is null)
             {
                 return false;
             }
-            
+
             return _locationService
-                .GetVisibleLocations(assigneeTenantId!)
+                .GetVisibleLocations(assigneeTenantId)
                 .Select(l => l.Id)
                 .Contains(command.Release.ExpectedRegion!.Id);
         }
 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+    }
+
+    /// <summary>
+    /// Resolves the TenantId of the user who will end up assigned to the PRI, so that
+    /// callers can check whether that user has visibility of a given release region.
+    /// Shared between the Command's Mediator-only validation and the Assignment step's
+    /// client-facing validation so that the two stay in sync.
+    /// </summary>
+    private static async Task<string?> ResolveAssigneeTenantId(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        string participantId,
+        string? priCode,
+        bool selfAssign,
+        CancellationToken cancellationToken)
+    {
+        if (selfAssign)
+        {
+            return currentUserService.TenantId;
+        }
+
+        if (string.IsNullOrWhiteSpace(priCode) || !int.TryParse(priCode.Trim(), out var code))
+        {
+            return null;
+        }
+
+        var createdBy = await unitOfWork.DbContext.PriCodes
+            .Where(p => p.Code == code && p.ParticipantId == participantId)
+            .Select(p => p.CreatedBy)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (createdBy is null)
+        {
+            return null;
+        }
+
+        return await unitOfWork.DbContext.Users
+            .Where(u => u.Id == createdBy)
+            .Select(u => u.TenantId)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public class PriCodeDto
@@ -145,13 +167,24 @@ public static class AddPRI
         public bool IsSelfAssignmentAllowed { get; set; }
         public required string ParticipantId { get; init; }
 
+        /// <summary>
+        /// The expected release region chosen on the Release step. Populated by the UI so that
+        /// the Assignment step can validate region access as soon as both a region and a
+        /// code/self-assign choice are known, rather than waiting until final submission.
+        /// </summary>
+        public LocationDto? ExpectedRegion { get; set; }
+
         public class Validator : AbstractValidator<PriCodeDto>
         {
             private readonly IUnitOfWork _unitOfWork;
+            private readonly ILocationService _locationService;
+            private readonly ICurrentUserService _currentUserService;
 
-            public Validator(IUnitOfWork unitOfWork)
+            public Validator(IUnitOfWork unitOfWork, ILocationService locationService, ICurrentUserService currentUserService)
             {
                 _unitOfWork = unitOfWork;
+                _locationService = locationService;
+                _currentUserService = currentUserService;
 
                 RuleFor(c => c.ParticipantId)
                     .NotNull();
@@ -173,7 +206,10 @@ public static class AddPRI
                         })
                         .WithMessage("Code must be 6 digits")
                         .MustAsync(BeValid)
-                        .WithMessage("Invalid code");
+                        .WithMessage("Invalid code")
+                        .MustAsync(BeAuthorisedForRegion)
+                        .WithMessage("The Community Support Worker who generated this code does not have access to the expected release region")
+                        .When(c => c.ExpectedRegion is not null);
                 });
 
                 // Self assign logic
@@ -190,6 +226,11 @@ public static class AddPRI
                             .NotEmpty()
                             .WithMessage("You must provide a code");
                     });
+
+                RuleFor(c => c.SelfAssign)
+                    .MustAsync(BeAuthorisedForRegion)
+                    .WithMessage("You do not have access to the expected release region")
+                    .When(c => c.SelfAssign && c.ExpectedRegion is not null);
             }
 
             private async Task<bool> BeValid(PriCodeDto dto, string? code, CancellationToken ct)
@@ -206,6 +247,33 @@ public static class AddPRI
 
                 return await _unitOfWork.DbContext.PriCodes
                     .AnyAsync(pc => pc.Code == parsed && pc.ParticipantId == dto.ParticipantId, ct);
+            }
+
+            private async Task<bool> BeAuthorisedForRegion(PriCodeDto dto, string? code, CancellationToken ct)
+                => await BeAuthorisedForRegion(dto, ct);
+
+            private async Task<bool> BeAuthorisedForRegion(PriCodeDto dto, bool selfAssign, CancellationToken ct)
+                => await BeAuthorisedForRegion(dto, ct);
+
+            private async Task<bool> BeAuthorisedForRegion(PriCodeDto dto, CancellationToken ct)
+            {
+                if (dto.ExpectedRegion is null)
+                {
+                    return true;
+                }
+
+                var tenantId = await ResolveAssigneeTenantId(
+                    _unitOfWork, _currentUserService, dto.ParticipantId, dto.PriCode, dto.SelfAssign, ct);
+
+                if (tenantId is null)
+                {
+                    return false;
+                }
+
+                return _locationService
+                    .GetVisibleLocations(tenantId)
+                    .Select(l => l.Id)
+                    .Contains(dto.ExpectedRegion.Id);
             }
         }
     }
