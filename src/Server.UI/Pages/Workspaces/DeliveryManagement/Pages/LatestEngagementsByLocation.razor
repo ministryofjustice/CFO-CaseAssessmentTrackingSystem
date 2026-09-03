@@ -23,7 +23,19 @@
 </MudAlert>
 
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    @if (_visualMode is false && _data?.Details is not null)
+    {
+        <MudPagination Rectangular="true"
+                       Variant="Variant.Text"
+                       Selected="Query.PageNumber"
+                       Count="@_data.Details.TotalPages"
+                       MiddleCount="2"
+                       BoundaryCount="1"
+                       SelectedChanged="PageChanged"
+                       Size="MudBlazor.Size.Small" />
 
+        <MudText>@_data.Details.TotalItems records</MudText>
+    }
     <MudSwitch T="bool" Value="_visualMode" ValueChanged="OnVisualModeChanged" Color="Color.Info" Label="Visual Mode" />
     <MudSpacer />
 
@@ -171,9 +183,6 @@ else
             <NoRecordsContent>
                 <MudText>@ConstantString.NoRecords</MudText>
             </NoRecordsContent>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="[10, 25, 50]" />
-            </PagerContent>
         </MudTable>
     }
 }

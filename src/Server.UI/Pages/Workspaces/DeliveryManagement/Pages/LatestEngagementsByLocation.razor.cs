@@ -164,6 +164,19 @@ public partial class LatestEngagementsByLocation
         Theme = new Theme { Mode = IsDarkMode ? Mode.Dark : Mode.Light }
     };
 
+    private async Task PageChanged(int page)
+    {
+        Query.PageNumber = page;
+        if (_table is not null)
+        {
+            _table.NavigateTo(page - 1);
+        }
+        else
+        {
+            await OnRefresh();
+        }
+    }
+
     private async Task OnRefresh()
     {
         // In table mode the MudTable's ServerData runs the (single) combined query; just reload it.
