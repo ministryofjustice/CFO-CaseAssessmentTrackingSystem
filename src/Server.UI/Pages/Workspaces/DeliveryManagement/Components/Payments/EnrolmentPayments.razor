@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
 
-<style type="text/css">
+<style>
 
     .centered {
     text-align: center;
@@ -27,8 +27,6 @@
             Loading="@_loading"
             LoadingProgressColor="Color.Info">
                 <ToolBarContent>
-                    <MudText Typo="Typo.subtitle1">Enrolments</MudText>
-                    <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         <MudLoadingButton Loading="@_downloading"
@@ -116,23 +114,29 @@
             @if(_loading is false)
             {
                 <ApexChart TItem="EnrolmentPaymentSummaryDto"
-                           Title="Enrolments By Contract"
+                           Title="Enrolments By Contract (% of Target)"
                            Options="@Options">
-                    <ApexPointSeries TItem="EnrolmentPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Custody"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.Custody"
-                                     ShowDataLabels="true" />
+                    @if (_summaryData.Any(e => e.Custody > 0))
+                    {
+                        <ApexPointSeries TItem="EnrolmentPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Custody"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.CustodyPercentage"
+                                         ShowDataLabels="true" />
+                    }
 
-                    <ApexPointSeries TItem="EnrolmentPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Community"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.Community"
-                                     ShowDataLabels="true" />
+                    @if (_summaryData.Any(e => e.Community > 0))
+                    {
+                        <ApexPointSeries TItem="EnrolmentPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Community"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.CommunityPercentage"
+                                         ShowDataLabels="true" />
+                    }
                 </ApexChart>
             }
         </MudItem>
@@ -173,10 +177,10 @@
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd DataLabel="Custody" Class="centered">@context.Custody</MudTd>
                     <MudTd DataLabel="Target" Class="centered">@context.CustodyTarget</MudTd>
-                    <MudTd DataLabel="Percentage" Class="centered">@context.CustodyPercentage</MudTd>
+                    <MudTd DataLabel="Percentage" Class="centered">@(context.CustodyPercentage)%</MudTd>
                     <MudTd DataLabel="Community" Class="centered">@context.Community</MudTd>
                     <MudTd DataLabel="Target" Class="centered">@context.CommunityTarget</MudTd>
-                    <MudTd DataLabel="Percentage" Class="centered">@context.CommunityPercentage</MudTd>
+                    <MudTd DataLabel="Percentage" Class="centered">@(context.CommunityPercentage)%</MudTd>
                 </RowTemplate>
             </MudTable>    
         </MudItem>

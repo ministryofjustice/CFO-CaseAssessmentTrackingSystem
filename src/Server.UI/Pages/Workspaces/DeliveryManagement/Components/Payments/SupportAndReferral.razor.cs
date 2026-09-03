@@ -10,7 +10,6 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components.Paym
 
 public partial class SupportAndReferral
 {
-    private readonly ApexChartOptions<SupportAndReferralPaymentSummaryDto> _options = new();
     private bool _loading = true;
     private bool _downloading;
 
@@ -57,6 +56,19 @@ public partial class SupportAndReferral
                 }
             }
         },
+        Yaxis = [
+            new YAxis
+            {
+                Min = 0,
+                Max = 100,
+                Title = new AxisTitle { Text = "% of Target Achieved" }
+            }
+        ],
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
@@ -96,7 +108,7 @@ public partial class SupportAndReferral
             ContractId = Contract?.Id,
             Month = Month,
             Year = Year,
-            TenantId = CurrentUser!.TenantId!
+            TenantId = CurrentUser.TenantId!
         };
 
         await OnRefresh();

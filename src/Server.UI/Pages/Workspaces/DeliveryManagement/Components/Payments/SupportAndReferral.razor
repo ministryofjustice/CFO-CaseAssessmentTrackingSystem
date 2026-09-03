@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
 
-<style type="text/css">
+<style>
 
     .centered {
     text-align: center;
@@ -26,8 +26,6 @@
             Loading="@_loading"
             LoadingProgressColor="Color.Info">
                 <ToolBarContent>
-                    <MudText Typo="Typo.subtitle1">Support & Referral</MudText>
-                    <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         <MudLoadingButton Disabled="@_downloading"
@@ -35,7 +33,7 @@
                                    Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
-                                   OnClick="OnExport">
+                                   OnClick="@OnExport">
                                 @ConstantString.Export
                             </MudLoadingButton>
                     </MudStack>
@@ -147,20 +145,28 @@
             @if(_loading is false)
             {
                 <ApexChart TItem="SupportAndReferralPaymentSummaryDto"
-                           Title="Support &amp; Referral By Contract"
+                           Title="Support &amp; Referral By Contract (% of Target)"
                            Options="@Options">
-                    <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Pre-Release Support"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.PreReleaseSupport" />
-                    <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Through the Gate"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.ThroughTheGateSupport" />
+                    @if (_summaryData.Any(e => e.PreReleaseSupport > 0))
+                    {
+                        <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Pre-Release Support"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.PreReleaseSupportPercentage"
+                                         ShowDataLabels="true" />
+                    }
+                    @if (_summaryData.Any(e => e.ThroughTheGateSupport > 0))
+                    {
+                        <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Through the Gate"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.ThroughTheGateSupportPercentage"
+                                         ShowDataLabels="true" />
+                    }
                 </ApexChart>
             }
         </MudItem>
@@ -202,10 +208,10 @@
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd DataLabel="Support" Class="centered">@context.PreReleaseSupport</MudTd>
                     <MudTd DataLabel="Target" Class="centered">@context.PreReleaseSupportTarget</MudTd>
-                    <MudTd DataLabel="Percentage" Class="centered">@context.PreReleaseSupportPercentage</MudTd>
+                    <MudTd DataLabel="Percentage" Class="centered">@(context.PreReleaseSupportPercentage)%</MudTd>
                     <MudTd DataLabel="Through the Gate" Class="centered">@context.ThroughTheGateSupport</MudTd>
                     <MudTd DataLabel="Target" Class="centered">@context.ThroughTheGateSupportTarget</MudTd>
-                    <MudTd DataLabel="Percentage" Class="centered">@context.ThroughTheGateSupportPercentage</MudTd>
+                    <MudTd DataLabel="Percentage" Class="centered">@(context.ThroughTheGateSupportPercentage)%</MudTd>
                 </RowTemplate>
             </MudTable>    
         </MudItem>

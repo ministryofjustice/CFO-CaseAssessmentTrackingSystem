@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
 
-<style type="text/css">
+<style>
     .centered {
     text-align: center;
     }
@@ -24,8 +24,6 @@
             Loading="@_loading" 
             LoadingProgressColor="Color.Info">
                 <ToolBarContent>
-                    <MudText Typo="Typo.subtitle1">Education & Training</MudText>
-                    <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         <MudLoadingButton Loading="@_downloading"
@@ -33,7 +31,7 @@
                                    Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
-                                   OnClick="OnExport">
+                                   OnClick="@OnExport">
                                     @ConstantString.Export
                         </MudLoadingButton>
                     </MudStack>
@@ -150,15 +148,18 @@
             @if (_loading is false)
             {
                 <ApexChart TItem="EducationPaymentSummaryDto"
-                           Title="Education & Training By Contract"
+                           Title="Education &amp; Training By Contract (% of Target)"
                            Options="@Options">
-                    <ApexPointSeries TItem="EducationPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Educations"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.Educations"
-                                     ShowDataLabels="true" />
+                    @if (_summaryData.Any(e => e.Educations > 0))
+                    {
+                        <ApexPointSeries TItem="EducationPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Educations"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.EducationsPercentage"
+                                         ShowDataLabels="true" />
+                    }
                 </ApexChart>
             }
         </MudItem>
@@ -192,7 +193,7 @@
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd DataLabel="Education & Training">@context.Educations</MudTd>
                     <MudTd DataLabel="Target">@context.EducationsTarget</MudTd>
-                    <MudTd DataLabel="Percentage">@context.EducationsPercentage</MudTd>
+                    <MudTd DataLabel="Percentage">@(context.EducationsPercentage)%</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
