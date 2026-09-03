@@ -23,14 +23,26 @@
 </MudAlert>
 
 <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    @if (_visualMode is false && _data?.Details is not null)
+    {
+        <MudPagination Rectangular="true"
+                       Variant="Variant.Text"
+                       Selected="Query.PageNumber"
+                       Count="@_data.Details.TotalPages"
+                       MiddleCount="2"
+                       BoundaryCount="1"
+                       SelectedChanged="PageChanged"
+                       Size="MudBlazor.Size.Small" />
 
+        <MudText>@_data.Details.TotalItems records</MudText>
+    }
     <MudSwitch T="bool" Value="_visualMode" ValueChanged="OnVisualModeChanged" Color="Color.Info" Label="Visual Mode" />
     <MudSpacer />
 
     <MudSwitch T="bool" Value="Query.HideRecentEngagements" Color="Color.Info"
                ValueChanged="OnHideRecentChanged" Label="3+ Month Inactive" />
 
-    <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="ShowLocationDialog"
+    <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="@ShowLocationDialog"
                EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
         @(_selectedLocationId == 0 ? "All Locations" : _locations[_selectedLocationId])
     </MudButton>
@@ -44,26 +56,30 @@
             <MudMenuItem OnClick="@(() => OnEngagementTypeChanged(type))">@type</MudMenuItem>
         }
     </MudMenu>
-
+    
     @if (_canFilterTenant)
     {
-        <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog"
+        <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="@ShowTenantDialog"
                    EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             @(_selectedTenantName ?? "All Tenants")
         </MudButton>
     }
+    
+    <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Text" OnClick="@ShowUserDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @UserLabel
+    </MudButton>
 
     <MudTooltip Text="Clear search parameters">
-        <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" />
+        <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
     </MudTooltip>
 
     <MudButton Size="MudBlazor.Size.Small" Variant="Variant.Filled" Color="Color.Info"
-               StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
+               StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefresh">
         @ConstantString.Refresh
     </MudButton>
 
     <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@_downloading"
-                      OnClick="OnExport" StartIcon="@Icons.Material.Filled.CloudDownload" Size="MudBlazor.Size.Small">
+                      OnClick="@OnExport" StartIcon="@Icons.Material.Filled.CloudDownload" Size="MudBlazor.Size.Small">
         @ConstantString.Export
     </MudLoadingButton>
 </MudStack>
@@ -114,11 +130,9 @@ else
     {
         <MudTable @ref="_table" ServerData="ServerReload" Hover="true" Striped="true"
                     Class="mt-4" Dense="true">
-            <ToolBarContent>
-                <MudText Typo="Typo.subtitle1">Participant details</MudText>
-            </ToolBarContent>
             <HeaderContent>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="SupportWorkerDisplayName">Current Support Worker</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Location</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="Category">Category</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EngagedWith">Engaged With</MudTableSortLabel></MudTh>
@@ -133,6 +147,7 @@ else
                         </MudLink>
                     </MudStack>
                 </MudTd>
+                <MudTd DataLabel="Current Support Worker">@context.SupportWorkerDisplayName</MudTd>
                 <MudTd DataLabel="Location">@context.CurrentLocationName</MudTd>
                 <MudTd DataLabel="Category">
                     @if (context.HasEngaged)
@@ -168,10 +183,6 @@ else
             <NoRecordsContent>
                 <MudText>@ConstantString.NoRecords</MudText>
             </NoRecordsContent>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="new[] { 10, 25, 50 }" />
-            </PagerContent>
         </MudTable>
     }
-
 }

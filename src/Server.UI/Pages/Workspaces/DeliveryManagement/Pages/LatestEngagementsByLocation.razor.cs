@@ -21,6 +21,9 @@ public partial class LatestEngagementsByLocation
     private bool _canFilterTenant;
     private bool _isTenantLevel;
     private string? _selectedTenantName;
+    private string? _selectedTenantId;
+
+    private string? _currentSupportWorker;
 
     private IDictionary<int, string> _locations = new Dictionary<int, string>();
     private string[] _engagementTypes = [];
@@ -30,7 +33,7 @@ public partial class LatestEngagementsByLocation
     private string _selectedEngagementType = string.Empty;
 
     private LatestEngagementsByLocationDto? _data;
-    private MudTable<ParticipantEngagementDto> _table = null!;
+    private MudTable<ParticipantEngagementDto>? _table;
 
     [Inject] private ILocationService LocationService { get; set; } = null!;
     [Inject] private IParticipantDialogService ParticipantDialogService { get; set; } = null!;
@@ -88,6 +91,13 @@ public partial class LatestEngagementsByLocation
             {
                 Query.TenantId = sd.TenantId;
                 _selectedTenantName = sd.TenantName;
+                _selectedTenantId = sd.TenantId;
+            }
+
+            if (sd.CurrentSupportWorker is not null)
+            {
+                _currentSupportWorker = sd.CurrentSupportWorker;
+                Query.EngagedWith = sd.CurrentSupportWorker;
             }
         }
 
@@ -154,6 +164,19 @@ public partial class LatestEngagementsByLocation
         Theme = new Theme { Mode = IsDarkMode ? Mode.Dark : Mode.Light }
     };
 
+    private async Task PageChanged(int page)
+    {
+        Query.PageNumber = page;
+        if (_table is not null)
+        {
+            _table.NavigateTo(page - 1);
+        }
+        else
+        {
+            await OnRefresh();
+        }
+    }
+
     private async Task OnRefresh()
     {
         // In table mode the MudTable's ServerData runs the (single) combined query; just reload it.
@@ -179,10 +202,7 @@ public partial class LatestEngagementsByLocation
             else
             {
                 _data = null;
-                if (result?.ErrorMessage is not null)
-                {
-                    Snackbar.Add(result.ErrorMessage, Severity.Error);
-                }
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
         catch (OperationCanceledException)
@@ -220,10 +240,7 @@ public partial class LatestEngagementsByLocation
             }
 
             _data = null;
-            if (result?.ErrorMessage is not null)
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Warning);
-            }
+            Snackbar.Add(result.ErrorMessage, Severity.Warning);
         }
         catch (OperationCanceledException)
         {
@@ -281,6 +298,7 @@ public partial class LatestEngagementsByLocation
         {
             Query.TenantId = tenant.TenantId;
             _selectedTenantName = tenant.DisplayName;
+            _selectedTenantId = tenant.TenantId;
             await SaveSessionState();
             await OnRefresh();
         }
@@ -300,6 +318,7 @@ public partial class LatestEngagementsByLocation
                 LocationId = Query.LocationId,
                 EngagementType = Query.EngagementType,
                 TenantId = Query.TenantId,
+                EngagedWith = Query.EngagedWith,
                 OrderBy = "EngagedOn",
                 SortDirection = nameof(SortDirection.Descending)
             };
@@ -327,15 +346,19 @@ public partial class LatestEngagementsByLocation
         }
     }
 
+    private string UserLabel => string.IsNullOrEmpty(_currentSupportWorker) ? "All Engaged With" : _currentSupportWorker;
+
     private async Task ClearSearch()
     {
         _selectedEngagementType = string.Empty;
         _selectedLocationId = 0;
         _selectedTenantName = null;
-        
+        _selectedTenantId = null;
+        _currentSupportWorker = null;
         Query.TenantId = null;
         Query.LocationId = null;
         Query.EngagementType = null;
+        Query.EngagedWith = null;
         Query.HideRecentEngagements = false;
 
         await SaveSessionState();
@@ -352,6 +375,52 @@ public partial class LatestEngagementsByLocation
             locationName,
             _selectedEngagementType == string.Empty ? null : _selectedEngagementType,
             Query.TenantId,
-            _selectedTenantName));
+            _selectedTenantName,
+            _currentSupportWorker
+            ));
+    }
+    
+    private async Task ShowUserDialog()
+    {
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(GetEffectiveUserProfile(), "Select Engaged With User");
+
+        if (user is not null)
+        {
+            _currentSupportWorker = string.IsNullOrEmpty(user.DisplayName) ? null : user.DisplayName;
+            Query.EngagedWith = _currentSupportWorker;
+            await SaveSessionState();
+            await OnRefresh();
+        }
+    }
+    
+    /// <summary>
+    /// Returns a profile scoped to the selected tenant, so the user picker only lists users within
+    /// the tenant the senior has drilled into. Falls back to the current user for their own tenant.
+    /// </summary>
+    private UserProfile GetEffectiveUserProfile()
+    {
+        if (string.IsNullOrEmpty(_selectedTenantId) || _selectedTenantId == CurrentUser.TenantId)
+        {
+            return CurrentUser;
+        }
+
+        return new UserProfile
+        {
+            UserId = CurrentUser.UserId,
+            UserName = CurrentUser.UserName,
+            Email = CurrentUser.Email,
+            DisplayName = CurrentUser.DisplayName,
+            PhoneNumber = CurrentUser.PhoneNumber,
+            TenantId = _selectedTenantId,
+            TenantName = CurrentUser.TenantName,
+            AssignedRoles = CurrentUser.AssignedRoles,
+            DefaultRole = CurrentUser.DefaultRole,
+            Contracts = CurrentUser.Contracts,
+            Status = CurrentUser.Status,
+            Provider = CurrentUser.Provider,
+            SuperiorName = CurrentUser.SuperiorName,
+            SuperiorId = CurrentUser.SuperiorId,
+            ProfilePictureDataUrl = CurrentUser.ProfilePictureDataUrl
+        };
     }
 }

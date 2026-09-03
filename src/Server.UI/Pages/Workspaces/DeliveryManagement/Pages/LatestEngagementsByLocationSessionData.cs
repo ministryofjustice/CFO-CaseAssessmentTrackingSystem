@@ -13,6 +13,7 @@ public record LatestEngagementsByLocationSessionData
     public string? EngagementType { get; init; }
     public string? TenantId { get; init; }
     public string? TenantName { get; init; }
+    public string? CurrentSupportWorker { get; init; }
 
     internal static LatestEngagementsByLocationSessionData FromState(
         bool visualMode,
@@ -21,7 +22,8 @@ public record LatestEngagementsByLocationSessionData
         string? locationName,
         string? engagementType,
         string? tenantId,
-        string? tenantName)
+        string? tenantName,
+        string? currentSupportWorker)
         => new()
         {
             VisualMode = visualMode,
@@ -30,6 +32,7 @@ public record LatestEngagementsByLocationSessionData
             LocationName = locationName,
             EngagementType = engagementType,
             TenantId = tenantId,
-            TenantName = tenantName
+            TenantName = tenantName,
+            CurrentSupportWorker = currentSupportWorker
         };
 }

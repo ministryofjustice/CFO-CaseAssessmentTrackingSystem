@@ -21,6 +21,7 @@ public static class GetLatestEngagementsByLocation
         public int? LocationId { get; set; }
         public string? EngagementType { get; set; }
         public string? TenantId { get; set; }
+        public string? EngagedWith { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<LatestEngagementsByLocationDto>>
@@ -48,6 +49,7 @@ public static class GetLatestEngagementsByLocation
                 join currentLocation in db.Locations on participant.CurrentLocation.Id equals currentLocation.Id
                 where request.LocationId == null || currentLocation.Id == request.LocationId
                 where string.IsNullOrWhiteSpace(request.EngagementType) || (engagement != null && engagement.Category == request.EngagementType)
+                where string.IsNullOrWhiteSpace(request.EngagedWith) || (engagement != null && engagement.EngagedWith == request.EngagedWith)
                 where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < threeMonthsAgo)
                 select new
                 {
@@ -59,7 +61,7 @@ public static class GetLatestEngagementsByLocation
                     engagement.EngagedAtContract,
                     engagement.EngagedWith,
                     engagement.EngagedWithTenant,
-                    owner.DisplayName,
+                    SupportWorkerDisplayName = owner.DisplayName,
                     CurrentLocationName = currentLocation.Name,
                     EngagedOn = (DateOnly?)engagement.EngagedOn
                 };
@@ -94,7 +96,7 @@ public static class GetLatestEngagementsByLocation
                     e.EngagedAtContract,
                     e.EngagedWith,
                     e.EngagedWithTenant,
-                    e.DisplayName,
+                    e.SupportWorkerDisplayName,
                     e.CurrentLocationName,
                     e.EngagedOn))
                 .ToListAsync(cancellationToken);
