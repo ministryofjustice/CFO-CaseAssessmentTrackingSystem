@@ -84,6 +84,10 @@ public partial class Users
             {
                 SecurityPolicies.MarkUserInReview,
                 (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.MarkUserInReview)).Succeeded
+            },
+            {
+                SecurityPolicies.Qa1,
+                (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Qa1)).Succeeded
             }
         };
 
