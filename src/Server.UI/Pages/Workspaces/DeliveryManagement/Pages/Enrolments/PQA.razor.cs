@@ -89,6 +89,11 @@ public partial class PQA
 
     protected async Task SubmitToQa()
     {
+        if(_saving)
+        {
+            return;
+        }
+
         try
         {
             _saving = true;

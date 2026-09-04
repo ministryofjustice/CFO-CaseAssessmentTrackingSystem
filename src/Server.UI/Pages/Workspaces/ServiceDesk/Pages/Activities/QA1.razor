@@ -94,7 +94,7 @@
                             </MudForm>
 
                             <MudContainer Class="d-flex px-0 pt-8">
-                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                                <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
                             </MudContainer>
                         }
                         else
@@ -118,6 +118,8 @@
 </MudContainer>
 
 @code {
+    
+    private bool _saving = false;    
     private ActivityQaExternalMessageWarning? warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry = null;
@@ -241,24 +243,35 @@
 
     protected async Task SubmitToQa()
     {
-        await _form!.ValidateAsync();
-
-        if (_form.IsValid is false)
+        if (_saving)
         {
             return;
         }
 
-        var result = await GetNewMediator().Send(Command);
+        try
+        {
+            _saving = true;
 
-        if (result.Succeeded)
-        {
-            Snackbar.Add("Activity submitted to QA2", Severity.Info);
-            Navigation.NavigateTo("/pages/workspace/servicedesk", true);
+            await _form!.ValidateAsync();
+
+            if (_form.IsValid is false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Command);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Activity submitted to QA2", Severity.Info);
+                Navigation.NavigateTo("/pages/workspace/servicedesk", true);
+            }
+            else
+            {
+                ShowActionFailure("Failed to submit participant to QA2", result);
+            }
         }
-        else
-        {
-            ShowActionFailure("Failed to submit", result);
-        }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)
