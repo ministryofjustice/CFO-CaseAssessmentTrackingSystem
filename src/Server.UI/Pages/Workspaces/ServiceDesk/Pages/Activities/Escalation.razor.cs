@@ -17,6 +17,7 @@ public partial class Escalation
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;
     private ActivityQaDetailsDto? _activityQaDetailsDto;
+    private bool _saving;
 
     [Parameter]
     public Guid Id { get; set; }
@@ -65,48 +66,59 @@ public partial class Escalation
 
     private async Task SubmitToQa()
     {
-        await _form!.ValidateAsync();
-
-        if (_form.IsValid == false)
+        if (_saving)
         {
             return;
         }
 
-        var submit = true;
-
-        if (Command is { MessageToProvider.Length: > 0 })
+        try
         {
-            submit = await _warningMessage!.ShowAsync();
-        }
+            _saving = true;
 
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
+            await _form!.ValidateAsync();
 
-            if (result.Succeeded)
+            if (_form.IsValid == false)
             {
-                var message = Command.Response switch
-                {
-                    SubmitActivityEscalationResponse.EscalationResponse.Accept => "Activity accepted",
-                    SubmitActivityEscalationResponse.EscalationResponse.Return => "Activity returned to PQA",
-                    _ => "Comment added"
-                };
-
-                Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/workspace/servicedesk/activities/queue?tab=escalation");
+                return;
             }
-            else
-            {
-                var message = Command.Response switch
-                {
-                    SubmitActivityEscalationResponse.EscalationResponse.Accept => "Failed to accept activity",
-                    SubmitActivityEscalationResponse.EscalationResponse.Return => "Failed to return activity",
-                    _ => "Failed to add Comment"
-                };
 
-                ShowActionFailure(message, result);
+            var submit = true;
+
+            if (Command is { MessageToProvider.Length: > 0 })
+            {
+                submit = await _warningMessage!.ShowAsync();
+            }
+
+            if (submit)
+            {
+                var result = await GetNewMediator().Send(Command);
+
+                if (result.Succeeded)
+                {
+                    var message = Command.Response switch
+                    {
+                        SubmitActivityEscalationResponse.EscalationResponse.Accept => "Activity accepted",
+                        SubmitActivityEscalationResponse.EscalationResponse.Return => "Activity returned to PQA",
+                        _ => "Comment added"
+                    };
+
+                    Snackbar.Add(message, Severity.Info);
+                    Navigation.NavigateTo("/pages/workspace/servicedesk/activities/queue?tab=escalation");
+                }
+                else
+                {
+                    var message = Command.Response switch
+                    {
+                        SubmitActivityEscalationResponse.EscalationResponse.Accept => "Failed to accept activity",
+                        SubmitActivityEscalationResponse.EscalationResponse.Return => "Failed to return activity",
+                        _ => "Failed to add Comment"
+                    };
+
+                    ShowActionFailure(message, result);
+                }
             }
         }
+        finally { _saving = false; }
     }
 
     private void OnResponseChanged()

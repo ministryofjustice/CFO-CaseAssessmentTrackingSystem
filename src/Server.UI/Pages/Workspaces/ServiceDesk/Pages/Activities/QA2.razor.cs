@@ -19,6 +19,7 @@ public partial class QA2
     private ActivityQueueEntryDto? _queueEntry;
     private ActivityQaDetailsDto? _activityQaDetailsDto;
     private bool _loadingQueueItem;
+    private bool _saving;
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
@@ -128,34 +129,45 @@ public partial class QA2
 
     private async Task SubmitToQa()
     {
-        await _form!.ValidateAsync();
-
-        if (_form.IsValid is false)
+        if (_saving)
         {
             return;
         }
 
-        var submit = true;
-
-        if (Command is { MessageToProvider.Length: > 0 })
+        try
         {
-            submit = await _warningMessage!.ShowAsync();
-        }
+            _saving = true;
 
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
+            await _form!.ValidateAsync();
 
-            if (result.Succeeded)
+            if (_form.IsValid is false)
             {
-                Snackbar.Add("Activity submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/workspace/servicedesk", true);
+                return;
             }
-            else
+
+            var submit = true;
+
+            if (Command is { MessageToProvider.Length: > 0 })
             {
-                ShowActionFailure("Failed to submit", result);
+                submit = await _warningMessage!.ShowAsync();
+            }
+
+            if (submit)
+            {
+                var result = await GetNewMediator().Send(Command);
+
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Activity submitted", Severity.Info);
+                    Navigation.NavigateTo("/pages/workspace/servicedesk", true);
+                }
+                else
+                {
+                    ShowActionFailure("Failed to submit", result);
+                }
             }
         }
+        finally { _saving = false; }
     }
 
     private void OnResponseChanged()

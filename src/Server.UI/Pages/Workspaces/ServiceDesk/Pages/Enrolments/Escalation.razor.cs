@@ -82,6 +82,11 @@ public partial class Escalation
 
     private async Task SubmitToQa()
     {
+        if (_saving)
+        {
+            return;
+        }
+
         try
         {
             _saving = true;

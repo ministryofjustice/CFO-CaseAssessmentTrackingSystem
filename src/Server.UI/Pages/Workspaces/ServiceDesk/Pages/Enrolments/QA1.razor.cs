@@ -159,6 +159,11 @@ public partial class QA1
 
     protected async Task SubmitToQa()
     {
+        if (_saving)
+        {
+            return;
+        }
+
         try
         {
             _saving = true;
