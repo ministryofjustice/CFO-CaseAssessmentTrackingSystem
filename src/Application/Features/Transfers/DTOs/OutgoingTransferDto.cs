@@ -19,6 +19,7 @@ public class OutgoingTransferDto
     public required string ParticipantId { get; set; }
     public required string ParticipantFullName { get; set; }
     public EnrolmentStatus? EnrolmentStatus { get; set; }
+    public string? PreviousSupportWorkerName { get; set; }
 
     private class Mapper : Profile
     {
@@ -28,6 +29,7 @@ public class OutgoingTransferDto
                 .ForMember(t => t.ParticipantFullName, options => options.MapFrom(source => source.Participant!.FirstName + " " + source.Participant.LastName))
                 .ForMember(p => p.FromContract, options => options.MapFrom(src => src.FromContract == null ? null : src.FromContract.Description))
                 .ForMember(p => p.ToContract, options => options.MapFrom(src => src.ToContract == null ? null : src.ToContract.Description))
-                .ForMember(p => p.EnrolmentStatus, options => options.MapFrom(src => src.Participant!.EnrolmentStatus));
+                .ForMember(p => p.EnrolmentStatus, options => options.MapFrom(src => src.Participant!.EnrolmentStatus))
+                .ForMember(p => p.PreviousSupportWorkerName, options => options.MapFrom(src => src.PreviousOwner == null ? null : src.PreviousOwner.DisplayName));
     }
 }

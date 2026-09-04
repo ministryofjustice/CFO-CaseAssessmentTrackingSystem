@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -47,6 +48,11 @@ public class ParticipantOutgoingTransferQueueEntry : ParticipantTransferQueueEnt
     /// Represents the previous owner  who owned participant.
     /// </summary>
     public string? PreviousOwnerId { get; private set; }
+
+    /// <summary>
+    /// The support worker who is losing access to the participant as a result of this transfer.
+    /// </summary>
+    public ApplicationUser? PreviousOwner { get; private set; }
 
     /// <summary>
     /// Represents the previous tenant who owned participant.

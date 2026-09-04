@@ -31,6 +31,7 @@ public partial class OutgoingTransfers
         return transfer.ParticipantId.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase)
             || transfer.ParticipantFullName.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase)
             || transfer.FromLocation.Name.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase)
-            || transfer.ToLocation.Name.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase);
+            || transfer.ToLocation.Name.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase)
+            || (transfer.PreviousSupportWorkerName?.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase) ?? false);
     }
 }
