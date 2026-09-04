@@ -62,7 +62,7 @@ public static class SubmitCpmResponse
             RuleFor(x => x.Comments)
                 .NotEmpty()
                 .WithMessage("Comments are required")
-                .MaximumLength(ValidationConstants.NotesLength)
+                .MaximumLength(ValidationConstants.NotesLength_Outcomes)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Comments"));
 

@@ -6,7 +6,7 @@ CREATE TABLE [Mi].[OutcomeQualityDipSampleParticipant] (
     [ShowsTaskProgression]          INT              DEFAULT ((0)) NOT NULL,
     [TTGDemonstratesGoodPRIProcess] INT              DEFAULT ((0)) NOT NULL,
     [SupportsJourney]               INT              DEFAULT ((0)) NOT NULL,
-    [CsoComments]                   NVARCHAR (1000)  NULL,
+    [CsoComments]                   NVARCHAR (MAX)  NULL,
     [LastModified]                  DATETIME2 (7)    NULL,
     [FinalReviewedBy]               NVARCHAR (36)    NULL,
     [Id]                            INT              IDENTITY (1, 1) NOT NULL,
