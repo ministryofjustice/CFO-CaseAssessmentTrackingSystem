@@ -38,19 +38,12 @@ COPY src/ src/
 COPY scripts/ scripts/
 
 
-# Build steps
-RUN dotnet build src/Server.UI/Server.UI.csproj --no-restore --configuration Release
-RUN dotnet build src/Worker/Worker.csproj --no-restore --configuration Release
-RUN dotnet build src/Cats.Consumers/Cats.Consumers.csproj --no-restore --configuration Release
-RUN dotnet build src/DatabaseSeeding/DatabaseSeeding.csproj --no-restore --configuration Release
-RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --no-restore --configuration Release
-
 # Publish steps
-RUN dotnet publish src/Server.UI/Server.UI.csproj --no-build --configuration Release --output /app/ui
-RUN dotnet publish src/Worker/Worker.csproj --no-build --configuration Release --output /app/worker
-RUN dotnet publish src/Cats.Consumers/Cats.Consumers.csproj --no-build --configuration Release --output /app/consumers
-RUN dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj --no-build --configuration Release --output /app/seeder
-RUN dotnet publish src/Database/CatsDb/CatsDb.sqlproj --no-build --configuration Release --output /app/migrator
+RUN dotnet publish src/Server.UI/Server.UI.csproj --configuration Release --output /app/ui
+RUN dotnet publish src/Worker/Worker.csproj --configuration Release --output /app/worker
+RUN dotnet publish src/Cats.Consumers/Cats.Consumers.csproj --configuration Release --output /app/consumers
+RUN dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj --configuration Release --output /app/seeder
+RUN dotnet publish src/Database/CatsDb/CatsDb.sqlproj --configuration Release --output /app/migrator
 
 # Schema-deploy tool: a .NET 10 file-based app (scripts/migrate-database.cs, no .csproj).
 # publish restores its inline `#:package` (DacFx) on its own; the file sets PublishAot=false so
