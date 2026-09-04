@@ -9,14 +9,9 @@ public class PublishWingInductionEngagementEventHandler(IUnitOfWork unitOfWork, 
 {
     public async Task Handle(WingInductionCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-        var query = from l in unitOfWork.DbContext.Locations
-                    join c in unitOfWork.DbContext.Contracts on l.Contract.Id equals c.Id
-                    where l.Id == notification.Item.LocationId
-                    select new { l.Name, Contract = c.Description };
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
-        var location = await query.SingleAsync(cancellationToken);
+        var location = await unitOfWork.DbContext.Locations
+            .Include(l => l.Contract)
+            .SingleAsync(l => l.Id == notification.Item.LocationId, cancellationToken);
 
         var e = new ParticipantEngagedIntegrationEvent(
             ParticipantId: notification.Item.ParticipantId,
@@ -24,7 +19,8 @@ public class PublishWingInductionEngagementEventHandler(IUnitOfWork unitOfWork, 
             Category: "Wing Induction",
             EngagedOn: DateOnly.FromDateTime(notification.Item.InductionDate),
             EngagedAtLocation: location.Name,
-            EngagedAtContract: location.Contract,
+            EngagedAtLocationType: location.LocationType.Name,
+            EngagedAtContract: location.Contract!.Description,
             EngagedWith: currentUserService.DisplayName!,
             EngagedWithTenant: currentUserService.TenantName!);
 

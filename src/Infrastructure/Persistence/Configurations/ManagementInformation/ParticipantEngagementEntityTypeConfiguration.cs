@@ -39,6 +39,10 @@ public class ParticipantEngagementEntityTypeConfiguration : IEntityTypeConfigura
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.LocationName);
 
+        builder.Property(x => x.EngagedAtLocationType)
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder.Property(x => x.EngagedAtContract)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ContractDescription);

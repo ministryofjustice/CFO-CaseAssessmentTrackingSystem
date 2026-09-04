@@ -37,7 +37,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
 
             request.PageSize = int.MaxValue;
 
-            // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
+            // Hack: call handler directly (skips Authorization pipeline, as we're outside the HttpContext).
             var data = await new GetParticipantsLatestEngagement.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
             if (data is not { Succeeded: true })
@@ -53,6 +53,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
                     { "Category", item => item.Category },
                     { "Description", item => item.Description },
                     { "Engaged at (Location)", item => item.EngagedAtLocationName },
+                    { "Engaged at (Location Type)", item => item.EngagedAtLocationType },
                     { "Engaged at (Contract)", item => item.EngagedAtContractName },
                     { "Engaged on", item => item.EngagedOn },
                     { "Has Engaged Recently", item => item.HasEngagedRecently ? "Yes" : "No" },

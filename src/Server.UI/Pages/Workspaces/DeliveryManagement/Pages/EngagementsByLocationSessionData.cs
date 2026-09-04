@@ -12,6 +12,7 @@ public record EngagementsByLocationSessionData
     public int Year { get; init; }
     public string? LocationName { get; init; }
     public string? EngagementType { get; init; }
+    public string? LocationType { get; init; }
     public string? TenantId { get; init; }
     public string? TenantName { get; init; }
 
@@ -22,6 +23,7 @@ public record EngagementsByLocationSessionData
         int locationId,
         string? locationName,
         string? engagementType,
+        string? locationType,
         string? tenantId,
         string? tenantName)
         => new()
@@ -32,6 +34,7 @@ public record EngagementsByLocationSessionData
             LocationId = locationId,
             LocationName = locationName,
             EngagementType = engagementType,
+            LocationType = locationType,
             TenantId = tenantId,
             TenantName = tenantName
         };

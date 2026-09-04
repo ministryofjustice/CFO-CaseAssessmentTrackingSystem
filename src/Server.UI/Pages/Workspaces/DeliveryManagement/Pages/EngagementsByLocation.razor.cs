@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
@@ -24,13 +25,16 @@ public partial class EngagementsByLocation
 
     private IDictionary<int, string> _locations = new Dictionary<int, string>();
     private string[] _engagementTypes = [];
+    private string[] _locationTypes = [];
 
     // Sentinel-backed filter selections: 0 / empty string represent "All".
     private int _selectedLocationId;
     private string _selectedEngagementType = string.Empty;
+    private string _selectedLocationType = string.Empty;
 
     private EngagementsByLocationDto? _data;
     private MudTable<ParticipantEngagementDto> _table = null!;
+    private int _currentTablePage;
 
     [Inject] private ILocationService LocationService { get; set; } = null!;
     [Inject] private IParticipantDialogService ParticipantDialogService { get; set; } = null!;
@@ -71,6 +75,8 @@ public partial class EngagementsByLocation
             _engagementTypes = typesResult.Data;
         }
 
+        _locationTypes = LocationType.List.Select(l => l.Name).ToArray();
+
         var cached = await SessionStorage.GetAsync<EngagementsByLocationSessionData>();
         if (cached is { Succeeded: true, Data: { } sd })
         {
@@ -79,6 +85,8 @@ public partial class EngagementsByLocation
             Query.Year = sd.Year;
             Query.EngagementType = string.IsNullOrEmpty(sd.EngagementType) ? null : sd.EngagementType;
             _selectedEngagementType = sd.EngagementType ?? string.Empty;
+            Query.LocationType = string.IsNullOrEmpty(sd.LocationType) ? null : sd.LocationType;
+            _selectedLocationType = sd.LocationType ?? string.Empty;
 
             if (sd.LocationId != 0 && sd.LocationName is not null)
             {
@@ -251,6 +259,7 @@ public partial class EngagementsByLocation
     private async Task OnMonthChanged(int month)
     {
         Query.Month = month;
+        _currentTablePage = 0;
         await SaveSessionState();
         await OnRefresh();
     }
@@ -258,6 +267,7 @@ public partial class EngagementsByLocation
     private async Task OnYearChanged(int year)
     {
         Query.Year = year;
+        _currentTablePage = 0;
         await SaveSessionState();
         await OnRefresh();
     }
@@ -266,6 +276,7 @@ public partial class EngagementsByLocation
     {
         _selectedLocationId = locationId;
         Query.LocationId = locationId == 0 ? null : locationId;
+        _currentTablePage = 0;
         await SaveSessionState();
         await OnRefresh();
     }
@@ -285,9 +296,22 @@ public partial class EngagementsByLocation
     {
         _selectedEngagementType = engagementType ?? string.Empty;
         Query.EngagementType = string.IsNullOrEmpty(engagementType) ? null : engagementType;
+        _currentTablePage = 0;
         await SaveSessionState();
         await OnRefresh();
     }
+
+    private async Task OnLocationTypeChanged(string locationType)
+    {
+        _selectedLocationType = locationType ?? string.Empty;
+        Query.LocationType = string.IsNullOrEmpty(locationType) ? null : locationType;
+        _currentTablePage = 0;
+        await SaveSessionState();
+        await OnRefresh();
+    }
+
+    private void OnPageChanged(int page) => _currentTablePage = page - 1;
+
     private async Task OnVisualModeChanged(bool value)
     {
         _visualMode = value;
@@ -301,6 +325,7 @@ public partial class EngagementsByLocation
         {
             Query.TenantId = tenant.TenantId;
             _selectedTenantName = tenant.DisplayName;
+            _currentTablePage = 0;
             await SaveSessionState();
             await OnRefresh();
         }
@@ -318,6 +343,7 @@ public partial class EngagementsByLocation
                 JustMyCases = Query.JustMyCases,
                 LocationId = Query.LocationId,
                 EngagementType = Query.EngagementType,
+                LocationType = Query.LocationType,
                 TenantId = Query.TenantId,
                 Month = Query.Month,
                 Year = Query.Year,
@@ -351,14 +377,17 @@ public partial class EngagementsByLocation
     private async Task ClearSearch()
     {
         _selectedEngagementType = string.Empty;
+        _selectedLocationType = string.Empty;
         _selectedLocationId = 0;
         _selectedTenantName = null;
 
         Query.TenantId = null;
         Query.LocationId = null;
         Query.EngagementType = null;
+        Query.LocationType = null;
         Query.Month = DateTime.Now.Month;
         Query.Year = DateTime.Now.Year;
+        _currentTablePage = 0;
 
         await SaveSessionState();
         await OnRefresh();
@@ -373,6 +402,7 @@ public partial class EngagementsByLocation
             Query.LocationId ?? 0,
             locationName,
             Query.EngagementType,
+            Query.LocationType,
             Query.TenantId,
             _selectedTenantName));
     }

@@ -13,6 +13,7 @@ public static class GetEngagementsByLocation
         public bool JustMyCases { get; init; }
         public int? LocationId { get; set; }
         public string? EngagementType { get; set; }
+        public string? LocationType { get; set; }
         public string? TenantId { get; set; }
         public required int Month { get; set; }
         public required int Year { get; set; }
@@ -38,6 +39,7 @@ public static class GetEngagementsByLocation
                 join engagementLocation in db.Locations on engagement.EngagedAtLocation equals engagementLocation.Name
                 where request.LocationId == null || engagementLocation.Id == request.LocationId
                 where string.IsNullOrWhiteSpace(request.EngagementType) || (engagement != null && engagement.Category == request.EngagementType)
+                where string.IsNullOrWhiteSpace(request.LocationType) || engagement.EngagedAtLocationType == request.LocationType
                 where engagement.EngagedOn.Month == request.Month && engagement.EngagedOn.Year == request.Year
                 select new
                 {
@@ -51,7 +53,8 @@ public static class GetEngagementsByLocation
                     engagement.EngagedWithTenant,
                     owner.DisplayName,
                     CurrentLocationName = currentLocation.Name,
-                    EngagedOn = (DateOnly?)engagement.EngagedOn
+                    EngagedOn = (DateOnly?)engagement.EngagedOn,
+                    engagement.EngagedAtLocationType
                 };
 #pragma warning restore CS8602, CS8604
 
@@ -84,7 +87,8 @@ public static class GetEngagementsByLocation
                     e.EngagedWithTenant,
                     e.DisplayName,
                     e.CurrentLocationName,
-                    e.EngagedOn))
+                    e.EngagedOn,
+                    e.EngagedAtLocationType))
                 .ToListAsync(cancellationToken);
 
             var details = new PaginatedData<ParticipantEngagementDto>(items, count, request.PageNumber, request.PageSize);
