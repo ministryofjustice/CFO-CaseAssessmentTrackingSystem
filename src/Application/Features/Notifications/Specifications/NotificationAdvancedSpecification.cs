@@ -6,6 +6,7 @@ public sealed class NotificationAdvancedSpecification : Specification<Notificati
 {
     public NotificationAdvancedSpecification(NotificationsAdvancedFilter filter) =>
         Query.Where(r => r.ReadDate == null, filter.ShowReadNotifications == false)
+            .Where(n => n.NotificationDate >= DateTime.Now.Date.AddDays(-30))
             .Where(n => n.OwnerId == filter.CurrentUser!.UserId)
             .Where(n => n.Heading.StartsWith("Activity"), filter.Type == NotificationType.Activities)
             .Where(n => n.Heading.StartsWith("Enrolment"), filter.Type == NotificationType.Enrolments)
