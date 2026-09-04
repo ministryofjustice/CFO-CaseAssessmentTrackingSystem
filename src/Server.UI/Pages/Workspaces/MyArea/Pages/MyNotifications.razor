@@ -23,6 +23,11 @@
 
     @if (Data is { Items: not null })
     {
+
+        <MudAlert Severity="Severity.Info" Class="mb-3" Variant="Variant.Filled">
+            Notifications will only be available for 30 days.
+        </MudAlert>
+
         <MudStack>
             <!-- Header/Filter row -->
             <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
