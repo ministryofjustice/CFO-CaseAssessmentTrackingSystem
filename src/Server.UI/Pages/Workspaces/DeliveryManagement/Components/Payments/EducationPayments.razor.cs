@@ -51,6 +51,19 @@ public partial class EducationPayments
                 }
             }
         },
+        Yaxis = [
+            new YAxis
+            {
+                Min = 0,
+                Max = 100,
+                Title = new AxisTitle { Text = "% of Target Achieved" }
+            }
+        ],
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
@@ -95,7 +108,7 @@ public partial class EducationPayments
             ContractId = Contract?.Id,
             Month = Month,
             Year = Year,
-            TenantId = CurrentUser!.TenantId!
+            TenantId = CurrentUser.TenantId!
         };
 
         await OnRefresh();

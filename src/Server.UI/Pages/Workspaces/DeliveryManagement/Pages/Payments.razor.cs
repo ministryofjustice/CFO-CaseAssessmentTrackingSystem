@@ -16,9 +16,9 @@ public partial class Payments
     public bool VisualMode { get; set; } = true;
     public ContractDto? SelectedContract { get; set; }
 
-    [Inject] private IContractService ContractService { get; set; } = default!;
+    [Inject] private IContractService ContractService { get; set; } = null!;
 
-    protected override void OnInitialized() => _noAccessToContracts = CurrentUser?.Contracts is [];
+    protected override void OnInitialized() => _noAccessToContracts = CurrentUser.Contracts is [];
 
     private void OnMonthChanged(int month) => Month = month;
     private void OnYearChanged(int year) => Year = year;

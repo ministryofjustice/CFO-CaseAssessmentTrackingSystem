@@ -23,7 +23,7 @@ else
         </MudItem>
         <MudSpacer />
 
-        <MudMenu Size="MudBlazor.Size.Small" 
+        <MudMenu Size="Size.Small" 
                 Variant="Variant.Text" 
                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
                 Label="@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month)">
@@ -33,7 +33,7 @@ else
             }
         </MudMenu>
 
-        <MudMenu Size="MudBlazor.Size.Small" 
+        <MudMenu Size="Size.Small" 
                 Variant="Variant.Text" 
                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
                 Label="@Year.ToString()">
@@ -43,7 +43,7 @@ else
             }
         </MudMenu>        
 
-        <MudMenu Size="MudBlazor.Size.Small"
+        <MudMenu Size="Size.Small"
             Variant="Variant.Text"
             EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
             Label="@(SelectedContract is null ? "Contract" : SelectedContract.Name )">
@@ -54,7 +54,7 @@ else
         </MudMenu>
 
         <MudTooltip Text="Clear search parameters">
-            <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" />
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
         </MudTooltip>
 
     </MudStack>

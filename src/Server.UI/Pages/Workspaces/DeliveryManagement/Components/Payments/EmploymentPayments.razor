@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
 
-<style type="text/css">
+<style>
     .centered {
     text-align: center;
     }
@@ -25,8 +25,6 @@
             Loading="@_loading"
             LoadingProgressColor="Color.Info">
                 <ToolBarContent>
-                    <MudText Typo="Typo.subtitle1">Employment</MudText>
-                    <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         <MudLoadingButton Loading="@_downloading"
@@ -34,7 +32,7 @@
                                    Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
-                                   OnClick="OnExport">
+                                   OnClick="@OnExport">
                             @ConstantString.Export
                         </MudLoadingButton>
                     </MudStack>
@@ -96,7 +94,7 @@
                     <MudTd DataLabel="Created">@context.CreatedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Commenced On">@context.CommencedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
-                    <MudTd DataLabel="PAyment Period">@context.PaymentPeriod.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Payment Period">@context.PaymentPeriod.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Participant">
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
@@ -152,15 +150,18 @@
             @if (_loading is false)
             {
                 <ApexChart TItem="EmploymentPaymentSummaryDto"
-                           Title="Employment By Contract"
+                           Title="Employment By Contract (% of Target)"
                            Options="@Options">
-                    <ApexPointSeries TItem="EmploymentPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Employments"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.Employments"
-                                     ShowDataLabels="true" />
+                    @if (_summaryData.Any(e => e.Employments > 0))
+                    {
+                        <ApexPointSeries TItem="EmploymentPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Employments"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.EmploymentsPercentage"
+                                         ShowDataLabels="true" />
+                    }
                 </ApexChart>
             }
         </MudItem>
@@ -194,7 +195,7 @@
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd DataLabel="Employments">@context.Employments</MudTd>
                     <MudTd DataLabel="Target">@context.EmploymentsTarget</MudTd>
-                    <MudTd DataLabel="Percentage">@context.EmploymentsPercentage</MudTd>
+                    <MudTd DataLabel="Percentage">@(context.EmploymentsPercentage)%</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>

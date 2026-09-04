@@ -10,7 +10,6 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components.Paym
 
 public partial class ActivityPayments
 {
-    private readonly ApexChartOptions<ActivityPaymentSummaryDto> _options = new();
     private bool _loading;
     private bool _downloading;
 
@@ -51,6 +50,19 @@ public partial class ActivityPayments
                     Svg = new ExportSvg { Filename = "ActivityPayments-Chart" }
                 }
             }
+        },
+        Yaxis = [
+            new YAxis
+            {
+                Min = 0,
+                Max = 100,
+                Title = new AxisTitle { Text = "% of Target Achieved" }
+            }
+        ],
+        Legend = new Legend
+        {
+            Show = true,
+            ShowForSingleSeries = true
         },
         Theme = new Theme
         {
@@ -96,7 +108,7 @@ public partial class ActivityPayments
             ContractId = Contract?.Id,
             Month = Month,
             Year = Year,
-            TenantId = CurrentUser!.TenantId!
+            TenantId = CurrentUser.TenantId!
         };
 
         await OnRefresh();
@@ -138,5 +150,4 @@ public partial class ActivityPayments
             _downloading = false;
         }
     }
-
 }

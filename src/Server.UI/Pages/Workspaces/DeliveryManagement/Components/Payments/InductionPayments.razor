@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
 
-<style type="text/css">
+<style>
 
     .centered {
     text-align: center;
@@ -27,8 +27,6 @@
             Loading="@_loading"
             LoadingProgressColor="Color.Info">
                 <ToolBarContent>
-                    <MudText Typo="Typo.subtitle1">Inductions</MudText>
-                    <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         <MudLoadingButton Loading="@_downloading"
@@ -148,24 +146,29 @@
             @if(_loading is false)
             {
                 <ApexChart TItem="InductionPaymentSummaryDto"
-                           Title="Inductions By Contract"
+                           Title="Inductions By Contract (% of Target)"
                            Options="@Options">
-                    <ApexPointSeries TItem="InductionPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Wing"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.Wings"
-                                     ShowDataLabels="true" />
+                    @if (_summaryData.Any(e => e.Wings > 0))
+                    {
+                        <ApexPointSeries TItem="InductionPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Wing"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.WingsPercentage"
+                                         ShowDataLabels="true" />
+                    }
 
-
-                    <ApexPointSeries TItem="InductionPaymentSummaryDto"
-                                     Items="_summaryData"
-                                     Name="Hub"
-                                     SeriesType="SeriesType.Bar"
-                                     XValue="e => e.Contract"
-                                     YValue="e => e.Hubs"
-                                     ShowDataLabels="true" />
+                    @if (_summaryData.Any(e => e.Hubs > 0))
+                    {
+                        <ApexPointSeries TItem="InductionPaymentSummaryDto"
+                                         Items="_summaryData"
+                                         Name="Hub"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Contract"
+                                         YValue="e => e.HubsPercentage"
+                                         ShowDataLabels="true" />
+                    }
                 </ApexChart>
             }
         </MudItem>
@@ -205,10 +208,10 @@
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd Class="centered">@context.Wings</MudTd>
                     <MudTd Class="centered">@context.WingsTarget</MudTd>
-                    <MudTd Class="centered">@context.WingsPercentage</MudTd>
+                    <MudTd Class="centered">@(context.WingsPercentage)%</MudTd>
                     <MudTd Class="centered">@context.Hubs</MudTd>
                     <MudTd Class="centered">@context.HubsTarget</MudTd>
-                    <MudTd Class="centered">@context.HubsPercentage</MudTd>
+                    <MudTd Class="centered">@(context.HubsPercentage)%</MudTd>
                 </RowTemplate>
             </MudTable>    
         </MudItem>
