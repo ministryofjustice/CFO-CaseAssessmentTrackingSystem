@@ -12,31 +12,50 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0.400@sha256:e1ffd2a92ae84c1291bc1b6887501f
 WORKDIR /src
 
 # Copy solution-level config required to restore and build
+# Solution-level files
 COPY Directory.Build.props Directory.Packages.props NuGet.config global.json ./
+
+# Project files
+COPY src/Aspire/Cats.ServiceDefaults/Cats.ServiceDefaults.csproj src/Aspire/Cats.ServiceDefaults/
+COPY src/Application/Application.csproj src/Application/
+COPY src/Domain/Domain.csproj src/Domain/
+COPY src/Infrastructure/Infrastructure.csproj src/Infrastructure/
+COPY src/Server.UI/Server.UI.csproj src/Server.UI/
+COPY src/Worker/Worker.csproj src/Worker/
+COPY src/Cats.Consumers/Cats.Consumers.csproj src/Cats.Consumers/
+COPY src/DatabaseSeeding/DatabaseSeeding.csproj src/DatabaseSeeding/
+COPY src/Database/CatsDb/CatsDb.sqlproj src/Database/CatsDb/
+
+# Restore steps
+RUN dotnet restore src/Server.UI/Server.UI.csproj 
+RUN dotnet restore src/Worker/Worker.csproj
+RUN dotnet restore src/Cats.Consumers/Cats.Consumers.csproj
+RUN dotnet restore src/DatabaseSeeding/DatabaseSeeding.csproj
+RUN dotnet restore src/Database/CatsDb/CatsDb.sqlproj
+
+# Copy source code
 COPY src/ src/
 COPY scripts/ scripts/
 
-RUN dotnet restore src/Server.UI/Server.UI.csproj \
- && dotnet publish src/Server.UI/Server.UI.csproj --configuration Release --no-restore --output /app/ui
 
-RUN dotnet restore src/Worker/Worker.csproj \
- && dotnet publish src/Worker/Worker.csproj --configuration Release --no-restore --output /app/worker
+# Build steps
+RUN dotnet build src/Server.UI/Server.UI.csproj --no-restore --configuration Release
+RUN dotnet build src/Worker/Worker.csproj --no-restore --configuration Release
+RUN dotnet build src/Cats.Consumers/Cats.Consumers.csproj --no-restore --configuration Release
+RUN dotnet build src/DatabaseSeeding/DatabaseSeeding.csproj --no-restore --configuration Release
+RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --no-restore --configuration Release
 
-RUN dotnet restore src/Cats.Consumers/Cats.Consumers.csproj \
- && dotnet publish src/Cats.Consumers/Cats.Consumers.csproj --configuration Release --no-restore --output /app/consumers
-
-RUN dotnet restore src/DatabaseSeeding/DatabaseSeeding.csproj \
- && dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj --configuration Release --no-restore --output /app/seeder
+# Publish steps
+RUN dotnet publish src/Server.UI/Server.UI.csproj --no-build --configuration Release --output /app/ui
+RUN dotnet publish src/Worker/Worker.csproj --no-build --configuration Release --output /app/worker
+RUN dotnet publish src/Cats.Consumers/Cats.Consumers.csproj --no-build --configuration Release --output /app/consumers
+RUN dotnet publish src/DatabaseSeeding/DatabaseSeeding.csproj --no-build --configuration Release --output /app/seeder
+RUN dotnet publish src/Database/CatsDb/CatsDb.sqlproj --no-build --configuration Release --output /app/migrator/CatsDb.dacpac
 
 # Schema-deploy tool: a .NET 10 file-based app (scripts/migrate-database.cs, no .csproj).
 # publish restores its inline `#:package` (DacFx) on its own; the file sets PublishAot=false so
 # it stays a normal framework-dependent app that runs on the aspnet runtime like the others.
 RUN dotnet publish scripts/migrate-database.cs --configuration Release --output /app/migrator
-
-# Build the SQL project to produce the DACPAC and ship it alongside the migrator, which
-# deploys it to the database at release time (replaces the old standalone sqlpackage image).
-RUN dotnet build src/Database/CatsDb/CatsDb.sqlproj --configuration Release \
- && cp src/Database/CatsDb/bin/Release/CatsDb.dacpac /app/migrator/CatsDb.dacpac
 
 # Trust the Amazon RDS eu-west-2 root CAs for TLS to the RDS SQL Server (fetched at build).
 # This must run in the SDK stage: the chiseled final image has no shell or package manager
