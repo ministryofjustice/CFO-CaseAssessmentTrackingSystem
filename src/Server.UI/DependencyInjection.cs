@@ -220,12 +220,6 @@ public static class DependencyInjection
             Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, @"Files"));
         }
 
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, @"Files")),
-            RequestPath = new PathString("/Files")
-        });
-
         var localizationOptions = new RequestLocalizationOptions()
             .SetDefaultCulture(LocalizationConstants.SupportedLanguages.Select(x => x.Code).First())
             .AddSupportedCultures(LocalizationConstants.SupportedLanguages.Select(x => x.Code).ToArray())
