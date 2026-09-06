@@ -248,6 +248,8 @@ public static class DependencyInjection
 
         services.Configure<OvernightServiceSettings>(configuration.GetSection("OvernightServiceSettings"));
 
+        services.Configure<SuspiciousLoginMonitoringOptions>(configuration.GetSection(SuspiciousLoginMonitoringOptions.Key));
+
         services.AddOptions<OutcomeQualityDipSampleSettings>()
             .BindConfiguration(OutcomeQualityDipSampleSettings.Key)
             .ValidateDataAnnotations()
@@ -716,6 +718,23 @@ public static class DependencyInjection
                 {
                     quartz.AddTrigger(opts => opts
                         .ForJob(ArchiveParticipantsJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
+            }
+
+            if (options.GetSection(MonitorSuspiciousLoginActivityJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } monitorSuspiciousLoginActivityJob)
+            {
+                quartz.AddJob<MonitorSuspiciousLoginActivityJob>(opts =>
+                    opts.WithIdentity(MonitorSuspiciousLoginActivityJob.Key)
+                        .WithDescription(MonitorSuspiciousLoginActivityJob.Description)
+                );
+
+                foreach (var schedule in monitorSuspiciousLoginActivityJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(MonitorSuspiciousLoginActivityJob.Key)
                         .WithDescription(schedule.Description)
                         .WithCronSchedule(schedule.Chron));
                 }
