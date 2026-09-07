@@ -74,7 +74,10 @@ else
                         <CaseNotes ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Review">
-                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus"/>
+                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" 
+                                                     OnFormSubmit="CsoResponseSubmitted" 
+                                                     Status="_participant.DipSampleStatus"
+                                                     CpmHasReviewed="@_participant.CpmAnswer.IsAnswer"/>
                     </MudTabPanel>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                         <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
@@ -85,9 +88,9 @@ else
                         </MudTabPanel>
                     </AuthorizeView>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
-                        <MudTabPanel Text="Finalise" Disabled="_participant.CpmAnswer.IsAnswer is false">
+                        <MudTabPanel Text="Finalise" Disabled="_participant.DipSampleStatus.Value < DipSampleStatus.Verified.Value">
                             <SubmitFinalResponseComponent Command="@SubmitFinalCommand" 
-                                                            Status="_participant.DipSampleStatus" 
+                                                            Status="_participant.DipSampleStatus"
                                                             OnFormSubmit="FinalResponseSubmitted"
                                                             CpmComments="@_participant.CpmComments"/>
                         </MudTabPanel>

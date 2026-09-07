@@ -17,7 +17,6 @@ public partial class DipSamples
     private bool _isLoading;
     private DipSampleDto[] _samples = [];
     private string? _errorMessage;
-    private bool _canReview;
 
     [CascadingParameter] public UserProfile? CurrentUser { get; set; }
 
@@ -32,9 +31,6 @@ public partial class DipSamples
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthState;
-        _canReview = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview)).Succeeded;
-
         var offset = DateTime.Now.AddMonths(Options.Value.MonthOffset);
 
         Query = new GetOutcomeQualityDipSamples.Query

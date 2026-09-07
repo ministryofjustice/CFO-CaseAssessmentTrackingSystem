@@ -17,6 +17,8 @@ public partial class SubmitCsoResponseComponent
 
     [Parameter, EditorRequired] public DipSampleStatus Status { get; set; } = default!;
 
+    [Parameter] public bool CpmHasReviewed { get; set; }
+
     private async Task OnSubmit()
     {
         await _form.ValidateAsync();
@@ -29,7 +31,7 @@ public partial class SubmitCsoResponseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        if (Status == DipSampleStatus.AwaitingReview)
+        if (Status == DipSampleStatus.AwaitingReview && !CpmHasReviewed)
         {
             var state = await AuthState;
             var result =
