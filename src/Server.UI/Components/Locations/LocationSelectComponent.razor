@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Delius.DTOs
 @using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 @using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming
 @using System.Linq.Expressions
 
@@ -50,7 +51,22 @@
     [Parameter]
     public Expression<Func<LocationDto?>>? For { get; set; }
 
+    [Parameter]
+    public bool ShowAllOption { get; set; }
+
+    [Parameter]
+    public string AllOptionLabel { get; set; } = "All Locations";
+
     private LocationDto[] _locations = [];
+
+    private LocationDto AllLocationsOption => new()
+    {
+        Id = 0,
+        Name = AllOptionLabel,
+        ContractName = string.Empty,
+        GenderProvision = GenderProvision.Any,
+        LocationType = LocationType.Unknown
+    };
 
     private async Task HandleValueChanged(LocationDto? locationDto)
     {
@@ -63,7 +79,9 @@
     protected override void OnInitialized()
     {
         var locations = LocationService.GetVisibleLocations(TenantId).OrderBy(l => l.Name);
-        _locations = (LocationFilter is not null ? locations.Where(LocationFilter) : locations).ToArray();
+        var filtered = (LocationFilter is not null ? locations.Where(LocationFilter) : locations).ToArray();
+
+        _locations = ShowAllOption ? [AllLocationsOption, .. filtered] : filtered;
     }
 
     private bool Search(LocationDto? location, string searchText)

@@ -303,33 +303,33 @@ public partial class Participants
 
     private async Task ShowSelectLocationDialog()
     {
-        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile);
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile, showAllOption: Query.Locations.Length > 0);
         
         if (location is not null)
         {
-            Query.Locations = [location.Id];
+            Query.Locations = location.Id == 0 ? [] : [location.Id];
             await OnRefresh();
         }
     }
 
     private async Task ShowAssigneeDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile);
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile, showAllOption: !string.IsNullOrEmpty(Query.OwnerId), allOptionLabel: "All Assignees");
         
         if (user is not null)
         {
-            Query.OwnerId = user.UserId;
+            Query.OwnerId = string.IsNullOrEmpty(user.UserId) ? null : user.UserId;
             await OnRefresh();
         }
     }
 
     private async Task ShowTenantDialog()
     {
-        var tenant = await ParticipantDialogService.PromptForTenantAsync(UserProfile);
+        var tenant = await ParticipantDialogService.PromptForTenantAsync(UserProfile, showAllOption: !string.IsNullOrEmpty(Query.TenantId));
         
         if (tenant is not null)
         {
-            Query.TenantId = tenant.TenantId;
+            Query.TenantId = string.IsNullOrEmpty(tenant.TenantId) ? null : tenant.TenantId;
             await OnRefresh();
         }
     }

@@ -30,7 +30,8 @@ public partial class ArchivedCaseBehaviour
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", CurrentUser }
+            { "CurrentUser", CurrentUser },
+            { "ShowAllOption", true }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };

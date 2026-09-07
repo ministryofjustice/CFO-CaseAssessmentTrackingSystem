@@ -10,12 +10,14 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 
 public class ParticipantDialogService(IDialogService dialogService) : IParticipantDialogService
 {
-    public async Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null, string title = "Select a location")
+    public async Task<LocationDto?> PromptForLocationAsync(UserProfile currentUser, Func<LocationDto, bool>? filter = null, string title = "Select a location", bool showAllOption = false, string allOptionLabel = "All Locations")
     {
         var parameters = new DialogParameters<SelectLocationDialog>
         {
             { "CurrentUser", currentUser },
-            { "Filter", filter }
+            { "Filter", filter },
+            { "ShowAllOption", showAllOption },
+            { "AllOptionLabel", allOptionLabel }
         };
 
         var options = new DialogOptions
@@ -39,12 +41,14 @@ public class ParticipantDialogService(IDialogService dialogService) : IParticipa
             : null;
     }
 
-    public async Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee", Func<ApplicationUserDto, bool>? filter = null)
+    public async Task<SelectedUser?> PromptForAssigneeAsync(UserProfile currentUser, string title = "Select an assignee", Func<ApplicationUserDto, bool>? filter = null, bool showAllOption = false, string allOptionLabel = "All Users")
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
             { "CurrentUser", currentUser },
-            { "Filter", filter }
+            { "Filter", filter },
+            { "ShowAllOption", showAllOption },
+            { "AllOptionLabel", allOptionLabel }
         };
 
         var options = new DialogOptions
@@ -68,11 +72,13 @@ public class ParticipantDialogService(IDialogService dialogService) : IParticipa
             : null;
     }
 
-    public async Task<SelectedTenant?> PromptForTenantAsync(UserProfile currentUser)
+    public async Task<SelectedTenant?> PromptForTenantAsync(UserProfile currentUser, bool showAllOption = false, string allOptionLabel = "All Tenants")
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", currentUser }
+            { "CurrentUser", currentUser },
+            { "ShowAllOption", showAllOption },
+            { "AllOptionLabel", allOptionLabel }
         };
 
         var options = new DialogOptions
