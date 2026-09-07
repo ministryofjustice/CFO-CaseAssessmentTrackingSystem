@@ -6,7 +6,13 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-@if (Status != DipSampleStatus.AwaitingReview)
+@if (CpmHasReviewed)
+{
+    <MudAlert Severity="Severity.Info">
+        This information is now readonly because the verification has already been completed for this participant.
+    </MudAlert>
+}
+else if (Status != DipSampleStatus.AwaitingReview)
 {
     <MudAlert Severity="Severity.Info">
         This information is now readonly because the sample is at the @Status.Name stage.
