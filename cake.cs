@@ -58,28 +58,52 @@ Task("Publish")
     .IsDependentOn("Test")
     .Does(() =>
     {
-        // publish the Server.UI
+        // Mirror the Dockerfile's combined image: each app is published into its own
+        // directory (ui / worker / consumers / seeder / migrator) so their appsettings.json
+        // files do not collide. Keep these output names in sync with the Dockerfile.
+
         DotNetPublish("./src/Server.UI/Server.UI.csproj", new DotNetPublishSettings()
         {
            Configuration = configuration,
            NoBuild = true,
            NoRestore = true,
-           OutputDirectory = "./artifacts/Server.UI",
+           OutputDirectory = "./artifacts/ui",
         });
 
-        //publish the Database Seeder
+        DotNetPublish("./src/Worker/Worker.csproj", new DotNetPublishSettings()
+        {
+           Configuration = configuration,
+           NoBuild = true,
+           NoRestore = true,
+           OutputDirectory = "./artifacts/worker",
+        });
+
+        DotNetPublish("./src/Cats.Consumers/Cats.Consumers.csproj", new DotNetPublishSettings()
+        {
+           Configuration = configuration,
+           NoBuild = true,
+           NoRestore = true,
+           OutputDirectory = "./artifacts/consumers",
+        });
+
         DotNetPublish("./src/DatabaseSeeding/DatabaseSeeding.csproj", new DotNetPublishSettings()
         {
            Configuration = configuration,
            NoBuild = true,
            NoRestore = true,
-           OutputDirectory = "./artifacts/DatabaseSeeding",
+           OutputDirectory = "./artifacts/seeder",
         });
 
-        DotNetBuild("./src/Database/CatsDb/CatsDb.sqlproj", new DotNetBuildSettings()
+        DotNetPublish("./src/Database/CatsDb/CatsDb.sqlproj", new DotNetPublishSettings()
         {
             Configuration = configuration,
-            OutputDirectory = "./artifacts/"
+            OutputDirectory = "./artifacts/migrator",
+        });
+
+        DotNetPublish("./scripts/migrate-database.cs", new DotNetPublishSettings()
+        {
+            Configuration = configuration,
+            OutputDirectory = "./artifacts/migrator",
         });
 
     });
