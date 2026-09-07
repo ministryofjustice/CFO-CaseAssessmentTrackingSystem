@@ -7,12 +7,13 @@ using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Commands;
 
-public static class ExportProviderFeedback
+public static class ExportMyFeedback
 {
-    [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
+    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
     public class Command : ICommand<Result>
     {
-        public required ProviderFeedbackExportRequest Request { get; set; }
+        public required DateTime StartDate { get; set; }
+        public required DateTime EndDate { get; set; }
     }
 
     public class Handler(
@@ -21,12 +22,21 @@ public static class ExportProviderFeedback
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var json = JsonConvert.SerializeObject(request.Request);
+            // UserId is forced to the caller's own id - never trust a client-supplied value here -
+            // so a service desk officer can only ever export the feedback they have personally received.
+            var exportRequest = new ExportProviderFeedback.ProviderFeedbackExportRequest
+            {
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                UserId = currentUser.UserId
+            };
+
+            var json = JsonConvert.SerializeObject(exportRequest);
 
             var document = GeneratedDocument.Create(
                 DocumentTemplate.ProviderFeedback,
-                "Feedback.xlsx",
-                "Feedback Export",
+                "MyFeedback.xlsx",
+                "My Feedback Export",
                 currentUser.UserId!,
                 currentUser.TenantId!,
                 json);
@@ -66,19 +76,4 @@ public static class ExportProviderFeedback
             return hasRecentlyRequestedDocument is false;
         }
     }
-
-    public class ProviderFeedbackExportRequest
-    {
-        public required DateTime StartDate { get; set; }
-        public required DateTime EndDate { get; set; }
-        public string? TenantId { get; set; }
-
-        /// <summary>
-        /// When set, the export is scoped to only the feedback personally received by this
-        /// user - populated server-side only, see <see cref="ExportMyFeedback.Handler"/>.
-        /// Always null for this command, which exports team-wide feedback.
-        /// </summary>
-        public string? UserId { get; set; }
-    }
 }
-

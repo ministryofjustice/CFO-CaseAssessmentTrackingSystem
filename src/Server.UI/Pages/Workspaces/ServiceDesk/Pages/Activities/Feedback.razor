@@ -33,15 +33,27 @@
             </MudLink>
         }
 
-        <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
-            <MudLoadingButton Loading="@_downloading"
-                                Variant="Variant.Filled"
-                                Color="Color.Secondary"
-                                StartIcon="@Icons.Material.Filled.CloudDownload"
-                                Size="Size.Small"
-                                OnClick="@OnExport">
-                @ConstantString.Export
-            </MudLoadingButton>
+        <AuthorizeView Policy="@SecurityPolicies.SeniorInternal">
+            <Authorized>
+                <MudLoadingButton Loading="@_downloading"
+                                    Variant="Variant.Filled"
+                                    Color="Color.Secondary"
+                                    StartIcon="@Icons.Material.Filled.CloudDownload"
+                                    Size="Size.Small"
+                                    OnClick="@OnExportTeam">
+                    @ConstantString.Export
+                </MudLoadingButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudLoadingButton Loading="@_downloading"
+                                    Variant="Variant.Filled"
+                                    Color="Color.Secondary"
+                                    StartIcon="@Icons.Material.Filled.CloudDownload"
+                                    Size="Size.Small"
+                                    OnClick="@OnExportMine">
+                    @ConstantString.Export
+                </MudLoadingButton>
+            </NotAuthorized>
         </AuthorizeView>
     </MudStack>
 

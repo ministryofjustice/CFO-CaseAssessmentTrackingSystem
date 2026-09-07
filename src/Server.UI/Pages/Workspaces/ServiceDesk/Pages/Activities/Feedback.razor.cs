@@ -49,24 +49,41 @@ public partial class Feedback
         }
     }
 
-    private async Task OnExport()
+    private Task OnExportTeam()
+    {
+        var startDate = DateRange.Start ?? throw new InvalidOperationException("Start date not set");
+        var endDate = DateRange.End ?? throw new InvalidOperationException("End date not set");
+
+        return Export(() => GetNewMediator().Send(new ExportProviderFeedback.Command
+        {
+            Request = new ExportProviderFeedback.ProviderFeedbackExportRequest
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                TenantId = SelectedTenantId
+            }
+        }));
+    }
+
+    private Task OnExportMine()
+    {
+        var startDate = DateRange.Start ?? throw new InvalidOperationException("Start date not set");
+        var endDate = DateRange.End ?? throw new InvalidOperationException("End date not set");
+
+        return Export(() => GetNewMediator().Send(new ExportMyFeedback.Command
+        {
+            StartDate = startDate,
+            EndDate = endDate
+        }));
+    }
+
+    private async Task Export(Func<Task<Result>> sendCommand)
     {
         try
         {
             _downloading = true;
 
-            var startDate = DateRange.Start ?? throw new InvalidOperationException("Start date not set");
-            var endDate = DateRange.End ?? throw new InvalidOperationException("End date not set");
-
-            var exportResult = await GetNewMediator().Send(new ExportProviderFeedback.Command
-            {
-                Request = new ExportProviderFeedback.ProviderFeedbackExportRequest
-                {
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    TenantId = SelectedTenantId
-                }
-            });
+            var exportResult = await sendCommand();
 
             if (exportResult.Succeeded)
             {

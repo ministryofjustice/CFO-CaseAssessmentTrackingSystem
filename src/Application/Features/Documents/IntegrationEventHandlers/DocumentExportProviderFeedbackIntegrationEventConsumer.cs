@@ -40,15 +40,30 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             // Stub user profile — handlers below do not use CurrentUser in their query body.
             var stubUser = new UserProfile { UserName = "system", Email = "system@system", UserId = context.UserId };
 
-            var sheets = new (string SheetName, byte[] Data)[]
+            var justMySheets = string.IsNullOrWhiteSpace(request.UserId) == false;
+
+            (string SheetName, byte[] Data)[] sheets;
+
+            if(justMySheets)
             {
-                await BuildEnrolmentReturnsSheet(request, stubUser),
-                await BuildActivitiesReturnsSheet(request, stubUser),
-                await BuildEnrolmentAdvisoriesSheet(request, stubUser),
-                await BuildActivitiesAdvisoriesSheet(request, stubUser),
-                await BuildEnrolmentTeamFeedbackSheet(request, stubUser),
-                await BuildActivitiesTeamFeedbackSheet(request, stubUser),
-            };
+                sheets =
+                [
+                    await BuildEnrolmentFeedbackSheet(request, stubUser),
+                    await BuildActivitiesFeedbackSheet(request, stubUser),
+                ];
+            }
+            else
+            {
+                sheets =
+                [
+                    await BuildEnrolmentReturnsSheet(request, stubUser),
+                    await BuildActivitiesReturnsSheet(request, stubUser),
+                    await BuildEnrolmentAdvisoriesSheet(request, stubUser),
+                    await BuildActivitiesAdvisoriesSheet(request, stubUser),
+                    await BuildEnrolmentFeedbackSheet(request, stubUser),
+                    await BuildActivitiesFeedbackSheet(request, stubUser),
+                ];
+            }
 
             var merged = await excelService.MergeSheetsAsync(sheets);
 
@@ -210,7 +225,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
         return ("Activities Advisories", sheet);
     }
 
-    private async Task<(string SheetName, byte[] Data)> BuildEnrolmentTeamFeedbackSheet(
+    private async Task<(string SheetName, byte[] Data)> BuildEnrolmentFeedbackSheet(
         ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
     {
         var query = new GetEnrolmentsFeedback.Query
@@ -218,6 +233,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             TenantId = request.TenantId,
+            UserId = request.UserId,
             CurrentUser = stubUser
         };
         var data = await new GetEnrolmentsFeedback.Handler(unitOfWork).Handle(query, CancellationToken.None);
@@ -239,11 +255,14 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Enrolment Processed Date",   r => r.EnrolmentProcessedDate },
                 { "Feedback Date",              r => r.Created },
                 { "Message",                    r => r.Message },
+                { "Read",                       r => r.IsRead },
             });
-        return ("Enrolment Team Feedback", sheet);
+
+        var sheetName = string.IsNullOrWhiteSpace(request.UserId) ? "Enrolment Team Feedback" : "My Enrolment Feedback";
+        return (sheetName, sheet);
     }
 
-    private async Task<(string SheetName, byte[] Data)> BuildActivitiesTeamFeedbackSheet(
+    private async Task<(string SheetName, byte[] Data)> BuildActivitiesFeedbackSheet(
         ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
     {
         var query = new GetActivitiesFeedback.Query
@@ -251,6 +270,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             TenantId = request.TenantId,
+            UserId = request.UserId,
             CurrentUser = stubUser
         };
         var data = await new GetActivitiesFeedback.Handler(unitOfWork).Handle(query, CancellationToken.None);
@@ -274,7 +294,11 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Activity Processed Date",    r => r.ActivityProcessedDate },
                 { "Feedback Date",              r => r.Created },
                 { "Message",                    r => r.Message },
+                { "Read",                       r => r.IsRead },
             });
-        return ("Activities Team Feedback", sheet);
+
+        var sheetName = string.IsNullOrWhiteSpace(request.UserId) ? "Activities Team Feedback" : "My Activities Feedback";
+        return (sheetName, sheet);
     }
 }
+
