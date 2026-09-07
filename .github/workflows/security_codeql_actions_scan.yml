@@ -1,0 +1,29 @@
+name: Security CodeQL scan
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "5 3 * * MON-FRI" # Every weekday at 03:05 UTC
+jobs:
+  security-codeql-actions-check:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    name: Project security CodeQL actions scan
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_codeql_actions.yml@v2 # WORKFLOW_VERSION
+    with:
+      channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID || 'NO_SLACK' }}
+    secrets: inherit
+
+  security-codeql-csharp-check:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    name: Project security CodeQL C# SAST scan
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_codeql.yml@v2 # WORKFLOW_VERSION
+    with:
+      channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID || 'NO_SLACK' }}
+      languages: 'csharp'
+      build_mode: 'none' # CodeQL's build-free extractor for C#; avoids replicating the dotnet cake.cs build pipeline
+    secrets: inherit

@@ -49,6 +49,25 @@ jobs:
       attach_sbom_to_registry: true
       sign_image: true
 
+  security_snyk_image_scan:
+    name: Security Snyk image scan
+    needs: [build_app]
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_snyk_scan.yml@v2 # WORKFLOW_VERSION
+    with:
+      channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID || 'NO_SLACK' }}
+      severity: 'HIGH,CRITICAL'
+      scan_type: 'image' # scans the freshly built candidate image (OS + app layers) before it reaches any environment
+      image_ref: 'ghcr.io/ministryofjustice/hmpps-cfo-cats:${{ needs.build_app.outputs.app_version }}'
+      slack_include_summary: true
+    secrets:
+      HMPPS_SNYK_CLIENT_SECRET: ${{ secrets.HMPPS_SNYK_CLIENT_SECRET }}
+      HMPPS_SNYK_CLIENT_ID: ${{ secrets.HMPPS_SNYK_CLIENT_ID }}
+      HMPPS_SRE_SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
+
   deploy_dev:
     name: Deploy to the development environment
     needs: [build_app, helm_lint]
