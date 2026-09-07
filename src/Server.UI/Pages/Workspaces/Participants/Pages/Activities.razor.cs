@@ -246,14 +246,14 @@ public partial class Activities
 
     private async Task ShowSubmittedByDialog()
     {
-        var parameters = new DialogParameters<SelectUserDialog> { { "CurrentUser", UserProfile } };
+        var parameters = new DialogParameters<SelectUserDialog> { { "CurrentUser", UserProfile }, { "ShowAllOption", !string.IsNullOrEmpty(Query.OwnerId) } };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
         var dialog = await DialogService.ShowAsync<SelectUserDialog>("Select a user", parameters, options);
         var result = await dialog.Result;
 
         if (result is { Canceled: false, Data: SelectedUser user })
         {
-            Query.OwnerId = user.UserId;
+            Query.OwnerId = string.IsNullOrEmpty(user.UserId) ? null : user.UserId;
             Query.PageNumber = 1;
             await OnRefresh();
         }
@@ -261,14 +261,14 @@ public partial class Activities
 
     private async Task ShowTenantDialog()
     {
-        var parameters = new DialogParameters<SelectTenantDialog> { { "CurrentUser", UserProfile } };
+        var parameters = new DialogParameters<SelectTenantDialog> { { "CurrentUser", UserProfile }, { "ShowAllOption", !string.IsNullOrEmpty(Query.TenantId) } };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
         var dialog = await DialogService.ShowAsync<SelectTenantDialog>("Select a tenant", parameters, options);
         var result = await dialog.Result;
 
         if (result is { Canceled: false, Data: SelectedTenant tenant })
         {
-            Query.TenantId = tenant.TenantId;
+            Query.TenantId = string.IsNullOrEmpty(tenant.TenantId) ? null : tenant.TenantId;
             Query.PageNumber = 1;
             await OnRefresh();
         }
@@ -276,15 +276,15 @@ public partial class Activities
 
     private async Task ShowSelectLocationDialog()
     {
-        var parameters = new DialogParameters<SelectLocationDialog> { { "CurrentUser", UserProfile } };
+        var parameters = new DialogParameters<SelectLocationDialog> { { "CurrentUser", UserProfile }, { "ShowAllOption", Query.LocationId.HasValue } };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
         var dialog = await DialogService.ShowAsync<SelectLocationDialog>("Select a location", parameters, options);
         var result = await dialog.Result;
 
         if (result is { Canceled: false, Data: LocationDto location })
         {
-            Query.LocationId = location.Id;
-            Query.LocationName = location.Name;
+            Query.LocationId = location.Id == 0 ? null : location.Id;
+            Query.LocationName = location.Id == 0 ? null : location.Name;
             Query.PageNumber = 1;
             await OnRefresh();
         }
