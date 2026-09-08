@@ -95,7 +95,7 @@
             }
             else
             {
-                @Users[Query.OwnerId]
+                @(Users.TryGetValue(Query.OwnerId, out var displayName) ? displayName : Query.OwnerId)
             }
         </MudButton>
         <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => OnShowTenantDialog.InvokeAsync())" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -119,7 +119,7 @@
             }
         </MudButton>
 
-        <MudMenu Size="Size.Small" Label="@(Query.Label is null ? "All Labels" : Labels[(Guid)Query.Label!.Value].Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenu Size="Size.Small" Label="@(Query.Label is null ? "All Labels" : Labels[Query.Label!.Value].Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             <MudMenuItem Label="All" OnClick="@(() => OnLabelChanged.InvokeAsync(null))" />
             @foreach(var l in Labels.Values.OrderBy(l => l.Name))
             {
