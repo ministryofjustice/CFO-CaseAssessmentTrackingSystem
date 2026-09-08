@@ -13,7 +13,6 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -64,6 +63,7 @@ public partial class Participants
 
     private IDictionary<int, string> _locations = null!;
     private IDictionary<string, string> _users = null!;
+    private string? _usersFilterSignature;
 
     private IDictionary<string, string> _tenants = null!;
 
@@ -107,16 +107,12 @@ public partial class Participants
         var authState = await AuthState;
         _canReassign = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Reassign)).Succeeded;
 
-        _users = UserService.DataSource
-            .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
-            .ToDictionary(a => a.Id, e => e.DisplayName);
-
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
                     .ToDictionary(k => k.Id, k => k.Name);
 
         var labelsResult = await Service.Send(new GetVisibleLabels.Query(UserProfile));
 
-        if(labelsResult.Succeeded && labelsResult.Data is not null)
+        if(labelsResult is { Succeeded: true, Data: not null })
         {
             _labels = labelsResult.Data
                         .ToDictionary(k => k.Id, v => v);
@@ -241,6 +237,14 @@ public partial class Participants
             Loading = true;
 
             Query.CurrentUser = UserProfile;
+
+            var signature = BuildUsersFilterSignature();
+            if (signature != _usersFilterSignature)
+            {
+                await LoadUsersAsync();
+                _usersFilterSignature = signature;
+            }
+
             var results = await Service.Send(Query);
             if (results is { Succeeded: true, Data: not null })
             {
@@ -253,12 +257,10 @@ public partial class Participants
                 _data = [];
                 _totalPages = 0;
                 _totalItems = 0;
-                
-                if (results?.ErrorMessage is not null)
-                {
-                    Snackbar.Add(results.ErrorMessage, Severity.Error);
-                }
+
+                Snackbar.Add(results.ErrorMessage, Severity.Error);
             }
+            
             await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
         }
         finally
@@ -297,8 +299,38 @@ public partial class Participants
         {
             ParticipantCacheKey.Refresh();
             _selectedParticipantIds.Clear();
+            await LoadUsersAsync();
+            _usersFilterSignature = BuildUsersFilterSignature();
             await OnRefresh();
         }
+    }
+
+    private string BuildUsersFilterSignature()
+        => string.Join('|',
+            Query.ListView,
+            Query.Keyword,
+            string.Join(',', Query.Locations),
+            Query.Label,
+            Query.TenantId,
+            Query.RiskDue,
+            Query.RecentAction);
+
+    private async Task LoadUsersAsync()
+    {
+        var assigneesResult = await Service.Send(new GetParticipantAssignees.Query(UserProfile)
+        {
+            ListView = Query.ListView,
+            Keyword = Query.Keyword,
+            Locations = Query.Locations,
+            Label = Query.Label,
+            TenantId = Query.TenantId,
+            RiskDue = Query.RiskDue,
+            RecentAction = Query.RecentAction
+        });
+
+        _users = assigneesResult is { Succeeded: true, Data: not null }
+            ? assigneesResult.Data.ToDictionary(a => a.Id, e => e.DisplayName)
+            : new Dictionary<string, string>();
     }
 
     private async Task ShowSelectLocationDialog()
@@ -314,7 +346,7 @@ public partial class Participants
 
     private async Task ShowAssigneeDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile);
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile, filter: u => _users.ContainsKey(u.Id));
         
         if (user is not null)
         {
