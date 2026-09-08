@@ -5,13 +5,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
 public static class GetEnrolmentAdvisoriesToProvider
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.ProviderFeedback)]
     public class Query : IQuery<Result<EnrolmentAdvisoriesToProviderDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public string? UserId { get; set; }
         public string? TenantId { get; set; }
+        public bool IncludeInternalData { get; set; } = true;
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -21,6 +22,7 @@ public static class GetEnrolmentAdvisoriesToProvider
         public async Task<Result<EnrolmentAdvisoriesToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
+            var includeInternalData = request.IncludeInternalData && request.CurrentUser.HasInternalRole();
 
             
             var query = from pfe in context.ProviderFeedbackEnrolments
@@ -42,11 +44,11 @@ public static class GetEnrolmentAdvisoriesToProvider
                 {
                     ContractName = con.Description,
                     ParticipantId = pfe.ParticipantId,
-                    Queue = pfe.Queue,
+                    Queue = includeInternalData ? pfe.Queue : null,
                     SupportWorker = sw.DisplayName,
-                    CfoUser = cfoUser.DisplayName,
-                    PqaSubmittedDate = pfe.PqaSubmittedDate,
-                    PqaUser = submittedByUser.DisplayName,
+                    CfoUser = includeInternalData ? cfoUser.DisplayName : null,
+                    PqaSubmittedDate = includeInternalData ? pfe.PqaSubmittedDate : null,
+                    PqaUser = includeInternalData ? submittedByUser.DisplayName : null,
                     AdvisoryDate = pfe.ActionDate,
                     FeedbackType = pfe.FeedbackType,
                     Message = (pfe.Message ?? "").Replace("\r", " ").Replace("\n", " ")
@@ -56,7 +58,7 @@ public static class GetEnrolmentAdvisoriesToProvider
                             .AsNoTracking()
                             .ToArrayAsync(cancellationToken);
 
-            return new EnrolmentAdvisoriesToProviderDto(result);
+            return new EnrolmentAdvisoriesToProviderDto(result, includeInternalData);
 
         }
 
@@ -64,18 +66,19 @@ public static class GetEnrolmentAdvisoriesToProvider
 
     public record EnrolmentAdvisoriesToProviderDto
     {
-        public EnrolmentAdvisoriesToProviderDto(EnrolmentAdvisoriesTabularData[] tabularData)
+        public EnrolmentAdvisoriesToProviderDto(EnrolmentAdvisoriesTabularData[] tabularData, bool includeInternalData = true)
         {
             TabularData = tabularData;
-            
+
             ChartData = tabularData
                 .GroupBy(td => td.ContractName)
                 .OrderBy(g => g.Key)
                 .Select(g => new EnrolmentAdvisoriesChartData
                 {
                     ContractName = g.Key,
-                    EscalationQueue = g.Count(x => x.Queue == "Escalation"),
-                    QA2Queue = g.Count(x => x.Queue == "QA2")
+                    Total = g.Count(),
+                    EscalationQueue = includeInternalData ? g.Count(x => x.Queue == "Escalation") : 0,
+                    QA2Queue = includeInternalData ? g.Count(x => x.Queue == "QA2") : 0
                 })
                 .ToArray();
         }
@@ -101,6 +104,7 @@ public static class GetEnrolmentAdvisoriesToProvider
     public record EnrolmentAdvisoriesChartData
     {
         public string? ContractName { get; set; }
+        public int Total { get; set; }
         public int EscalationQueue { get; set; }
         public int QA2Queue { get; set; }
     }
