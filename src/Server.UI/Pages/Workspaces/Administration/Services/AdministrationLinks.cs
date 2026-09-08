@@ -15,5 +15,6 @@ public static class AdministrationLinks
     public static readonly BreadcrumbLinkModel Tenants = new("Tenants", "Manage Tenants", $"{Home.Href}/tenants", Group: "User Management", 3);
     public static readonly BreadcrumbLinkModel Users = new("Users", "Manage Users", $"{Home.Href}/users/users", Group: "User Management", Order: 1);
     public static readonly BreadcrumbLinkModel UserAudit = new("User Audit", "View user login and authentication audit trails", $"{Home.Href}/users/useraudit", "User Management", Order: 2);
+    public static readonly BreadcrumbLinkModel LoginMonitoring = new("Login Monitoring", "Monitor and alert on suspicious login activity", $"{Home.Href}/users/loginmonitoring", "User Management", Order: 4);
 }
  

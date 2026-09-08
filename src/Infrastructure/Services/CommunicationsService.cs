@@ -71,6 +71,30 @@ public class CommunicationsService(IOptions<NotifyOptions> options, ILogger<Comm
         }
     }
 
+    public async Task SendLoginThresholdAlertEmailAsync(string email, string subject, string body)
+    {
+        try
+        {
+            var client = Client();
+            var response = await client.SendEmailAsync(emailAddress: email,
+            templateId: options.Value.GetTemplate("LoginThresholdAlert")!.EmailTemplateId,
+            personalisation: new Dictionary<string, dynamic>() {
+                {
+                    "subject",
+                    subject
+                },
+                {
+                    "body",
+                    body
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            logger.LogError("Failed to send login threshold alert email. {e}", e);
+        }
+    }
+
     private NotificationClient Client() => new(options.Value.ApiKey);
 }
 

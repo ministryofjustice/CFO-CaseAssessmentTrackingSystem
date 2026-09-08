@@ -86,5 +86,13 @@ public enum IdentityActionType
     AccountMarkedAsLeft,
 
     [Description("Account Unlocked")]
-    UserAccountUnlocked
+    UserAccountUnlocked,
+
+    /// <summary>
+    /// Automated monitoring has detected suspicious login activity
+    /// (e.g. a burst of failed attempts from a single IP address or against a
+    /// single account, or attempts against a monitored/high-value username).
+    /// </summary>
+    [Description("Suspicious Login Activity Detected")]
+    SuspiciousActivityDetected
 }

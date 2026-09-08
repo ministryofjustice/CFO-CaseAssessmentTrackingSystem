@@ -1,0 +1,190 @@
+@page "/pages/workspace/administration/users/loginmonitoring"
+
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Humanizer
+
+@inherits CatsComponent<LoginSecurityOverviewDto>
+
+@attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
+
+<PageTitle>@Title</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudStack Spacing="4">
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <MudText Typo="Typo.h6">Login Monitoring</MudText>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudSelect T="int"
+                       Label="Time period"
+                       Value="_lookbackHours"
+                       ValueChanged="OnLookbackChanged"
+                       Dense="true"
+                       Style="min-width:160px">
+                <MudSelectItem T="int" Value="1">Last hour</MudSelectItem>
+                <MudSelectItem T="int" Value="6">Last 6 hours</MudSelectItem>
+                <MudSelectItem T="int" Value="24">Last 24 hours</MudSelectItem>
+                <MudSelectItem T="int" Value="72">Last 3 days</MudSelectItem>
+                <MudSelectItem T="int" Value="168">Last 7 days</MudSelectItem>
+            </MudSelect>
+            <MudLoadingButton Color="Color.Primary"
+                              Variant="Variant.Filled"
+                              Loading="@Loading"
+                              OnClick="RefreshAsync"
+                              StartIcon="@Icons.Material.Filled.Refresh"
+                              Size="Size.Small">
+                Refresh
+            </MudLoadingButton>
+        </MudStack>
+    </MudStack>
+
+    @if (Data is not null)
+    {
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4" Elevation="2">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Failed attempts</MudText>
+                    <MudText Typo="Typo.h4">@Data.TotalFailedAttempts</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4" Elevation="2">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Unknown usernames</MudText>
+                    <MudText Typo="Typo.h4">@Data.UnknownUserAttempts</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4" Elevation="2">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Distinct source IPs</MudText>
+                    <MudText Typo="Typo.h4">@Data.DistinctOffendingIpAddresses</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4" Elevation="2">
+                    <MudText Typo="Typo.subtitle2" Color="@(Data.AlertsRaised > 0 ? Color.Error : Color.Secondary)">Alerts raised</MudText>
+                    <MudText Typo="Typo.h4" Color="@(Data.AlertsRaised > 0 ? Color.Error : Color.Default)">@Data.AlertsRaised</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.subtitle1">Recent alerts</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (Data.RecentAlerts.Count == 0)
+                {
+                    <MudText Typo="Typo.body2">No suspicious login activity alerts in this period.</MudText>
+                }
+                else
+                {
+                    <MudSimpleTable Dense="true" Hover="true" Striped="true">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Targeted username</th>
+                                <th>Source IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var alert in Data.RecentAlerts)
+                            {
+                                <tr>
+                                    <td>@alert.DateTime</td>
+                                    <td>@(string.IsNullOrWhiteSpace(alert.UserName) ? "(various)" : alert.UserName)</td>
+                                    <td>@alert.IpAddress</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+            </MudCardContent>
+        </MudCard>
+
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudCard Elevation="2">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.subtitle1">Top source IP addresses (failed attempts)</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (Data.TopOffendingIpAddresses.Count == 0)
+                        {
+                            <MudText Typo="Typo.body2">No failed attempts in this period.</MudText>
+                        }
+                        else
+                        {
+                            <MudSimpleTable Dense="true" Hover="true" Striped="true">
+                                <thead>
+                                    <tr>
+                                        <th>IP address</th>
+                                        <th style="text-align:right">Failed attempts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in Data.TopOffendingIpAddresses)
+                                    {
+                                        <tr>
+                                            <td>@row.Key</td>
+                                            <td style="text-align:right">@row.Count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudCard Elevation="2">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.subtitle1">Top targeted usernames (failed attempts)</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (Data.TopTargetedUserNames.Count == 0)
+                        {
+                            <MudText Typo="Typo.body2">No failed attempts in this period.</MudText>
+                        }
+                        else
+                        {
+                            <MudSimpleTable Dense="true" Hover="true" Striped="true">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th style="text-align:right">Failed attempts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in Data.TopTargetedUserNames)
+                                    {
+                                        <tr>
+                                            <td>@row.Key</td>
+                                            <td style="text-align:right">@row.Count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
+    else if (Loading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+    }
+    else if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+    }
+
+</MudStack>
