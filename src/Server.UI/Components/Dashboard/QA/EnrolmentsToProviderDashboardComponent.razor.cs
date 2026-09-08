@@ -17,6 +17,9 @@ public partial class EnrolmentsToProviderDashboardComponent
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
 
+    [Parameter]
+    public bool IncludeInternalColumns { get; set; } = true;
+
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
@@ -26,6 +29,7 @@ public partial class EnrolmentsToProviderDashboardComponent
          CurrentUser = CurrentUser,
          UserId = CurrentUser.UserId,
          TenantId = TenantId,
+         IncludeInternalData = IncludeInternalColumns,
          StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };

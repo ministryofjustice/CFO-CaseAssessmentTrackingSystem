@@ -92,6 +92,15 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.InternalStaff, "True");
         });
 
+        options.AddPolicy(SecurityPolicies.ProviderFeedback, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireAssertion(context =>
+                context.User.HasClaim(ApplicationClaimTypes.InternalStaff, "True")
+                || context.User.HasClaim(ApplicationClaimTypes.Permission, Permissions.PQA));
+        });
+
         options.AddPolicy(SecurityPolicies.SystemSupportFunctions, policy =>
         {
             policy.RequireAuthenticatedUser();
