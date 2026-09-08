@@ -14,10 +14,13 @@ namespace Cfo.Cats.Infrastructure.Jobs;
 ///     Aspire dashboard / Grafana, where alert rules can be attached).
 ///  2. Records a <see cref="IdentityActionType.SuspiciousActivityDetected"/> entry in the
 ///     identity audit trail so it is visible to administrators in the UI.
+///  3. Sends a single GOV.UK Notify digest email per scan to the configured distribution
+///     list when one or more new alerts are raised.
 /// </summary>
 public class MonitorSuspiciousLoginActivityJob(
     ILogger<MonitorSuspiciousLoginActivityJob> logger,
     IUnitOfWork unitOfWork,
+    ICommunicationsService communicationsService,
     IOptions<SuspiciousLoginMonitoringOptions> options) : IJob
 {
     public static readonly JobKey Key = new JobKey(name: nameof(MonitorSuspiciousLoginActivityJob));
@@ -73,6 +76,7 @@ public class MonitorSuspiciousLoginActivityJob(
                 .Where(a => FailedActionTypes.Contains(a.ActionType) && a.DateTime >= windowStart);
 
             var newAlerts = new List<IdentityAuditTrail>();
+            var alertSummaries = new List<string>();
 
             // Rule A: a single IP address making many failed attempts (automated attack).
             var offendingIps = await failedAttempts
@@ -94,6 +98,7 @@ public class MonitorSuspiciousLoginActivityJob(
                     "HighVolumeFromIpAddress", offender.IpAddress, offender.Count, windowSeconds);
 
                 newAlerts.Add(IdentityAuditTrail.Create(null, PerformedBy, IdentityActionType.SuspiciousActivityDetected, offender.IpAddress));
+                alertSummaries.Add($"High volume of failed attempts ({offender.Count}) from IP address {offender.IpAddress}.");
             }
 
             // Rule B: a single account being targeted by many failed attempts (credential stuffing).
@@ -116,6 +121,7 @@ public class MonitorSuspiciousLoginActivityJob(
                     "HighVolumeAgainstUser", target.UserName, target.Count, windowSeconds);
 
                 newAlerts.Add(IdentityAuditTrail.Create(target.UserName, PerformedBy, IdentityActionType.SuspiciousActivityDetected, MultipleMarker));
+                alertSummaries.Add($"High volume of failed attempts ({target.Count}) against username {target.UserName}.");
             }
 
             // Rule C: any attempt against a monitored/high-value username (e.g. admin@...).
@@ -153,6 +159,7 @@ public class MonitorSuspiciousLoginActivityJob(
                             "MonitoredUserName", matchedUserName, keyword, windowSeconds);
 
                         newAlerts.Add(IdentityAuditTrail.Create(matchedUserName, PerformedBy, IdentityActionType.SuspiciousActivityDetected, MultipleMarker));
+                        alertSummaries.Add($"Login attempt against monitored username {matchedUserName} (matched keyword '{keyword}').");
                     }
                 }
             }
@@ -162,6 +169,8 @@ public class MonitorSuspiciousLoginActivityJob(
                 await unitOfWork.DbContext.IdentityAuditTrails.AddRangeAsync(newAlerts, cancellationToken);
                 await unitOfWork.SaveChangesAsync(cancellationToken);
                 logger.LogWarning("Raised {AlertCount} new suspicious login activity alert(s)", newAlerts.Count);
+
+                await SendAlertEmailAsync(settings, alertSummaries, windowSeconds);
             }
             else
             {
@@ -173,5 +182,46 @@ public class MonitorSuspiciousLoginActivityJob(
             logger.LogError(ex, "Quartz job {Key} failed", Key.Name);
             throw new JobExecutionException(msg: "An unexpected error occurred executing Monitor Suspicious Login Activity job", refireImmediately: true, cause: ex);
         }
+    }
+
+    /// <summary>
+    /// Sends a single GOV.UK Notify digest email per scan to each configured recipient.
+    /// </summary>
+    private async Task SendAlertEmailAsync(SuspiciousLoginMonitoringOptions settings, IReadOnlyList<string> alertSummaries, int windowSeconds)
+    {
+        try
+        {
+            var recipients = (settings.DistributionList ?? [])
+            .Where(email => string.IsNullOrWhiteSpace(email) == false)
+            .Select(email => email.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+            if (recipients.Length == 0)
+            {
+                logger.LogInformation("Suspicious login activity detected but no distribution list is configured; skipping email alert");
+                return;
+            }
+
+            var subject = $"CATS security alert: {alertSummaries.Count} suspicious login alert(s) detected";
+            var body = $"CATS detected {alertSummaries.Count} suspicious login alert(s) within the last {windowSeconds} seconds "
+                    + $"(at {DateTime.Now:yyyy-MM-dd HH:mm:ss}):"
+                    + Environment.NewLine + Environment.NewLine
+                    + string.Join(Environment.NewLine, alertSummaries.Select(summary => $"- {summary}"))
+                    + Environment.NewLine + Environment.NewLine
+                    + "Review the Login Monitoring dashboard in CATS Administration for full details.";
+
+            foreach (var recipient in recipients)
+            {
+                await communicationsService.SendLoginThresholdAlertEmailAsync(recipient, subject, body);
+            }
+
+            logger.LogInformation("Sent suspicious login activity alert email to {RecipientCount} recipient(s)", recipients.Length);
+        }
+        catch(Exception ex)
+        {
+            logger.LogError(ex, "Failed to send alert email");
+        }
+        
     }
 }

@@ -27,4 +27,11 @@ public class SuspiciousLoginMonitoringOptions
     /// "admin" and "admin@justice.gov.uk" are caught.
     /// </summary>
     public string[] MonitoredUserNames { get; set; } = [];
+
+    /// <summary>
+    /// Email addresses that should receive a GOV.UK Notify alert (using the
+    /// "LoginThresholdAlert" template) when suspicious login activity is detected.
+    /// A single digest email is sent to each recipient per scan that raises alerts.
+    /// </summary>
+    public string[] DistributionList { get; set; } = [];
 }
