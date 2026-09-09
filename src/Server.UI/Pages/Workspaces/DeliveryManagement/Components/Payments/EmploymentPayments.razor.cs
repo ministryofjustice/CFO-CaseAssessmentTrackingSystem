@@ -69,6 +69,13 @@ public partial class EmploymentPayments
             Show = true,
             ShowForSingleSeries = true
         },
+        DataLabels = new DataLabels
+        {
+            Style = new DataLabelsStyle
+            {
+                FontSize = "10px"
+            }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
