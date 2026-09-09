@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
+using Cfo.Cats.Application.Features.Activities.Queries.Extensions;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Newtonsoft.Json;
@@ -25,32 +26,9 @@ public static class AllActivitiesWithPagination
 
             var activities = db.Activities.ApplySpecification(request.Specification);
 
-            if (request.ReturnedWithinDays is { } days)
-            {
-                var cutoff = DateTime.UtcNow.AddDays(-days);
-
-                // Note: we ignore QA1 returns, because these are not returned to the provider
-                var returnedActivityIds = 
-                    db.ActivityPqaQueue // PQA returns
-                        .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
-                        .Select(e => e.ActivityId)
-                    .Union(db.ActivityQa2Queue // QA2 returns
-                        .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
-                        .Select(e => e.ActivityId))
-                    .Union(db.ActivityEscalationQueue // Escalation returns
-                        .Where(e => e.IsCompleted && e.IsAccepted == false && e.LastModified >= cutoff)
-                        .Select(e => e.ActivityId));
-
-                activities = activities.Where(a => returnedActivityIds.Contains(a.Id));
-            }
-
-            if (request.ApprovedWithinDays is { } approvedDays)
-            {
-                var approvedCutoff = DateTime.UtcNow.AddDays(-approvedDays).Date;
-
-                activities = activities.Where(a => a.Status == ActivityStatus.ApprovedStatus.Value
-                                                   && a.CompletedOn >= approvedCutoff);
-            }
+            activities = activities
+                .ApplyReturnedWithinDaysFilter(db, request.ReturnedWithinDays)
+                .ApplyApprovedWithinDaysFilter(request.ApprovedWithinDays);
 
 #pragma warning disable CS8602
             var query = from a in activities
