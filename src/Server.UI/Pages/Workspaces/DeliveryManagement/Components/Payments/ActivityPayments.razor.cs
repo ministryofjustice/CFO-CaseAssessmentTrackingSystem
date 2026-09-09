@@ -64,6 +64,13 @@ public partial class ActivityPayments
             Show = true,
             ShowForSingleSeries = true
         },
+        DataLabels = new DataLabels
+        {
+            Style = new DataLabelsStyle
+            {
+                FontSize = "10px"
+            }
+        },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
