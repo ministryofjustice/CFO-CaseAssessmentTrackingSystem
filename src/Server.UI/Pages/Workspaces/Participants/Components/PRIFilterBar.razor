@@ -73,7 +73,7 @@
             }
             else
             {
-                @(Users.TryGetValue(Query.CustodySupportWorker, out var custodyWorker) ? custodyWorker : Query.CustodySupportWorker)
+                @(CustodyWorkers.TryGetValue(Query.CustodySupportWorker, out var custodyWorker) ? custodyWorker : Query.CustodySupportWorker)
             }
         </MudButton>
 
@@ -86,7 +86,7 @@
             }
             else
             {
-                @(Users.TryGetValue(Query.CommunitySupportWorker, out var communityWorker) ? communityWorker : Query.CommunitySupportWorker)
+                @(CommunityWorkers.TryGetValue(Query.CommunitySupportWorker, out var communityWorker) ? communityWorker : Query.CommunitySupportWorker)
             }
         </MudButton>
 
@@ -137,7 +137,8 @@
     [Parameter] public int TotalItems { get; set; }
     [Parameter] public bool Tabular { get; set; }
     [Parameter] public bool IsDownloading { get; set; }
-    [Parameter] public IDictionary<string, string> Users { get; set; } = null!;
+    [Parameter] public IDictionary<string, string> CustodyWorkers { get; set; } = null!;
+    [Parameter] public IDictionary<string, string> CommunityWorkers { get; set; } = null!;
     [Parameter] public IDictionary<int, string> Locations { get; set; } = null!;
 
     [Parameter] public EventCallback<string?> OnSearchChanged { get; set; }

@@ -18,14 +18,14 @@
                 Buttons and search text goes here                
             *@
             <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
-                          ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
+                          ValueChanged="@OnSearch" Clearable="true" ShrinkLabel="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
                           AdornmentColor="Color.Secondary">
             </MudTextField>
             <MudSpacer />
             <MudLoadingButton Variant="Variant.Filled" Size="Size.Small"   
                       Loading="@_loading"
-                      OnClick="OnRefreshClicked"
+                      OnClick="@OnRefreshClicked"
                       StartIcon="@Icons.Material.Filled.Refresh"
                       Color="Color.Secondary">
                         @ConstantString.Refresh
@@ -35,7 +35,7 @@
                         Color="Color.Secondary"
                         StartIcon="@Icons.Material.Filled.CloudDownload"
                         Size="Size.Small"
-                        OnClick="OnExport">
+                        OnClick="@OnExport">
                         @ConstantString.Export
             </MudLoadingButton>
         </MudStack>
@@ -59,7 +59,7 @@
             <MudSpacer />
 
             <!-- Tenant -->
-            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 @if(string.IsNullOrEmpty(Query.TenantId))
                 {
                     @("All Tenants")
@@ -72,7 +72,7 @@
 
             <!-- Support Worker -->
 
-            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSupportWorkerDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowSupportWorkerDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 @if(string.IsNullOrEmpty(Query.SupportWorkerId))
                 {
                     @("All Assignees")
@@ -91,7 +91,7 @@
             </MudMenu>
 
             <MudTooltip Text="Clear search parameters">
-                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
             </MudTooltip>
 
         </MudStack>

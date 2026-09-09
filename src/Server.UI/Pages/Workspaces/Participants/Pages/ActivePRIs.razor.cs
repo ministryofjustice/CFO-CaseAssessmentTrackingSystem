@@ -23,7 +23,7 @@ public partial class ActivePRIs
 
     [Inject]
     public IUserService UserService { get; set; } = null!;
-    
+
     [Inject]
     public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
     
@@ -39,8 +39,10 @@ public partial class ActivePRIs
     private int _totalPages;
     private PRIPaginationDto[] _data = [];
     private bool Tabular { get; set; } = true;
-    private IDictionary<string, string> _users = new Dictionary<string, string>();
+    private IDictionary<string, string> _custodyWorkers = new Dictionary<string, string>();
+    private IDictionary<string, string> _communityWorkers = new Dictionary<string, string>();
     private IDictionary<int, string> _locations = new Dictionary<int, string>();
+    private string? _usersFilterSignature;
 
     private ActivePRIsWithPagination.Query Query { get; set; } = new()
     {
@@ -55,13 +57,9 @@ public partial class ActivePRIs
 
     protected override async Task OnInitializedAsync()
     {
-        // Initialise locations and users dictionaries
+        //Initialise locations dictionary. Assignees are loaded per-filter in OnRefresh.
         _locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
             .ToDictionary(k => k.Id, e => e.Name);
-
-        _users = UserService.DataSource
-            .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
-            .ToDictionary(a => a.Id, e => e.DisplayName);
 
         Query.CurrentUser = UserProfile;
         
@@ -94,6 +92,14 @@ public partial class ActivePRIs
         try
         {
             Query.CurrentUser = UserProfile;
+
+            var signature = BuildUsersFilterSignature();
+            if (signature != _usersFilterSignature)
+            {
+                await LoadUsersAsync();
+                _usersFilterSignature = signature;
+            }
+
             var result = await GetNewMediator().Send(Query);
 
             if (result is { Succeeded: true, Data: not null })
@@ -119,6 +125,43 @@ public partial class ActivePRIs
         finally
         {
             _loading = false;
+        }
+    }
+
+    private string BuildUsersFilterSignature()
+        => string.Join('|',
+            Query.Keyword,
+            Query.JustMyPris,
+            Query.IncludeIncoming,
+            Query.IncludeOutgoing,
+            Query.CustodySupportWorker,
+            Query.CommunitySupportWorker,
+            Query.ExpectedReleaseRegionId,
+            Query.ActiveStatus);
+
+    private async Task LoadUsersAsync()
+    {
+        var assigneesResult = await GetNewMediator().Send(new GetPriAssignees.Query(UserProfile!)
+        {
+            Keyword = Query.Keyword,
+            JustMyPris = Query.JustMyPris,
+            IncludeIncoming = Query.IncludeIncoming,
+            IncludeOutgoing = Query.IncludeOutgoing,
+            CustodySupportWorker = Query.CustodySupportWorker,
+            CommunitySupportWorker = Query.CommunitySupportWorker,
+            ExpectedReleaseRegionId = Query.ExpectedReleaseRegionId,
+            ActiveStatus = Query.ActiveStatus
+        });
+
+        if (assigneesResult is { Succeeded: true, Data: not null })
+        {
+            _custodyWorkers = assigneesResult.Data.CustodyWorkers.ToDictionary(a => a.Id, a => a.DisplayName);
+            _communityWorkers = assigneesResult.Data.CommunityWorkers.ToDictionary(a => a.Id, a => a.DisplayName);
+        }
+        else
+        {
+            _custodyWorkers = new Dictionary<string, string>();
+            _communityWorkers = new Dictionary<string, string>();
         }
     }
     
@@ -287,7 +330,8 @@ public partial class ActivePRIs
 
     private async Task ShowCustodyWorkerDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Custody Support Worker");
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Custody Support Worker",
+            filter: u => _custodyWorkers.ContainsKey(u.Id));
         
         if (user is not null)
         {
@@ -299,7 +343,8 @@ public partial class ActivePRIs
 
     private async Task ShowCommunityWorkerDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Community Support Worker");
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Community Support Worker",
+            filter: u => _communityWorkers.ContainsKey(u.Id));
         
         if (user is not null)
         {
