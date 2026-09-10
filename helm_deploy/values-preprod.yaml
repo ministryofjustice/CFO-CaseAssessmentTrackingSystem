@@ -10,7 +10,9 @@ generic-service:
     targetMemoryUtilizationPercentage: 75
     scaleUpStabilizationWindowSeconds: 60
   ingress:
-    host: hmpps-cfo-case-assessment-tracking-system-preprod.live.cloud-platform.service.justice.gov.uk
+    hosts:
+      - preprod.manage-external-funded-offender-provision.service.justice.gov.uk
+    tlsSecretName: cats-preprod-custom-domain-tls
     modsecurity_audit_enabled: true
   resources:
     requests:

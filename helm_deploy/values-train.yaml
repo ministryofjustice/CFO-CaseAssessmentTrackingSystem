@@ -10,7 +10,9 @@ generic-service:
     targetMemoryUtilizationPercentage: 80
     scaleUpStabilizationWindowSeconds: 60
   ingress:
-    host: hmpps-cfo-case-assessment-tracking-system-train.live.cloud-platform.service.justice.gov.uk
+    hosts:
+      - training.manage-external-funded-offender-provision.service.justice.gov.uk
+    tlsSecretName: cats-train-custom-domain-tls
   resources:
     requests:
       cpu: 300m
