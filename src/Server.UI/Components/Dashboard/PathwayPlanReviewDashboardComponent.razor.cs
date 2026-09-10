@@ -6,9 +6,9 @@ namespace Cfo.Cats.Server.UI.Components.Dashboard;
 public partial class PathwayPlanReviewDashboardComponent
 {
     [Parameter]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; } 
     [Parameter]
-    public string TenantId { get; set; } = null!;
+    public string? TenantId { get; set; } 
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
@@ -21,9 +21,7 @@ public partial class PathwayPlanReviewDashboardComponent
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
-
-    private GetPathwayPlans.Query Query { get; set; } = null!;
-
+    
     protected override IQuery<Result<GetPathwayPlans.PathwayPlanDto>> CreateQuery()
      => new GetPathwayPlans.Query()
      {
@@ -93,14 +91,15 @@ public partial class PathwayPlanReviewDashboardComponent
                 OffsetY = 5
             }
         },
-        Yaxis = new List<YAxis>
-        {
+        Yaxis =
+        [
+
             new YAxis
             {
                 Min = 0,
                 ForceNiceScale = true
             }
-        },
+        ],
         Responsive =
         [
             new()
@@ -119,7 +118,7 @@ public partial class PathwayPlanReviewDashboardComponent
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
-        Colors = new List<string> { "#5cb85c", "#d9534f" }
+        Colors = ["#5cb85c", "#d9534f"]
     };
 
     private IEnumerable<GetPathwayPlans.PathwayPlanReviewTabularData> FilteredTabularData =>

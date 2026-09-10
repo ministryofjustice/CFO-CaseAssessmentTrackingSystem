@@ -14,7 +14,7 @@ namespace Cfo.Cats.Server.UI.Components.Dashboard;
 public partial class UnassignedCasesDashboardComponent
 {
     [Parameter]
-    public string TenantId { get; set; } = null!;
+    public string? TenantId { get; set; }
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
@@ -63,7 +63,7 @@ public partial class UnassignedCasesDashboardComponent
         _previousVisualMode = VisualMode;
         _previousTenantId = TenantId;
 
-        _locations = LocationService.GetVisibleLocations(TenantId)
+        _locations = LocationService.GetVisibleLocations(TenantId ?? CurrentUser.TenantId!)
                         .ToDictionary(k => k.Id, e => e.Name);
 
         _includeTransferIn = IncludeTransferIn;
@@ -94,7 +94,7 @@ public partial class UnassignedCasesDashboardComponent
         // Reload locations if tenant changed
         if (tenantChanged)
         {
-            _locations = LocationService.GetVisibleLocations(TenantId)
+            _locations = LocationService.GetVisibleLocations(TenantId ?? CurrentUser.TenantId!)
                 .ToDictionary(k => k.Id, e => e.Name);
             _previousTenantId = TenantId;
 

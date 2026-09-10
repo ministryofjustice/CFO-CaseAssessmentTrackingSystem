@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
@@ -22,11 +23,11 @@ public partial class RecentApprovedActivities
         if (cached is { Succeeded: true, Data: { } sd })
         {
             _dateRange = new DateRange(sd.StartDate, sd.EndDate);
-            RestoreState(sd.VisualMode, sd.TenantId, sd.UserId);
+            await RestoreState(sd.VisualMode, sd.TenantId, sd.UserId);
         }
     }
 
-    private void RestoreState(bool visualMode, string? tenantId, string? userId)
+    private async Task RestoreState(bool visualMode, string? tenantId, string? userId)
     {
         VisualMode = visualMode;
 
@@ -35,13 +36,33 @@ public partial class RecentApprovedActivities
             return;
         }
 
-        OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
+        await OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
         OnUserSelected(string.IsNullOrWhiteSpace(userId) ? null : userId);
+    }
+
+    protected override async Task<IDictionary<string, string>> LoadUsersAsync()
+    {
+        var result = await GetNewMediator().Send(new GetRecentlyApprovedActivityAssignees.Query(CurrentUser)
+        {
+            TenantId = SelectedTenantId,
+            StartDate = _dateRange.Start ?? DateTime.Today,
+            EndDate = _dateRange.End ?? DateTime.Today
+        });
+
+        return result is { Succeeded: true, Data: not null }
+            ? result.Data.ToDictionary(a => a.Id, a => a.DisplayName)
+            : new Dictionary<string, string>();
     }
 
     private async Task OnDateRangeChanged(DateRange? dateRange)
     {
         _dateRange = dateRange ?? _dateRange;
+
+        if (CanFilter)
+        {
+            await ReloadUsersAsync();
+        }
+
         await SaveSessionState();
     }
 
@@ -53,7 +74,7 @@ public partial class RecentApprovedActivities
 
     private async Task OnTenantSelectedWithSave(string? tenantId)
     {
-        OnTenantSelected(tenantId);
+        await OnTenantSelected(tenantId);
         await SaveSessionState();
     }
 
@@ -65,7 +86,7 @@ public partial class RecentApprovedActivities
 
     private async Task OnClearFilterWithSave()
     {
-        OnClearFilter();
+        await OnClearFilter();
         await SaveSessionState();
     }
 

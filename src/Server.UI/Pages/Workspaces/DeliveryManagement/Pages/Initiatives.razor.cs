@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Server.UI.Services;
 
@@ -19,11 +20,11 @@ public partial class Initiatives
 
         if (cached is { Succeeded: true, Data: { } sd })
         {
-            RestoreState(sd.VisualMode, sd.ShowActiveOnly, sd.InitiativeFilter, sd.TenantId, sd.UserId);
+            await RestoreState(sd.VisualMode, sd.ShowActiveOnly, sd.InitiativeFilter, sd.TenantId, sd.UserId);
         }
     }
 
-    private void RestoreState(bool visualMode, bool showActiveOnly, InitiativeDto? initiativeFilter, string? tenantId, string? userId)
+    private async Task RestoreState(bool visualMode, bool showActiveOnly, InitiativeDto? initiativeFilter, string? tenantId, string? userId)
     {
         VisualMode = visualMode;
         _showActiveOnly = showActiveOnly;
@@ -34,8 +35,20 @@ public partial class Initiatives
             return;
         }
 
-        OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
+        await OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
         OnUserSelected(string.IsNullOrWhiteSpace(userId) ? null : userId);
+    }
+
+    protected override async Task<IDictionary<string, string>> LoadUsersAsync()
+    {
+        var result = await GetNewMediator().Send(new GetInitiativeObjectiveAssignees.Query(CurrentUser)
+        {
+            TenantId = SelectedTenantId
+        });
+
+        return result is { Succeeded: true, Data: not null }
+            ? result.Data.ToDictionary(a => a.Id, a => a.DisplayName)
+            : new Dictionary<string, string>();
     }
 
     private async Task OnVisualModeChanged(bool visualMode)
@@ -59,7 +72,7 @@ public partial class Initiatives
     private async Task OnTenantSelectedWithSave(string? tenantId)
     {
         var previousTenantId = SelectedTenantId;
-        OnTenantSelected(tenantId);
+        await OnTenantSelected(tenantId);
 
         if (previousTenantId != SelectedTenantId)
         {
@@ -78,7 +91,7 @@ public partial class Initiatives
 
     private async Task OnClearFilterWithSave()
     {
-        OnClearFilter();
+        await OnClearFilter();
         _initiativeFilter = null;
         await SaveSessionState();
     }

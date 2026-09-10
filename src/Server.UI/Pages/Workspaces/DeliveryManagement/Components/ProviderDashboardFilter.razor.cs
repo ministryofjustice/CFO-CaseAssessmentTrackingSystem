@@ -1,25 +1,28 @@
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Server.UI.Components.Identity;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components;
 
 /// <summary>
 /// Tenant + user drill-down selectors for the Provider workspace dashboards, following the same
-/// dialog-driven pattern as the Participants list. Rendered only for staff who may filter; the user
-/// picker is scoped to the selected tenant so drilling down narrows the choices.
+/// dialog-driven pattern as the Participants list. Rendered only for staff who may filter. Each
+/// calling page supplies its own tenant-scoped <see cref="Users"/> candidate list, computed via a
+/// dedicated query matching that page's own underlying data (e.g. participant owners vs. activity
+/// owners vs. payment support workers) — this component does not derive the list itself, since a
+/// single "all tenant users" or "one generic query" doesn't fit every dashboard.
 /// </summary>
 public partial class ProviderDashboardFilter
 {
-    [Inject]
-    private IUserService UserService { get; set; } = null!;
-
     [Inject]
     private ITenantService TenantService { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public UserProfile CurrentUser { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public IDictionary<string, string> Users { get; set; } = new Dictionary<string, string>();
 
     [Parameter]
     public string? SelectedTenantId { get; set; }
@@ -39,7 +42,13 @@ public partial class ProviderDashboardFilter
     [Parameter]
     public bool ShowUser { get; set; }= true;
 
-    private IDictionary<string, string> _users = new Dictionary<string, string>();
+    /// <summary>
+    /// Label shown when no user is selected. Defaults to "All Users", but pages whose picker
+    /// lists something other than users (e.g. Initiatives' assignees) can override it.
+    /// </summary>
+    [Parameter]
+    public string AllUsersLabel { get; set; } = "All Users";
+
     private IDictionary<string, string> _tenants = new Dictionary<string, string>();
 
     private string TenantLabel =>
@@ -49,18 +58,12 @@ public partial class ProviderDashboardFilter
 
     private string UserLabel =>
         string.IsNullOrEmpty(SelectedUserId)
-            ? "All Users"
-            : _users.TryGetValue(SelectedUserId, out var name) ? name : SelectedUserId;
+            ? AllUsersLabel
+            : Users.TryGetValue(SelectedUserId, out var name) ? name : SelectedUserId;
 
-    protected override void OnInitialized()
-    {
-        _users = UserService.DataSource
-            .Where(d => d.TenantId!.StartsWith(CurrentUser.TenantId!))
-            .ToDictionary(a => a.Id, e => e.DisplayName);
-
+    protected override void OnInitialized() =>
         _tenants = TenantService.GetVisibleTenants(CurrentUser.TenantId!)
             .ToDictionary(k => k.Id, k => k.Name);
-    }
 
     private async Task ShowTenantDialog()
     {
@@ -83,7 +86,8 @@ public partial class ProviderDashboardFilter
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", GetEffectiveUserProfile() }
+            { "CurrentUser", GetEffectiveUserProfile() },
+            { "Filter", (Func<ApplicationUserDto, bool>)(u => Users.ContainsKey(u.Id)) }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
