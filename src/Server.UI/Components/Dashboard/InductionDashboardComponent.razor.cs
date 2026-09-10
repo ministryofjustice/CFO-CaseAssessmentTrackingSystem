@@ -11,10 +11,10 @@ public partial class InductionDashboardComponent
     public DateRange? DateRange { get; set; }
 
     [Parameter]
-    public string UserId { get; set; } = null!;    
+    public string? UserId { get; set; }    
     
     [Parameter]
-    public string TenantId { get; set; } = null!;
+    public string? TenantId { get; set; }
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }

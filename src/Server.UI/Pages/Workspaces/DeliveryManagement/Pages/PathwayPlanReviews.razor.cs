@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages;
@@ -17,11 +18,11 @@ public partial class PathwayPlanReviews
 
         if (cached is { Succeeded: true, Data: { } sd })
         {
-            RestoreState(sd.VisualMode, sd.ShowOverdueOnly, sd.TenantId, sd.UserId);
+            await RestoreState(sd.VisualMode, sd.ShowOverdueOnly, sd.TenantId, sd.UserId);
         }
     }
 
-    private void RestoreState(bool visualMode, bool showOverdueOnly, string? tenantId, string? userId)
+    private async Task RestoreState(bool visualMode, bool showOverdueOnly, string? tenantId, string? userId)
     {
         VisualMode = visualMode;
         _showOverdueOnly = showOverdueOnly;
@@ -31,8 +32,20 @@ public partial class PathwayPlanReviews
             return;
         }
 
-        OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
+        await OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
         OnUserSelected(string.IsNullOrWhiteSpace(userId) ? null : userId);
+    }
+
+    protected override async Task<IDictionary<string, string>> LoadUsersAsync()
+    {
+        var result = await GetNewMediator().Send(new GetPathwayPlanAssignees.Query(CurrentUser)
+        {
+            TenantId = SelectedTenantId
+        });
+
+        return result is { Succeeded: true, Data: not null }
+            ? result.Data.ToDictionary(a => a.Id, a => a.DisplayName)
+            : new Dictionary<string, string>();
     }
 
     private async Task OnVisualModeChanged(bool visualMode)
@@ -49,7 +62,7 @@ public partial class PathwayPlanReviews
 
     private async Task OnTenantSelectedWithSave(string? tenantId)
     {
-        OnTenantSelected(tenantId);
+        await OnTenantSelected(tenantId);
         await SaveSessionState();
     }
 
@@ -61,7 +74,7 @@ public partial class PathwayPlanReviews
 
     private async Task OnClearFilterWithSave()
     {
-        OnClearFilter();
+        await OnClearFilter();
         await SaveSessionState();
     }
 

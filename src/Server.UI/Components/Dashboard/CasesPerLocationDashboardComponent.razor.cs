@@ -6,9 +6,9 @@ namespace Cfo.Cats.Server.UI.Components.Dashboard;
 public partial class CasesPerLocationDashboardComponent
 {
     [Parameter]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
     [Parameter]
-    public string TenantId { get; set; } = null!;
+    public string? TenantId { get; set; }
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }

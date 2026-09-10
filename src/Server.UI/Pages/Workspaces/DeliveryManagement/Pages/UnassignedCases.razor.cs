@@ -21,7 +21,7 @@ public partial class UnassignedCases
 
         if (cached is { Succeeded: true, Data: { } sd })
         {
-            RestoreState(
+            await RestoreState(
                 sd.VisualMode,
                 sd.IncludeTransferIn,
                 sd.Keyword,
@@ -32,14 +32,7 @@ public partial class UnassignedCases
         }
     }
 
-    private void RestoreState(
-        bool visualMode,
-        bool includeTransferIn,
-        string? keyword,
-        int? enrolmentStatus,
-        int? locationId,
-        string? tenantId,
-        string? userId)
+    private async Task RestoreState(bool visualMode, bool includeTransferIn, string? keyword, int? enrolmentStatus, int? locationId, string? tenantId, string? userId)
     {
         VisualMode = visualMode;
         _includeTransferIn = includeTransferIn;
@@ -52,7 +45,7 @@ public partial class UnassignedCases
             return;
         }
 
-        OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
+        await OnTenantSelected(string.IsNullOrWhiteSpace(tenantId) ? null : tenantId);
         OnUserSelected(string.IsNullOrWhiteSpace(userId) ? null : userId);
     }
 
@@ -73,7 +66,7 @@ public partial class UnassignedCases
 
     private async Task OnTenantSelectedWithSave(string? tenantId)
     {
-        OnTenantSelected(tenantId);
+        await OnTenantSelected(tenantId);
         await SaveSessionState();
     }
 
@@ -85,7 +78,7 @@ public partial class UnassignedCases
 
     private async Task OnClearFilterWithSave()
     {
-        OnClearFilter();
+        await OnClearFilter();
         await SaveSessionState();
     }
 

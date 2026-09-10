@@ -61,6 +61,13 @@ public abstract class ProviderDashboardBase : CatsComponentBase
     /// </summary>
     protected string SelectionKey => $"{EffectiveUserId}|{EffectiveTenantId}";
 
+    /// <summary>
+    /// Candidate users for the drill-down user picker. Populated by <see cref="LoadUsersAsync"/>,
+    /// which each dashboard page overrides with its own tenant-scoped query matching its own
+    /// underlying data (there's no single "assignee" concept shared across all dashboards).
+    /// </summary>
+    protected IDictionary<string, string> Users { get; private set; } = new Dictionary<string, string>();
+
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
@@ -75,16 +82,18 @@ public abstract class ProviderDashboardBase : CatsComponentBase
 
         // Staff who can filter start unfiltered ("All Tenants"), mirroring the Participants list,
         // and pick a tenant or drill into a specific user from the header.
+        await ReloadUsersAsync();
     }
 
     /// <summary>
     /// Applies a tenant selection from the drill-down header. Changing the tenant drills back up,
     /// clearing any user we had drilled into.
     /// </summary>
-    protected void OnTenantSelected(string? tenantId)
+    protected async Task OnTenantSelected(string? tenantId)
     {
         SelectedTenantId = tenantId;
         SelectedUserId = null;
+        await ReloadUsersAsync();
     }
 
     /// <summary>
@@ -95,9 +104,22 @@ public abstract class ProviderDashboardBase : CatsComponentBase
     /// <summary>
     /// Clears the drill-down back to All Tenants / All Users, mirroring the Participants list.
     /// </summary>
-    protected void OnClearFilter()
+    protected async Task OnClearFilter()
     {
         SelectedTenantId = null;
         SelectedUserId = null;
+        await ReloadUsersAsync();
     }
+
+    protected async Task ReloadUsersAsync() =>
+        Users = CanFilter ? await LoadUsersAsync() : new Dictionary<string, string>();
+
+    /// <summary>
+    /// Loads the candidate users for this dashboard's picker, scoped to <see cref="EffectiveTenantId"/>
+    /// or <see cref="SelectedTenantId"/> as appropriate. Pages that show the user filter must override
+    /// this with their own dedicated query; pages without a user filter (e.g. Unassigned Cases) can
+    /// leave the default empty result.
+    /// </summary>
+    protected virtual Task<IDictionary<string, string>> LoadUsersAsync() =>
+        Task.FromResult<IDictionary<string, string>>(new Dictionary<string, string>());
 }

@@ -13,11 +13,13 @@
     @if (CanFilter)
     {
         <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 Users="@Users"
                                  SelectedTenantId="@SelectedTenantId"
                                  SelectedUserId="@SelectedUserId"
                                  TenantSelected="OnTenantSelectedWithSave"
                                  UserSelected="OnUserSelectedWithSave"
-                                 ClearRequested="OnClearFilterWithSave" />
+                                 ClearRequested="OnClearFilterWithSave"
+                                 AllUsersLabel="All Assignees" />
     }
 </MudStack>
 

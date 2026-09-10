@@ -19,6 +19,7 @@
     @if (CanFilter)
     {
         <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 Users="@Users"
                                  SelectedTenantId="@SelectedTenantId"
                                  SelectedUserId="@SelectedUserId"
                                  TenantSelected="OnTenantSelectedWithSave"
