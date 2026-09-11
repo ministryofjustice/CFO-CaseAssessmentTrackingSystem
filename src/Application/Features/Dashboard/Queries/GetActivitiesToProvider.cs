@@ -5,13 +5,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
 public static class GetActivitiesToProvider
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.ProviderFeedback)]
     public class Query : IQuery<Result<ActivitiesToProviderDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public string? UserId { get; set; }
         public string? TenantId { get; set; }
+        public bool IncludeInternalData { get; set; } = true;
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -21,6 +22,7 @@ public static class GetActivitiesToProvider
         public async Task<Result<ActivitiesToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
+            var includeInternalData = request.IncludeInternalData && request.CurrentUser.HasInternalRole();
 
             var query = from pfa in context.ProviderFeedbackActivities.AsNoTracking()
                 where pfa.FeedbackType == ((int)FeedbackType.Returned)
@@ -42,12 +44,12 @@ public static class GetActivitiesToProvider
                 {
                     ContractName = con.Description,
                     ParticipantId = pfa.ParticipantId,
-                    Queue = pfa.Queue,
+                    Queue = includeInternalData ? pfa.Queue : null,
                     ActivityType = a.Type,
                     SupportWorker = sw.DisplayName,
-                    CfoUser = cfoUser.DisplayName,
-                    PqaSubmittedDate = (DateTime?)pfa.PqaSubmittedDate,
-                    PqaUser = submittedByUser.DisplayName,
+                    CfoUser = includeInternalData ? cfoUser.DisplayName : null,
+                    PqaSubmittedDate = includeInternalData ? (DateTime?)pfa.PqaSubmittedDate : null,
+                    PqaUser = includeInternalData ? submittedByUser.DisplayName : null,
                     ReturnReason = pfa.ReturnReason,
                     ReturnedDate = pfa.ActionDate,
                     Message = pfa.Message ?? ""
@@ -57,7 +59,7 @@ public static class GetActivitiesToProvider
                             .AsNoTracking()
                             .ToArrayAsync(cancellationToken);
 
-            return new ActivitiesToProviderDto(result);
+            return new ActivitiesToProviderDto(result, includeInternalData);
 
         }
 
@@ -65,7 +67,7 @@ public static class GetActivitiesToProvider
 
     public record ActivitiesToProviderDto
     {
-        public ActivitiesToProviderDto(ActivitiesTabularData[] tabularData)
+        public ActivitiesToProviderDto(ActivitiesTabularData[] tabularData, bool includeInternalData = true)
         {
             TabularData = tabularData;
             
@@ -91,6 +93,7 @@ public static class GetActivitiesToProvider
                 {
                     ContractName = g.Key.ContractName,
                     ActivityType = g.Key.ActivityType,
+                    Count = g.Count(),
                     EscalationQueue = g.Count(x => x.Queue == "Escalation"),
                     QA2Queue = g.Count(x => x.Queue == "QA2")
                 })
@@ -111,10 +114,24 @@ public static class GetActivitiesToProvider
                     {
                         ContractName = contract,
                         ActivityType = activityType,
+                        Count = 0,
                         EscalationQueue = 0,
                         QA2Queue = 0
                     });
                 }
+            }
+
+            if (!includeInternalData)
+            {
+                completeData = completeData
+                    .GroupBy(td => new { td.ContractName, td.ActivityType })
+                    .Select(g => new ActivitiesChartData
+                    {
+                        ContractName = g.Key.ContractName,
+                        ActivityType = g.Key.ActivityType,
+                        Count = g.Sum(x => x.Count)
+                    })
+                    .ToList();
             }
             
             ChartData = completeData.ToArray();

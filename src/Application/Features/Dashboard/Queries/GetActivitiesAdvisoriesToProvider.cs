@@ -5,13 +5,14 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
 public static class GetActivitiesAdvisoriesToProvider
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.ProviderFeedback)]
     public class Query : IQuery<Result<ActivitiesAdvisoriesToProviderDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public string? UserId { get; set; }
         public string? TenantId { get; set; }
+        public bool IncludeInternalData { get; set; } = true;
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -21,6 +22,7 @@ public static class GetActivitiesAdvisoriesToProvider
         public async Task<Result<ActivitiesAdvisoriesToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
+            var includeInternalData = request.IncludeInternalData && request.CurrentUser.HasInternalRole();
 
             var query = from pfa in context.ProviderFeedbackActivities.AsNoTracking()
                 where pfa.Message != null
@@ -43,12 +45,12 @@ public static class GetActivitiesAdvisoriesToProvider
                 {
                     ContractName = con.Description,
                     ParticipantId = pfa.ParticipantId,
-                    Queue = pfa.Queue,
+                    Queue = includeInternalData ? pfa.Queue : null,
                     ActivityType = a.Type,
                     SupportWorker = sw.DisplayName,
-                    CfoUser = cfoUser.DisplayName,
-                    PqaSubmittedDate = (DateTime?)pfa.PqaSubmittedDate,
-                    PqaUser = submittedByUser.DisplayName,
+                    CfoUser = includeInternalData ? cfoUser.DisplayName : null,
+                    PqaSubmittedDate = includeInternalData ? (DateTime?)pfa.PqaSubmittedDate : null,
+                    PqaUser = includeInternalData ? submittedByUser.DisplayName : null,
                     AdvisoryDate = pfa.ActionDate,
                     FeedbackType = pfa.FeedbackType,
                     Message = pfa.Message ?? ""
@@ -58,7 +60,7 @@ public static class GetActivitiesAdvisoriesToProvider
                             .AsNoTracking()
                             .ToArrayAsync(cancellationToken);
 
-            return new ActivitiesAdvisoriesToProviderDto(result.ToList());
+            return new ActivitiesAdvisoriesToProviderDto(result.ToList(), includeInternalData);
 
         }
 
@@ -66,7 +68,7 @@ public static class GetActivitiesAdvisoriesToProvider
 
     public record ActivitiesAdvisoriesToProviderDto
     {
-        public ActivitiesAdvisoriesToProviderDto(List<ActivitiesAdvisoriesTabularData> tabularData)
+        public ActivitiesAdvisoriesToProviderDto(List<ActivitiesAdvisoriesTabularData> tabularData, bool includeInternalData = true)
         {
             TabularData = tabularData;
             
@@ -78,8 +80,9 @@ public static class GetActivitiesAdvisoriesToProvider
                 {
                     ContractName = g.Key.ContractName,
                     ActivityType = g.Key.ActivityType,
-                    EscalationQueue = g.Count(x => x.Queue == "Escalation"),
-                    QA2Queue = g.Count(x => x.Queue == "QA2")
+                    Total = g.Count(),
+                    EscalationQueue = includeInternalData ? g.Count(x => x.Queue == "Escalation") : 0,
+                    QA2Queue = includeInternalData ? g.Count(x => x.Queue == "QA2") : 0
                 })
                 .ToArray();
         }
@@ -108,6 +111,7 @@ public static class GetActivitiesAdvisoriesToProvider
     {
         public string? ContractName { get; set; }
         public ActivityType? ActivityType { get; set; }
+        public int Total { get; set; }
         public int EscalationQueue { get; set; }
         public int QA2Queue { get; set; }
     }

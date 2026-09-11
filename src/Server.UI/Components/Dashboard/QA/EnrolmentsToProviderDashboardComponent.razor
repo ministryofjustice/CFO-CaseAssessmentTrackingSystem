@@ -23,20 +23,23 @@
                       Height="650" Width="@( "100%" )">
 
             <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
-                                        Items='Data.ChartData.Where(x => x.Queue == "Escalation")'
+                                        Items='IncludeInternalColumns ? Data.ChartData.Where(x => x.Queue == "Escalation") : Data.ChartData'
                                         SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="Escalation"
+                                        Name='@(IncludeInternalColumns ? "Escalation" : "Returns")'
                                         XValue="@(e => e.ContractName)"
                                         YValue="@(e => e.Count)"
                                         ShowDataLabels="true" />
 
-            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
-                                        Items='Data.ChartData.Where(x => x.Queue == "QA2")'
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="QA2"
-                                        XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.Count)"
-                                        ShowDataLabels="true" />
+            @if (IncludeInternalColumns)
+            {
+                <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
+                                            Items='Data.ChartData.Where(x => x.Queue == "QA2")'
+                                            SeriesType="ApexCharts.SeriesType.Bar"
+                                            Name="QA2"
+                                            XValue="@(e => e.ContractName)"
+                                            YValue="@(e => e.Count)"
+                                            ShowDataLabels="true" />
+            }
 
 		</ApexCharts.ApexChart>
 	}
@@ -49,11 +52,14 @@
                         Contract
                     </MudTableSortLabel>
                 </MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.Queue!)">
-                        Queue
-                    </MudTableSortLabel>
-                </MudTh>
+                @if (IncludeInternalColumns)
+                {
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.Queue!)">
+                            Queue
+                        </MudTableSortLabel>
+                    </MudTh>
+                }
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ParticipantId!)">
                         Participant
@@ -64,21 +70,24 @@
                         Support Worker
                     </MudTableSortLabel>
                 </MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaUser!)">
-                        Provider QA
-                    </MudTableSortLabel>
-                </MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.CfoUser!)">
-                        CFO User
-                    </MudTableSortLabel>
-                </MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaSubmittedDate!)">
-                        PQA Submitted Date
-                    </MudTableSortLabel>
-                </MudTh>
+                @if (IncludeInternalColumns)
+                {
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaUser!)">
+                            Provider QA
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.CfoUser!)">
+                            CFO User
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaSubmittedDate!)">
+                            PQA Submitted Date
+                        </MudTableSortLabel>
+                    </MudTh>
+                }
 				<MudTh>
                     <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ReturnReason!)">
                         Return Reason
@@ -93,12 +102,18 @@
 			</HeaderContent>
 			<RowTemplate>
                 <MudTd DataLabel="Contract">@context.ContractName</MudTd>
-				<MudTd DataLabel="Queue">@context.Queue</MudTd>
+				@if (IncludeInternalColumns)
+                {
+                    <MudTd DataLabel="Queue">@context.Queue</MudTd>
+                }
 				<MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
 				<MudTd DataLabel="Support Worker">@context.SupportWorker</MudTd>
-				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
-				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
-				<MudTd DataLabel="PQA Submitted Date">@context.PqaSubmittedDate</MudTd>
+				@if (IncludeInternalColumns)
+                {
+                    <MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
+                    <MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
+                    <MudTd DataLabel="PQA Submitted Date">@context.PqaSubmittedDate</MudTd>
+                }
 				<MudTd DataLabel="Return Reason">@context.ReturnReason</MudTd>
 				<MudTd DataLabel="Returned Date">@context.ReturnedDate</MudTd>
 				<MudTd DataLabel="Message">@context.Message</MudTd>
