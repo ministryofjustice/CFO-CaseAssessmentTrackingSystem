@@ -27,6 +27,7 @@ public partial class LatestEngagementsByLocation
 
     private IDictionary<int, string> _locations = new Dictionary<int, string>();
     private string[] _engagementTypes = [];
+    private HashSet<string> _engagedWithNames = [];
 
     // Sentinel-backed filter selections: 0 / empty string represent "All".
     private int _selectedLocationId;
@@ -101,7 +102,29 @@ public partial class LatestEngagementsByLocation
             }
         }
 
+        await LoadEngagedWithNamesAsync();
         await OnRefresh();
+    }
+
+    /// <summary>
+    /// Loads the distinct "engaged with" names actually recorded for cases in the current
+    /// tenant/case scope, so the picker only offers people who really have engagements rather
+    /// than every user in the tenant.
+    /// </summary>
+    private async Task LoadEngagedWithNamesAsync()
+    {
+        var result = await GetNewMediator().Send(new GetEngagementAssignees.Query(CurrentUser)
+        {
+            JustMyCases = Query.JustMyCases,
+            TenantId = Query.TenantId,
+            LocationId = Query.LocationId,
+            EngagementType = Query.EngagementType,
+            HideRecentEngagements = Query.HideRecentEngagements
+        });
+
+        _engagedWithNames = result is { Succeeded: true, Data: not null }
+            ? [.. result.Data]
+            : [];
     }
 
     private ApexChartOptions<LocationEngagementSummaryDto> BuildChartOptions() => new()
@@ -259,6 +282,7 @@ public partial class LatestEngagementsByLocation
     private async Task OnHideRecentChanged(bool value)
     {
         Query.HideRecentEngagements = value;
+        await LoadEngagedWithNamesAsync();
         await SaveSessionState();
         await OnRefresh();
     }
@@ -267,6 +291,7 @@ public partial class LatestEngagementsByLocation
     {
         _selectedLocationId = locationId;
         Query.LocationId = locationId == 0 ? null : locationId;
+        await LoadEngagedWithNamesAsync();
         await SaveSessionState();
         await OnRefresh();
     }
@@ -286,6 +311,7 @@ public partial class LatestEngagementsByLocation
     {
         _selectedEngagementType = engagementType;
         Query.EngagementType = string.IsNullOrEmpty(engagementType) ? null : engagementType;
+        await LoadEngagedWithNamesAsync();
         await SaveSessionState();
         await OnRefresh();
     }
@@ -299,6 +325,7 @@ public partial class LatestEngagementsByLocation
             Query.TenantId = tenant.TenantId;
             _selectedTenantName = tenant.DisplayName;
             _selectedTenantId = tenant.TenantId;
+            await LoadEngagedWithNamesAsync();
             await SaveSessionState();
             await OnRefresh();
         }
@@ -361,6 +388,7 @@ public partial class LatestEngagementsByLocation
         Query.EngagedWith = null;
         Query.HideRecentEngagements = false;
 
+        await LoadEngagedWithNamesAsync();
         await SaveSessionState();
         await OnRefresh();
     }
@@ -382,7 +410,10 @@ public partial class LatestEngagementsByLocation
     
     private async Task ShowUserDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(GetEffectiveUserProfile(), "Select Engaged With User");
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(
+            GetEffectiveUserProfile(),
+            "Select Engaged With User",
+            filter: u => _engagedWithNames.Contains(u.DisplayName));
 
         if (user is not null)
         {

@@ -1,9 +1,9 @@
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
@@ -34,9 +34,6 @@ public partial class Activities
     public CatsSessionStorage SessionStorage { get; set; } = null!;
 
     [Inject]
-    public IUserService UserService { get; set; } = null!;
-
-    [Inject]
     public ITenantService TenantService { get; set; } = null!;
 
     [CascadingParameter]
@@ -51,6 +48,7 @@ public partial class Activities
 
     private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<string, string> _tenants = new Dictionary<string, string>();
+    private string? _usersFilterSignature;
 
     private ActivitiesQuickFilter _currentFilter = ActivitiesQuickFilter.All;
 
@@ -75,10 +73,6 @@ public partial class Activities
 
         var state = await AuthState;
         Query.IncludeInternalNotes = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
-
-        _users = UserService.DataSource
-            .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
-            .ToDictionary(a => a.Id, e => e.DisplayName);
 
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
             .ToDictionary(k => k.Id, k => k.Name);
@@ -127,6 +121,14 @@ public partial class Activities
     private async Task OnRefresh()
     {
         Query.UserProfile = UserProfile;
+
+        var signature = BuildUsersFilterSignature();
+        if (signature != _usersFilterSignature)
+        {
+            await LoadUsersAsync();
+            _usersFilterSignature = signature;
+        }
+
         var result = await Service.Send(Query);
 
         if (result is { Succeeded: true, Data: not null })
@@ -143,6 +145,34 @@ public partial class Activities
         }
 
         await SessionStorage.SetAsync(ActivitiesSessionData.FromQuery(Query, Tabular));
+    }
+
+    private string BuildUsersFilterSignature()
+        => string.Join('|',
+            Query.Keyword,
+            Query.TenantId,
+            Query.LocationId,
+            Query.Status,
+            Query.TypeFilter,
+            Query.ReturnedWithinDays,
+            Query.ApprovedWithinDays);
+
+    private async Task LoadUsersAsync()
+    {
+        var assigneesResult = await Service.Send(new GetActivityAssignees.Query(UserProfile)
+        {
+            Keyword = Query.Keyword,
+            TenantId = Query.TenantId,
+            LocationId = Query.LocationId,
+            Status = Query.Status,
+            TypeFilter = Query.TypeFilter,
+            ReturnedWithinDays = Query.ReturnedWithinDays,
+            ApprovedWithinDays = Query.ApprovedWithinDays
+        });
+
+        _users = assigneesResult is { Succeeded: true, Data: not null }
+            ? assigneesResult.Data.ToDictionary(a => a.Id, e => e.DisplayName)
+            : new Dictionary<string, string>();
     }
 
     private async Task TabularChanged(bool? tabular)
@@ -246,7 +276,11 @@ public partial class Activities
 
     private async Task ShowSubmittedByDialog()
     {
-        var parameters = new DialogParameters<SelectUserDialog> { { "CurrentUser", UserProfile } };
+        var parameters = new DialogParameters<SelectUserDialog>
+        {
+            { "CurrentUser", UserProfile },
+            { "Filter", (Func<ApplicationUserDto, bool>)(u => _users.ContainsKey(u.Id)) }
+        };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
         var dialog = await DialogService.ShowAsync<SelectUserDialog>("Select a user", parameters, options);
         var result = await dialog.Result;

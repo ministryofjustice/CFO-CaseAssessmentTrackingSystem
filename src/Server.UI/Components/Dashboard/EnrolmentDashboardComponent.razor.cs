@@ -9,9 +9,9 @@ public partial class EnrolmentDashboardComponent
 {
     [EditorRequired, Parameter] public DateRange? DateRange { get; set; }
 
-    [Parameter] public string UserId { get; set; } = null!;
+    [Parameter] public string? UserId { get; set; }
 
-    [Parameter] public string TenantId { get; set; } = null!;
+    [Parameter] public string? TenantId { get; set; }
 
     [EditorRequired, Parameter] public bool VisualMode { get; set; }
 

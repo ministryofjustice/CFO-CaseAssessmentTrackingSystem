@@ -1,9 +1,9 @@
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
@@ -16,16 +16,14 @@ public partial class PqaList
     [CascadingParameter] private UserProfile UserProfile { get; set; } = null!;
 
     [Inject]
-    public IUserService UserService { get; set; } = null!;
-
-    [Inject]
     public ITenantService TenantService { get; set; } = null!;
 
     [Inject]
     public CatsSessionStorage SessionStorage { get; set; } = null!;
 
-    private IDictionary<string, string> _users = null!;
+    private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<string, string> _tenants = null!;
+    private string? _usersFilterSignature;
 
     private int _totalPages;
     private int _totalItems;
@@ -50,10 +48,6 @@ public partial class PqaList
 
     protected override async Task OnInitializedAsync()
     {
-        _users = UserService.DataSource
-            .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
-            .ToDictionary(a => a.Id, e => e.DisplayName);
-
         _tenants = TenantService.GetVisibleTenants(UserProfile.TenantId!)
             .ToDictionary(k => k.Id, k => k.Name);
 
@@ -76,7 +70,7 @@ public partial class PqaList
 
     private void OnRowClick(TableRowClickEventArgs<ActivityQueueEntryDto> args)
     {
-        if (args?.Item is not null)
+        if (args.Item is not null)
         {
             Navigation.NavigateTo($"/pages/workspace/deliverymanagement/activities/pqa/{args.Item.Id}");
         }
@@ -100,13 +94,13 @@ public partial class PqaList
         Query.TenantId = null;
         Query.ActivityTypeId = null;
         Query.OrderBy = "CommencedOn";
-        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.SortDirection = nameof(SortDirection.Ascending);
         Query.PageNumber = 1;
         Query.PageSize = 50;
         Query.Keyword = null;
     }
 
-    private Task OnSearch(string text)
+    private Task OnSearch(string? text)
     {
         Query.Keyword = text;
         return OnRefresh();
@@ -121,6 +115,14 @@ public partial class PqaList
         {
             _loading = true;
             Query.CurrentUser = UserProfile;
+
+            var signature = BuildUsersFilterSignature();
+            if (signature != _usersFilterSignature)
+            {
+                await LoadUsersAsync();
+                _usersFilterSignature = signature;
+            }
+
             var results = await Service.Send(Query);
             if (results is { Succeeded: true, Data: not null })
             {
@@ -140,6 +142,23 @@ public partial class PqaList
         {
             _loading = false;
         }
+    }
+
+    private string BuildUsersFilterSignature()
+        => string.Join('|', Query.Keyword, Query.TenantId, Query.ActivityTypeId);
+
+    private async Task LoadUsersAsync()
+    {
+        var assigneesResult = await Service.Send(new GetActivityPqaAssignees.Query(UserProfile)
+        {
+            Keyword = Query.Keyword,
+            TenantId = Query.TenantId,
+            ActivityTypeId = Query.ActivityTypeId
+        });
+
+        _users = assigneesResult is { Succeeded: true, Data: not null }
+            ? assigneesResult.Data.ToDictionary(a => a.Id, e => e.DisplayName)
+            : new Dictionary<string, string>();
     }
 
     private async Task ActivityTypeChanged(int? activityTypeId)
@@ -200,7 +219,8 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", UserProfile }
+            { "CurrentUser", UserProfile },
+            { "Filter", (Func<ApplicationUserDto, bool>)(u => _users.ContainsKey(u.Id)) }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -218,14 +238,14 @@ public partial class PqaList
     {
         if (Query.OrderBy == key)
         {
-            Query.SortDirection = Query.SortDirection == SortDirection.Ascending.ToString()
-                ? SortDirection.Descending.ToString()
-                : SortDirection.Ascending.ToString();
+            Query.SortDirection = Query.SortDirection == nameof(SortDirection.Ascending)
+                ? nameof(SortDirection.Descending)
+                : nameof(SortDirection.Ascending);
         }
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Ascending.ToString();
+            Query.SortDirection = nameof(SortDirection.Ascending);
         }
 
         await OnRefresh();
