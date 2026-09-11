@@ -287,7 +287,7 @@ public partial class ActivePRIs
 
     private async Task ShowCustodyWorkerDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Custody Support Worker");
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, "Select Custody Support Worker", showAllOption: !string.IsNullOrEmpty(Query.CustodySupportWorker), allOptionLabel: "All Custody Support Workers");
         
         if (user is not null)
         {
@@ -299,7 +299,7 @@ public partial class ActivePRIs
 
     private async Task ShowCommunityWorkerDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Community Support Worker");
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, "Select Community Support Worker", showAllOption: !string.IsNullOrEmpty(Query.CommunitySupportWorker), allOptionLabel: "All Community Support Workers");
         
         if (user is not null)
         {
@@ -311,7 +311,7 @@ public partial class ActivePRIs
 
     private async Task ShowRegionDialog()
     {
-        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile!, l => l.LocationType.IsHub == false && l.LocationType.IsCustody == false, title: "Select Expected Release Region");
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile!, l => l.LocationType.IsHub == false && l.LocationType.IsCustody == false, title: "Select Expected Release Region", showAllOption: Query.ExpectedReleaseRegionId.HasValue, allOptionLabel: "All Expected Release Regions");
         
         if (location is not null)
         {

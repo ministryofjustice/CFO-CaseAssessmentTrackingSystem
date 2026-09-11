@@ -162,7 +162,8 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", UserProfile! }
+            { "CurrentUser", UserProfile! },
+            { "ShowAllOption", !string.IsNullOrEmpty(Query.TenantId) }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -171,7 +172,7 @@ public partial class PqaList
 
         if (result is { Canceled: false, Data: SelectedTenant tenant })
         {
-            Query.TenantId = tenant.TenantId;
+            Query.TenantId = string.IsNullOrEmpty(tenant.TenantId) ? null : tenant.TenantId;
             await OnRefresh();
         }
     }
@@ -180,7 +181,8 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", UserProfile! }
+            { "CurrentUser", UserProfile! },
+            { "ShowAllOption", !string.IsNullOrEmpty(Query.SupportWorkerId) }
         };
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
@@ -189,7 +191,7 @@ public partial class PqaList
 
         if (result is { Canceled: false, Data: SelectedUser user })
         {
-            Query.SupportWorkerId = user.UserId;
+            Query.SupportWorkerId = string.IsNullOrEmpty(user.UserId) ? null : user.UserId;
             await OnRefresh();
         }
     }

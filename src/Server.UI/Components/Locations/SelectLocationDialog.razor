@@ -4,12 +4,12 @@
 <MudDialog>
     <DialogContent>
         <div style="min-width: 600px">
-            <LocationSelectComponent ValueChanged="dto => { OnLocationChanged(dto); }" TenantId="@(TenantId ?? CurrentUser.TenantId)" LocationFilter="Filter" />
+            <LocationSelectComponent ValueChanged="dto => { OnLocationChanged(dto); }" TenantId="@(TenantId ?? CurrentUser.TenantId)" LocationFilter="Filter" ShowAllOption="@ShowAllOption" AllOptionLabel="@AllOptionLabel" />
         </div>
     </DialogContent>
     <DialogActions>
         <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
-		<MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" Loading="_saving" OnClick="Submit" Disabled="@(SelectedLocation == null)">@ConstantString.Ok</MudLoadingButton>
+		<MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" Loading="_saving" OnClick="Submit" Disabled="@(!_hasSelection)">@ConstantString.Ok</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
@@ -27,19 +27,35 @@
     [Parameter]
     public Func<LocationDto, bool>? Filter { get; set; } = null;
 
+    [Parameter]
+    public bool ShowAllOption { get; set; }
+
+    [Parameter]
+    public string AllOptionLabel { get; set; } = "All Locations";
+
     private bool _saving = false;
 
-    private void OnLocationChanged(LocationDto? dto) => SelectedLocation = dto;
+    private bool _hasSelection = false;
+
+    private LocationDto EmptyLocation => new()
+    {
+        Id = 0,
+        Name = AllOptionLabel,
+        ContractName = string.Empty,
+        GenderProvision = Cfo.Cats.Domain.Common.Enums.GenderProvision.Any,
+        LocationType = Cfo.Cats.Domain.Common.Enums.LocationType.Unknown
+    };
+
+    private void OnLocationChanged(LocationDto? dto)
+    {
+        SelectedLocation = dto ?? EmptyLocation;
+        _hasSelection = true;
+    }
 
     private LocationDto? SelectedLocation { get; set; }
 
     private void Submit()
     {
-        if(SelectedLocation == null)
-        {
-            Snackbar.Add("You must select a location", Severity.Warning);
-            return;
-        }
         _saving = true;
         Dialog.Close(DialogResult.Ok(SelectedLocation));
     }

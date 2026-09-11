@@ -13,7 +13,15 @@ public partial class SelectTenantDialog
     [Parameter]
     public UserProfile CurrentUser { get; set; } = null!;
 
-    private SelectedTenant SelectedTenant { get; set; } = new SelectedTenant(string.Empty, string.Empty);
+    [Parameter]
+    public bool ShowAllOption { get; set; }
+
+    [Parameter]
+    public string AllOptionLabel { get; set; } = "All Tenants";
+
+    private bool _hasSelection = false;
+
+    private SelectedTenant SelectedTenant { get; set; } = new(string.Empty, string.Empty);
 
     private void Submit()
     {
@@ -21,11 +29,11 @@ public partial class SelectTenantDialog
         Dialog.Close(DialogResult.Ok(SelectedTenant));
     }
 
-    private void OnTenantSelectedChanged(TenantDto? dto) => SelectedTenant = SelectedTenant with
+    private void OnTenantSelectedChanged(TenantDto? dto)
     {
-        TenantId = dto?.Id ?? string.Empty,
-        DisplayName = dto?.Name ?? string.Empty
-    };
+        SelectedTenant = new SelectedTenant(dto?.Id ?? string.Empty, dto?.Name ?? string.Empty);
+        _hasSelection = true;
+    }
 }
 
 public record SelectedTenant(string TenantId, string DisplayName);
