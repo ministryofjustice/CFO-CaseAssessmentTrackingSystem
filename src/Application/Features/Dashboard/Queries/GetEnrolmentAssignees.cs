@@ -14,6 +14,8 @@ public static class GetEnrolmentAssignees
     {
         public UserProfile CurrentUser { get; } = currentUser;
         public string? TenantId { get; set; }
+        public required DateTime StartDate { get; init; }
+        public required DateTime EndDate { get; init; }
     }
 
     public class AssigneeDto
@@ -38,7 +40,10 @@ public static class GetEnrolmentAssignees
             var assignees = await (
                     from mi in context.EnrolmentPayments
                     join u in context.Users on mi.SupportWorker equals u.Id
-                    where mi.EligibleForPayment && mi.TenantId.StartsWith(tenantId)
+                    where mi.EligibleForPayment
+                       && mi.TenantId.StartsWith(tenantId)
+                       && mi.Approved >= request.StartDate
+                       && mi.Approved <= request.EndDate
                     select new AssigneeDto
                     {
                         Id = u.Id,

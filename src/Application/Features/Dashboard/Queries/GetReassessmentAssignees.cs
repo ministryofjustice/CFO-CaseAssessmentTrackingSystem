@@ -14,6 +14,8 @@ public static class GetReassessmentAssignees
     {
         public UserProfile CurrentUser { get; } = currentUser;
         public string? TenantId { get; set; }
+        public required DateTime StartDate { get; init; }
+        public required DateTime EndDate { get; init; }
     }
 
     public class AssigneeDto
@@ -38,7 +40,10 @@ public static class GetReassessmentAssignees
             var assignees = await (
                     from mi in context.ReassessmentPayments
                     join u in context.Users on mi.SupportWorker equals u.Id
-                    where mi.EligibleForPayment && mi.TenantId.StartsWith(tenantId)
+                    where mi.EligibleForPayment
+                       && mi.TenantId.StartsWith(tenantId)
+                       && mi.PaymentPeriod >= request.StartDate
+                       && mi.PaymentPeriod < request.EndDate.AddDays(1).Date
                     select new AssigneeDto
                     {
                         Id = u.Id,
