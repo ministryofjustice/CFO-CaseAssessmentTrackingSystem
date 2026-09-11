@@ -19,7 +19,7 @@
 
 @if (Data is not null)
 {
-    <MudDataGrid Hover="true" Dense="true" Items="@Data" Striped="true">
+    <MudDataGrid @ref="_dataGrid" Hover="true" Dense="true" Items="@Data" Striped="true">
         <Columns>
             <HierarchyColumn />
             <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.Created">

@@ -6,12 +6,30 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class PathwayPlanReviewHistory
 {
+    private MudDataGrid<PathwayPlanReviewHistoryDto>? _dataGrid;
+
     protected override IQuery<Result<PathwayPlanReviewHistoryDto[]>> CreateQuery()
         => new GetPathwayPlanReviewHistory.Query()
         {
             CurrentUser = CurrentUser,
             ParticipantId = ParticipantId
         };
+
+    public async Task ExpandAll()
+    {
+        if (_dataGrid is not null)
+        {
+            await _dataGrid.ExpandAllHierarchy();
+        }
+    }
+
+    public async Task CollapseAll()
+    {
+        if (_dataGrid is not null)
+        {
+            await _dataGrid.CollapseAllHierarchy();
+        }
+    }
 
     private async Task EditPathwayPlanReview(PathwayPlanReviewHistoryDto pathwayPlanReview)
     {

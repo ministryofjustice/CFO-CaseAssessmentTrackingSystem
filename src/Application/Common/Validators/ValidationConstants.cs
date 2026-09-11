@@ -18,6 +18,7 @@ public static class ValidationConstants
     public const string NotesMessage = "{0} must contain only letters, numbers, spaces and common punctuation";
 
     public const int NotesLength = 1000;
+    public const int NotesLength_Outcomes = 5000;
 
     public const string Guid = @"^\{?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\}?$";
     public const string GuidMessage = "{0} must contain a valid Guid";

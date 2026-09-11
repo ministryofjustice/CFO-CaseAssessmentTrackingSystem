@@ -25,6 +25,12 @@ public partial class Objective
     public required bool HideCompletedTasks { get; set; }
 
     [Parameter]
+    public bool Expanded { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<bool> ExpandedChanged { get; set; }
+
+    [Parameter]
     public EventCallback OnChange { get; set; }
 
     private async Task Complete()

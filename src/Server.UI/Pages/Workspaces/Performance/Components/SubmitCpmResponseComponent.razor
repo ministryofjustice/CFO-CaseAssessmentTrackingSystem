@@ -5,7 +5,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-@if (Status != DipSampleStatus.Reviewed)
+@if (Status != DipSampleStatus.AwaitingReview && Status != DipSampleStatus.Reviewed)
 {
     <MudAlert Severity="Severity.Info">
         This information is now readonly because the sample is at the @Status.Name stage.
@@ -52,8 +52,8 @@
                 <MudTextField @bind-Value="@Command.Comments"
                               For="@(() => Command.Comments)"
                               Lines="5"
-                              MaxLength=@ValidationConstants.NotesLength
-                              Counter=@ValidationConstants.NotesLength
+                              MaxLength=@ValidationConstants.NotesLength_Outcomes
+                              Counter=@ValidationConstants.NotesLength_Outcomes
                               Immediate="true">
                 </MudTextField>
             </MudStack>
@@ -82,7 +82,7 @@
             </MudRadioGroup>
         </MudItem>
         <MudItem xs="12">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" OnClick="OnSubmit">Submit</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Disabled="@ReadOnly" OnClick="OnSubmit">Submit</MudButton>
         </MudItem>
     </MudGrid>
 </MudForm>
