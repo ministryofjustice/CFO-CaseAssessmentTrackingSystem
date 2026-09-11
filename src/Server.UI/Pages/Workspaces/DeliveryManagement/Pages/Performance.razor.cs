@@ -11,6 +11,16 @@ public partial class Performance
     private string PerformanceKey => $"{SelectionKey}|{_dateRange.Start?.Ticks ?? 0}|{_dateRange.End?.Ticks ?? 0}";
 
     /// <summary>
+    /// The date picker only affects which users have relevant data (see <see cref="LoadUsersAsync"/>),
+    /// so changing it must also refresh the picker's candidate list, not just the tab data.
+    /// </summary>
+    private async Task OnDateRangeChanged(DateRange? dateRange)
+    {
+        _dateRange = dateRange ?? _dateRange;
+        await ReloadUsersAsync();
+    }
+
+    /// <summary>
     /// Performance has 7 independent tabs (Enrolments, Inductions, Support &amp; Referral, Activities,
     /// Education &amp; Training, Employment, Reassessments), each backed by its own dashboard query with
     /// its own idea of "assignee" (participant owner vs. activity owner vs. payment support worker).
@@ -21,13 +31,16 @@ public partial class Performance
     {
         var mediator = GetNewMediator();
 
-        var enrolmentsTask = mediator.Send(new GetEnrolmentAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
-        var inductionsTask = mediator.Send(new GetInductionAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
-        var supportReferralsTask = mediator.Send(new GetSupportReferralAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
-        var reassessmentsTask = mediator.Send(new GetReassessmentAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
-        var paidActivitiesTask = mediator.Send(new GetPaidActivityAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
-        var educationAndTrainingTask = mediator.Send(new GetEducationAndTrainingAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
-        var employmentsTask = mediator.Send(new GetEmploymentAssignees.Query(CurrentUser) { TenantId = SelectedTenantId });
+        var startDate = _dateRange.Start ?? new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        var endDate = _dateRange.End ?? DateTime.Today;
+
+        var enrolmentsTask = mediator.Send(new GetEnrolmentAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
+        var inductionsTask = mediator.Send(new GetInductionAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
+        var supportReferralsTask = mediator.Send(new GetSupportReferralAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
+        var reassessmentsTask = mediator.Send(new GetReassessmentAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
+        var paidActivitiesTask = mediator.Send(new GetPaidActivityAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
+        var educationAndTrainingTask = mediator.Send(new GetEducationAndTrainingAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
+        var employmentsTask = mediator.Send(new GetEmploymentAssignees.Query(CurrentUser) { TenantId = SelectedTenantId, StartDate = startDate, EndDate = endDate });
 
         await Task.WhenAll(enrolmentsTask, inductionsTask, supportReferralsTask, reassessmentsTask,
             paidActivitiesTask, educationAndTrainingTask, employmentsTask);

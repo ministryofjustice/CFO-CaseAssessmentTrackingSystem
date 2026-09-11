@@ -15,6 +15,8 @@ public static class GetEducationAndTrainingAssignees
     {
         public UserProfile CurrentUser { get; } = currentUser;
         public string? TenantId { get; set; }
+        public required DateTime StartDate { get; init; }
+        public required DateTime EndDate { get; init; }
     }
 
     public class AssigneeDto
@@ -41,6 +43,8 @@ public static class GetEducationAndTrainingAssignees
                     join ap in context.Activities on mi.ActivityId equals ap.Id
                     where mi.EligibleForPayment
                        && mi.TenantId.StartsWith(tenantId)
+                       && mi.PaymentPeriod >= request.StartDate
+                       && mi.PaymentPeriod <= request.EndDate
                        && ap.OwnerId != null
                        && ap.Owner != null
                     select new AssigneeDto

@@ -55,7 +55,11 @@ public class GetEducationAndTrainingAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetEducationAndTrainingAssignees.Query(null!);
+        var query = new GetEducationAndTrainingAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -64,7 +68,12 @@ public class GetEducationAndTrainingAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetEducationAndTrainingAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetEducationAndTrainingAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
@@ -81,7 +90,11 @@ public class GetEmploymentAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetEmploymentAssignees.Query(null!);
+        var query = new GetEmploymentAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -90,7 +103,12 @@ public class GetEmploymentAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetEmploymentAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetEmploymentAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
@@ -107,7 +125,11 @@ public class GetEnrolmentAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetEnrolmentAssignees.Query(null!);
+        var query = new GetEnrolmentAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -116,7 +138,12 @@ public class GetEnrolmentAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetEnrolmentAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetEnrolmentAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
@@ -133,7 +160,11 @@ public class GetInductionAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetInductionAssignees.Query(null!);
+        var query = new GetInductionAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -142,7 +173,12 @@ public class GetInductionAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetInductionAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetInductionAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
@@ -185,7 +221,11 @@ public class GetPaidActivityAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetPaidActivityAssignees.Query(null!);
+        var query = new GetPaidActivityAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -194,7 +234,12 @@ public class GetPaidActivityAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetPaidActivityAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetPaidActivityAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
@@ -237,7 +282,11 @@ public class GetReassessmentAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetReassessmentAssignees.Query(null!);
+        var query = new GetReassessmentAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -246,7 +295,12 @@ public class GetReassessmentAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetReassessmentAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetReassessmentAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
@@ -298,7 +352,11 @@ public class GetSupportReferralAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsNull_ShouldHaveError()
     {
-        var query = new GetSupportReferralAssignees.Query(null!);
+        var query = new GetSupportReferralAssignees.Query(null!)
+        {
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "CurrentUser");
@@ -307,7 +365,12 @@ public class GetSupportReferralAssigneesQueryTests
     [Test]
     public void Validator_WhenCurrentUserIsValid_ShouldBeValid()
     {
-        var query = new GetSupportReferralAssignees.Query(TestHelper.CreateUser()) { TenantId = "1.1." };
+        var query = new GetSupportReferralAssignees.Query(TestHelper.CreateUser())
+        {
+            TenantId = "1.1.",
+            StartDate = default,
+            EndDate = default
+        };
         var result = _validator.Validate(query);
         result.IsValid.ShouldBeTrue();
     }
