@@ -18,9 +18,14 @@ public partial class UserSelectComponent
     [Parameter] public bool ActiveOnly { get; set; }
 
     [Parameter] public Func<ApplicationUserDto, bool>? Filter { get; set; }
-    
+
+    [Parameter] public bool ShowAllOption { get; set; }
+    [Parameter] public string AllOptionLabel { get; set; } = "All Users";
+
     private ApplicationUserDto[] _users = [];
-    
+
+    private readonly ApplicationUserDto _allUsersOption = new();
+
     protected override void OnInitialized()
     {
         var users = UserService.DataSource
@@ -35,14 +40,25 @@ public partial class UserSelectComponent
         {
             users = users.Where(Filter);
         }
-        
-        _users = users.OrderBy(u => u.DisplayName).ToArray();
+
+        var filtered = users.OrderBy(u => u.DisplayName).ToArray();
+
+        if (ShowAllOption)
+        {
+            _allUsersOption.Id = string.Empty;
+            _allUsersOption.DisplayName = AllOptionLabel;
+            _users = [_allUsersOption, .. filtered];
+        }
+        else
+        {
+            _users = filtered;
+        }
     }
     
     private string GetDisplayName(ApplicationUserDto? user) => user?.DisplayName ?? string.Empty;
     private async Task HandleValueChanged(ApplicationUserDto? value)
     {
         Value = value;
-        await ValueChanged.InvokeAsync(value);
+        await ValueChanged.InvokeAsync(Value);
     }
 }

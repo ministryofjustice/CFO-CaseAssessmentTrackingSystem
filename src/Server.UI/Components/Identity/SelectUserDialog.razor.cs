@@ -16,7 +16,15 @@ public partial class SelectUserDialog
     [Parameter]
     public Func<ApplicationUserDto, bool>? Filter { get; set; }
 
-    private SelectedUser SelectedUser { get; set; } = new SelectedUser(string.Empty, string.Empty);
+    [Parameter]
+    public bool ShowAllOption { get; set; }
+
+    [Parameter]
+    public string AllOptionLabel { get; set; } = "All Users";
+
+    private bool _hasSelection = false;
+
+    private SelectedUser SelectedUser { get; set; } = new(string.Empty, string.Empty);
 
     private void Submit()
     {
@@ -24,10 +32,11 @@ public partial class SelectUserDialog
         Dialog.Close(DialogResult.Ok(SelectedUser));
     }
 
-    private void OnUserSelectedChanged(ApplicationUserDto? dto) => SelectedUser = new SelectedUser(
-        dto?.Id ?? string.Empty,
-        dto?.DisplayName ?? string.Empty
-    );
+    private void OnUserSelectedChanged(ApplicationUserDto? dto)
+    {
+        SelectedUser = new SelectedUser(dto?.Id ?? string.Empty, dto?.DisplayName ?? string.Empty);
+        _hasSelection = true;
+    }
 }
 
 public record SelectedUser(string UserId, string DisplayName);
