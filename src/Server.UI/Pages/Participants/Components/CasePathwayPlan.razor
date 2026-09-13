@@ -1,8 +1,8 @@
-<MudTabs Outlined="true" Border="true" Class="mt-2" >
+<MudTabs Outlined="true" Border="true" Class="mt-2" KeepPanelsAlive="true">
     <MudTabPanel Text="Latest">
-        <ViewPathwayPlan />
+        <ViewPathwayPlan @ref="_viewPathwayPlan" />
     </MudTabPanel>
     <MudTabPanel Text="Review History">
-        <PathwayPlanReviewHistory ParticipantId="@ParticipantDetails!.Id"/>
+        <PathwayPlanReviewHistory @ref="_reviewHistory" ParticipantId="@ParticipantDetails!.Id"/>
       </MudTabPanel>
 </MudTabs>

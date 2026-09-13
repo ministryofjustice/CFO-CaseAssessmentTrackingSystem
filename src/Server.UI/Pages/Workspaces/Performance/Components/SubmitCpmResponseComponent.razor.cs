@@ -52,7 +52,7 @@ public partial class SubmitCpmResponseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        if (Status == DipSampleStatus.Reviewed)
+        if (Status == DipSampleStatus.AwaitingReview || Status == DipSampleStatus.Reviewed)
         {
             var state = await AuthState;
             var result =

@@ -62,7 +62,7 @@ public static class SubmitCpmResponse
             RuleFor(x => x.Comments)
                 .NotEmpty()
                 .WithMessage("Comments are required")
-                .MaximumLength(ValidationConstants.NotesLength)
+                .MaximumLength(ValidationConstants.NotesLength_Outcomes)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Comments"));
 
@@ -77,8 +77,10 @@ public static class SubmitCpmResponse
                 RuleFor(c => c)
                     .Must((c) => Exist(c.DipSampleId, c.ParticipantId))
                     .WithMessage(string.Format(message, "not found"))
-                    .Must((c) => BeInReviewedStatus(c.DipSampleId))
-                    .WithMessage(string.Format(message, $"sample must be in '{DipSampleStatus.Reviewed}' status"))
+                    .Must((c) => BeInAwaitingReviewOrReviewedStatus(c.DipSampleId))
+                    .WithMessage(string.Format(message, $"sample must be in '{DipSampleStatus.AwaitingReview}' or '{DipSampleStatus.Reviewed}' status"))
+                    .Must((c) => HaveCsoAnswer(c.DipSampleId, c.ParticipantId))
+                    .WithMessage(string.Format(message, "the CSO must review this participant first"))
                     .Must((c) => NotHaveFinalisedAnswer(c.DipSampleId, c.ParticipantId))
                     .WithMessage(string.Format(message, "cannot override a finalised answer"));
             });
@@ -87,9 +89,14 @@ public static class SubmitCpmResponse
         private bool Exist(Guid dipSampleId, string participantId) 
             => unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.Any(dsp => dsp.DipSampleId == dipSampleId && dsp.ParticipantId == participantId);
         
-        private bool BeInReviewedStatus(Guid dipSampleId)
-            => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(ds => ds.Id == dipSampleId && ds.Status == DipSampleStatus.Reviewed);
-        
+        private bool BeInAwaitingReviewOrReviewedStatus(Guid dipSampleId)
+            => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(ds => ds.Id == dipSampleId
+                && (ds.Status == DipSampleStatus.AwaitingReview || ds.Status == DipSampleStatus.Reviewed));
+
+        private bool HaveCsoAnswer(Guid dipSampleId, string participantId)
+            => unitOfWork.DbContext.OutcomeQualityDipSampleParticipants
+                .Any(dsp => dsp.DipSampleId == dipSampleId && dsp.ParticipantId == participantId && dsp.CsoIsCompliant != ComplianceAnswer.NotAnswered);
+
         private bool NotHaveFinalisedAnswer(Guid dipSampleId, string participantId)
         {
             var dsp = unitOfWork.DbContext.OutcomeQualityDipSampleParticipants

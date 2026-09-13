@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Domain.Common.Enums;
+﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
@@ -37,9 +36,6 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
 
         builder.Property(dsp => dsp.LocationType)
             .HasMaxLength(64);
-
-        builder.Property(dsp => dsp.CsoComments)
-            .HasMaxLength(ValidationConstants.NotesLength);
 
         builder.Property(s => s.HasClearParticipantJourney)
             .IsRequired()

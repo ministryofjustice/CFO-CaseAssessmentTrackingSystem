@@ -60,7 +60,7 @@
            .Where(objective => objective.IsCompleted is false || _hideCompletedObjectives is false)
            .OrderByDirection(_sortDirection, _selectors[_selector]))
             {
-                <Objective Model="objective" HideCompletedTasks="_hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantDetails!.IsActive" ParticipantName="@ParticipantDetails.FullName" OnChange="async() => await OnRefresh()" />
+                <Objective Model="objective" HideCompletedTasks="_hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantDetails!.IsActive" ParticipantName="@ParticipantDetails.FullName" OnChange="async() => await OnRefresh()" Expanded="@GetExpanded(objective.Id)" ExpandedChanged="@(expanded => SetExpanded(objective.Id, expanded))" />
                 <MudDivider />
             }
         </MudList>

@@ -1,6 +1,7 @@
 @inherits CatsComponentBase
 
 @using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.PerformanceManagement.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 
 @inject IUserService UserService
@@ -17,8 +18,7 @@ else if (PathwayPlan is null)
 }
 else
 {
-
-    <MudExpansionPanels MultiExpansion="true" Elevation="2" Outlined="true">
+    <MudExpansionPanels @ref="_objectivePanels" MultiExpansion="true" Elevation="2" Outlined="true">
         @foreach (var objective in PathwayPlan.Objectives)
         {
             <MudExpansionPanel>
@@ -79,7 +79,7 @@ else
                         Tasks
                     </MudText>
 
-                    <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanels @ref="_taskPanelsByObjective[objective.Index]" MultiExpansion="true">
                         @foreach (var task in objective.Tasks)
                         {
                             <MudExpansionPanel>
@@ -141,11 +141,31 @@ else
                                                 </MudText>
                                             </ToolBarContent>
                                             <HeaderContent>
-                                                <MudTh>Category</MudTh>
-                                                <MudTh>Created</MudTh>
-                                                <MudTh>Classification</MudTh>
-                                                <MudTh>Status</MudTh>
-                                                <MudTh>Location</MudTh>
+                                                <MudTh>
+                                                    <MudTableSortLabel SortBy="new Func<ParticipantDipSampleActivityDto, object>(x => x.Category.Name)">
+                                                        Category
+                                                    </MudTableSortLabel>
+                                                </MudTh>
+                                                <MudTh>
+                                                    <MudTableSortLabel SortBy="new Func<ParticipantDipSampleActivityDto, object>(x => x.Created)">
+                                                        Created
+                                                    </MudTableSortLabel>
+                                                </MudTh>
+                                                <MudTh>
+                                                    <MudTableSortLabel SortBy="new Func<ParticipantDipSampleActivityDto, object>(x => x.Definition.Classification.Name)">
+                                                        Classification
+                                                    </MudTableSortLabel>
+                                                </MudTh>
+                                                <MudTh>
+                                                    <MudTableSortLabel SortBy="new Func<ParticipantDipSampleActivityDto, object>(x => x.Status.Name)">
+                                                        Status
+                                                    </MudTableSortLabel>
+                                                </MudTh>
+                                                <MudTh>
+                                                    <MudTableSortLabel SortBy="new Func<ParticipantDipSampleActivityDto, object>(x => x.Location)">
+                                                        Location
+                                                    </MudTableSortLabel>
+                                                </MudTh>
                                                 <MudTh></MudTh>
                                             </HeaderContent>
                                             <RowTemplate>

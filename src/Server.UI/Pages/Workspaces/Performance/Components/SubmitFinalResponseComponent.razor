@@ -47,8 +47,8 @@
                 <MudTextField @bind-Value="@Command.Comments"
                               For="@(() => Command.Comments)"
                               Lines="5"
-                              MaxLength=@ValidationConstants.NotesLength
-                              Counter=@ValidationConstants.NotesLength
+                              MaxLength=@ValidationConstants.NotesLength_Outcomes
+                              Counter=@ValidationConstants.NotesLength_Outcomes
                               Immediate="true">
                 </MudTextField>
             </MudStack>
@@ -78,7 +78,7 @@
         </MudItem>
 
         <MudItem xs="12">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" OnClick="OnSubmit">Submit</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Disabled="@ReadOnly" OnClick="OnSubmit">Submit</MudButton>
         </MudItem>
     </MudGrid>
 </MudForm>

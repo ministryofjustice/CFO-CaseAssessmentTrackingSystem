@@ -5,7 +5,16 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 
-<PerformancePageHeader SampleLabel="@SampleLabel" />
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+    <PerformancePageHeader SampleLabel="@SampleLabel" />
+    @if (_activeTabIndex is PathwayPlanDetailsTabIndex or PathwayPlanReviewTabIndex)
+    {
+        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small">
+            <MudButton StartIcon="@Icons.Material.Filled.UnfoldMore" OnClick="@ExpandAllPathwayPlan">Expand All</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.UnfoldLess" OnClick="@CollapseAllPathwayPlan">Collapse All</MudButton>
+        </MudButtonGroup>
+    }
+</MudStack>
 
 @if (_isLoading)
 {
@@ -41,15 +50,19 @@ else
             </MudItem>
 
             <MudItem xs="10">
-                <MudTabs KeepPanelsAlive="true">
+                <MudStack Row="true" Justify="Justify.FlexStart" Class="mb-2">
+                    <RagBar Model="@_latestParticipantAssessment" />
+                </MudStack>
+
+                <MudTabs KeepPanelsAlive="true" @bind-ActivePanelIndex="_activeTabIndex">
                     <MudTabPanel Text="Events">
                         <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Details">
-                        <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
+                        <OutcomeQualityDipSamplePathwayPlanComponent @ref="_pathwayPlanObjectives" ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Pathway Plan Review">
-                        <PathwayPlanReviewHistory ParticipantId="@_participant.ParticipantId"/>
+                        <PathwayPlanReviewHistory @ref="_pathwayPlanReviewHistory" ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Assessments">
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId"/>
@@ -61,7 +74,10 @@ else
                         <CaseNotes ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Review">
-                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus"/>
+                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" 
+                                                     OnFormSubmit="CsoResponseSubmitted" 
+                                                     Status="_participant.DipSampleStatus"
+                                                     CpmHasReviewed="@_participant.CpmAnswer.IsAnswer"/>
                     </MudTabPanel>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                         <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
@@ -72,9 +88,9 @@ else
                         </MudTabPanel>
                     </AuthorizeView>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
-                        <MudTabPanel Text="Finalise" Disabled="_participant.CpmAnswer.IsAnswer is false">
+                        <MudTabPanel Text="Finalise" Disabled="_participant.DipSampleStatus.Value < DipSampleStatus.Verified.Value">
                             <SubmitFinalResponseComponent Command="@SubmitFinalCommand" 
-                                                            Status="_participant.DipSampleStatus" 
+                                                            Status="_participant.DipSampleStatus"
                                                             OnFormSubmit="FinalResponseSubmitted"
                                                             CpmComments="@_participant.CpmComments"/>
                         </MudTabPanel>

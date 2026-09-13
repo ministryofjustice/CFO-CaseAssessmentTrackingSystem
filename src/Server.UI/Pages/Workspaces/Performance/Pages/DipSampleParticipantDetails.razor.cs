@@ -1,8 +1,12 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
+using Cfo.Cats.Server.UI.Pages.Participants.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components;
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Pages;
@@ -22,6 +26,40 @@ public partial class DipSampleParticipantDetails
     public IUserService UserService { get; set; } = null!;
 
     private string? SampleLabel => _participant is null ? null : $"{_participant.ContractName} ({_participant.PeriodFromDesc})";
+
+    private OutcomeQualityDipSamplePathwayPlanComponent? _pathwayPlanObjectives;
+    private PathwayPlanReviewHistory? _pathwayPlanReviewHistory;
+
+    private const int PathwayPlanDetailsTabIndex = 1;
+    private const int PathwayPlanReviewTabIndex = 2;
+
+    private int _activeTabIndex;
+
+    private async Task ExpandAllPathwayPlan()
+    {
+        if (_pathwayPlanObjectives is not null)
+        {
+            await _pathwayPlanObjectives.ExpandAll();
+        }
+
+        if (_pathwayPlanReviewHistory is not null)
+        {
+            await _pathwayPlanReviewHistory.ExpandAll();
+        }
+    }
+
+    private async Task CollapseAllPathwayPlan()
+    {
+        if (_pathwayPlanObjectives is not null)
+        {
+            await _pathwayPlanObjectives.CollapseAll();
+        }
+
+        if (_pathwayPlanReviewHistory is not null)
+        {
+            await _pathwayPlanReviewHistory.CollapseAll();
+        }
+    }
 
     private SubmitCsoResponse.Command? _csoCommand;
 
@@ -77,6 +115,8 @@ public partial class DipSampleParticipantDetails
     
     private ParticipantDipSampleDto? _participant;
 
+    private ParticipantAssessmentDto? _latestParticipantAssessment;
+
     private string? _error;
     
     protected override async Task OnInitializedAsync()
@@ -99,6 +139,8 @@ public partial class DipSampleParticipantDetails
                 if (dipSampleDtoResult is { Succeeded: true, Data: not null })
                 {
                     _participant = dipSampleDtoResult.Data;
+
+                    await SetLatestParticipantAssessment(mediator, ComponentCancellationToken);
 
                     // Saturate answers
 
@@ -142,6 +184,24 @@ public partial class DipSampleParticipantDetails
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) 
         => await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
+
+    private async Task SetLatestParticipantAssessment(IMediator mediator, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(ParticipantId) == false)
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = ParticipantId
+            };
+
+            var result = await mediator.Send(query, cancellationToken);
+
+            if (result is { Succeeded: true, Data: not null })
+            {
+                _latestParticipantAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
+        }
+    }
 
     private async Task CsoResponseSubmitted(SubmitCsoResponse.Command command)
     {
