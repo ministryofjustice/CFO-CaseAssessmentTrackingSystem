@@ -2,6 +2,7 @@
 @inherits CatsComponentBase
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
+@using Cfo.Cats.Application.Features.Transfers.DTOs
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Humanizer
 
@@ -11,6 +12,12 @@
     <MudText Typo="Typo.h4">Outgoing Transfers</MudText>
     <MudSpacer />
     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @(_locationFilter?.Name ?? "All Locations")
+    </MudButton>
+    <MudTooltip Text="Clear search parameters">
+        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" />
+    </MudTooltip>
 </MudStack>
 
 <MudTable Dense="true" Striped="true" Items="@_transfers"
@@ -19,16 +26,17 @@
           Loading="@_isLoading"
           LoadingProgressColor="Color.Info"
           Class="mb-8 pa-4"
+          SortLabel="Sort By"
           Filter="Filter">
     <HeaderContent>
         <MudTh>@ConstantString.Actions</MudTh>
-        <MudTh>Participant</MudTh>
-        <MudTh>Status</MudTh>
-        <MudTh>Previous Support Worker</MudTh>
-        <MudTh>Occurred</MudTh>
-        <MudTh>From</MudTh>
-        <MudTh>To</MudTh>
-        <MudTh>Type</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.ParticipantFullName)">Participant</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.EnrolmentStatus?.Name ?? string.Empty)">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.PreviousSupportWorkerName ?? string.Empty)">Previous Support Worker</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.MoveOccured)">Occurred</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.FromLocation.Name)">From</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.ToLocation.Name)">To</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<OutgoingTransferDto, object>(x => x.TransferType.Name)">Type</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@ConstantString.Actions">
