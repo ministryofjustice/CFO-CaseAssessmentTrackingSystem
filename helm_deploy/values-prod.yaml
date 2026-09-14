@@ -29,7 +29,7 @@ generic-service:
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-prod.svc.cluster.local:8080"
-    DMS__ApplicationUrl: "https://dms-api.co-financing.org"
+    DMS__ApplicationUrl: "https://api.cfo-data-management-system.service.justice.gov.uk"
 
 worker:
   resources:
@@ -58,7 +58,7 @@ consumers:
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-prod.svc.cluster.local:8080"
-    DMS__ApplicationUrl: "https://dms-api.co-financing.org"
+    DMS__ApplicationUrl: "https://api.cfo-data-management-system.service.justice.gov.uk"
     Features__PresenceHub__RelayUserPresenceNotifications: "false"
 
 # RDS bridge - disabled in non-development environments
