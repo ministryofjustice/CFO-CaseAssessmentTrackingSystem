@@ -330,9 +330,7 @@ public partial class ActivePRIs
 
     private async Task ShowCustodyWorkerDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Custody Support Worker",
-            filter: u => _custodyWorkers.ContainsKey(u.Id));
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, "Select Custody Support Worker", showAllOption: !string.IsNullOrEmpty(Query.CustodySupportWorker), allOptionLabel: "All Custody Support Workers");
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, "Select Custody Support Worker", showAllOption: !string.IsNullOrEmpty(Query.CustodySupportWorker), allOptionLabel: "All Custody Support Workers",filter: u => _custodyWorkers.ContainsKey(u.Id));
         
         if (user is not null)
         {
@@ -343,10 +341,8 @@ public partial class ActivePRIs
     }
 
     private async Task ShowCommunityWorkerDialog()
-    {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!,"Select Community Support Worker",
-            filter: u => _communityWorkers.ContainsKey(u.Id));
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, "Select Community Support Worker", showAllOption: !string.IsNullOrEmpty(Query.CommunitySupportWorker), allOptionLabel: "All Community Support Workers");
+    { 
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile!, "Select Community Support Worker", showAllOption: !string.IsNullOrEmpty(Query.CommunitySupportWorker), allOptionLabel: "All Community Support Workers",filter: u => _communityWorkers.ContainsKey(u.Id));
         
         if (user is not null)
         {

@@ -88,8 +88,7 @@ public partial class ProviderDashboardFilter
         var parameters = new DialogParameters<SelectUserDialog>
         {
             { "CurrentUser", GetEffectiveUserProfile() },
-            { "Filter", (Func<ApplicationUserDto, bool>)(u => Users.ContainsKey(u.Id)) }
-            { "CurrentUser", GetEffectiveUserProfile() },
+            { "Filter", (Func<ApplicationUserDto, bool>)(u => Users.ContainsKey(u.Id)) },
             { "ShowAllOption", !string.IsNullOrEmpty(SelectedUserId) }
         };
 

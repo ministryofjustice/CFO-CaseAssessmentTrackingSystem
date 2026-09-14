@@ -346,8 +346,7 @@ public partial class Participants
 
     private async Task ShowAssigneeDialog()
     {
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile, showAllOption: !string.IsNullOrEmpty(Query.OwnerId), allOptionLabel: "All Assignees");
-        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile, filter: u => _users.ContainsKey(u.Id));
+        var user = await ParticipantDialogService.PromptForAssigneeAsync(UserProfile, showAllOption: !string.IsNullOrEmpty(Query.OwnerId), allOptionLabel: "All Assignees",filter: u => _users.ContainsKey(u.Id));
         
         if (user is not null)
         {

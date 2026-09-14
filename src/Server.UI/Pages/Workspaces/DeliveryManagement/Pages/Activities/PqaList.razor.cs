@@ -221,8 +221,7 @@ public partial class PqaList
         var parameters = new DialogParameters<SelectUserDialog>
         {
             { "CurrentUser", UserProfile },
-            { "Filter", (Func<ApplicationUserDto, bool>)(u => _users.ContainsKey(u.Id)) }
-            { "CurrentUser", UserProfile },
+            { "Filter", (Func<ApplicationUserDto, bool>)(u => _users.ContainsKey(u.Id)) },
             { "ShowAllOption", !string.IsNullOrEmpty(Query.SupportWorkerId) }
         };
 

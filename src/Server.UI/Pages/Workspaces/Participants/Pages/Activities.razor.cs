@@ -278,10 +278,11 @@ public partial class Activities
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", UserProfile },
+            { "CurrentUser", UserProfile }, 
+            { "ShowAllOption", !string.IsNullOrEmpty(Query.OwnerId) },
             { "Filter", (Func<ApplicationUserDto, bool>)(u => _users.ContainsKey(u.Id)) }
         };
-        var parameters = new DialogParameters<SelectUserDialog> { { "CurrentUser", UserProfile }, { "ShowAllOption", !string.IsNullOrEmpty(Query.OwnerId) } };
+        
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = false };
         var dialog = await DialogService.ShowAsync<SelectUserDialog>("Select a user", parameters, options);
         var result = await dialog.Result;
