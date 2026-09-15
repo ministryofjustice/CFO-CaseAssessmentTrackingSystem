@@ -35,9 +35,24 @@ public partial class PqaList
     private bool _downloading;
     
     private EnrolmentQueueEntryDto[] _data = [];
+    private readonly HashSet<Guid> _expanded = [];
 
     private PqaQueueWithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
+
+    private bool IsExpanded(Guid id) => _expanded.Contains(id);
+
+    private void ToggleExpanded(Guid id)
+    {
+        if (_expanded.Contains(id))
+        {
+            _expanded.Remove(id);
+        }
+        else
+        {
+            _expanded.Add(id);
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {
