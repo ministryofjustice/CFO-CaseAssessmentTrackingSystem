@@ -7,6 +7,9 @@ public partial class CasePathwayPlan
     [CascadingParameter(Name = "ParticipantDetails")]
     public ParticipantCascadingDetails? ParticipantDetails { get; set; }
 
+    [Parameter]
+    public EventCallback OnUpdate { get; set; }
+
     private ViewPathwayPlan? _viewPathwayPlan;
     private PathwayPlanReviewHistory? _reviewHistory;
 
