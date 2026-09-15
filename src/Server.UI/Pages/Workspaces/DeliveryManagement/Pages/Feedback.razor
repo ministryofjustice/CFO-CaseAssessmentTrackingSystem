@@ -1,0 +1,71 @@
+@page "/pages/workspace/deliverymanagement/feedback"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
+@using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+
+<DeliveryManagementPageHeader />
+
+<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mb-4">
+    <MudSwitch @bind-Value="_visualMode"
+               T="bool"
+               ThumbIcon="@Icons.Material.Filled.StackedBarChart"
+               Color="Color.Primary">
+        Visual Mode
+    </MudSwitch>
+
+    <MudSpacer />
+
+    <MudDateRangePicker @ref="_picker"
+                        DateFormat="dd MMM yyyy"
+                        TitleDateFormat="MMMM dd"
+                        @bind-DateRange="@_dateRange"
+                        MaxDate="DateTime.Today"
+                        MinDate="@(new DateTime(2025, 1, 1))"
+                        Class="pa-2">
+        <PickerActions>
+            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
+</MudStack>
+
+<MudTabs Outlined="true" Class="pa-0 ma-0">
+    <MudTabPanel Text="Enrolment Returns" Class="pa-2">
+        <EnrolmentsToProviderDashboardComponent
+            TenantId="@TenantId"
+            DateRange="@_dateRange"
+            @key="FeedbackKey"
+            VisualMode="@_visualMode"
+            IncludeInternalColumns="@_includeInternalColumns" />
+    </MudTabPanel>
+
+    <MudTabPanel Text="Enrolment Advisories" Class="pa-2">
+        <EnrolmentAdvisoriesToProviderDashboardComponent
+            TenantId="@TenantId"
+            DateRange="@_dateRange"
+            @key="FeedbackKey"
+            VisualMode="@_visualMode"
+            IncludeInternalColumns="@_includeInternalColumns" />
+    </MudTabPanel>
+
+    <MudTabPanel Text="Activities Returns" Class="pa-2">
+        <ActivitiesToProviderDashboardComponent
+            TenantId="@TenantId"
+            DateRange="@_dateRange"
+            @key="FeedbackKey"
+            VisualMode="@_visualMode"
+            IncludeInternalColumns="@_includeInternalColumns" />
+    </MudTabPanel>
+
+    <MudTabPanel Text="Activities Advisories" Class="pa-2">
+        <ActivitiesAdvisoriesToProviderDashboardComponent
+            TenantId="@TenantId"
+            DateRange="@_dateRange"
+            @key="FeedbackKey"
+            VisualMode="@_visualMode"
+            IncludeInternalColumns="@_includeInternalColumns" />
+    </MudTabPanel>
+</MudTabs>
+
