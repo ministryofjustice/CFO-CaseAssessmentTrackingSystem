@@ -33,6 +33,9 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordArchivedCaseConsumer>(provider)
             .Handle<CloseOffLastArchivedCaseEntry>(provider)
             .Handle<RecordVeteranLabelStatusConsumer>(provider)
+            .Handle<RecordTransgenderLabelStatusConsumer>(provider)
+            .Handle<RecordGangMemberLabelStatusConsumer>(provider)
+            .Handle<RecordCareLeaverLabelStatusConsumer>(provider)
             .Handle<ParticipantCreatedIntegrationEventConsumer>(provider);
 
         var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
