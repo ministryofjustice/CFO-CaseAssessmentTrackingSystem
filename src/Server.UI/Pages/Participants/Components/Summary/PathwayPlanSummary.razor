@@ -46,7 +46,7 @@
                     <DataListItem Label="Due Date" HelperText="@due.Humanize()">
                         <MudStack Row="true" StretchItems="StretchItems.Start">
                             <MudText>
-                                @ParticipantSummaryDto.PathwayPlan!.Created.AddMonths(3).Date.ToShortDateString()
+                                @due.Date.ToShortDateString()
                             </MudText>
                             <MudIcon Size="Size.Small"
                                 Color="@(due < DateTime.Now.Date ? Color.Warning : Color.Info)"
