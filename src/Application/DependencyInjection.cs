@@ -7,6 +7,7 @@ using Cfo.Cats.Application.Features.ManagementInformation.Providers;
 using Cfo.Cats.Application.Features.ParticipantLabels;
 using Cfo.Cats.Application.Features.PerformanceManagement.Providers;
 using Cfo.Cats.Application.Pipeline;
+using Cfo.Cats.Application.Pipeline.ValidationSpecifications;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ public static class DependencyInjection
 
         services.AddAutoMapper(config => { config.AddMaps(applicationAssembly); });
         services.AddValidatorsFromAssembly(applicationAssembly);
-        
+
         services.AddCortexMediator(new[] { typeof(DependencyInjection) }, config =>
         {
             config.AddOpenCommandPipelineBehavior(typeof(CommandTraceMetricsBehaviour<,>));
@@ -41,6 +42,7 @@ public static class DependencyInjection
             config.AddOpenCommandPipelineBehavior(typeof(CommandTransactionBehaviour<,>));
             config.AddOpenQueryPipelineBehavior(typeof(QueryTransactionBehaviour<,>));
             config.AddOpenQueryPipelineBehavior(typeof(AccessAuditingBehaviour<,>));
+            config.AddOpenQueryPipelineBehavior(typeof(AccessValidationBehaviour<,>));
         });
         services.Replace(ServiceDescriptor.Scoped<IMediator, SequentialNotificationMediator>());
 
@@ -58,6 +60,11 @@ public static class DependencyInjection
 
         services.AddScoped<ICumulativeProvider, CumulativeProvider>();
 
+        services.Scan(scan => scan.FromAssemblyOf<AccessValidationSpecification>()
+            .AddClasses(classes => classes.AssignableTo<AccessValidationSpecification>())
+            .As<AccessValidationSpecification>()
+            .WithScopedLifetime());
+
         services.Scan(scan => scan
             .FromAssemblyOf<IPertinentEventProvider>()
             .AddClasses(classes => classes.AssignableTo<IPertinentEventProvider>())
@@ -66,7 +73,7 @@ public static class DependencyInjection
 
         services.AddScoped<ILabelCounter, LabelCounter>();
         services.AddScoped<IParticipantLabelsCounter, ParticipantLabelsCounter>();
-        
+
         return services;
     }
 }
