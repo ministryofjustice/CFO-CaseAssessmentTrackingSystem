@@ -11,7 +11,7 @@ generic-service:
     scaleUpStabilizationWindowSeconds: 60
   ingress:
     hosts:
-      - training.manage-external-funded-offender-provision.service.justice.gov.uk
+      - manage-external-funded-offender-provision-train.hmpps.service.justice.gov.uk
     tlsSecretName: cats-train-custom-domain-tls
   resources:
     requests:

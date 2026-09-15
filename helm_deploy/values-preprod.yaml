@@ -11,7 +11,7 @@ generic-service:
     scaleUpStabilizationWindowSeconds: 60
   ingress:
     hosts:
-      - preprod.manage-external-funded-offender-provision.service.justice.gov.uk
+      - manage-external-funded-offender-provision-preprod.hmpps.service.justice.gov.uk
     tlsSecretName: cats-preprod-custom-domain-tls
     modsecurity_audit_enabled: true
   resources:
