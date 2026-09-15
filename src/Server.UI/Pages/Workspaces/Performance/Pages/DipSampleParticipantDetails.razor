@@ -51,7 +51,7 @@ else
 
             <MudItem xs="10">
                 <MudStack Row="true" Justify="Justify.FlexStart" Class="mb-2">
-                    <RagBar Model="@_latestParticipantAssessment" />
+                    <RagBar ParticipantId="@_participant.ParticipantId" AssessmentId="@_latestParticipantAssessment!.Id" />
                 </MudStack>
 
                 <MudTabs KeepPanelsAlive="true" @bind-ActivePanelIndex="_activeTabIndex">
