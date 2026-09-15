@@ -9,22 +9,24 @@ namespace Cfo.Cats.Application.Features.Assessments.Queries;
 public static class GetAssessmentScores
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IQuery<Result<IEnumerable<ParticipantAssessmentDto>>>
+    public class Query : IQuery<Result<ParticipantAssessmentDto[]>>
     {
         public required string ParticipantId { get; set; }
+        public Guid? AssessmentId { get; set; }
     }
 
-    public class Handler : IQueryHandler<Query, Result<IEnumerable<ParticipantAssessmentDto>>>
+    public class Handler : IQueryHandler<Query, Result<ParticipantAssessmentDto[]>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
         public Handler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
-        public async Task<Result<IEnumerable<ParticipantAssessmentDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<ParticipantAssessmentDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = (from pa in _unitOfWork.DbContext.ParticipantAssessments
                          join l in _unitOfWork.DbContext.Locations on pa.LocationId equals l.Id
                          where pa.ParticipantId == request.ParticipantId
+                          && (request.AssessmentId == null || pa.Id == request.AssessmentId)
                          select new ParticipantAssessmentDto
                          {
                              Id = pa.Id,
@@ -38,9 +40,9 @@ public static class GetAssessmentScores
                          })
                          .AsNoTracking();
 
-            var result = await query.ToListAsync(cancellationToken);
+            var result = await query.ToArrayAsync(cancellationToken);
 
-            return Result<IEnumerable<ParticipantAssessmentDto>>.Success(result);
+            return result;
         }
     }
     public class Validator : AbstractValidator<Query>

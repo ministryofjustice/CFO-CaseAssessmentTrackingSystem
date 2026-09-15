@@ -3,6 +3,7 @@
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 
 @inject IUserService UserService
 
@@ -20,7 +21,7 @@ else if (_participantAssessments.Any())
 
                 <TitleContent>
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                        <Cfo.Cats.Server.UI.Pages.Participants.Components.RagBar Model="assessment" />
+                        <RagBarDisplay Assessment="assessment" />
                     </MudStack>
                 </TitleContent>
                 <ChildContent>

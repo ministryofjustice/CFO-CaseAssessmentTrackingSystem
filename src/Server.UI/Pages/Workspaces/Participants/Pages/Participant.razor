@@ -1,5 +1,5 @@
 @page "/pages/workspace/participants/{id}"
-@inherits CatsComponentBase
+@inherits CatsComponent<ParticipantSummaryDto>
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
@@ -7,54 +7,62 @@
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
+@using Cfo.Cats.Application.Features.Participants.DTOs
 
 <style>
     .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}
 </style>
 
-    <ParticipantsPageHeader />
+  <ParticipantsPageHeader />
 
-  @if (_participantCascading is not null && _participant is not null)
+  @if(ErrorMessage is not null)
+  {
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+        @ErrorMessage
+    </MudAlert>
+  }
+
+  @if (Data is not null)
     {
-        <CascadingValue Value="_participant">
-        <CascadingValue Value="_participantCascading" Name="ParticipantDetails" IsFixed="true">
+        <CascadingValue Value="Data">
+        <CascadingValue Value="ParticipantCascadingDetails" Name="ParticipantDetails" IsFixed="true">
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
-                @if (_participant.PostLicenceCaseClosureEnd.HasValue)
+                @if (Data.PostLicenceCaseClosureEnd.HasValue)
                 {
-                    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@string.Format(_notActiveInFeedAlertMessage, _participant.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
+                    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@string.Format(_notActiveInFeedAlertMessage, Data.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
                 }
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
                     <MudItem xs="12">
 
                         <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"   >
-                            <MudText Typo="Typo.body2" >Participant</MudText>
-                            <MudText Typo="Typo.body1">@_participant.ParticipantName</MudText>
+                            <MudText Typo="Typo.body2">Participant</MudText>
+                            <MudText Typo="Typo.body1">@Data.ParticipantName</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.body2" >Ref</MudText>
-                            <MudText Typo="Typo.body1">@_participant.Id</MudText>
+                            <MudText Typo="Typo.body2">Ref</MudText>
+                            <MudText Typo="Typo.body1">@Data.Id</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
-                            <MudText Typo="Typo.body2" >Status</MudText>
-                            <MudText Typo="Typo.body1">@_participant.EnrolmentStatus.Name</MudText>
+                            <MudText Typo="Typo.body2">Status</MudText>
+                            <MudText Typo="Typo.body1">@Data.EnrolmentStatus.Name</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
                             <MudText Typo="Typo.body2" >Assigned To</MudText>
-                            <MudText Typo="Typo.body1">@($"{_participant.OwnerName} ({_participant.TenantName}) ")</MudText>
+                            <MudText Typo="Typo.body1">@($"{Data.OwnerName} ({Data.TenantName}) ")</MudText>
                             <MudDivider Vertical="true" FlexItem="true"/>
                             <MudText Typo="Typo.body2" >Location</MudText>
-                            <MudText Typo="Typo.body1">@_participant.Location</MudText>
+                            <MudText Typo="Typo.body1">@Data.Location</MudText>
                         </MudStack>
                     </MudItem>
                 </MudGrid>
 
-                @if (_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
+                @if (Data.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
                 {
                     <MudStack Row="true" Justify="Justify.FlexStart">
-                        <ParticipantActionMenu OnUpdate="() => Refresh()"/>
+                        <ParticipantActionMenu OnUpdate="() => RefreshAsync()"/>
                         <MudDivider Vertical="true" FlexItem="true" />
-                        <RagBar Model="@_latestParticipantAssessment" />
+                        <RagBar ParticipantId="@Id" AssessmentId="@Data.Assessments.OrderByDescending(l => l.Created).FirstOrDefault()?.AssessmentId" />
                     </MudStack>
                     
                    
-                    @if (_showRightToWorkWarning)
+                    @if (ShowRightToWorkWarning())
                     {
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
                     }
@@ -78,20 +86,20 @@
                         </MudTabPanel>
 
                         <MudTabPanel Text="About">
-                            <CaseAbout ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
+                            <CaseAbout ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
-                            <Inductions ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
+                            <Inductions ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
-                            <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
-                            <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" />
+                            <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
+                            <ExternalData ParticipantId="@Id" ConsentStatus="@Data.ConsentStatus" />
                         </MudTabPanel>
                         <MudTabPanel Text="Risk">
                             <CaseRisk ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Assessments">
-                            <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
+                            <CaseAssessment ParticipantId="@Id" ConsentDate="@Data.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
                              <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
@@ -109,11 +117,11 @@
                                     <MudText Typo="Typo.h4">
                                         Pathway Plan
                                     </MudText>
-                                    <OutcomeQualityDipSamplePathwayPlanComponent @ref="_summaryObjectives" ParticipantId="@_participant.Id" />
+                                    <OutcomeQualityDipSamplePathwayPlanComponent @ref="_summaryObjectives" ParticipantId="@Data.Id" />
                                     <MudText Typo="Typo.h4">
                                         Reviews
                                     </MudText>
-                                    <PathwayPlanReviewHistory @ref="_summaryReviewHistory" ParticipantId="@_participant.Id"/>   
+                                    <PathwayPlanReviewHistory @ref="_summaryReviewHistory" ParticipantId="@Data.Id"/>   
                                 </MudStack>
                                 
                              }
@@ -123,7 +131,7 @@
                              }
                         </MudTabPanel>
                         <MudTabPanel Text="PRI">
-                            <CasePRI ParticipantId="@Id" OnUpdate="() => Refresh()" />
+                            <CasePRI ParticipantId="@Id" OnUpdate="() => RefreshAsync()" />
                         </MudTabPanel>
                         <MudTabPanel Text="Bio">
                             <CaseBio ParticipantId="@Id" />
@@ -132,7 +140,7 @@
                             <CaseDocuments ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Notes">
-                            <CaseNotes ParticipantId="@Id" AllowAddNote="@_participant.IsActive" />
+                            <CaseNotes ParticipantId="@Id" AllowAddNote="@Data.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Timeline">
                             <CaseTimeline />
