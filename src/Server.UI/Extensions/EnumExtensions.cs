@@ -67,6 +67,11 @@ public static class EnumExtensions
         AppIcon.HubInduction => Icons.Material.Filled.AssignmentInd,
         AppIcon.WingInduction => Icons.Material.Filled.AssignmentInd,
         AppIcon.WingInductionPhase => Icons.Material.Filled.AssignmentInd,
+
+        //Auto assigned labels - Bio
+        AppIcon.GangMember => Icons.Material.Filled.GroupWork,
+        AppIcon.Transgender => Icons.Material.Filled.Transgender,
+        AppIcon.CareLeaver => Icons.Material.Filled.ChildCare,
         _ => null
     };
 }
