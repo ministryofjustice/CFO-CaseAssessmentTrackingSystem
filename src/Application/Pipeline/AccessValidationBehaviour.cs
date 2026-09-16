@@ -23,7 +23,7 @@ public sealed class AccessValidationBehaviour<TQuery, TResponse>
 
             if(grant is not AccessGrant.Granted)
             {
-                logger.LogWarning("Access denined in validation pipeline");
+                logger.LogWarning("Access denied in validation pipeline");
                 throw new AccessDeniedException();
             }
 
