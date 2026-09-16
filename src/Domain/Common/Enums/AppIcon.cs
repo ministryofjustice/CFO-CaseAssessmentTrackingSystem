@@ -50,7 +50,9 @@ public enum AppIcon
     WingInductionPhase,
     CareLeaver,
     GangMember,
-    Transgender,
-
+    Transgender,    
+    Disabled,
+    Homeless,
+    Neurodiverse
 }
 
