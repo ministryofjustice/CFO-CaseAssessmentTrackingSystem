@@ -1,6 +1,6 @@
 <MudTabs Outlined="true" Border="true" Class="mt-2" KeepPanelsAlive="true">
     <MudTabPanel Text="Latest">
-        <ViewPathwayPlan @ref="_viewPathwayPlan" />
+        <ViewPathwayPlan @ref="_viewPathwayPlan" OnUpdate="OnUpdate" />
     </MudTabPanel>
     <MudTabPanel Text="Review History">
         <PathwayPlanReviewHistory @ref="_reviewHistory" ParticipantId="@ParticipantDetails!.Id"/>
