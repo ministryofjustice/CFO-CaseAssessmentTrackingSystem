@@ -4,6 +4,7 @@
 
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities.Components
 @using Humanizer
 
 @inject IStringLocalizer<PqaList> L
@@ -102,6 +103,7 @@
 
     <MudTable Dense="true" T="ActivityQueueEntryDto" Items="@_data" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
         <HeaderContent>
+            <MudTh></MudTh>            
             <MudTh>
                 @L["Participant"]
             </MudTh>
@@ -128,6 +130,13 @@
             </MudTh>
         </HeaderContent>
         <RowTemplate>
+            <MudTd>
+                <div @onclick:stopPropagation="true">
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@(IsExpanded(context.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@(() => ToggleExpanded(context.Id))" />
+                </div>
+            </MudTd>            
             <MudTd>
                 <MudStack>
                     <MudText>
@@ -212,5 +221,15 @@
         <LoadingContent>
             <MudText>@ConstantString.Loading</MudText>
         </LoadingContent>
+        <ChildRowContent>
+            @if (IsExpanded(context.Id))
+            {
+                <MudTr>
+                    <td colspan="5" class="pa-4">
+                        <QaNotesDropdown ActivityId="@context.ActivityId" />
+                    </td>
+                </MudTr>
+            }
+        </ChildRowContent>        
     </MudTable>
 </MudContainer>

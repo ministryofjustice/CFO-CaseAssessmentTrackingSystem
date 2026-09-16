@@ -35,6 +35,22 @@ public partial class PqaList
 
     private ActivityQueueEntryDto[] _data = [];
 
+    private readonly HashSet<Guid> _expanded = [];
+
+    private bool IsExpanded(Guid id) => _expanded.Contains(id);
+
+    private void ToggleExpanded(Guid id)
+    {
+        if (_expanded.Contains(id))
+        {
+            _expanded.Remove(id);
+        }
+        else
+        {
+            _expanded.Add(id);
+        }
+    }
+
     private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
 
     private readonly List<ActivityType> _availableActivityTypes = ActivityDefinition.List
