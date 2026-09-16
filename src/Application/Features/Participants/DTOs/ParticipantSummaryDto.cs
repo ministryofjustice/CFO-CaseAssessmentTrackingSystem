@@ -133,7 +133,8 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.AssessmentDate, options => options.MapFrom(source => source.Created))
                 .ForMember(target => target.AssessmentCreator, options => options.MapFrom(source => source.CreatedBy))
                 .ForMember(target => target.AssessmentScored, options => options.MapFrom(source => source.Scores.All(s => s.Score >= 0)))
-                .ForMember(target => target.Completed, options => options.MapFrom(source => source.Completed));
+                .ForMember(target => target.Completed, options => options.MapFrom(source => source.Completed))
+                .ForMember(target => target.Created, options => options.MapFrom(source => source.Created));
 
             CreateMap<Domain.Entities.Bios.ParticipantBio, BioSummaryDto>()
                 .ForMember(target => target.BioId, options => options.MapFrom(source => source.Id))
@@ -171,6 +172,8 @@ public class AssessmentSummaryDto
     /// Date the latest assessment has been completed
     /// </summary>
     public DateTime? Completed { get; init; }
+
+    public DateTime Created { get; init; }
 }
 
 public class BioSummaryDto

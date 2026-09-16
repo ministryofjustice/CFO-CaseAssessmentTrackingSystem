@@ -2,7 +2,7 @@
 
 <MudGrid>
     <MudItem xs="12">
-        <RagBar Model="@ParticipantAssessmentDto" />
+        <RagBar ParticipantId="@ParticipantAssessmentDto!.ParticipantId" AssessmentId="@ParticipantAssessmentDto.Id" />
     </MudItem>
 
     @if (ParticipantDto.AssessmentJustification is not null)
