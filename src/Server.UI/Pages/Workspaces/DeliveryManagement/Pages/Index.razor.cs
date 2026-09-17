@@ -73,6 +73,7 @@ public partial class Index
         {
             links.Add(DeliveryManagementLinks.EnrolmentsPqa);
             links.Add(DeliveryManagementLinks.ActivitiesPqa);
+            links.Add(DeliveryManagementLinks.Feedback);
         }
 
         if (canViewPayments)
