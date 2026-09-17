@@ -34,6 +34,7 @@
             "" => [home],
             "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],
             "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb()],
+            "tasks-due" => [home, ParticipantLinks.TasksDue.AsMudBreadcrumb()],
             "incoming-transfers" => BuildIncomingTransfersBreadcrumbs(home, uri),
             "outgoing-transfers" => [home, ParticipantLinks.OutgoingTransfers.AsMudBreadcrumb()],
             "pre-release-inventory" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb()],
@@ -63,6 +64,7 @@
             {
                 "all" => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant],
                 "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb(), participant],
+                "tasks-due" => [home, ParticipantLinks.TasksDue.AsMudBreadcrumb(), participant],
                 "activepri" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb(), participant],
                 "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb(), participant],
                 "incoming-transfers" => [home, ParticipantLinks.IncomingTransfers.AsMudBreadcrumb(), participant],

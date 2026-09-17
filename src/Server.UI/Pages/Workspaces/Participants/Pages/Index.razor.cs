@@ -14,7 +14,7 @@ public partial class Index
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = null!;
 
-    private bool _allowTransfers = false;
+    private bool _allowTransfers;
 
     private BreadcrumbLinkModel[] Links { get; set; } = [];
 
@@ -28,7 +28,8 @@ public partial class Index
             ParticipantLinks.All,
             ParticipantLinks.AllActivities,
             ParticipantLinks.MovedParticipants,
-            ParticipantLinks.AllPris
+            ParticipantLinks.AllPris,
+            ParticipantLinks.TasksDue
         ];
 
         if(_allowTransfers)
