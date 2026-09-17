@@ -48,5 +48,9 @@ public enum AppIcon
     HubInduction,
     WingInduction,
     WingInductionPhase,
+    CareLeaver,
+    GangMember,
+    Transgender,
+
 }
 
