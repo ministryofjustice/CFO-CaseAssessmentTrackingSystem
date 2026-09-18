@@ -29,13 +29,15 @@ public partial class TasksDue
     private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<string, string> _tenants = new Dictionary<string, string>();
 
+    private readonly HashSet<Guid> _expandedRows = [];
+
     private bool Tabular { get; set; }
 
     private TasksDueWithPagination.Query Query { get; set; } = new()
     {
         CurrentUser = null!,
         PageNumber = 1,
-        PageSize = 15,
+        PageSize = 10,
         OrderBy = "Due",
         SortDirection = "Ascending"
     };
@@ -144,7 +146,7 @@ public partial class TasksDue
             TaskDueCategory.Overdue => "Overdue",
             TaskDueCategory.DueImminently => "Due Imminently (Next Week)",
             TaskDueCategory.DueSoon => "Due Soon (Next Month)",
-            _ => "All Outstanding Tasks"
+            _ => "All Open Tasks"
         };
 
     private static string CategoryLabel(TaskDueCategory category)
@@ -208,4 +210,14 @@ public partial class TasksDue
 
     private void ViewParticipant(TasksDueWithPagination.TaskDueDto task)
         => Navigation.NavigateTo($"/pages/workspace/participants/{task.ParticipantId}?from=tasks-due");
+
+    private bool IsExpanded(Guid taskId) => _expandedRows.Contains(taskId);
+
+    private void ToggleExpanded(Guid taskId)
+    {
+        if (!_expandedRows.Add(taskId))
+        {
+            _expandedRows.Remove(taskId);
+        }
+    }
 }
