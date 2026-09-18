@@ -81,7 +81,7 @@ public static class TasksDueWithPagination
                             ObjectiveId = objective.Id,
                             ObjectiveDescription = objective.Description,
                             ParticipantId = participant.Id,
-                            ParticipantName = $"{participant.FirstName} {participant.LastName}",
+                            ParticipantName = participant.FirstName + " " + participant.LastName,
                             OwnerId = participant.OwnerId,
                             OwnerName = owner != null ? owner.DisplayName : null,
                             TenantId = owner != null ? owner.TenantId : null

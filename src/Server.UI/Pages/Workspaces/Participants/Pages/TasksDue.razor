@@ -11,7 +11,7 @@
 <MudStack>
     <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
         <MudMenu Label="@($"Filters: {GetCurrentFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem OnClick="@(() => ApplyCategoryFilter(null))">All Outstanding Tasks</MudMenuItem>
+            <MudMenuItem OnClick="@(() => ApplyCategoryFilter(null))">All Open Tasks</MudMenuItem>
             <MudMenuItem OnClick="@(() => ApplyCategoryFilter(TaskDueCategory.Overdue))">Overdue</MudMenuItem>
             <MudMenuItem OnClick="@(() => ApplyCategoryFilter(TaskDueCategory.DueImminently))">Due Imminently (Next Week)</MudMenuItem>
             <MudMenuItem OnClick="@(() => ApplyCategoryFilter(TaskDueCategory.DueSoon))">Due Soon (Next Month)</MudMenuItem>
@@ -87,6 +87,7 @@
     {
         <MudTable Dense="true" T="TasksDueWithPagination.TaskDueDto" Items="@_data" Hover="true" Striped="true">
             <HeaderContent>
+                <MudTh></MudTh>
                 <MudTh>Status</MudTh>
                 <MudTh>Participant</MudTh>
                 <MudTh>Task</MudTh>
@@ -94,6 +95,11 @@
                 <MudTh>Support Worker</MudTh>
             </HeaderContent>
             <RowTemplate>
+                <MudTd>
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@(IsExpanded(context.TaskId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@(() => ToggleExpanded(context.TaskId))" />
+                </MudTd>
                 <MudTd DataLabel="Status">
                     <MudChip T="string" Color="CategoryColour(context.Category)" Size="Size.Small">@CategoryLabel(context.Category)</MudChip>
                 </MudTd>
@@ -116,6 +122,25 @@
                 </MudTd>
                 <MudTd DataLabel="Support Worker">@(context.OwnerName ?? "Unassigned")</MudTd>
             </RowTemplate>
+            <ChildRowContent>
+                @if (IsExpanded(context.TaskId))
+                {
+                    <MudTr>
+                        <td colspan="6" class="pa-0">
+                            <MudPaper Elevation="0" Class="pa-2">
+                                <MudText Typo="Typo.subtitle2">Objective</MudText>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudText Typo="Typo.body1">@context.ObjectiveDescription</MudText>
+                                    @if (context.IsMandatory)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Warning">Mandatory</MudChip>
+                                    }
+                                </MudStack>
+                            </MudPaper>
+                        </td>
+                    </MudTr>
+                }
+            </ChildRowContent>
         </MudTable>
     }
     else
@@ -147,6 +172,19 @@
                             </MudItem>
                         </MudGrid>
                     </MudStack>
+
+                    <MudExpansionPanels Elevation="0" Class="mt-2">
+                        <MudExpansionPanel Text="Objective">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.body1">@item.ObjectiveDescription</MudText>
+                                @if (item.IsMandatory)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Warning">Mandatory</MudChip>
+                                }
+                            </MudStack>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+
                     <MudDivider Class="mt-3 mb-2" />
 
                     <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
@@ -163,5 +201,5 @@
 }
 else
 {
-    <MudAlert Severity="Severity.Info" Class="mt-4">No outstanding tasks match the current filters.</MudAlert>
+    <MudAlert Severity="Severity.Info" Class="mt-4">No open tasks match the current filters.</MudAlert>
 }
