@@ -17,4 +17,6 @@ public static class ParticipantLinks
     public static BreadcrumbLinkModel OutgoingTransfers = new ("Outgoing Transfers", "View outgoing transfers", $"{Home.Href}/outgoing-transfers");
 
     public static BreadcrumbLinkModel AllActivities = new ("Activities", "Access all activities" ,$"{Home.Href}/activities");
+
+    public static BreadcrumbLinkModel TasksDue = new ("Tasks Due", "Pathway plan tasks that are overdue, due imminently, or due soon" ,$"{Home.Href}/tasks-due");
 }

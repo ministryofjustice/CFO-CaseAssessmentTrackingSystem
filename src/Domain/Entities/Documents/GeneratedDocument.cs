@@ -90,4 +90,5 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate PerformanceEmployments= new(nameof(PerformanceEmployments), 2300);
     public static readonly DocumentTemplate PerformanceReassessments = new(nameof(PerformanceReassessments), 2400);
     public static readonly DocumentTemplate PerformanceRecentApprovedActivities = new(nameof(PerformanceRecentApprovedActivities), 2500);
+    public static readonly DocumentTemplate TasksDue = new(nameof(TasksDue), 2600);
 }
