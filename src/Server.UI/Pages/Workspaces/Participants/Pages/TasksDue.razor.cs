@@ -1,7 +1,9 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
@@ -25,6 +27,7 @@ public partial class TasksDue
     private TasksDueWithPagination.TaskDueDto[] _data = [];
     private int _totalPages;
     private int _totalItems;
+    private bool _downloading;
 
     private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<string, string> _tenants = new Dictionary<string, string>();
@@ -104,6 +107,45 @@ public partial class TasksDue
     {
         Tabular = tabular.GetValueOrDefault();
         await SessionStorage.SetAsync(TasksDueSessionData.FromQuery(Query, Tabular));
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+
+            var result = await GetNewMediator().Send(new ExportTasksDue.Command
+            {
+                Request = new ExportTasksDue.TasksDueExportRequest
+                {
+                    UserId = UserProfile.UserId,
+                    OwnerId = Query.OwnerId,
+                    TenantId = Query.TenantId,
+                    Category = Query.Category,
+                    Keyword = Query.Keyword,
+                    OrderBy = Query.OrderBy,
+                    SortDirection = Query.SortDirection
+                }
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(ConstantString.ExportSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("An error has occurred while generating the tasks due export.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 
     private async Task PageChanged(int page)
