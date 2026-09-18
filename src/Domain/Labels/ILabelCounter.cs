@@ -3,14 +3,14 @@ namespace Cfo.Cats.Domain.Labels;
 public interface ILabelCounter
 {
     /// <summary>
-    /// Returns a count of the number of the Labels visible with this name for the contract.
+    /// Returns a count of the number of labels that already use the given name.
     ///
-    /// If contractId is null then it will be labels at the global level. 
+    /// Label names must be globally unique, regardless of the contracts they are
+    /// associated with.
     /// </summary>
     /// <param name="name">The name of the label</param>
-    /// <param name="contractId">The id of the contract, or null for global labels</param>
-    /// <returns>A count of visible labels with the given name and contract id.</returns>
-    int CountVisibleLabels(string name, string? contractId);
+    /// <returns>A count of labels with the given name.</returns>
+    int CountLabelsWithName(string name);
 
     /// <summary>
     /// Counts the number of participants associated with the given label.

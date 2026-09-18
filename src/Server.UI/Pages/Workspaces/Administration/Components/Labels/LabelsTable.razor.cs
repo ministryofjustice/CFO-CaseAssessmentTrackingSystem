@@ -24,7 +24,7 @@ public partial class LabelsTable
             Variant = AppVariant.Filled,
             Name = string.Empty,
             Description = string.Empty,
-            ContractId = null
+            ContractIds = []
         };
 
         var parameters = new DialogParameters<AddLabelDialog>()
@@ -53,7 +53,8 @@ public partial class LabelsTable
             LabelId = new LabelId(context.Id),
             NewVariant = context.Variant,
             NewScope =  context.Scope,
-            NewAppIcon = context.AppIcon
+            NewAppIcon = context.AppIcon,
+            NewContractIds = context.ContractIds.ToList()
         };
 
         var parameters = new DialogParameters<EditLabelDialog>()
@@ -79,10 +80,10 @@ public partial class LabelsTable
             UserProfile = CurrentUser,
         };
 
-        var label = context.Contract switch
+        var label = context.ContractCount switch
         {
-            null => $"Are you sure you want to delete the global label {context.Name}?",
-            _ => $"Are you sure you want to delete the {context.Name} label from the {context.Contract} contract?",
+            1 => $"Are you sure you want to delete the {context.Name} label? It is assigned to 1 contract.",
+            _ => $"Are you sure you want to delete the {context.Name} label? It is assigned to {context.ContractCount} contracts.",
         };
         
         var parameters = new DialogParameters<ConfirmationDialog>()

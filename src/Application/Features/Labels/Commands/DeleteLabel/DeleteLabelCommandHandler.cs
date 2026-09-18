@@ -12,7 +12,7 @@ public class DeleteLabelCommandHandler(
         CancellationToken cancellationToken)
     {
         var label = await repository.GetByIdAsync(request.LabelId);
-        label.Delete(request.UserProfile.AsDomainUser(), labelCounter);
+        label.Delete(labelCounter);
         return Result.Success();
     }
 }

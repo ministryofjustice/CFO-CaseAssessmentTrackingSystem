@@ -149,7 +149,7 @@ public static class ParticipantProjectionExtensions
                                Name = pl.Label.Name,
                                Description = pl.Label.Description,
                                Scope = pl.Label.Scope,
-                               Contract = pl.Label.ContractId!,
+                               ContractCount = pl.Label.Contracts.Count,
                                Id = pl.Label.Id.Value,
                                AppIcon = pl.Label.AppIcon,
                                Colour = pl.Label.Colour,
