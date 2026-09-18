@@ -1,6 +1,6 @@
 CREATE TABLE [Configuration].[Label] (
     [Id]             UNIQUEIDENTIFIER NOT NULL,
-    [Name]           NVARCHAR (25)    NOT NULL,
+    [Name]           NVARCHAR (40)    NOT NULL,
     [Description]    NVARCHAR (200)   NOT NULL,
     [Colour]         INT              NOT NULL,
     [Variant]        INT              NOT NULL,
