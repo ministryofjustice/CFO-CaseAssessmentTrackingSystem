@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Features.Bios.IntegrationEvents;
+using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.ParticipantLabels.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Participants.IntegrationEventHandlers;
@@ -36,6 +37,9 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordTransgenderLabelStatusConsumer>(provider)
             .Handle<RecordGangMemberLabelStatusConsumer>(provider)
             .Handle<RecordCareLeaverLabelStatusConsumer>(provider)
+            .Handle<RecordDisabledLabelStatusConsumer>(provider)
+            .Handle<RecordHomelessLabelStatusConsumer>(provider)
+            .Handle<RecordNeurodiverseLabelStatusConsumer>(provider)
             .Handle<ParticipantCreatedIntegrationEventConsumer>(provider);
 
         var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
@@ -56,6 +60,7 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<ParticipantTransitionedIntegrationEvent>();
         await _bus.Subscribe<ActivityTransitionedIntegrationEvent>();
         await _bus.Subscribe<BioSubmittedIntegrationEvent>();
+        await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
         await _bus.Subscribe<ParticipantCreatedIntegrationEvent>();
     }
 

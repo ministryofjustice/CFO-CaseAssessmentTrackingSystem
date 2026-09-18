@@ -72,6 +72,11 @@ public static class EnumExtensions
         AppIcon.GangMember => Icons.Material.Filled.GroupWork,
         AppIcon.Transgender => Icons.Material.Filled.Transgender,
         AppIcon.CareLeaver => Icons.Material.Filled.ChildCare,
+
+        //Auto assigned labels - Assessment
+        AppIcon.Disabled => Icons.Material.Filled.Accessible,
+        AppIcon.Homeless => Icons.Material.Filled.DomainDisabled,
+        AppIcon.Neurodiverse => Icons.Material.Filled.Diversity2,
         _ => null
     };
 }
