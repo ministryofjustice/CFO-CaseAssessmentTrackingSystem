@@ -19,11 +19,15 @@ public class EditLabelCommandValidator : AbstractValidator<EditLabelCommand>
             .MaximumLength(LabelConstants.DescriptionMaximumLength);
 
         RuleFor(v => v.NewName)
-            .Matches(ValidationConstants.LettersSpacesUnderscores)
-            .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
+            .Matches(ValidationConstants.Keyword)
+            .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Name"));
 
         RuleFor(v => v.NewDescription)
             .Matches(ValidationConstants.Notes)
             .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
+
+        RuleFor(x => x.NewContractIds)
+            .NotEmpty()
+            .WithMessage("A label must be assigned to at least one contract");
     }
 }

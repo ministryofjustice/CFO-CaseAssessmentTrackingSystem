@@ -41,7 +41,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -65,7 +65,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Secondary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Person,
-            ContractId = null
+            ContractIds = ["CONTRACT-001"]
         };
 
         await _handler.Handle(command, CancellationToken.None);
@@ -85,7 +85,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -106,7 +106,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -127,7 +127,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -148,7 +148,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -169,7 +169,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -190,7 +190,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -199,7 +199,7 @@ public class AddLabelCommandTests
     }
 
     [Test]
-    public void Validator_WithNameContainingInvalidCharacters_ShouldFail()
+    public void Validator_WithNameContainingNumbers_ShouldPass()
     {
         var validator = new AddLabelCommandValidator();
         var command = new AddLabelCommand
@@ -210,14 +210,12 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
 
-        result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.PropertyName == "Name" && 
-            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
+        result.IsValid.ShouldBeTrue();
     }
 
     [Test]
@@ -232,7 +230,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -252,7 +250,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -272,7 +270,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -292,7 +290,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -312,7 +310,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -334,7 +332,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -345,7 +343,7 @@ public class AddLabelCommandTests
     [Test]
     public void Handle_WithDuplicateName_ShouldThrowBusinessRuleException()
     {
-        _labelCounter.Setup(c => c.CountVisibleLabels(It.IsAny<string>(), It.IsAny<string?>()))
+        _labelCounter.Setup(c => c.CountLabelsWithName(It.IsAny<string>()))
             .Returns(1);
 
         var command = new AddLabelCommand
@@ -356,7 +354,7 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         Should.Throw<BusinessRuleValidationException>(async () =>
@@ -364,7 +362,7 @@ public class AddLabelCommandTests
     }
 
     [Test]
-    public async Task Handle_WithGlobalScope_ShouldCreateWithNullContractId()
+    public async Task Handle_WithNoContracts_ShouldCreateLabelWithNoContracts()
     {
         Label? addedLabel = null;
         _repository.Setup(r => r.AddAsync(It.IsAny<Label>()))
@@ -374,22 +372,22 @@ public class AddLabelCommandTests
         var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
-            Name = "Global",
-            Description = "Global Label",
+            Name = "NoContracts",
+            Description = "No Contracts Label",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = null
+            ContractIds = []
         };
 
         await _handler.Handle(command, CancellationToken.None);
 
         addedLabel.ShouldNotBeNull();
-        addedLabel.ContractId.ShouldBeNull();
+        addedLabel.Contracts.ShouldBeEmpty();
     }
 
     [Test]
-    public async Task Handle_WithContractScope_ShouldCreateWithContractId()
+    public async Task Handle_WithContracts_ShouldCreateWithContracts()
     {
         Label? addedLabel = null;
         _repository.Setup(r => r.AddAsync(It.IsAny<Label>()))
@@ -404,12 +402,12 @@ public class AddLabelCommandTests
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
-            ContractId = "CONTRACT-001"
+            ContractIds = ["CONTRACT-001"]
         };
 
         await _handler.Handle(command, CancellationToken.None);
 
         addedLabel.ShouldNotBeNull();
-        addedLabel.ContractId.ShouldBe("CONTRACT-001");
+        addedLabel.Contracts.Select(c => c.ContractId).ShouldContain("CONTRACT-001");
     }
 }

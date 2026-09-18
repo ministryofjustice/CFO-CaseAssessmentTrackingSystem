@@ -71,7 +71,7 @@ public class CloseParticipantLabelCommandHandlerTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             _labelCounter);
     
 
@@ -100,7 +100,7 @@ public class CloseParticipantLabelCommandHandlerTests
 
     private class TestLabelCounter : ILabelCounter
     {
-        public int CountVisibleLabels(string name, string? contractId) => 0;
+        public int CountLabelsWithName(string name) => 0;
         public int CountParticipants(LabelId labelId) => 0;
     }
 }

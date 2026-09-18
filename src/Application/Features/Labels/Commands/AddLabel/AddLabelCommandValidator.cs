@@ -18,11 +18,15 @@ public class AddLabelCommandValidator : AbstractValidator<AddLabelCommand>
             .MaximumLength(LabelConstants.DescriptionMaximumLength);
 
         RuleFor(v => v.Name)
-            .Matches(ValidationConstants.LettersSpacesUnderscores)
-            .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
+            .Matches(ValidationConstants.Keyword)
+            .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Name"));
 
         RuleFor(v => v.Description)
             .Matches(ValidationConstants.Notes)
             .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
+
+        RuleFor(x => x.ContractIds)
+            .NotEmpty()
+            .WithMessage("A label must be assigned to at least one contract");
     }
 }

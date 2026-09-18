@@ -83,6 +83,8 @@ internal static class DatabaseConstants
         
         public const string Label = nameof(Label);
 
+        public const string LabelContract = nameof(LabelContract);
+
         public const string Initiative = nameof(Initiative);
         public const string InitiativeObjective = nameof(InitiativeObjective);
 

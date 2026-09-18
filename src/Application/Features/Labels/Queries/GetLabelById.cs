@@ -26,13 +26,23 @@ public static class GetLabelById
                                     [Label].[Name] as [{nameof(LabelDto.Name)}],
                                     [Label].[Description] as [{nameof(LabelDto.Description)}],
                                     [Label].[Colour] as [{nameof(LabelDto.Colour)}],
-                                    [Contract].[Description] as [{nameof(LabelDto.Contract)}],
                                     [Label].[Variant] as [{nameof(LabelDto.Variant)}],
-                                    [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}]
+                                    [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}],
+                                    [Label].[Scope] as [{nameof(LabelDto.Scope)}],
+                                    COUNT([LabelContract].[ContractId]) as [{nameof(LabelDto.ContractCount)}],
+                                    STRING_AGG(CAST([LabelContract].[ContractId] AS NVARCHAR(MAX)), ',') as [{nameof(LabelDto.ContractIdsRaw)}]
                                 FROM [Configuration].[Label] as [Label]
-                                LEFT JOIN [Configuration].[Contract] as [Contract]
-                                    on [Label].[ContractId] = [Contract].[Id]
+                                LEFT JOIN [Configuration].[LabelContract] as [LabelContract]
+                                    on [LabelContract].[LabelId] = [Label].[Id]
                                 WHERE [Label].[Id] = @LabelId
+                                GROUP BY 
+                                    [Label].[Id],
+                                    [Label].[Name],
+                                    [Label].[Description],
+                                    [Label].[Colour],
+                                    [Label].[Variant],
+                                    [Label].[AppIcon],
+                                    [Label].[Scope]
                                 """;
             
             var label = await connection.QuerySingleAsync<LabelDto>(sql, new {request.LabelId});

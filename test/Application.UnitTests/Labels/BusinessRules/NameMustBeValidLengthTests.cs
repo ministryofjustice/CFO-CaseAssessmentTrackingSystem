@@ -13,7 +13,7 @@ public class NameMustBeValidLengthTests
         var rule = new NameMustBeValidLength("A");
 
         rule.IsBroken().ShouldBeTrue();
-        rule.Message.ShouldBe("Label must be between 2 and 25 characters.");
+        rule.Message.ShouldBe("Label must be between 2 and 40 characters.");
     }
 
     [Test]
@@ -33,9 +33,9 @@ public class NameMustBeValidLengthTests
     }
 
     [Test]
-    public void IsBroken_WhenNameHasTwentySixCharacters_ShouldReturnTrue()
+    public void IsBroken_WhenNameHasFortyOneCharacters_ShouldReturnTrue()
     {
-        var twentySix = new string('x', 26);
+        var twentySix = new string('x', 41);
         var rule = new NameMustBeValidLength(twentySix);
 
         rule.IsBroken().ShouldBeTrue();
