@@ -43,7 +43,7 @@
                 <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Variant)">Variant</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Contract)">Contract</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.ContractCount)">Contracts</MudTableSortLabel>
             </MudTh>
             <MudTh>
                 <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Scope.Name)">Scope</MudTableSortLabel>
@@ -73,7 +73,7 @@
             <MudTd DataLabel="Variant">
                 @context.Variant
             </MudTd>
-            <MudTd DataLabel="Contract">@context.Contract</MudTd>
+            <MudTd DataLabel="Contracts">@context.ContractCount</MudTd>
             <MudTd DataLabel="Scope">
                 @context.Scope    
             </MudTd>

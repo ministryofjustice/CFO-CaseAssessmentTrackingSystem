@@ -26,31 +26,28 @@ public static class GetVisibleLabels
                                         [Label].[Description] as [{nameof(LabelDto.Description)}],
                                         [Label].[Colour] as [{nameof(LabelDto.Colour)}],
                                         [Label].[Variant] as [{nameof(LabelDto.Variant)}],
-                                        NULL as [{nameof(LabelDto.Contract)}],
                                         [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}],
-                                        [Label].[Scope] as [{nameof(LabelDto.Scope)}]
+                                        [Label].[Scope] as [{nameof(LabelDto.Scope)}],
+                                        COUNT([VisibleContracts].[ContractId]) as [{nameof(LabelDto.ContractCount)}],
+                                        STRING_AGG(CAST([VisibleContracts].[ContractId] AS NVARCHAR(MAX)), ',') as [{nameof(LabelDto.ContractIdsRaw)}]
                                     FROM [Configuration].[Label] as [Label]
-                                    WHERE [ContractId] IS NULL
-                                    UNION
-                                    SELECT 
-                                        [Label].[Id] as [{nameof(LabelDto.Id)}],
-                                        [Label].[Name] as [{nameof(LabelDto.Name)}],
-                                        [Label].[Description] as [{nameof(LabelDto.Description)}],
-                                        [Label].[Colour] as [{nameof(LabelDto.Colour)}],
-                                        [Label].[Variant] as [{nameof(LabelDto.Variant)}],
-                                        [Contract].[Description] as [{nameof(LabelDto.Contract)}],
-                                        [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}],
-                                        [Label].[Scope] as [{nameof(LabelDto.Scope)}]
-                                    FROM [Configuration].[Label] as [Label]
-                                    INNER JOIN [Configuration].[Contract] as [Contract]
-                                        ON [Label].[ContractId] = [Contract].[Id]
+                                    INNER JOIN [Configuration].[LabelContract] as [LabelContract]
+                                        ON [LabelContract].[LabelId] = [Label].[Id]
                                     INNER JOIN 
                                     (
                                         SELECT DISTINCT ContractId 
                                         FROM [Configuration].[Tenant]
                                         WHERE [Id] like @TenantId + '%'
                                         AND [ContractId] IS NOT NULL
-                                    ) as [VisibleContracts] ON [VisibleContracts].[ContractId] = [Label].[ContractId]
+                                    ) as [VisibleContracts] ON [VisibleContracts].[ContractId] = [LabelContract].[ContractId]
+                                    GROUP BY 
+                                        [Label].[Id],
+                                        [Label].[Name],
+                                        [Label].[Description],
+                                        [Label].[Colour],
+                                        [Label].[Variant],
+                                        [Label].[AppIcon],
+                                        [Label].[Scope]
                                 """;
 
             var labels = await connection.QueryAsync<LabelDto>(sql, new { TenantId = request.CurrentUser.TenantId! });

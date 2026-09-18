@@ -1,4 +1,5 @@
 @inherits OwningComponentBase<IMediator>
+@using Cfo.Cats.Application.Features.Contracts.DTOs
 
 <MudDialog>
     <TitleContent>
@@ -80,6 +81,22 @@
                             HelperText="@Model.HelperTextFor(x => x.NewAppIcon)" 
                             For="@(() => Model.NewAppIcon)" 
                             @bind-Value="Model.NewAppIcon"/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudSelect T="ContractDto"
+                                   Label="Contracts"
+                                   MultiSelection="true"
+                                   Required="true"
+                                   RequiredError="Select at least one contract"
+                                   HelperText="The contracts this label applies to. A label is only visible for the contracts it is assigned to."
+                                   AnchorOrigin="Origin.BottomLeft"
+                                   ToStringFunc="@(c => c?.Name)"
+                                   @bind-SelectedValues="SelectedContracts">
+                            @foreach (var contract in AvailableContracts)
+                            {
+                                <MudSelectItem T="ContractDto" Value="@contract">@contract.Name</MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
                         <MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween" Spacing="2">

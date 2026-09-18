@@ -6,29 +6,23 @@ using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Labels.BusinessRules;
 
-public class LabelCannotBeRenamedIfExistingLabelExistsTests
+public class NameMustBeUniqueRuleTests
 {
     [Test]
-    public void IsBroken_WhenNewNameAlreadyExists_ShouldReturnTrue()
+    public void IsBroken_WhenDuplicateNameExists_ShouldReturnTrue()
     {
         var labelCounter = new TestLabelCounter(1);
-        var rule = new LabelCannotBeRenamedIfExistingLabelExists(
-            "NewName",
-            "OldName",
-            labelCounter);
+        var rule = new NameMustBeUniqueRule(labelCounter, "Duplicate");
 
         rule.IsBroken().ShouldBeTrue();
-        rule.Message.ShouldBe("Cannot rename label from OldName to NewName as the label already exists.");
+        rule.Message.ShouldBe("Label names must be unique");
     }
 
     [Test]
-    public void IsBroken_WhenNewNameDoesNotExist_ShouldReturnFalse()
+    public void IsBroken_WhenNameIsUnique_ShouldReturnFalse()
     {
         var labelCounter = new TestLabelCounter(0);
-        var rule = new LabelCannotBeRenamedIfExistingLabelExists(
-            "NewName",
-            "OldName",
-            labelCounter);
+        var rule = new NameMustBeUniqueRule(labelCounter, "Unique");
 
         rule.IsBroken().ShouldBeFalse();
     }

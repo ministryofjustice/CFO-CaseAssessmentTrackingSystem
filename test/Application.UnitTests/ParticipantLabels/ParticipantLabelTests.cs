@@ -146,7 +146,7 @@ public class ParticipantLabelTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             _labelCounter);
 
     private class TestParticipantLabelsCounter : IParticipantLabelsCounter
@@ -160,7 +160,7 @@ public class ParticipantLabelTests
 
     private class TestLabelCounter : ILabelCounter
     {
-        public int CountVisibleLabels(string name, string? contractId) => 0;
+        public int CountLabelsWithName(string name) => 0;
         public int CountParticipants(LabelId labelId) => 0;
     }
 }

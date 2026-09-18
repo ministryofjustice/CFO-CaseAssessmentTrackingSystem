@@ -17,6 +17,21 @@ public record LabelDto
     public AppVariant Variant { get; init; } 
 
     public AppIcon AppIcon { get; init; }
-    
-    public required string Contract { get; init; }
+
+    /// <summary>
+    /// The number of contracts this label is assigned to (and therefore visible for).
+    /// </summary>
+    public int ContractCount { get; init; }
+
+    /// <summary>
+    /// A comma separated list of the contract ids this label is assigned to.
+    /// Populated by the data layer; use <see cref="ContractIds"/> to consume.
+    /// </summary>
+    public string? ContractIdsRaw { get; init; }
+
+    [JsonIgnore]
+    public IReadOnlyCollection<string> ContractIds =>
+        string.IsNullOrWhiteSpace(ContractIdsRaw)
+            ? []
+            : ContractIdsRaw.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }

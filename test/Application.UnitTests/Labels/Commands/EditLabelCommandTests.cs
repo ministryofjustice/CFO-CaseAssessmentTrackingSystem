@@ -36,7 +36,7 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
@@ -50,7 +50,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Secondary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Person
+            NewAppIcon = AppIcon.Person,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -73,7 +74,7 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
@@ -87,7 +88,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.System,
             NewColour = AppColour.Info,
             NewVariant = AppVariant.Text,
-            NewAppIcon = AppIcon.Star
+            NewAppIcon = AppIcon.Star,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         await _handler.Handle(command, CancellationToken.None);
@@ -110,7 +112,7 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
@@ -124,7 +126,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         await _handler.Handle(command, CancellationToken.None);
@@ -145,7 +148,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -166,7 +170,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -187,7 +192,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -208,7 +214,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -229,7 +236,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -250,7 +258,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -271,7 +280,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -280,7 +290,7 @@ public class EditLabelCommandTests
     }
 
     [Test]
-    public void Validator_WithNewNameContainingInvalidCharacters_ShouldFail()
+    public void Validator_WithNewNameContainingNumbers_ShouldPass()
     {
         var validator = new EditLabelCommandValidator();
         var command = new EditLabelCommand
@@ -291,14 +301,13 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
 
-        result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.PropertyName == "NewName" && 
-            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
+        result.IsValid.ShouldBeTrue();
     }
     
     [Test]
@@ -313,7 +322,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -333,7 +343,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -353,7 +364,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -373,7 +385,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -393,7 +406,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -415,7 +429,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = validator.Validate(command);
@@ -434,12 +449,12 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
             .ReturnsAsync(existingLabel);
-        _labelCounter.Setup(c => c.CountVisibleLabels(It.IsAny<string>(), It.IsAny<string?>()))
+        _labelCounter.Setup(c => c.CountLabelsWithName(It.IsAny<string>()))
             .Returns(1);
 
         var command = new EditLabelCommand
@@ -450,7 +465,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         Should.Throw<BusinessRuleValidationException>(async () =>
@@ -469,12 +485,12 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
             .ReturnsAsync(existingLabel);
-        _labelCounter.Setup(c => c.CountVisibleLabels(It.IsAny<string>(), It.IsAny<string?>()))
+        _labelCounter.Setup(c => c.CountLabelsWithName(It.IsAny<string>()))
             .Returns(0);
 
         var command = new EditLabelCommand
@@ -485,7 +501,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -505,7 +522,7 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
@@ -519,7 +536,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.System,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -539,7 +557,7 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
@@ -553,7 +571,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Label
+            NewAppIcon = AppIcon.Label,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -573,7 +592,7 @@ public class EditLabelCommandTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
 
         _repository.Setup(r => r.GetByIdAsync(existingLabel.Id))
@@ -587,7 +606,8 @@ public class EditLabelCommandTests
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
-            NewAppIcon = AppIcon.Star
+            NewAppIcon = AppIcon.Star,
+            NewContractIds = ["CONTRACT-001"]
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);

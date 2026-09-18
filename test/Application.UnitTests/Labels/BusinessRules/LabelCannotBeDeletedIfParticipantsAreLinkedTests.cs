@@ -50,7 +50,7 @@ public class LabelCannotBeDeletedIfParticipantsAreLinkedTests
             _participantCount = participantCount;
         }
 
-        public int CountVisibleLabels(string name, string? contractId) => 0;
+        public int CountLabelsWithName(string name) => 0;
         public int CountParticipants(LabelId labelId) => _participantCount;
     }
 }

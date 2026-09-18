@@ -18,7 +18,7 @@ public class AddLabelCommandHandler(
             request.Colour, 
             request.Variant, 
             request.AppIcon,
-            request.ContractId, 
+            request.ContractIds, 
             labelCounter);
         await repository.AddAsync(l);
         return Result.Success();

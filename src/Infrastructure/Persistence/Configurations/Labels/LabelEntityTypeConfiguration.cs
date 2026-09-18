@@ -1,4 +1,3 @@
-using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Labels;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Cfo.Cats.Infrastructure.Constants.Database;
@@ -24,11 +23,18 @@ public class LabelEntityTypeConfiguration : IEntityTypeConfiguration<Label>
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(LabelConstants.DescriptionMaximumLength);
-        
-        builder.HasOne<Contract>()              
-            .WithMany()                     
-            .HasForeignKey(x => x.ContractId) 
-            .IsRequired(false);
+
+        builder.OwnsMany(x => x.Contracts, contract =>
+        {
+            contract.ToTable(DatabaseConstants.Tables.LabelContract, DatabaseConstants.Schemas.Configuration);
+            contract.WithOwner().HasForeignKey("LabelId");
+            contract.HasKey("LabelId", nameof(LabelContract.ContractId));
+            contract.Property(x => x.ContractId)
+                .HasMaxLength(DatabaseConstants.FieldLengths.ContractId);
+        });
+
+        builder.Navigation(x => x.Contracts)
+            .AutoInclude();
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);

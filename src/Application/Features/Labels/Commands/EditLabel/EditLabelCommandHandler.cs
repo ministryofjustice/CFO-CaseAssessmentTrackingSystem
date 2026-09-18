@@ -8,7 +8,7 @@ public class EditLabelCommandHandler(ILabelRepository repository, ILabelCounter 
     public async Task<Result> Handle(EditLabelCommand request, CancellationToken cancellationToken)
     {
         var label = await repository.GetByIdAsync(request.LabelId);
-        label.Edit(request.NewName, request.NewDescription, request.NewScope, request.NewColour, request.NewVariant, request.NewAppIcon, labelCounter);
+        label.Edit(request.NewName, request.NewDescription, request.NewScope, request.NewColour, request.NewVariant, request.NewAppIcon, request.NewContractIds, labelCounter);
         return Result.Success();
     }
 }
