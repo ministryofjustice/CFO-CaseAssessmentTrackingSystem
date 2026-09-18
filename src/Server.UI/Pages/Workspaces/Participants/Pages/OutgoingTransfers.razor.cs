@@ -33,7 +33,7 @@ public partial class OutgoingTransfers
 
     private async Task ShowSelectLocationDialog()
     {
-        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile);
+        var location = await ParticipantDialogService.PromptForLocationAsync(UserProfile, l => l.LocationType.IsHub == false);
 
         if (location is not null)
         {
