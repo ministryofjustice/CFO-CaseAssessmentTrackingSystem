@@ -28,8 +28,8 @@ public partial class Index
             ParticipantLinks.All,
             ParticipantLinks.AllActivities,
             ParticipantLinks.MovedParticipants,
-            ParticipantLinks.AllPris,
-            ParticipantLinks.TasksDue
+            ParticipantLinks.TasksDue,
+            ParticipantLinks.AllPris,            
         ];
 
         if(_allowTransfers)
