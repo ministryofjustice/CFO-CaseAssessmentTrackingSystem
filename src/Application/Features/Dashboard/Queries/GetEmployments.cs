@@ -11,6 +11,8 @@ public static class GetEmployments
         public required DateTime EndDate { get; set; }
         public string? UserId { get; set; }
         public string? TenantId { get; set; }
+        public int? LocationId { get; set; }
+        public string? LocationType { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -20,12 +22,18 @@ public static class GetEmployments
         {
             var context = unitOfWork.DbContext;
 
+            var locationTypeFilter = string.IsNullOrWhiteSpace(request.LocationType)
+                ? null
+                : LocationType.FromName(request.LocationType);
+
             var query = from mi in context.EmploymentPayments
                         join ap in context.Activities on mi.ActivityId equals ap.Id
                         join l in context.Locations on mi.LocationId equals l.Id
                         where mi.PaymentPeriod >= request.StartDate &&
                               mi.PaymentPeriod <= request.EndDate
                               && mi.EligibleForPayment
+                              && (request.LocationId == null || l.Id == request.LocationId)
+                              && (locationTypeFilter == null || l.LocationType == locationTypeFilter)
                         select new { mi, ap, l };
 
             // Checks and applies filter based on UserId or TenantId else throws exception
