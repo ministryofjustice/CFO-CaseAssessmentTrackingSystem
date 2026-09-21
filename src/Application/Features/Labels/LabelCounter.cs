@@ -8,7 +8,7 @@ public class LabelCounter(ISqlConnectionFactory sqlConnectionFactory) : ILabelCo
     public int CountParticipants(LabelId labelId)
     {
         using var connection = sqlConnectionFactory.CreateOpenConnection();
-        
+
         const string sql = """
                            SELECT Count(*) 
                            FROM [Participant].[Label] as [Label]
@@ -22,26 +22,20 @@ public class LabelCounter(ISqlConnectionFactory sqlConnectionFactory) : ILabelCo
         });
     }
 
-    public int CountVisibleLabels(string name, string? contractId)
+    public int CountLabelsWithName(string name)
     {
         using var connection = sqlConnectionFactory.CreateOpenConnection();
-        
+
         const string sql = """
                          SELECT Count(*) 
                          FROM [Configuration].[Label] as [Label]
                          WHERE 
                             [Label].[Name] = @Name
-                            AND (
-                                @ContractId IS NULL
-                                OR
-                                ContractId = @ContractId
-                            )
                          """;
 
         return connection.QuerySingle<int>(sql, new
         {
             Name = name,
-            ContractId = contractId,
         });
     }
 }

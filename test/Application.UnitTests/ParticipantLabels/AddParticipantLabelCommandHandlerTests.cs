@@ -101,7 +101,7 @@ public class AddParticipantLabelCommandHandlerTests
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
-            "CONTRACT-001",
+            ["CONTRACT-001"],
             mockLabelCounter.Object);
     }
 }

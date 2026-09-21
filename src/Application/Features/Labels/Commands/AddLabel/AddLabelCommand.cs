@@ -26,7 +26,7 @@ public class AddLabelCommand : ICommand<Result>
     [Display(Name ="Icon", Description = "The icon to display (or None)")]
     public AppIcon AppIcon { get; set; }
 
-    [Display(Name="Contract", Description = "Option contract to limit user applicability and visibility")]
-    public string? ContractId { get; set; }
+    [Display(Name="Contracts", Description = "The contracts this label applies to. A label is only visible for the contracts it is assigned to.")]
+    public List<string> ContractIds { get; set; } = [];
     
 }

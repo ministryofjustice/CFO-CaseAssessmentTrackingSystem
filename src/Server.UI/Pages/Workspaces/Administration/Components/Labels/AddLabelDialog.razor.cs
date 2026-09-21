@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
@@ -9,12 +10,20 @@ public partial class AddLabelDialog
 {
     private MudForm? _form;
     private bool _saving;
-    private ContractDto? SelectedContract { get; set; }
+
+    [Inject] private IContractService ContractService { get; set; } = null!;
+
+    private IReadOnlyCollection<ContractDto> AvailableContracts { get; set; } = [];
+    private IReadOnlyCollection<ContractDto> SelectedContracts { get; set; } = new HashSet<ContractDto>();
+
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
 
     [Parameter, EditorRequired] public AddLabelCommand Model { get; set; } = null!;
+
+    protected override void OnInitialized()
+        => AvailableContracts = ContractService.GetVisibleContracts(CurrentUser.TenantId ?? "xxx").ToList();
 
     private void Cancel() => MudDialog.Cancel();
 
@@ -23,14 +32,15 @@ public partial class AddLabelDialog
         try
         {
             _saving = true;
+
+            Model.ContractIds = SelectedContracts.Select(c => c.Id).ToList();
+
             await _form!.ValidateAsync();
 
             if (_form!.IsValid == false)
             {
                 return;
             }
-
-            Model.ContractId = SelectedContract?.Id;
 
             var result = await Service.Send(Model);
 

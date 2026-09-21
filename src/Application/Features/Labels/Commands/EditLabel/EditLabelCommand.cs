@@ -28,4 +28,7 @@ public class EditLabelCommand : ICommand<Result>
     [Display(Name = "Icon", Description = "The icon to display (or None)")]
     public AppIcon NewAppIcon { get; set; }
 
+    [Display(Name = "Contracts", Description = "The contracts this label applies to. A label is only visible for the contracts it is assigned to.")]
+    public List<string> NewContractIds { get; set; } = [];
+
 }

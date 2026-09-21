@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Projects;
 
 namespace Cats.AppHost.Extensions;
@@ -22,6 +23,10 @@ internal static class DatabaseExtensions
 
         var catsDbSqlProj = builder.AddSqlProject<CatsDb>("CatsSqlProj")
                                 .WithReference(catsDb)
+                                .WithConfigureDacDeployOptions(options =>
+                                {
+                                    options.BlockOnPossibleDataLoss = false;
+                                })
                                 .WithSkipWhenDeployed();
 
         var seeding = builder.AddProject<DatabaseSeeding>("DatabaseSeeding")
