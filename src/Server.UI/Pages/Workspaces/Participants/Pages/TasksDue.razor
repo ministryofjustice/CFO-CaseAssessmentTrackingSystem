@@ -1,0 +1,210 @@
+@page "/pages/workspace/participants/tasks-due"
+@inherits CatsComponentBase
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+@using Cfo.Cats.Application.Features.PathwayPlans.Queries
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Humanizer
+
+<ParticipantsPageHeader />
+
+<MudStack>
+    <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+        <MudMenu Label="@($"Filters: {GetCurrentFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => ApplyCategoryFilter(null))">All Open Tasks</MudMenuItem>
+            <MudMenuItem OnClick="@(() => ApplyCategoryFilter(TaskDueCategory.Overdue))">Overdue</MudMenuItem>
+            <MudMenuItem OnClick="@(() => ApplyCategoryFilter(TaskDueCategory.DueImminently))">Due Imminently (Next Week)</MudMenuItem>
+            <MudMenuItem OnClick="@(() => ApplyCategoryFilter(TaskDueCategory.DueSoon))">Due Soon (Next Month)</MudMenuItem>
+        </MudMenu>
+        <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
+                        ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
+                        AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                        AdornmentColor="Color.Secondary">
+        </MudTextField>
+        <MudSpacer />
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                    StartIcon="@Icons.Material.Filled.Refresh" OnClick="@OnRefresh">
+            @ConstantString.Refresh
+        </MudButton>
+        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="@_downloading"
+                          OnClick="@OnExport" StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
+
+    <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+
+        <MudPagination
+            Rectangular="true"
+            Variant="Variant.Text"
+            Selected="Query.PageNumber"
+            Count="@_totalPages"
+            MiddleCount="2"
+            BoundaryCount="1"
+            SelectedChanged="PageChanged"
+            Size="Size.Small" />
+
+        <MudText>@_totalItems records</MudText>
+
+        <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@TabularChanged" T="bool?" />
+
+        <MudSpacer />
+
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowOwnerDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if (string.IsNullOrEmpty(Query.OwnerId))
+            {
+                @("All Support Workers")
+            }
+            else
+            {
+                @(_users.TryGetValue(Query.OwnerId, out var name) ? name : "Selected user")
+            }
+        </MudButton>
+
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @if (string.IsNullOrEmpty(Query.TenantId))
+            {
+                @("All Tenants")
+            }
+            else
+            {
+                @(_tenants.TryGetValue(Query.TenantId, out var name) ? name : "Selected tenant")
+            }
+        </MudButton>
+
+        <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Due Date" OnClick="@(() => SortBy("Due"))" />
+            <MudMenuItem Label="Participant" OnClick="@(() => SortBy("ParticipantName"))" />
+            <MudMenuItem Label="Support Worker" OnClick="@(() => SortBy("OwnerName"))" />
+        </MudMenu>
+
+        <MudTooltip Text="Clear search parameters">
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
+        </MudTooltip>
+    </MudStack>
+
+</MudStack>
+
+@if (_data is { Length: > 0 })
+{
+    @if (Tabular)
+    {
+        <MudTable Dense="true" T="TasksDueWithPagination.TaskDueDto" Items="@_data" Hover="true" Striped="true">
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Participant</MudTh>
+                <MudTh>Task</MudTh>
+                <MudTh>Due Date</MudTh>
+                <MudTh>Support Worker</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@(IsExpanded(context.TaskId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@(() => ToggleExpanded(context.TaskId))" />
+                </MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="CategoryColour(context.Category)" Size="Size.Small">@CategoryLabel(context.Category)</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Participant">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
+                        <MudLink Typo="Typo.body1" Href="@($"/pages/workspace/participants/{context.ParticipantId}?from=tasks-due")">
+                            @context.ParticipantId
+                        </MudLink>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Task">@context.TaskDescription</MudTd>
+                <MudTd DataLabel="Due Date">
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body1">@context.Due.ToShortDateString()</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            @(context.Due.Date == DateTime.Today ? "today" : context.Due.Humanize())
+                        </MudText>
+                    </div>
+                </MudTd>
+                <MudTd DataLabel="Support Worker">@(context.OwnerName ?? "Unassigned")</MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if (IsExpanded(context.TaskId))
+                {
+                    <MudTr>
+                        <td colspan="6" class="pa-0">
+                            <MudPaper Elevation="0" Class="pa-2">
+                                <MudText Typo="Typo.subtitle2">Objective</MudText>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudText Typo="Typo.body1">@context.ObjectiveDescription</MudText>
+                                    @if (context.IsMandatory)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Warning">Mandatory</MudChip>
+                                    }
+                                </MudStack>
+                            </MudPaper>
+                        </td>
+                    </MudTr>
+                }
+            </ChildRowContent>
+        </MudTable>
+    }
+    else
+    {
+        <MudStack Class="mt-4" Spacing="2">
+            @foreach (var item in _data)
+            {
+                <MudPaper Outlined="true" Class="pa-3">
+                    <MudStack Spacing="2">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                            <MudText Typo="Typo.subtitle1" Style="font-weight: 500">@item.ParticipantName</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">(@item.ParticipantId)</MudText>
+                            <MudChip T="string" Color="CategoryColour(item.Category)" Size="Size.Small">@CategoryLabel(item.Category)</MudChip>
+                        </MudStack>
+
+                        <MudText Typo="Typo.body1">@item.TaskDescription</MudText>
+
+                        <MudGrid Spacing="2">
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Due Date</MudText>
+                                <MudText Typo="Typo.body2">@item.Due.ToShortDateString()</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                    @(item.Due.Date == DateTime.Today ? "today" : item.Due.Humanize())
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Support Worker</MudText>
+                                <MudText Typo="Typo.body2">@(item.OwnerName ?? "Unassigned")</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudStack>
+
+                    <MudExpansionPanels Elevation="0" Class="mt-2">
+                        <MudExpansionPanel Text="Objective">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.body1">@item.ObjectiveDescription</MudText>
+                                @if (item.IsMandatory)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Warning">Mandatory</MudChip>
+                                }
+                            </MudStack>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+
+                    <MudDivider Class="mt-3 mb-2" />
+
+                    <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small"
+                                   StartIcon="@Icons.Material.Filled.Visibility"
+                                   OnClick="@(() => ViewParticipant(item))">
+                            @ConstantString.ViewParticipant
+                        </MudButton>
+                    </MudStack>
+                </MudPaper>
+            }
+        </MudStack>
+    }
+}
+else
+{
+    <MudAlert Severity="Severity.Info" Class="mt-4">No open tasks match the current filters.</MudAlert>
+}
