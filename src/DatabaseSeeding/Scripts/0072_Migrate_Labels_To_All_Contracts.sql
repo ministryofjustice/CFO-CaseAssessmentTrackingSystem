@@ -4,7 +4,7 @@
 IF NOT EXISTS (SELECT TOP (1) LabelId FROM [Configuration].[LabelContract])
 BEGIN
 
-  INSERT INTO Configuration.LAbelContract (LabelId, ContractId) 
+  INSERT INTO Configuration.LabelContract (LabelId, ContractId) 
   VALUES
   (N'499A6380-5F0C-40D5-83C6-0BB1158CCC21', N'con_24036'),
   (N'50176C48-E1F5-48B5-B422-182EF7B54B73', N'con_24036'),
