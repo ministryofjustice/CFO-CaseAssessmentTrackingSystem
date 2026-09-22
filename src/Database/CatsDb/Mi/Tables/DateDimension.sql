@@ -1,7 +1,7 @@
 CREATE TABLE [Mi].[DateDimension] (
     [TheDate]             DATE          NOT NULL,
     [TheDay]              INT           NOT NULL,
-    [TheDaySuffix]        NVARCHAR (2)  NOT NULL,
+    [TheDaySuffix]        CHAR (2)      NOT NULL,
     [TheDayName]          NVARCHAR (20) NOT NULL,
     [TheDayOfWeek]        INT           NOT NULL,
     [TheDayOfWeekInMonth] INT           NOT NULL,

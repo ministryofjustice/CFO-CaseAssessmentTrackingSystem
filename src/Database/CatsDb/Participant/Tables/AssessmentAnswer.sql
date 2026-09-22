@@ -18,10 +18,6 @@ ON [Participant].[AssessmentAnswer]
 );
 GO
 
-CREATE NONCLUSTERED INDEX [IX_AssessmentAnswer_AssessmentId]
-ON [Participant].[AssessmentAnswer] ([AssessmentId]);
-GO
-
 ALTER TABLE [Participant].[AssessmentAnswer]
 ADD CONSTRAINT [FK_AssessmentAnswer_Assessment_AssessmentId]
 FOREIGN KEY ([AssessmentId])
