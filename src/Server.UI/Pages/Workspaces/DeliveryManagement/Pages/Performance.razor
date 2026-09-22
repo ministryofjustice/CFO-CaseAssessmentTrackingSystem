@@ -7,21 +7,8 @@
 
 <DeliveryManagementPageHeader />
 
-<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+<MudStack Row="true" Class="my-4" AlignItems="AlignItems.Center" Spacing="2">
     <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
-    <MudSpacer />
-    @if (CanFilter)
-    {
-        <ProviderDashboardFilter CurrentUser="CurrentUser"
-                                 SelectedTenantId="@SelectedTenantId"
-                                 SelectedUserId="@SelectedUserId"
-                                 TenantSelected="OnTenantSelected"
-                                 UserSelected="OnUserSelected"
-                                 ClearRequested="OnClearFilter" />
-    }
-</MudStack>
-
-<MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
     <div style="max-width: 640px;">
         <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
             <PickerActions>
@@ -41,6 +28,15 @@
             <MudMenuItem OnClick="@(() => OnLocationTypeChanged(locationType))">@locationType</MudMenuItem>
         }
     </MudMenu>
+    @if (CanFilter)
+    {
+        <ProviderDashboardFilter CurrentUser="CurrentUser"
+                                 SelectedTenantId="@SelectedTenantId"
+                                 SelectedUserId="@SelectedUserId"
+                                 TenantSelected="OnTenantSelected"
+                                 UserSelected="OnUserSelected"
+                                 ClearRequested="OnClearFilterWithLocations" />
+    }    
 </MudStack>
 
 

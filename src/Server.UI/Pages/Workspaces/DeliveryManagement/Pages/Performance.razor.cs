@@ -36,4 +36,12 @@ public partial class Performance
     }
 
     private void OnLocationTypeChanged(string locationType) => _selectedLocationType = locationType;
+
+    private void OnClearFilterWithLocations()
+    {
+        OnClearFilter();
+        _selectedLocationId = null;
+        _selectedLocationName = null;
+        _selectedLocationType = string.Empty;
+    }
 }
