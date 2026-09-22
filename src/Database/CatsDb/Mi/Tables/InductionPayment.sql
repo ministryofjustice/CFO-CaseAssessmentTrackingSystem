@@ -25,3 +25,5 @@ CREATE NONCLUSTERED INDEX [ix_InductionPayment_ParticipantId]
     ON [Mi].[InductionPayment]([ParticipantId] ASC, [ContractId] ASC);
 GO
 
+CREATE NONCLUSTERED INDEX [ix_InductionPayment_PaymentPeriod]
+    on [Mi].[InductionPayment] ([PaymentPeriod] ASC, [ContractId] ASC, [LocationType] ASC);

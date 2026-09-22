@@ -44,12 +44,12 @@ BEGIN
                     t.Employment,
                     ISNULL(emp.eligible_count, 0)               as [EmploymentActual]
 
-            FROM mi.ContractTarget t
+            FROM Mi.ContractTarget t
                     INNER JOIN Configuration.Contract c
                                 ON c.Id = t.ContractId
 
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.EnrolmentPayment ep
+                                    FROM Mi.EnrolmentPayment ep
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(Approved) = t.Month
                                     AND YEAR(Approved) = t.Year
@@ -61,7 +61,7 @@ BEGIN
                                                         'Unmapped Custody')
                                     GROUP BY ContractId) as PrisonPayments
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.EnrolmentPayment ep
+                                    FROM Mi.EnrolmentPayment ep
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(Approved) = t.Month
                                     AND YEAR(Approved) = t.Year
@@ -72,7 +72,7 @@ BEGIN
                                                         'Unmapped Community')
                                     GROUP BY ContractId) as CommunityPayments
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.InductionPayment as ip
+                                    FROM Mi.InductionPayment as ip
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(Approved) = t.Month
                                     AND YEAR(Approved) = t.Year
@@ -80,7 +80,7 @@ BEGIN
                                     AND LocationType IN ('Wing')
                                     GROUP BY ContractId) as WingPayments
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.InductionPayment as ip
+                                    FROM Mi.InductionPayment as ip
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(Approved) = t.Month
                                     AND YEAR(Approved) = t.Year
@@ -88,7 +88,7 @@ BEGIN
                                     AND LocationType IN ('Hub')
                                     GROUP BY ContractId) as HubPayments
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.SupportAndReferralPayment as sp
+                                    FROM Mi.SupportAndReferralPayment as sp
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(Approved) = t.Month
                                     AND YEAR(Approved) = t.Year
@@ -96,7 +96,7 @@ BEGIN
                                     AND SupportType IN ('Pre-Release Support')
                                     GROUP BY ContractId) as PreRelease
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.SupportAndReferralPayment as sp
+                                    FROM Mi.SupportAndReferralPayment as sp
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(Approved) = t.Month
                                     AND YEAR(Approved) = t.Year
@@ -107,7 +107,7 @@ BEGIN
                 -- Support work is different we need to union two tables
                     OUTER APPLY (SELECT sum(sp.eligible_count) as [eligible_count]
                                     FROM (SELECT COUNT(*) AS eligible_count
-                                        FROM mi.ActivityPayment as ap
+                                        FROM Mi.ActivityPayment as ap
                                         WHERE EligibleForPayment = 1
                                             AND MONTH(PaymentPeriod) = t.Month
                                             AND YEAR(PaymentPeriod) = t.Year
@@ -116,14 +116,14 @@ BEGIN
                                         GROUP BY ContractId
                                         UNION ALL
                                         SELECT COUNT(*) AS eligible_count
-                                        FROM mi.ReassessmentPayment as ap
+                                        FROM Mi.ReassessmentPayment as ap
                                         WHERE EligibleForPayment = 1
                                             AND MONTH(PaymentPeriod) = t.Month
                                             AND YEAR(PaymentPeriod) = t.Year
                                             AND ap.ContractId = t.ContractId) as sp) as SupportWork
 
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.ActivityPayment as ap
+                                    FROM Mi.ActivityPayment as ap
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(PaymentPeriod) = t.Month
                                     AND YEAR(PaymentPeriod) = t.Year
@@ -132,7 +132,7 @@ BEGIN
                                     GROUP BY ContractId) as hc
 
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.ActivityPayment as ap
+                                    FROM Mi.ActivityPayment as ap
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(PaymentPeriod) = t.Month
                                     AND YEAR(PaymentPeriod) = t.Year
@@ -141,7 +141,7 @@ BEGIN
                                     GROUP BY ContractId) as cas
 
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.ActivityPayment as ap
+                                    FROM Mi.ActivityPayment as ap
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(PaymentPeriod) = t.Month
                                     AND YEAR(PaymentPeriod) = t.Year
@@ -150,7 +150,7 @@ BEGIN
                                     GROUP BY ContractId) as isw
 
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.EducationPayment as ep
+                                    FROM Mi.EducationPayment as ep
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(PaymentPeriod) = t.Month
                                     AND YEAR(PaymentPeriod) = t.Year
@@ -158,7 +158,7 @@ BEGIN
                                     GROUP BY ContractId) as ed
 
                     OUTER APPLY (SELECT COUNT(*) AS eligible_count
-                                    FROM mi.EmploymentPayment as ep
+                                    FROM Mi.EmploymentPayment as ep
                                     WHERE EligibleForPayment = 1
                                     AND MONTH(PaymentPeriod) = t.Month
                                     AND YEAR(PaymentPeriod) = t.Year

@@ -21,3 +21,6 @@ CREATE NONCLUSTERED INDEX [IX_ParticipantEngagement_EngagedOn_ParticipantId]
     ON [Mi].[ParticipantEngagement]([EngagedOn] ASC, [ParticipantId] ASC);
 GO
 
+CREATE NONCLUSTERED INDEX [IX_ParticipantEngagement_ParticipantId] 
+    ON [Mi].[ParticipantEngagement] ([ParticipantId] ASC, [Category] ASC);
+

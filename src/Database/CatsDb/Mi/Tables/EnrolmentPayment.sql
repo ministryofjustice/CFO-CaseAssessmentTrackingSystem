@@ -27,3 +27,5 @@ CREATE NONCLUSTERED INDEX [IX_EnrolmentPayment_ParticipantId]
     ON [Mi].[EnrolmentPayment]([ParticipantId] ASC);
 GO
 
+CREATE NONCLUSTERED INDEX [IX_EnrolmentPayment_Approved]
+    ON [Mi].[EnrolmentPayment]( [Approved], [ContractId], [LocationType] )
