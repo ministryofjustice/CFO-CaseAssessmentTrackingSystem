@@ -8,6 +8,8 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Pages.Activities;
 public partial class Feedback
 {
     private MudDateRangePicker _picker = null!;
+    private MudTabs _tabs = null!;
+    private int _activeTabIndex;
 
     private bool _visualMode = true;
     private bool _downloading;

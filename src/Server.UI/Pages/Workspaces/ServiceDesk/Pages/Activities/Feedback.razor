@@ -33,35 +33,27 @@
             </MudLink>
         }
 
-        <AuthorizeView Policy="@SecurityPolicies.SeniorInternal">
-            <Authorized>
-                <MudLoadingButton Loading="@_downloading"
-                                    Variant="Variant.Filled"
-                                    Color="Color.Secondary"
-                                    StartIcon="@Icons.Material.Filled.CloudDownload"
-                                    Size="Size.Small"
-                                    OnClick="@OnExportTeam">
-                    @ConstantString.Export
-                </MudLoadingButton>
-            </Authorized>
-            <NotAuthorized>
-                <MudLoadingButton Loading="@_downloading"
-                                    Variant="Variant.Filled"
-                                    Color="Color.Secondary"
-                                    StartIcon="@Icons.Material.Filled.CloudDownload"
-                                    Size="Size.Small"
-                                    OnClick="@OnExportMine">
-                    @ConstantString.Export
-                </MudLoadingButton>
-            </NotAuthorized>
-        </AuthorizeView>
+        @{
+            // The export must reflect only the tab currently on screen: the "My Feedback"
+            // tab always exports the caller's own feedback, regardless of any senior
+            // permissions the user may also hold.
+            var isMyFeedbackTabActive = _tabs?.ActivePanel?.Text == "My Feedback";
+        }
+        <MudLoadingButton Loading="@_downloading"
+                            Variant="Variant.Filled"
+                            Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.CloudDownload"
+                            Size="Size.Small"
+                            OnClick="@(isMyFeedbackTabActive ? OnExportMine : OnExportTeam)">
+            @ConstantString.Export
+        </MudLoadingButton>
     </MudStack>
 
     
 </MudStack>
 
 
-<MudTabs Outlined="true" Class="pa-0 ma-0">
+<MudTabs Outlined="true" Class="pa-0 ma-0" @ref="_tabs" @bind-ActivePanelIndex="_activeTabIndex">
     <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
         <MudTabPanel Text="Returns" Class="pa-2">
             <ActivitiesToProviderDashboardComponent
