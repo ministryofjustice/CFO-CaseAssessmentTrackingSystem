@@ -45,6 +45,19 @@
                         
                         <MudTooltip>
                             <ChildContent>
+                            @if(IsParticipantArchived){    
+                                <CatsChip
+                                    Icon="@label.AppIcon" 
+                                    Colour="@label.Colour"
+                                    Label="@label.Name"
+                                    Description=""
+                                    Variant="@label.Variant"
+                                    ShowDelete="true"
+                                    Disabled="@(label.LifetimeEnd < DateTime.UtcNow)">
+                                </CatsChip>
+                            }
+                            else
+                            {
                                 <CatsChip
                                     Icon="@label.AppIcon" 
                                     Colour="@label.Colour"
@@ -54,7 +67,8 @@
                                     ShowDelete="true"
                                     OnClose="@(()=> DeleteLabel(label))"
                                     Disabled="@(label.LifetimeEnd < DateTime.UtcNow)">
-                                </CatsChip>
+                                </CatsChip>                                
+                            }
                             </ChildContent>
                             <TooltipContent>
                                 @if (label.AppIcon is not AppIcon.None)
@@ -87,7 +101,7 @@
         </MudCardContent>
         <MudCardActions>
         
-            @if (Data is not null && VisibleLabels is { Length: > 0 })
+            @if (Data is not null && VisibleLabels is { Length: > 0 } && IsParticipantArchived is false)
             {   
                 <AddLabelMenu 
                     ParticipantId="new ParticipantId(ParticipantId)" 

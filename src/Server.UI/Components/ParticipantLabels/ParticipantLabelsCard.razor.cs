@@ -13,6 +13,8 @@ public partial class ParticipantLabelsCard
 
     private bool IncludeClosed { get; set; } = false;
     private LabelDto[] VisibleLabels { get; set; } = [];
+    [Parameter]
+    public bool IsParticipantArchived { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
