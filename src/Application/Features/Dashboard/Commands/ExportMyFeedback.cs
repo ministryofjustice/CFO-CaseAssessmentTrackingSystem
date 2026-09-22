@@ -49,29 +49,29 @@ public static class ExportMyFeedback
 
     public class Validator : AbstractValidator<Command>
     {
-        private readonly ICurrentUserService currentUserService;
-        private readonly IUnitOfWork unitOfWork;
-        private readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly TimeSpan _cooldown = TimeSpan.FromSeconds(30);
 
         public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
-            this.currentUserService = currentUserService;
-            this.unitOfWork = unitOfWork;
+            _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
-                    .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+                    .WithMessage($"You must wait {_cooldown.Humanize()} between requesting documents.");
             });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
-            var cooldownPeriod = DateTime.UtcNow - cooldown;
+            var cooldownPeriod = DateTime.UtcNow - _cooldown;
 
-            var hasRecentlyRequestedDocument = unitOfWork.DbContext.GeneratedDocuments
-                .Any(d => d.CreatedBy == currentUserService.UserId && d.Created > cooldownPeriod);
+            var hasRecentlyRequestedDocument = _unitOfWork.DbContext.GeneratedDocuments
+                .Any(d => d.CreatedBy == _currentUserService.UserId && d.Created > cooldownPeriod);
 
             return hasRecentlyRequestedDocument is false;
         }
