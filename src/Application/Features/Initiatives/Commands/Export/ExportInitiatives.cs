@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Initiatives.Queries;
@@ -24,11 +25,17 @@ public static class ExportInitiatives
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("Initiatives");
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Initiatives Export",
+                ("Include Expired", request.Query.IncludeExpired ? "Yes" : null));
+
             var document = GeneratedDocument
                 .Create(
                     DocumentTemplate.Initiatives,
-                    "Initiatives.xlsx",
-                    "Initiatives Export",
+                    filename,
+                    description,
                     currentUser.UserId!,
                     currentUser.TenantId!,
                     json);

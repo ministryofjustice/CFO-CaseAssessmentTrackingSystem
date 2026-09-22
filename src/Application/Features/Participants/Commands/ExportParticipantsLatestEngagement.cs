@@ -1,4 +1,7 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
@@ -18,14 +21,35 @@ public static class ExportParticipantsLatestEngagement
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
+        ICurrentUserService currentUser,
+        ITenantService tenantService,
+        ILocationService locationService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("LatestEngagements");
+
+            var locationName = request.Query.LocationId.HasValue
+                ? locationService.DataSource.FirstOrDefault(l => l.Id == request.Query.LocationId.Value)?.Name
+                : null;
+
+            var tenantName = string.IsNullOrWhiteSpace(request.Query.TenantId)
+                ? null
+                : tenantService.DataSource.FirstOrDefault(t => t.Id == request.Query.TenantId)?.Name;
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Latest Engagements Export",
+                ("Just My Cases", request.Query.JustMyCases ? "Yes" : null),
+                ("Hide Recent Engagements", request.Query.HideRecentEngagements ? "Yes" : null),
+                ("Location", locationName),
+                ("Category", request.Query.EngagementType),
+                ("Tenant", tenantName),
+                ("Engaged With", request.Query.EngagedWith));
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.ParticipantsLatestEngagement, "LatestEngagements.xlsx", "Latest Engagements Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.ParticipantsLatestEngagement, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
@@ -24,8 +25,15 @@ public static class ExportKeyValues
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("KeyValues");
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "KeyValues Export",
+                ("Search", request.Query?.Keyword),
+                ("Picklist", request.Query?.Picklist?.ToString()));
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.KeyValues, "KeyValues.xlsx", "KeyValues Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.KeyValues, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

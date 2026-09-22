@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
@@ -24,8 +25,10 @@ public static class ExportCaseWorkload
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("CaseWorkload");
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.CaseWorkload, filename, "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

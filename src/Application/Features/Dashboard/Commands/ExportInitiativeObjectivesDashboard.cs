@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
@@ -17,16 +19,37 @@ public static class ExportInitiativeObjectivesDashboard
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
+        ICurrentUserService currentUser,
+        ITenantService tenantService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(request.Request);
 
+            var filename = ExportDocumentNaming.BuildFileName("InitiativeObjectivesDashboard");
+
+            var tenantName = string.IsNullOrWhiteSpace(request.Request.TenantId)
+                ? null
+                : tenantService.DataSource.FirstOrDefault(t => t.Id == request.Request.TenantId)?.Name;
+
+            var userName = string.IsNullOrWhiteSpace(request.Request.UserId)
+                ? null
+                : await unitOfWork.DbContext.Users
+                    .Where(u => u.Id == request.Request.UserId)
+                    .Select(u => u.DisplayName)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Initiative Objectives Dashboard Export",
+                ("Tenant", tenantName),
+                ("User", userName),
+                ("Initiative", request.Request.InitiativeCode),
+                ("Active Only", request.Request.ShowActiveOnly ? "Yes" : null));
+
             var document = GeneratedDocument.Create(
                 DocumentTemplate.InitiativeObjectivesDashboard,
-                "InitiativeObjectivesDashboard.xlsx",
-                "Initiative Objectives Dashboard Export",
+                filename,
+                description,
                 currentUser.UserId!,
                 currentUser.TenantId!,
                 json);

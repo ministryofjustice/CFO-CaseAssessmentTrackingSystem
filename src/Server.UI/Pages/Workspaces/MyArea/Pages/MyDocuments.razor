@@ -73,8 +73,28 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="Description">
+                @{
+                    var (summary, filters) = SplitDescription(context.Description);
+                }
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body1">@context.Description</MudText>
+                    <div class="d-flex align-center">
+                        <MudText Typo="Typo.body1" Class="flex-grow-1">@summary</MudText>
+                        @if (filters.Length > 0)
+                        {
+                            <MudIconButton Size="Size.Small"
+                                           Class="ml-auto"
+                                           Icon="@(_expandedIds.Contains(context.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                           OnClick="@(() => ToggleExpanded(context.Id))" />
+                        }
+                    </div>
+                    @if (filters.Length > 0)
+                    {
+                        <MudCollapse Expanded="@_expandedIds.Contains(context.Id)">
+                            <MudText Typo="Typo.body1" Class="mud-text-secondary" Style="white-space: pre-line; color: gray;">
+                                @string.Join("\n", filters)
+                            </MudText>
+                        </MudCollapse>
+                    }
                 </div>
             </MudTd>
             <MudTd DataLabel="Requested on">
