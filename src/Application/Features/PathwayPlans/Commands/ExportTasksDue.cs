@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
@@ -16,14 +18,36 @@ public static class ExportTasksDue
         public required TasksDueExportRequest Request { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : ICommandHandler<Command, Result>
+    public class Handler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUser,
+        ITenantService tenantService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(request.Request);
 
+            var filename = ExportDocumentNaming.BuildFileName("TasksDue");
+
+            var tenantName = string.IsNullOrWhiteSpace(request.Request.TenantId)
+                ? null
+                : tenantService.DataSource.FirstOrDefault(t => t.Id == request.Request.TenantId)?.Name;
+
+            var supportWorkerName = string.IsNullOrWhiteSpace(request.Request.UserId)
+                ? null
+                : await unitOfWork.DbContext.Users
+                    .Where(u => u.Id == request.Request.UserId)
+                    .Select(u => u.DisplayName)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Tasks Due Export",
+                ("Search", request.Request.Keyword),
+                ("Tenant", tenantName),
+                ("Support Worker", supportWorkerName));
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.TasksDue, "TasksDue.xlsx", "Tasks Due Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.TasksDue, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
