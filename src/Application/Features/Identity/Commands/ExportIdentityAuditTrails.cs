@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
@@ -21,10 +22,17 @@ public static class ExportIdentityAuditTrails
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
+            var filename = ExportDocumentNaming.BuildFileName("IdentityAuditTrails");
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "User Audit Export",
+                ("Action Type", request.Request.IdentityActionType?.ToString()),
+                ("User", request.Request.UserName));
+
             var document = GeneratedDocument.Create(
                 DocumentTemplate.IdentityAuditTrails,
-                "User Audit Export.xlsx",
-                "User Audit Export",
+                filename,
+                description,
                 currentUserService.UserId!,
                 currentUserService.TenantId!,
                 searchCriteria: serializer.Serialize(request));

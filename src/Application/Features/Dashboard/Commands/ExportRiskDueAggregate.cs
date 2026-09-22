@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.SecurityConstants;
@@ -24,8 +25,14 @@ public static class ExportRiskDueAggregate
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("RiskDueAggregate");
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "RiskDue Aggregate Export",
+                ("Grouping", request.Query.GroupingType.ToString()));
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.RiskDueAggregate, "RiskDueAggregate.xlsx", "RiskDue Aggregate Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.RiskDueAggregate, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
