@@ -33,15 +33,25 @@
         </MudEnumSelect>
         <MudSpacer />
         <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexEnd" Spacing="2">
+            <MudTextField T="string"
+                Value="@Query.UserName"
+                ValueChanged="@OnSearchUserName"
+                Placeholder="@ConstantString.Search"
+                Clearable="true"
+                ShrinkLabel="true"
+                AdornmentIcon="@Icons.Material.Filled.Search"
+                Adornment="Adornment.Start"
+                AdornmentColor="Color.Secondary"
+                Style="min-width:300px">
+            </MudTextField>
             <MudEnumSelect 
                 TEnum="IdentityActionType?" 
-                Placeholder="Search for audit type" 
+                Placeholder="Select audit type" 
                 Value="@Query.IdentityActionType" 
                 Clearable="true" 
                 ValueChanged="@(s => OnSearch(s))" 
                 Style="min-width:140px"> 
             </MudEnumSelect>
-
             <MudLoadingButton 
                     Color="Color.Secondary" 
                     Variant="Variant.Filled" 
