@@ -58,12 +58,6 @@ public static class IdentityAuditTrailsWithPagination
             RuleFor(r => r.SortDirection)
                 .Matches(ValidationConstants.SortDirection)
                 .WithMessage(ValidationConstants.SortDirectionMessage);
-
-            When(r => r.UserName is not null, () => {
-                RuleFor(r => r.UserName)
-                    .EmailAddress();
-            });
-         
         }
     }
 }

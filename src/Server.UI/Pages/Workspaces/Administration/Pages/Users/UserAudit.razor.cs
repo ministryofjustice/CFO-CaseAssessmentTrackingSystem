@@ -29,6 +29,12 @@ public partial class UserAudit : CatsComponentBase
         await _table.ReloadServerData();
     }
 
+    private async Task OnSearchUserName(string? userName)
+    {
+        Query.UserName = string.IsNullOrWhiteSpace(userName) ? null : userName;
+        await _table.ReloadServerData();
+    }
+
     private async Task OnExport()
     {
         try
@@ -69,7 +75,6 @@ public partial class UserAudit : CatsComponentBase
         try
         {
             _loading = true;
-            Query.UserName = null;
             Query.OrderBy = string.IsNullOrWhiteSpace(state.SortLabel) ? "Id" : state.SortLabel;
             Query.SortDirection = state.SortDirection == SortDirection.Descending
                 ? nameof(SortDirection.Descending)
