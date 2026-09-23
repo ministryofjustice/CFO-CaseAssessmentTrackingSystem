@@ -2,12 +2,13 @@
 @inherits CatsComponent<ParticipantSummaryDto>
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Exceptions
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
-@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Components
 
 <style>
     .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}
@@ -17,9 +18,31 @@
 
   @if(ErrorMessage is not null)
   {
-    <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
-        @ErrorMessage
-    </MudAlert>
+    @if(ErrorMessage is AccessDeniedException.ExceptionMessage)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+            <MudStack>
+                <MudText>To access this record one of the following must be true:</MudText>
+                <MudStack HtmlTag="ol" Class="pl-6">
+                    <li>You are the case owner</li>
+                    <li>You have owned the case in the last 3 months</li>
+                    <li>The participant is in a location you have access to</li>
+                    <li>In the last 3 months, the participant has been in a location you have access to</li>
+                    <li>You are the named Support Worker on an active PRI for the participant</li>
+                </MudStack>
+                <MudText>
+                    Please contact the CFO Service Desk if you think one of the above is true but you are still getting this message.
+                </MudText>
+            </MudStack>
+        </MudAlert>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+            @ErrorMessage
+        </MudAlert>    
+    }
+    
   }
 
   @if (Data is not null)
