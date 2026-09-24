@@ -12,6 +12,65 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.Labels;
 
 public partial class LabelsTable
 {
+    private string? _searchString;
+    private AppColour? _colourFilter;
+    private AppVariant? _variantFilter;
+    private LabelScope? _scopeFilter;
+
+    private IEnumerable<LabelDto> FilteredData
+    {
+        get
+        {
+            if (Data is null)
+            {
+                return [];
+            }
+
+            IEnumerable<LabelDto> filtered = Data;
+
+            if (string.IsNullOrWhiteSpace(_searchString) == false)
+            {
+                var search = _searchString.Trim();
+                filtered = filtered.Where(l =>
+                    l.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    || l.Description.Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (_colourFilter is not null)
+            {
+                filtered = filtered.Where(l => l.Colour == _colourFilter);
+            }
+
+            if (_variantFilter is not null)
+            {
+                filtered = filtered.Where(l => l.Variant == _variantFilter);
+            }
+
+            if (_scopeFilter is not null)
+            {
+                filtered = filtered.Where(l => l.Scope == _scopeFilter);
+            }
+
+            return filtered;
+        }
+    }
+
+    private void OnSearchChanged(string? value) => _searchString = value;
+
+    private void OnColourChanged(AppColour? colour) => _colourFilter = colour;
+
+    private void OnVariantChanged(AppVariant? variant) => _variantFilter = variant;
+
+    private void OnScopeChanged(LabelScope? scope) => _scopeFilter = scope;
+
+    private void ClearFilters()
+    {
+        _searchString = null;
+        _colourFilter = null;
+        _variantFilter = null;
+        _scopeFilter = null;
+    }
+
     protected override IQuery<Result<LabelDto[]>> CreateQuery()
         => new GetVisibleLabels.Query(CurrentUser);
 

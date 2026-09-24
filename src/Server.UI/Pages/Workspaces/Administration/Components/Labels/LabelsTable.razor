@@ -10,22 +10,69 @@
 
 @if (Data is not null)
 {
-    <MudTable Items="@Data"
-              Hover="true"
-              Striped="true"
-              Dense="true"
-              SortLabel="Sort By">
-        <ToolBarContent>
+    <MudStack Class="mb-4">
+        <!-- Header/Filter row -->
+        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+            <MudTextField T="string" Value="@_searchString" Placeholder="@ConstantString.Search"
+                          ValueChanged="@OnSearchChanged" Immediate="true" Clearable="true" ShrinkLabel="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                          AdornmentColor="Color.Secondary" Class="mt-0" />
             <MudSpacer />
             <MudButton Variant="Variant.Filled"
                        Size="Size.Small"
                        Disabled="@Loading"
                        OnClick="@OnAddLabel"
-                       StartIcon="@Icons.Material.Filled.AddComment" 
+                       StartIcon="@Icons.Material.Filled.AddComment"
                        Color="Color.Primary">
                 Add Label
             </MudButton>
-        </ToolBarContent>
+        </MudStack>
+
+        <!-- Additional filters row -->
+        <MudStack Row="true" Class="pt-2" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+            <MudSpacer />
+            <MudMenu Size="Size.Small"
+                     Label="@(_colourFilter is null ? "All Colours" : _colourFilter.ToString())"
+                     EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => OnColourChanged(null))">All Colours</MudMenuItem>
+                @foreach (var colour in Enum.GetValues<AppColour>())
+                {
+                    <MudMenuItem Icon="@Icons.Material.Filled.Circle" IconColor="@colour.AsMudColour()"
+                                 OnClick="@(() => OnColourChanged(colour))">@colour.ToString()</MudMenuItem>
+                }
+            </MudMenu>
+
+            <MudMenu Size="Size.Small"
+                     Label="@(_variantFilter is null ? "All Variants" : _variantFilter.ToString())"
+                     EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => OnVariantChanged(null))">All Variants</MudMenuItem>
+                @foreach (var variant in Enum.GetValues<AppVariant>())
+                {
+                    <MudMenuItem OnClick="@(() => OnVariantChanged(variant))">@variant.ToString()</MudMenuItem>
+                }
+            </MudMenu>
+
+            <MudMenu Size="Size.Small"
+                     Label="@(_scopeFilter is null ? "All Scopes" : _scopeFilter.Name)"
+                     EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => OnScopeChanged(null))">All Scopes</MudMenuItem>
+                @foreach (var scope in LabelScope.List)
+                {
+                    <MudMenuItem OnClick="@(() => OnScopeChanged(scope))">@scope.Name</MudMenuItem>
+                }
+            </MudMenu>
+
+            <MudTooltip Text="Clear filters">
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearFilters" />
+            </MudTooltip>
+        </MudStack>
+    </MudStack>
+
+    <MudTable Items="@FilteredData"
+              Hover="true"
+              Striped="true"
+              Dense="true"
+              SortLabel="Sort By">
         <HeaderContent>
             <MudTh>
                 
