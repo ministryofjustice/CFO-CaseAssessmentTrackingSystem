@@ -38,7 +38,7 @@
 
         <!-- Labels -->
         <MudItem xs="12" md="6" lg="4" xl="3">
-            <ParticipantLabelsCard ParticipantId="@ParticipantSummaryDto!.Id" />
+            <ParticipantLabelsCard ParticipantId="@ParticipantSummaryDto!.Id" IsParticipantArchived="@(ParticipantSummaryDto!.EnrolmentStatus == EnrolmentStatus.ArchivedStatus)"/>
         </MudItem>
 
     </MudGrid>
