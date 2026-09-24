@@ -1,7 +1,7 @@
 CREATE TABLE [Configuration].[Label] (
     [Id]             UNIQUEIDENTIFIER NOT NULL,
     [Name]           NVARCHAR (40)    NOT NULL,
-    [Description]    NVARCHAR (200)   NOT NULL,
+    [Description]    NVARCHAR (1000)   NOT NULL,
     [Colour]         INT              NOT NULL,
     [Variant]        INT              NOT NULL,
     [Created]        DATETIME2 (7)    NULL,

@@ -53,6 +53,8 @@ public enum AppIcon
     Transgender,    
     Disabled,
     Homeless,
-    Neurodiverse
+    Neurodiverse,
+    News
+
 }
 
