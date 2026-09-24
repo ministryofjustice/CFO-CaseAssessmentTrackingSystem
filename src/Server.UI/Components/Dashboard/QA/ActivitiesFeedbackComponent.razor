@@ -33,6 +33,7 @@
                     Name="Reason"
                     XValue="e => e.ActivityFeedbackReason"
                     YValue="e => e.Count"
+                    PointColor="e => FeedbackChartColourProvider.GetColour(e.ActivityFeedbackReason)"
                     ShowDataLabels="true"/>
 
             </ApexCharts.ApexChart>
@@ -156,7 +157,7 @@
                 }
             </ChildRowContent>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new [] { 10, 20, 50 }" />
+                <MudTablePager PageSizeOptions="[10, 20, 50]" />
             </PagerContent>
         </MudTable>
     }
