@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Newtonsoft.Json;
 using Rebus.Handlers;
@@ -36,8 +37,17 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             var request = JsonConvert.DeserializeObject<ExportProviderFeedback.ProviderFeedbackExportRequest>(context.SearchCriteria!)
                 ?? throw new Exception("Failed to deserialise export request.");
 
-            // Stub user profile — handlers below do not use CurrentUser in their query body.
-            var stubUser = new UserProfile { UserName = "system", Email = "system@system", UserId = context.UserId };
+            // Stub user profile for handlers that require a CurrentUser context. Access to this
+            // consumer's exports is already gated by the SeniorInternal/Internal policy on the
+            // commands that trigger it (ExportProviderFeedback / ExportMyFeedback).
+            var stubUser = new UserProfile
+            {
+                UserName = "system",
+                Email = "system@system",
+                UserId = context.UserId,
+                TenantId = context.TenantId,
+                AssignedRoles = [RoleNames.SystemSupport]
+            };
 
             var justMySheets = string.IsNullOrWhiteSpace(request.UserId) == false;
 
