@@ -199,6 +199,13 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Participant AddConsent(DateTime consentDate, Guid documentId)
     {
+        // close off the previously current consent, if there is one, so it no longer shows as valid indefinitely
+        var previousConsent = _consents
+            .Where(c => c.Lifetime.EndDate == DateTime.MaxValue.Date)
+            .MaxBy(c => c.Lifetime.StartDate);
+
+        previousConsent?.EndOn(consentDate);
+
         _consents.Add(Consent.Create( Id, consentDate, documentId ));
         return this;
     }

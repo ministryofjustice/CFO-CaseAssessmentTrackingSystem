@@ -33,5 +33,11 @@ public class Consent : BaseAuditableEntity<int>, ILifetime
 
     public static Consent Create(string participantId, DateTime consentDate, Guid documentId) => new(participantId, consentDate, documentId);
 
-    public Lifetime Lifetime { get; }
+    public Lifetime Lifetime { get; private set; }
+
+    /// <summary>
+    /// Ends this consent on the given date, e.g. when a newer consent supersedes it.
+    /// </summary>
+    /// <param name="validTo">The date the consent should be considered no longer current.</param>
+    public void EndOn(DateTime validTo) => Lifetime = Lifetime.Extend(validTo);
 }
