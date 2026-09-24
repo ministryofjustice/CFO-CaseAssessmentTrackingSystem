@@ -14,9 +14,6 @@ public sealed class AccessValidationBehaviour<TQuery, TResponse>
     {
         if(query is IAuditableRequest<TResponse> auditableRequest)
         {
-
-            logger.LogDebug("Checking access rules for {ParticipantId}", auditableRequest.Identifier());
-
             var participantId = auditableRequest.Identifier();
             
             var grant = await CanAccessParticipantRecord(participantId);
@@ -39,6 +36,12 @@ public sealed class AccessValidationBehaviour<TQuery, TResponse>
         foreach(var strategy in validationStrategies.OrderBy(s => s.Order))
         {
             grant = await strategy.IsSatisfiedBy(participantId, grant);
+            if(logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("{particpantId} {strategy} - {grant}", participantId, strategy.GetType().Name, grant);    
+            }
+            
+            
         }
         
         return grant;
