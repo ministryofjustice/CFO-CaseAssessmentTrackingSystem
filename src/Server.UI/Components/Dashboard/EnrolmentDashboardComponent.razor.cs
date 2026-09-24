@@ -13,6 +13,10 @@ public partial class EnrolmentDashboardComponent
 
     [Parameter] public string TenantId { get; set; } = null!;
 
+    [Parameter] public int? LocationId { get; set; }
+
+    [Parameter] public string? LocationType { get; set; }
+
     [EditorRequired, Parameter] public bool VisualMode { get; set; }
 
     [CascadingParameter(Name = "IsDarkMode")]
@@ -26,6 +30,8 @@ public partial class EnrolmentDashboardComponent
             CurrentUser = CurrentUser,
             UserId = UserId,
             TenantId = TenantId,
+            LocationId = LocationId,
+            LocationType = LocationType,
             StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
             EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
         };
