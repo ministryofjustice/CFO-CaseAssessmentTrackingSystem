@@ -13,7 +13,7 @@ public class DescriptionMustBeValidLengthTests
         var rule = new DescriptionMustBeValidLength("AB");
 
         rule.IsBroken().ShouldBeTrue();
-        rule.Message.ShouldBe("Description must be between 3 and 200 characters.");
+        rule.Message.ShouldBe("Description must be between 3 and 1000 characters.");
     }
 
     [Test]
@@ -34,9 +34,9 @@ public class DescriptionMustBeValidLengthTests
     }
 
     [Test]
-    public void IsBroken_WhenDescriptionHasTwoHundredAndOneCharacters_ShouldReturnTrue()
+    public void IsBroken_WhenDescriptionHasOneThousandAndOneCharacters_ShouldReturnTrue()
     {
-        var description = new string('A', 201);
+        var description = new string('A', 1001);
         var rule = new DescriptionMustBeValidLength(description);
 
         rule.IsBroken().ShouldBeTrue();

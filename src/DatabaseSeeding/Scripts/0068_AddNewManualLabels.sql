@@ -23,7 +23,11 @@ FROM (
              (CAST('01A09FD7-EBDD-7496-A81B-6B7705B9EA56' AS UNIQUEIDENTIFIER), 'PTS Required', 'Personal Track Safety course attendance required to improve employment opportunities', 5, 0, 13, 0),
              (CAST('01A09FD7-EBDD-7496-A81B-6B7705B9EA57' AS UNIQUEIDENTIFIER), 'PTS Certified', 'Successfully passed Personal Track Safety training', 4, 0, 13, 0),
              (CAST('01A09FD7-EBDD-7496-A81B-6B7705B9EA58' AS UNIQUEIDENTIFIER), 'Recall', 'Participant has experience of being recalled into prison during the lifetime of CFO Evolution', 5, 0, 7, 0),
-             (CAST('01A09FD7-EBDD-7496-A81B-6B7705B9EA5A' AS UNIQUEIDENTIFIER), 'Unpaid Work requirement', 'Subject to a court-ordered Unpaid Work requirement to be completed', 5, 0, 16, 0)
+             (CAST('01A09FD7-EBDD-7496-A81B-6B7705B9EA5A' AS UNIQUEIDENTIFIER), 'Unpaid Work requirement', 'Subject to a court-ordered Unpaid Work requirement to be completed', 5, 0, 16, 0),
+             (CAST('01A0D2C6-2E7B-7B69-973D-50F11F3C5FEE' AS UNIQUEIDENTIFIER), 'GNS Potential - Custody', 'A provider has identified this participant as a Good News Story (GNS) relating to custodial delivery, having notable success, achievement or positive impact that may be suitable for recognition, promotion or wider sharing (note - the existing process for submitting GNS must still be followed)', 5, 0, 33, 0),
+             (CAST('01A0D2C6-2E7B-789B-9E59-948589AB720F' AS UNIQUEIDENTIFIER), 'GNS Potential - Community', 'A provider has identified this participant as a Good News Story (GNS) relating to community delivery, having notable success, achievement or positive impact that may be suitable for recognition, promotion or wider sharing (note - the existing process for submitting GNS must still be followed)', 5, 0, 33, 0),
+             (CAST('01A0D2C6-2E7B-78F5-BF34-B57FF5695CC4' AS UNIQUEIDENTIFIER), 'GNS Submitted - Custody', 'A provider has submitted this participant to CFO as a Good News Story (GNS) relating to Custody delivery', 4, 0, 33, 0),
+             (CAST('01A0D2C6-2E7B-7830-A9ED-9F5E0552CD5D' AS UNIQUEIDENTIFIER), 'GNS Submitted - Community', 'A provider has submitted this participant to CFO as a Good News Story (GNS) relating to Community delivery', 4, 0, 33, 0)
   ) AS NewLabels([Id], [Name], [Description], [Colour], [Variant], [AppIcon], [Scope])
 WHERE NOT EXISTS (
     SELECT 1

@@ -55,7 +55,7 @@ public static class EnumExtensions
         AppIcon.Home => Icons.Material.Filled.Home,
         AppIcon.Lock => Icons.Material.Filled.Lock,
         AppIcon.Court => Icons.Material.Filled.Gavel,
-
+        
         // Existing app icons from the assessment
         AppIcon.Enrolment => Icons.Material.Filled.HowToReg,
         AppIcon.Objective => Icons.Material.Filled.TrackChanges,
@@ -71,12 +71,14 @@ public static class EnumExtensions
         //Auto assigned labels - Bio
         AppIcon.GangMember => Icons.Material.Filled.GroupWork,
         AppIcon.Transgender => Icons.Material.Filled.Transgender,
-        AppIcon.CareLeaver => Icons.Material.Filled.ChildCare,
+        AppIcon.CareLeaver => Icons.Material.Filled.HomeWork,
 
         //Auto assigned labels - Assessment
         AppIcon.Disabled => Icons.Material.Filled.Accessible,
         AppIcon.Homeless => Icons.Material.Filled.DomainDisabled,
         AppIcon.Neurodiverse => Icons.Material.Filled.Diversity2,
+
+        AppIcon.News => Icons.Material.Filled.Newspaper,
         _ => null
     };
 }

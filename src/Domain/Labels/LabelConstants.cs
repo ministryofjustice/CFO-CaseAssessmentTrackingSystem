@@ -20,5 +20,5 @@ public static class LabelConstants
     /// <summary>
     /// The maximum length a description for a label should be.
     /// </summary>
-    public const int DescriptionMaximumLength = 200;
+    public const int DescriptionMaximumLength = 1000;
 }

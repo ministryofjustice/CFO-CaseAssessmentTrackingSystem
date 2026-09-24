@@ -137,14 +137,14 @@ public class AddLabelCommandTests
     }
 
     [Test]
-    public void Validator_WithDescriptionOver200Chars_ShouldFail()
+    public void Validator_WithDescriptionOver1000hars_ShouldFail()
     {
         var validator = new AddLabelCommandValidator();
         var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
-            Description = new string('A', 201),
+            Description = new string('A', 1001),
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
             AppIcon = AppIcon.Label,
