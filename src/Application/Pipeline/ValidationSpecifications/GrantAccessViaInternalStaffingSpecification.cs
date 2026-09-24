@@ -1,6 +1,6 @@
 namespace Cfo.Cats.Application.Pipeline.ValidationSpecifications;
 
-public sealed class CurrentUserIsInternalStaffAccessSpecification(ICurrentUserService currentUserService) : AccessValidationSpecification
+public sealed class GrantAccessViaInternalStaffingSpecification(ICurrentUserService currentUserService) : AccessValidationSpecification
 {
     public override int Order => 0;
 

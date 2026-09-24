@@ -20,21 +20,26 @@
   {
     @if(ErrorMessage is AccessDeniedException.ExceptionMessage)
     {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-            <MudStack>
-                <MudText>To access this record one of the following must be true:</MudText>
-                <MudStack HtmlTag="ol" Class="pl-6">
-                    <li>You are the case owner</li>
-                    <li>You have owned the case in the last 3 months</li>
-                    <li>The participant is in a location you have access to</li>
-                    <li>In the last 3 months, the participant has been in a location you have access to</li>
-                    <li>You are the named Support Worker on an active PRI for the participant</li>
-                </MudStack>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+            You do not currently have permission to access this participant record.
+        </MudAlert>
+        <MudStack Class="mt-4">
+            <MudText>
+                Access is available if any of the following apply:
+            </MudText>
+
+            <ul class="pl-6">
+                <li>You work in the same area, or a wider area of responsibility, as someone who has owned the case within
+                    the last 3 months</li>
+                    <li>You have access to a location the participant has been registered in within the last 3 months</li>
+                    <li>You are the named Support Worker on an open PRI</li>
+                </ul>
+
                 <MudText>
-                    Please contact the CFO Service Desk if you think one of the above is true but you are still getting this message.
+                    If you believe you should not be seeing this message, please contact the CFO Service Desk
                 </MudText>
             </MudStack>
-        </MudAlert>
+
     }
     else
     {

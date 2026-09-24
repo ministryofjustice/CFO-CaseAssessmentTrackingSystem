@@ -1,6 +1,6 @@
 namespace Cfo.Cats.Application.Pipeline.ValidationSpecifications;
 
-public class CurrentUserIsPartOfPriProcessAccessSpecification(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : AccessValidationSpecification
+public class GrantAccessViaOpenPriSpecification(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : AccessValidationSpecification
 {
     public override int Order => 1;
 
