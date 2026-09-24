@@ -32,6 +32,12 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportEnrolmentPaymentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInductionPaymentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEnrolmentPaymentsSummaryIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportInductionPaymentsSummaryIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportSupportAndReferralPaymentsSummaryIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportActivityPaymentsSummaryIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEducationPaymentsSummaryIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportEmploymentPaymentsSummaryIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportLatestParticipantEngagementsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportCumulativesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer>(provider);
@@ -40,7 +46,7 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportInitiativeObjectivesDashboardIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInitiativesIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportUsersIntegrationEventConsumer>(provider);
-    _activator.Handle<DocumentExportIdentityAuditTrailsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportIdentityAuditTrailsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportActivePrisIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportEngagementsByLocationIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportTasksDueIntegrationEventConsumer>(provider);
