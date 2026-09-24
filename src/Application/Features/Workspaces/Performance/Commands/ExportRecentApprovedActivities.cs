@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -17,16 +19,37 @@ public static class ExportRecentApprovedActivities
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
+        ICurrentUserService currentUser,
+        ITenantService tenantService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(request.Request);
 
+            var filename = ExportDocumentNaming.BuildFileName("PerformanceRecentApprovedActivities");
+
+            var tenantName = string.IsNullOrWhiteSpace(request.Request.TenantId)
+                ? null
+                : tenantService.DataSource.FirstOrDefault(t => t.Id == request.Request.TenantId)?.Name;
+
+            var userName = string.IsNullOrWhiteSpace(request.Request.UserId)
+                ? null
+                : await unitOfWork.DbContext.Users
+                    .Where(u => u.Id == request.Request.UserId)
+                    .Select(u => u.DisplayName)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Peformance Recent Approved Activities Export",
+                ("Tenant", tenantName),
+                ("User", userName),
+                ("Start Date", request.Request.StartDate.ToString("dd MMM yyyy")),
+                ("End Date", request.Request.EndDate.ToString("dd MMM yyyy")));
+
             var document = GeneratedDocument.Create(
                 DocumentTemplate.PerformanceRecentApprovedActivities,
-                "PerformanceRecentApprovedActivities.xlsx",
-                "Peformance Recent Approved Activities Export",
+                filename,
+                description,
                 currentUser.UserId!,
                 currentUser.TenantId!,
                 json);

@@ -142,8 +142,13 @@ public partial class ActivePRIs
                 {
                     UserId = UserProfile?.UserId,
                     Keyword = Query.Keyword,
+                    JustMyPris = Query.JustMyPris,
                     IncludeOutgoing = Query.IncludeOutgoing,
                     IncludeIncoming = Query.IncludeIncoming,
+                    CustodySupportWorker = Query.CustodySupportWorker,
+                    CommunitySupportWorker = Query.CommunitySupportWorker,
+                    ExpectedReleaseRegionId = Query.ExpectedReleaseRegionId,
+                    ActiveStatus = Query.ActiveStatus,
                     OrderBy = Query.OrderBy,
                     SortDirection = Query.SortDirection
                 }

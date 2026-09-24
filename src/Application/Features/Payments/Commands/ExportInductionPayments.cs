@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Application.SecurityConstants;
@@ -18,14 +20,26 @@ public static class ExportInductionPayments
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
+        ICurrentUserService currentUser,
+        IContractService contractService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("InductionPayments");
+
+            var contractName = string.IsNullOrWhiteSpace(request.Query.ContractId)
+                ? null
+                : contractService.DataSource.FirstOrDefault(c => c.Id == request.Query.ContractId)?.Name;
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "InductionPayments Export",
+                ("Contract", contractName),
+                ("Date", new DateTime(request.Query.Year, request.Query.Month, 1).ToString("MMM yyyy")));
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.InductionPayments, "InductionPayments.xlsx", "InductionPayments Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.InductionPayments, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

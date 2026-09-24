@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
@@ -17,15 +19,31 @@ public static class ExportUsers
         public string? Role { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ISerializer serializer)
+    public class Handler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        ISerializer serializer,
+        ITenantService tenantService)
         : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
+            var filename = ExportDocumentNaming.BuildFileName("Users");
+
+            var tenantName = string.IsNullOrWhiteSpace(request.TenantId)
+                ? null
+                : tenantService.DataSource.FirstOrDefault(t => t.Id == request.TenantId)?.Name;
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Users Export",
+                ("Search", request.SearchString),
+                ("Tenant", tenantName),
+                ("Role", request.Role));
+
             var document = GeneratedDocument
                 .Create(DocumentTemplate.Users, 
-                    "Users Export.xlsx", 
-                    "Users Export",
+                    filename, 
+                    description,
                     currentUserService.UserId!,
                     currentUserService.TenantId!,
                     searchCriteria: serializer.Serialize(request));

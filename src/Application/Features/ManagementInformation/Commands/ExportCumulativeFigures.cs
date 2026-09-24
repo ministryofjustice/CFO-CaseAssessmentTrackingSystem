@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Serialization;
+﻿using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
+using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
@@ -16,15 +18,30 @@ public static class ExportCumulativeFigures
         public string? ContractId { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ISerializer serializer)
+    public class Handler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        ISerializer serializer,
+        IContractService contractService)
         : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
+            var filename = ExportDocumentNaming.BuildFileName("CumulativeFigures");
+
+            var contractName = string.IsNullOrWhiteSpace(request.ContractId)
+                ? null
+                : contractService.DataSource.FirstOrDefault(c => c.Id == request.ContractId)?.Name;
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "Cumulative Figures",
+                ("Contract", contractName),
+                ("Date", request.EndDate.ToString("MMM yyyy")));
+
             var document = GeneratedDocument
                 .Create(DocumentTemplate.CumulativeFigures, 
-                    "Cumulative Figures.xlsx", 
-                    "Cumulative Figures",
+                    filename, 
+                    description,
                     currentUserService.UserId!,
                     currentUserService.TenantId!,
                     searchCriteria: serializer.Serialize(request));
