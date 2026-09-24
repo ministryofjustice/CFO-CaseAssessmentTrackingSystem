@@ -254,7 +254,7 @@ public class EditLabelCommandTests
         {
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
-            NewDescription = new string('A', 201),
+            NewDescription = new string('A', 1001),
             NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
