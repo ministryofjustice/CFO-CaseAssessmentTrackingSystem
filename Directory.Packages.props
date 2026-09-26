@@ -15,7 +15,7 @@
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.5.4" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.4" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.103.3" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.103.4" />
     <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.101" />
     <PackageVersion Include="Blazor-ApexCharts" Version="7.0.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
@@ -23,7 +23,7 @@
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
     <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="9.1.0" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="13.5.0" />
-    <PackageVersion Include="Dapper" Version="2.1.86" />
+    <PackageVersion Include="Dapper" Version="2.1.89" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageVersion Include="GovukNotify" Version="7.2.0" />
@@ -34,14 +34,14 @@
     <PackageVersion Include="LazyCache.AspNetCore" Version="2.4.0" />
     <PackageVersion Include="Cortex.Mediator" Version="3.1.2" />
     <PackageVersion Include="MemoryPack.Generator" Version="1.21.4" />
-    <PackageVersion Include="MessagePack" Version="3.1.9" />
+    <PackageVersion Include="MessagePack" Version="3.1.10" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.3" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
@@ -58,7 +58,7 @@
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.10.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-    <PackageVersion Include="Microsoft.SqlServer.DacFx" Version="170.4.83" />
+    <PackageVersion Include="Microsoft.SqlServer.DacFx" Version="170.5.96" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Moq.Dapper" Version="1.0.7" />
     <PackageVersion Include="MudBlazor" Version="9.10.0" />
@@ -67,12 +67,12 @@
     <PackageVersion Include="NUnit" Version="4.6.1" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.3.0" />
     <PackageVersion Include="NunitXml.TestLogger" Version="8.0.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.16.0-beta.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.19.0" />
     <PackageVersion Include="Quartz" Version="3.22.0" />
     <PackageVersion Include="Quartz.AspNetCore" Version="3.22.0" />
     <PackageVersion Include="Rebus" Version="8.9.4" />
@@ -80,9 +80,9 @@
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.1" />
     <PackageVersion Include="Rebus.ServiceProvider" Version="10.7.2" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
-    <PackageVersion Include="Sentry" Version="6.11.0" />
-    <PackageVersion Include="Sentry.AspNetCore" Version="6.11.0" />
-    <PackageVersion Include="Sentry.EntityFramework" Version="6.11.0" />
+    <PackageVersion Include="Sentry" Version="6.11.1" />
+    <PackageVersion Include="Sentry.AspNetCore" Version="6.11.1" />
+    <PackageVersion Include="Sentry.EntityFramework" Version="6.11.1" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.4" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.2.1" />
