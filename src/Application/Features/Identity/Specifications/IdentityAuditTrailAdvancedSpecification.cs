@@ -27,8 +27,8 @@ public class IdentityAuditTrailAdvancedSpecification : Specification<IdentityAud
         Query
             .Where(p => p.ActionType == filter.IdentityActionType, filter.IdentityActionType is not null)
             .Where(
-                p => p.UserName == filter.UserName,
-                filter.UserName is not null
+                p => p.UserName!.Contains(filter.UserName!) || p.PerformedBy!.Contains(filter.UserName!),
+                !string.IsNullOrWhiteSpace(filter.UserName)
             )
             .Where(
                 p => p.DateTime.Date == DateTime.Now.Date,
