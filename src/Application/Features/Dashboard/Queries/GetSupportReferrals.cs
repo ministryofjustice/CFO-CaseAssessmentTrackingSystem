@@ -12,6 +12,8 @@ public static class GetSupportReferrals
         public required DateTime EndDate { get; set; }
         public string? UserId { get; set; }
         public string? TenantId { get; set; }
+        public int? LocationId { get; set; }
+        public string? LocationType { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -38,8 +40,14 @@ public static class GetSupportReferrals
                 _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
             };
 
+            var locationTypeFilter = string.IsNullOrWhiteSpace(request.LocationType)
+                ? null
+                : LocationType.FromName(request.LocationType);
+
             var query = from mi in baseQuery
                         join l in context.Locations on mi.LocationId equals l.Id
+                        where (request.LocationId == null || l.Id == request.LocationId)
+                              && (locationTypeFilter == null || l.LocationType == locationTypeFilter)
                         group mi by new
                         {
                             l.Name,

@@ -7,9 +7,27 @@
 
 <DeliveryManagementPageHeader />
 
-<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+<MudStack Row="true" Class="my-4" AlignItems="AlignItems.Center" Spacing="2">
     <MudSwitch Label="Visual Mode" Color="Color.Info" @bind-Value="VisualMode" T="bool" />
+    <div style="max-width: 640px;">
+        <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+            <PickerActions>
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+    </div>
     <MudSpacer />
+    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @SelectedLocationLabel
+    </MudButton>
+    <MudMenu Size="Size.Small" Variant="Variant.Text" Label="@SelectedLocationTypeLabel" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenuItem OnClick="@(() => OnLocationTypeChanged(string.Empty))">All Location Types</MudMenuItem>
+        @foreach (var locationType in _locationTypes)
+        {
+            <MudMenuItem OnClick="@(() => OnLocationTypeChanged(locationType))">@locationType</MudMenuItem>
+        }
+    </MudMenu>
     @if (CanFilter)
     {
         <ProviderDashboardFilter CurrentUser="CurrentUser"
@@ -17,39 +35,31 @@
                                  SelectedUserId="@SelectedUserId"
                                  TenantSelected="OnTenantSelected"
                                  UserSelected="OnUserSelected"
-                                 ClearRequested="OnClearFilter" />
-    }
+                                 ClearRequested="OnClearFilterWithLocations" />
+    }    
 </MudStack>
 
-<div style="max-width: 640px;">
-    <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
-        <PickerActions>
-            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
-        </PickerActions>
-    </MudDateRangePicker>
-</div>
 
 <MudTabs TabPanelsClass="pa-4" ApplyEffectsToContainer="true" Outlined="true" Color="Color.Info">
     <MudTabPanel Text="Enrolments" Class="pa-3">
-        <EnrolmentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <EnrolmentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
     <MudTabPanel Text="Inductions" Class="pa-3">
-        <InductionDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <InductionDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
     <MudTabPanel Text="Support &amp; Referral" Class="pa-3">
-        <SupportAndReferralDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <SupportAndReferralDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
     <MudTabPanel Text="Activities" Class="pa-3">
-        <PaidActivityComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <PaidActivityComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
     <MudTabPanel Text="Education &amp; Training" Class="pa-3">
-        <EducationAndTrainingDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <EducationAndTrainingDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
     <MudTabPanel Text="Employment" Class="pa-3">
-        <EmploymentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <EmploymentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
     <MudTabPanel Text="Reassessments" Class="pa-3">
-        <ReassessmentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" @key="@PerformanceKey" VisualMode="@VisualMode" />
+        <ReassessmentDashboardComponent DateRange="@_dateRange" UserId="@EffectiveUserId" TenantId="@EffectiveTenantId" LocationId="@_selectedLocationId" LocationType="@_selectedLocationType" @key="@PerformanceKey" VisualMode="@VisualMode" />
     </MudTabPanel>
 </MudTabs>
