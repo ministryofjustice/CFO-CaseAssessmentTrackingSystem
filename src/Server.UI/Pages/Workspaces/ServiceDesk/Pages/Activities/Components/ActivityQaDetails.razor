@@ -10,7 +10,12 @@
     <MudText Typo="Typo.h5">
         Activity Confirmation (@Activity.ParticipantId)
     </MudText>
-    
+
+    @if (PostLicenceCaseClosureEnd.HasValue)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true">@string.Format(_licenceEndedWarningMessage, PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
+    }
+
     <MudDivider />
     
     <MudText Typo="Typo.subtitle1" Color="Color.Primary">
@@ -30,7 +35,7 @@
     
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Type</strong></MudText>
-        <MudText Typo="Typo.body1">@Activity.Definition!.Name</MudText>
+        <MudText Typo="Typo.body1">@Activity.Definition.Name</MudText>
     </MudStack>
 
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">

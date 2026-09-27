@@ -26,7 +26,7 @@ public class ParticipantDto
     public DateOnly? DateOfFirstConsent { get; set; }
 
     [Description("Current Location")]
-    public LocationDto CurrentLocation { get; set; } = default!;
+    public LocationDto CurrentLocation { get; set; } = null!;
     
     [Description("Enrolment Location")]
     public LocationDto? EnrolmentLocation { get; set; }
@@ -45,9 +45,9 @@ public class ParticipantDto
 
     public ExternalIdentifierDto[] ExternalIdentifiers {get;set;} = [];
 
-    public string TenantId { get; set; } = default!;
+    public string TenantId { get; set; } = null!;
 
-    public string SupportWorker { get;set; } = default!;
+    public string SupportWorker { get;set; } = null!;
 
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
 
@@ -61,6 +61,10 @@ public class ParticipantDto
     public RiskDueReason? RiskDueReason { get; set; }
 
     public bool IsActive { get; set; }
+
+    public DateOnly? DeactivatedInFeed { get; set; }
+
+    public DateOnly? PostLicenceCaseClosureEnd => DeactivatedInFeed?.AddDays(30);
 
     private class Mapping : Profile
     {

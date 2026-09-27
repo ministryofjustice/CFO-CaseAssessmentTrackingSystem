@@ -15,6 +15,11 @@
         Programme Consent Form (@Participant.Id)
     </MudText>
 
+    @if (Participant.PostLicenceCaseClosureEnd.HasValue)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true">@string.Format(_enrolmentLicenceEndedWarningMessage, Participant.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
+    }
+
     <MudDivider/>
 
     <MudText Typo="Typo.subtitle1" Color="Color.Primary">
@@ -100,8 +105,10 @@
     public required EnrolmentQueueEntryDto QueueEntry { get; set; }
 
     [Parameter, EditorRequired] 
-    public bool ShowNationality { get; set; } = false;
+    public bool ShowNationality { get; set; }
 
     [Parameter]
     public string? WorkspaceRef { get; set; }
+
+    private readonly string _enrolmentLicenceEndedWarningMessage = ConstantString.EnrolmentLicenceEndedWarning;
 } 

@@ -172,13 +172,7 @@ public static class ConstantString
 
     
     public static string Unarchive => Localize("Unarchive");
-
-    public static string ActivePreReleaseInventoryPRI =>
-     Localize("Active Pre-Release Inventory (PRI)");
-
-    public static string CustodySupportWorker =>
-     Localize("Custody Support Worker");
-
+    
     public static string CommunitySupportWorker =>
      Localize("Community Support Worker");
 
@@ -234,6 +228,8 @@ public static class ConstantString
     Localize("Objective Successfully Completed");
 
     public static string LicenceEndedWarning => Localize("Participants licence has ended. This 30-day period should be used to complete activities and submit any associated claims. New activity should not be started during this period. Archive date: {0}.");
+
+    public static string EnrolmentLicenceEndedWarning => Localize("Participants licence has ended. This 30-day period should be used to submit Enrolment. New Enrolment should not be started during this period. Archive date: {0}.");
 
     public static string EditParticipant => Localize("Edit Participant");
 
