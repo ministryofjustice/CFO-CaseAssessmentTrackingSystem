@@ -1,4 +1,4 @@
- @using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.SecurityConstants
 
 @inherits CatsComponent<GetActivitiesFeedback.ActivitiesFeedbackDto>
@@ -34,6 +34,7 @@
                         Name="@series.Reason"
                         XValue="e => e.Recipient"
                         YValue="e => e.Count"
+                        Color="@FeedbackChartColourProvider.GetColour(series.Reason)"
                         ShowDataLabels="true"/>
                 }
 
@@ -148,7 +149,7 @@
                 }
             </ChildRowContent>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new [] { 10, 20, 50 }" />
+                <MudTablePager PageSizeOptions="[10, 20, 50]" />
             </PagerContent>
         </MudTable>
     }
