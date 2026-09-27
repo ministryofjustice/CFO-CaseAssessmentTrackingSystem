@@ -12,6 +12,7 @@ public partial class SupportAndReferral
 {
     private bool _loading = true;
     private bool _downloading;
+    private bool _exportingSummary;
 
     [Parameter, EditorRequired] public bool DataView { get; set; }
 
@@ -155,6 +156,34 @@ public partial class SupportAndReferral
         finally
         {
             _downloading = false;
+        }
+    }
+
+    private async Task OnExportSummary()
+    {
+        try
+        {
+            _exportingSummary = true;
+            var result = await GetNewMediator().Send(new ExportSupportAndReferralPaymentsSummary.Command()
+            {
+                Query = _query!
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _exportingSummary = false;
         }
     }
 }

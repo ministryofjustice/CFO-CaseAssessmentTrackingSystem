@@ -82,6 +82,12 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate Activities = new(nameof(Activities), 18);
     public static readonly DocumentTemplate ActivePRIs = new(nameof(ActivePRIs), 19);
     public static readonly DocumentTemplate EngagementsByLocation = new(nameof(EngagementsByLocation), 20);
+    public static readonly DocumentTemplate EnrolmentPaymentsSummary = new(nameof(EnrolmentPaymentsSummary), 21);
+    public static readonly DocumentTemplate InductionPaymentsSummary = new(nameof(InductionPaymentsSummary), 22);
+    public static readonly DocumentTemplate SupportAndReferralPaymentsSummary = new(nameof(SupportAndReferralPaymentsSummary), 23);
+    public static readonly DocumentTemplate ActivityPaymentsSummary = new(nameof(ActivityPaymentsSummary), 24);
+    public static readonly DocumentTemplate EducationPaymentsSummary = new(nameof(EducationPaymentsSummary), 25);
+    public static readonly DocumentTemplate EmploymentPaymentsSummary = new(nameof(EmploymentPaymentsSummary), 26);
     public static readonly DocumentTemplate PerformanceEnrolments = new(nameof(PerformanceEnrolments), 1800);
     public static readonly DocumentTemplate PerformanceInductions= new(nameof(PerformanceInductions), 1900);
     public static readonly DocumentTemplate PerformanceSupportAndReferral = new(nameof(PerformanceSupportAndReferral), 2000);

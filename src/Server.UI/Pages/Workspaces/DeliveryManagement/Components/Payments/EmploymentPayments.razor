@@ -166,6 +166,16 @@
             }
         </MudItem>
         <MudItem xs="12" md="6">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-2">
+                <MudLoadingButton Loading="@_exportingSummary"
+                                  Variant="Variant.Filled"
+                                  Color="Color.Secondary"
+                                  StartIcon="@Icons.Material.Filled.CloudDownload"
+                                  Size="Size.Small"
+                                  OnClick="@OnExportSummary">
+                    @ConstantString.Export
+                </MudLoadingButton>
+            </MudStack>
             <MudTable Dense="true" Items="@_summaryData"
             Hover="true"
             Breakpoint="Breakpoint.Sm"
