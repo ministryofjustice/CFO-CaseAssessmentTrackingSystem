@@ -14,6 +14,7 @@ using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
+using Cfo.Cats.Domain.ExternalRisk;
 using Cfo.Cats.Domain.HelpLinks;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
@@ -47,6 +48,7 @@ public class ApplicationDbContext
     public DbSet<Participant> Participants => Set<Participant>();
     public DbSet<PathwayPlan> PathwayPlans => Set<PathwayPlan>();
     public DbSet<Risk> Risks => Set<Risk>();
+    public DbSet<ParticipantRiskUpdate> ParticipantRiskUpdates => Set<ParticipantRiskUpdate>();
     public DbSet<ParticipantAssessment> ParticipantAssessments => Set<ParticipantAssessment>();
 
     public DbSet<ParticipantBio> ParticipantBios => Set<ParticipantBio>();

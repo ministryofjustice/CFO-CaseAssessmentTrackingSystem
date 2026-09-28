@@ -58,30 +58,3 @@
         }        
     </MudCardActions>
 </MudCard>
-
-@* 
-
-
-
-
-        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText Typo="Typo.subtitle2">Next Review Due</MudText>
-            @if (ParticipantSummaryDto.RiskDue.HasValue)
-            {
-                <MudText> ()</MudText>
-            }
-        </MudStack>
-        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText Typo="Typo.subtitle2">Risk Due Reason</MudText>
-            <MudChip Size="Size.Small"
-                     T="string"
-                     Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
-                @ParticipantSummaryDto.RiskDueReason
-            </MudChip>
-        </MudStack>
-    </MudCardContent>
-
-    <MudCardActions>
-
-    </MudCardActions>
-</MudCard> *@

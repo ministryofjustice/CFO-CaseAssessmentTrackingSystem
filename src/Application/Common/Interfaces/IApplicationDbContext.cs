@@ -15,6 +15,7 @@ using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
+using Cfo.Cats.Domain.ExternalRisk;
 using Cfo.Cats.Domain.HelpLinks;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
@@ -38,6 +39,8 @@ public interface IApplicationDbContext
     DbSet<PathwayPlan> PathwayPlans { get; }
 
     DbSet<Risk> Risks { get; }
+
+    DbSet<ParticipantRiskUpdate> ParticipantRiskUpdates { get; }
 
     DbSet<KeyValue> KeyValues { get; }
 
