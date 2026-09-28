@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
@@ -24,8 +25,12 @@ public static class ExportCaseWorkload
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("CaseWorkload");
+
+            var description = ExportDocumentNaming.BuildDescription("CaseWorkload Export");
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.CaseWorkload, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
@@ -36,25 +41,26 @@ public static class ExportCaseWorkload
     public class Validator : AbstractValidator<Command>
     {
         private readonly ICurrentUserService currentUserService;
+        private readonly IApplicationSettings settings;
         private readonly IUnitOfWork unitOfWork;
-        private readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
 
-        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IApplicationSettings settings)
         {
             this.currentUserService = currentUserService;
+            this.settings = settings;
             this.unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
-                    .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+                    .WithMessage($"You must wait {ExportDocumentNaming.GetDocumentExportCooldown(settings).Humanize()} between requesting documents.");
             });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
-            var cooldownPeriod = DateTime.UtcNow - cooldown;
+            var cooldownPeriod = DateTime.UtcNow - ExportDocumentNaming.GetDocumentExportCooldown(settings);
 
             var hasRecentlyRequestedDocument = unitOfWork.DbContext.GeneratedDocuments
                 .Any(d => d.CreatedBy == currentUserService.UserId && d.Created > cooldownPeriod);

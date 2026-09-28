@@ -10,6 +10,8 @@ public interface IApplicationSettings
     string PreLoginMessage { get; set; }
 
     int IdleTimeOutMinutes { get; set; }
+
+    int? DocumentExportCooldownSeconds { get; set; }
 }
 
 public class ThemeDarkColours

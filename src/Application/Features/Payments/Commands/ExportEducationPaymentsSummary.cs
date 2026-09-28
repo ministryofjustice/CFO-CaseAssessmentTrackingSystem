@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Application.SecurityConstants;
@@ -18,14 +20,26 @@ public static class ExportEducationPaymentsSummary
 
     public class Handler(
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUser) : ICommandHandler<Command, Result>
+        ICurrentUserService currentUser,
+        IContractService contractService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
+            var filename = ExportDocumentNaming.BuildFileName("EducationPaymentsSummary");
+
+            var contractName = string.IsNullOrWhiteSpace(request.Query.ContractId)
+                ? null
+                : contractService.DataSource.FirstOrDefault(c => c.Id == request.Query.ContractId)?.Name;
+
+            var description = ExportDocumentNaming.BuildDescription(
+                "EducationPaymentsSummary Export",
+                ("Contract", contractName),
+                ("Date", new DateTime(request.Query.Year, request.Query.Month, 1).ToString("MMM yyyy")));
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.EducationPaymentsSummary, "EducationPaymentsSummary.xlsx", "Education By Contract Summary Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.EducationPaymentsSummary, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
@@ -36,25 +50,26 @@ public static class ExportEducationPaymentsSummary
     public class Validator : AbstractValidator<Command>
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly IApplicationSettings _settings;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly TimeSpan _cooldown = TimeSpan.FromSeconds(30);
 
-        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IApplicationSettings settings)
         {
             _currentUserService = currentUserService;
+            _settings = settings;
             _unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
-                    .WithMessage($"You must wait {_cooldown.Humanize()} between requesting documents.");
+                    .WithMessage($"You must wait {ExportDocumentNaming.GetDocumentExportCooldown(_settings).Humanize()} between requesting documents.");
             });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
-            var cooldownPeriod = DateTime.UtcNow - _cooldown;
+            var cooldownPeriod = DateTime.UtcNow - ExportDocumentNaming.GetDocumentExportCooldown(_settings);
 
             var hasRecentlyRequestedDocument = _unitOfWork.DbContext.GeneratedDocuments
                 .Any(d => d.CreatedBy == _currentUserService.UserId && d.Created > cooldownPeriod);

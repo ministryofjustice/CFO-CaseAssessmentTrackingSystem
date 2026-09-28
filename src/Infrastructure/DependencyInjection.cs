@@ -374,6 +374,15 @@ public static class DependencyInjection
                 var logger = sp.GetRequiredService<ILogger<CachingInitiativeService>>();
 
                 return new CachingInitiativeService(cache, service, logger);
+            })
+            .AddSingleton<UserService>()
+            .AddSingleton<IUserService>(sp =>
+            {
+                var service = sp.GetRequiredService<UserService>();
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingUserService>>();
+
+                return new CachingUserService(cache, service, logger);
             });
 
         services.AddSingleton<EfTargetsProvider>();
@@ -595,15 +604,6 @@ public static class DependencyInjection
             options.LoginPath = "/pages/authentication/login";
             options.Cookie.SameSite = SameSiteMode.Strict;
             options.Cookie.SecurePolicy = policy;
-        });
-
-        services.AddSingleton<UserService>();
-        services.AddSingleton<IUserService>(sp => {
-            var service = sp.GetRequiredService<UserService>();
-            var cache = sp.GetRequiredService<IFusionCache>();
-            var logger =sp.GetRequiredService<ILogger<CachingUserService>>();
-
-            return new CachingUserService(cache, service, logger);
         });
 
         return services;

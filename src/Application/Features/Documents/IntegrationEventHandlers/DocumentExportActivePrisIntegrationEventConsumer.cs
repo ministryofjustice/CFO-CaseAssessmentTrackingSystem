@@ -50,8 +50,13 @@ public class DocumentExportActivePrisIntegrationEventConsumer(
             {
                 CurrentUser = stubUser,
                 Keyword = request.Keyword,
+                JustMyPris = request.JustMyPris,
                 IncludeOutgoing = request.IncludeOutgoing,
                 IncludeIncoming = request.IncludeIncoming,
+                CustodySupportWorker = request.CustodySupportWorker,
+                CommunitySupportWorker = request.CommunitySupportWorker,
+                ExpectedReleaseRegionId = request.ExpectedReleaseRegionId,
+                ActiveStatus = request.ActiveStatus,
                 OrderBy = request.OrderBy ?? "Id",
                 SortDirection = request.SortDirection ?? "Descending",
                 PageNumber = 1,

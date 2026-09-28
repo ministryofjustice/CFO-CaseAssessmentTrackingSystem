@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
@@ -28,38 +29,26 @@ public static class ExportEngagementsByLocation
         {
             var json = JsonConvert.SerializeObject(request.Query);
 
-            var monthName = new DateTime(request.Query.Year, request.Query.Month, 1).ToString("MMM");
+            var filename = ExportDocumentNaming.BuildFileName("EngagementsByLocation");
 
-            var fileNameParts = new List<string> { "EngagementsByLocation", request.Query.Year.ToString(), monthName };
+            var locationName = request.Query.LocationId.HasValue
+                ? locationService.DataSource.FirstOrDefault(l => l.Id == request.Query.LocationId.Value)?.Name
+                : null;
 
-            if (request.Query.LocationId.HasValue)
-            {
-                var locationName = locationService.DataSource.FirstOrDefault(l => l.Id == request.Query.LocationId.Value)?.Name.Replace(" ", "_");
-                if (locationName != null)
-                {
-                    fileNameParts.Add(locationName);
-                }
-            }
+            var tenantName = string.IsNullOrWhiteSpace(request.Query.TenantId)
+                ? null
+                : tenantService.DataSource.FirstOrDefault(t => t.Id == request.Query.TenantId)?.Name;
 
-            if (!string.IsNullOrWhiteSpace(request.Query.EngagementType))
-            {
-                var engagementType = request.Query.EngagementType.Replace(" ", "_");
-                fileNameParts.Add(engagementType);
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.Query.TenantId))
-            {
-                var tenantName = tenantService.DataSource.FirstOrDefault(t => t.Id == request.Query.TenantId)?.Name.Replace(" ","_");
-                if (tenantName != null)
-                {
-                    fileNameParts.Add(tenantName);
-                }
-            }
-
-            var filename = string.Join("-", fileNameParts) + ".xlsx";
+            var description = ExportDocumentNaming.BuildDescription(
+                "Engagements By Location Export",
+                ("Location", locationName),
+                ("Category", request.Query.EngagementType),
+                ("Location Type", request.Query.LocationType),
+                ("Contract", tenantName),
+                ("Date", new DateTime(request.Query.Year, request.Query.Month, 1).ToString("MMM yyyy")));
 
             var document = GeneratedDocument
-                .Create(DocumentTemplate.EngagementsByLocation, filename, "Engagements By Location Export", currentUser.UserId!, currentUser.TenantId!, json);
+                .Create(DocumentTemplate.EngagementsByLocation, filename, description, currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
@@ -70,25 +59,26 @@ public static class ExportEngagementsByLocation
     public class Validator : AbstractValidator<Command>
     {
         private readonly ICurrentUserService currentUserService;
+        private readonly IApplicationSettings settings;
         private readonly IUnitOfWork unitOfWork;
-        private readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
 
-        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IApplicationSettings settings)
         {
             this.currentUserService = currentUserService;
+            this.settings = settings;
             this.unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
-                    .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+                    .WithMessage($"You must wait {ExportDocumentNaming.GetDocumentExportCooldown(settings).Humanize()} between requesting documents.");
             });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
-            var cooldownPeriod = DateTime.UtcNow - cooldown;
+            var cooldownPeriod = DateTime.UtcNow - ExportDocumentNaming.GetDocumentExportCooldown(settings);
 
             var hasRecentlyRequestedDocument = unitOfWork.DbContext.GeneratedDocuments
                 .Any(d => d.CreatedBy == currentUserService.UserId && d.Created > cooldownPeriod);

@@ -11,4 +11,5 @@ public class AppConfigurationSettings : IApplicationSettings
     public required ThemeDarkColours PrimaryColourDark { get; set; }
     public required string PreLoginMessage { get; set; }
     public int IdleTimeOutMinutes { get; set; }
+    public int? DocumentExportCooldownSeconds { get; set; }
 }
