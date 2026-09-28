@@ -70,7 +70,7 @@ internal static class AppExtensions
                 .WithCatsDatabaseReference(databases.CatsDb)
                 .WithDmsConfiguration(builder.Configuration)
                 .WithAwsConfiguration(builder.Configuration)
-                .WithReplicas(4) // use 4 replicas to simulate a few processes for management
+                .WithReplicas(1) // use 4 replicas to simulate a few processes for management
                 .WithReference(rabbit)
                 .WaitFor(rabbit);
         }
