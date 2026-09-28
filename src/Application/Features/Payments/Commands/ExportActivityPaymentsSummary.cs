@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
@@ -50,25 +50,26 @@ public static class ExportActivityPaymentsSummary
     public class Validator : AbstractValidator<Command>
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly IApplicationSettings _settings;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly TimeSpan _cooldown = TimeSpan.FromSeconds(30);
 
-        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IApplicationSettings settings)
         {
             _currentUserService = currentUserService;
+            _settings = settings;
             _unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
-                    .WithMessage($"You must wait {_cooldown.Humanize()} between requesting documents.");
+                    .WithMessage($"You must wait {ExportDocumentNaming.GetDocumentExportCooldown(_settings).Humanize()} between requesting documents.");
             });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
-            var cooldownPeriod = DateTime.UtcNow - _cooldown;
+            var cooldownPeriod = DateTime.UtcNow - ExportDocumentNaming.GetDocumentExportCooldown(_settings);
 
             var hasRecentlyRequestedDocument = _unitOfWork.DbContext.GeneratedDocuments
                 .Any(d => d.CreatedBy == _currentUserService.UserId && d.Created > cooldownPeriod);

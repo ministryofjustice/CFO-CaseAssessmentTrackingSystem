@@ -7,6 +7,13 @@ public static class ExportDocumentNaming
 {
     private const string Extension = ".xlsx";
 
+    public static readonly TimeSpan DefaultDocumentExportCooldown = TimeSpan.FromSeconds(30);
+
+    public static TimeSpan GetDocumentExportCooldown(IApplicationSettings settings)
+        => settings.DocumentExportCooldownSeconds.HasValue
+            ? TimeSpan.FromSeconds(settings.DocumentExportCooldownSeconds.Value)
+            : DefaultDocumentExportCooldown;
+
     public static string BuildFileName(string exportName, DateTime? generatedOn = null)
     {
         var date = generatedOn ?? DateTime.UtcNow;

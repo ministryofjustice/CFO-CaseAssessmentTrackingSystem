@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Exports;
+using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
@@ -21,7 +22,8 @@ public static class ExportPqaEnrolments
     public class Handler(
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUser,
-        ITenantService tenantService) : ICommandHandler<Command, Result>
+        ITenantService tenantService,
+        IUserService userService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -35,10 +37,7 @@ public static class ExportPqaEnrolments
 
             var supportWorkerName = string.IsNullOrWhiteSpace(request.Query.SupportWorkerId)
                 ? null
-                : await unitOfWork.DbContext.Users
-                    .Where(u => u.Id == request.Query.SupportWorkerId)
-                    .Select(u => u.DisplayName)
-                    .FirstOrDefaultAsync(cancellationToken);
+                : userService.GetDisplayName(request.Query.SupportWorkerId);
 
             var description = ExportDocumentNaming.BuildDescription(
                 "PqaEnrolments Export",
@@ -58,25 +57,26 @@ public static class ExportPqaEnrolments
     public class Validator : AbstractValidator<Command>
     {
         private readonly ICurrentUserService currentUserService;
+        private readonly IApplicationSettings settings;
         private readonly IUnitOfWork unitOfWork;
-        private readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
 
-        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IApplicationSettings settings)
         {
             this.currentUserService = currentUserService;
+            this.settings = settings;
             this.unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
-                    .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+                    .WithMessage($"You must wait {ExportDocumentNaming.GetDocumentExportCooldown(settings).Humanize()} between requesting documents.");
             });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
-            var cooldownPeriod = DateTime.UtcNow - cooldown;
+            var cooldownPeriod = DateTime.UtcNow - ExportDocumentNaming.GetDocumentExportCooldown(settings);
 
             var hasRecentlyRequestedDocument = unitOfWork.DbContext.GeneratedDocuments
                 .Any(d => d.CreatedBy == currentUserService.UserId && d.Created > cooldownPeriod);
