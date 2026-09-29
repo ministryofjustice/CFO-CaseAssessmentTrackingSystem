@@ -43,8 +43,9 @@ public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<Pri
         {
             // we are a PRI objective, and we have a release date. Ergo, raise an event
             await unitOfWork.DbContext.InsertOutboxMessage(
-                new PRIThroughTheGateCompletedIntegrationEvent(result
-                    .PRIId));
+                new PRIThroughTheGateCompletedIntegrationEvent(
+                        result.PRIId,
+                        context.OccurredOn));
             await unitOfWork.SaveChangesAsync();
         }
 

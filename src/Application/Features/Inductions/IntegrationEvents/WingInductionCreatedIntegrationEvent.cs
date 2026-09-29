@@ -1,7 +1,9 @@
+using Cfo.Cats.Application.Outbox;
+
 namespace Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 
-public record WingInductionCreatedIntegrationEvent(Guid Id, DateTime OccurredOn);
+public record WingInductionCreatedIntegrationEvent(Guid WingInductionId, DateTime OccurredOn) : IntegrationEvent(OccurredOn);
 
-public record HubInductionCreatedIntegrationEvent(Guid Id, DateTime OccurredOn);
+public record HubInductionCreatedIntegrationEvent(Guid HubInductionId, DateTime OccurredOn)  : IntegrationEvent(OccurredOn);
 
-public record WingPhaseCompletedIntegrationEvent(Guid InductionId, int Phase);
+public record WingPhaseCompletedIntegrationEvent(Guid WingInductionId, int Phase, DateTime OccurredOn) : IntegrationEvent(OccurredOn);

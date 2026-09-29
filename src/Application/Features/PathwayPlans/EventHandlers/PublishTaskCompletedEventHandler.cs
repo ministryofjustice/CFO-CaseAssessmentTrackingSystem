@@ -12,6 +12,7 @@ public class PublishTaskCompletedEventHandler(IUnitOfWork unitOfWork) : INotific
             notification.Item.ObjectiveId,
             notification.Item.IsMandatory,
             notification.Item.Index,
-            notification.Item.CompletedStatus!.Name
+            notification.Item.CompletedStatus!.Name,
+            notification.Item.Completed!.Value
         ));
 }

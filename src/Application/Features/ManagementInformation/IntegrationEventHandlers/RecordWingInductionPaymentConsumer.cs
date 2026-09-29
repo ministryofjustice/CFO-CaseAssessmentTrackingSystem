@@ -16,7 +16,7 @@ public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandl
                 .ThenInclude(l => l!.Contract)
             .Include(a => a.Owner)
             .AsNoTracking()
-            .SingleAsync(i => i.Id == context.Id);
+            .SingleAsync(i => i.Id == context.WingInductionId);
 
         IneligibilityReason? ineligibilityReason = null;
 

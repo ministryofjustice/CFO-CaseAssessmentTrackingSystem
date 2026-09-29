@@ -49,6 +49,11 @@ public partial class Index
             links.Add(AdministrationLinks.AuditTrails);
             links.Add(AdministrationLinks.Outbox);
             links.Add(AdministrationLinks.PickList);
+
+            if (Config.GetValue<bool>("Features:IntegrationEventPublishing:Enabled"))
+            {
+                links.Add(AdministrationLinks.IntegrationEvents);
+            }
         }
         
         if (_showSystemFunctions)

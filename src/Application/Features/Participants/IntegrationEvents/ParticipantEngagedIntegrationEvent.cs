@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+﻿using Cfo.Cats.Application.Outbox;
+
+namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 
 public record ParticipantEngagedIntegrationEvent(
     string ParticipantId, 
@@ -9,4 +11,4 @@ public record ParticipantEngagedIntegrationEvent(
     string EngagedAtLocationType,
     string EngagedAtContract,
     string EngagedWith,
-    string EngagedWithTenant);
+    string EngagedWithTenant) : IntegrationEvent(EngagedOn.ToDateTime(TimeOnly.MinValue));

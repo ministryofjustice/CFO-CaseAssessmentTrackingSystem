@@ -16,7 +16,7 @@ public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
                 .ThenInclude(l => l!.Contract)
             .Include(a => a.Owner)
             .AsNoTracking()
-            .SingleAsync(i => i.Id == context.Id);
+            .SingleAsync(i => i.Id == context.HubInductionId);
 
         IneligibilityReason? ineligibilityReason = null;
 

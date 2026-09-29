@@ -12,7 +12,7 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMess
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
-            .SingleAsync(activity => activity.Id == context.Id);
+            .SingleAsync(activity => activity.Id == context.ActivitiyId);
 
         if (activity.Type == ActivityType.Employment || activity.Type == ActivityType.EducationAndTraining)
         {

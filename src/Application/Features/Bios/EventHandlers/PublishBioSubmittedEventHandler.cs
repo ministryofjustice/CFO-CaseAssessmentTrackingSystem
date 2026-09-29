@@ -7,5 +7,5 @@ namespace Cfo.Cats.Application.Features.Bios.EventHandlers;
 public class PublishBioSubmittedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<BioSubmittedDomainEvent>
 {
     public async Task Handle(BioSubmittedDomainEvent notification, CancellationToken cancellationToken) 
-    => await unitOfWork.DbContext.InsertOutboxMessage(new BioSubmittedIntegrationEvent(notification.Item.Id));
+    => await unitOfWork.DbContext.InsertOutboxMessage(new BioSubmittedIntegrationEvent(notification.Item.Id, notification.Item.Completed!.Value));
 }

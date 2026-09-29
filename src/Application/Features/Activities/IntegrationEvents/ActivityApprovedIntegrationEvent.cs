@@ -1,3 +1,6 @@
-﻿namespace Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+﻿using Cfo.Cats.Application.Outbox;
 
-public record ActivityApprovedIntegrationEvent(Guid Id, DateTime OccurredOn);
+namespace Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+
+public record ActivityApprovedIntegrationEvent(Guid ActivitiyId, DateTime OccurredOn) 
+    : IntegrationEvent(OccurredOn);

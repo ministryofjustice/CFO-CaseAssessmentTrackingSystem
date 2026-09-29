@@ -1,5 +1,7 @@
-﻿namespace Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
+﻿using Cfo.Cats.Application.Outbox;
 
-public record PRIAssignedIntegrationEvent(Guid PRIId, DateTime OccurredOn);
+namespace Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 
-public record PRIThroughTheGateCompletedIntegrationEvent(Guid PRIId);
+public record PRIAssignedIntegrationEvent(Guid PRIId, DateTime OccurredOn) : IntegrationEvent(OccurredOn);
+
+public record PRIThroughTheGateCompletedIntegrationEvent(Guid PRIId, DateTime OccurredOn) : IntegrationEvent(OccurredOn);

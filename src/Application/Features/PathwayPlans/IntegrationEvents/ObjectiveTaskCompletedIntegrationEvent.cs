@@ -1,8 +1,11 @@
-﻿namespace Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
+﻿using Cfo.Cats.Application.Outbox;
+
+namespace Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 
 public record ObjectiveTaskCompletedIntegrationEvent(
     Guid TaskId,
     Guid ObjectiveId,
     bool IsMandatoryTask,
     int Index,
-    string CompletionState);
+    string CompletionState,
+    DateTime OccurredOn) : IntegrationEvent(OccurredOn);

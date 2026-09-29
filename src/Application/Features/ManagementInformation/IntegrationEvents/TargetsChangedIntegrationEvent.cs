@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Cfo.Cats.Application.Outbox;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEvents;
 
-public record TargetsChangedIntegrationEvent();
+public record TargetsChangedIntegrationEvent() : IntegrationEvent(DateTime.Now);
