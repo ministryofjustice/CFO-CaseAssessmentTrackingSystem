@@ -1,4 +1,5 @@
-﻿@inherits CatsComponentBase
+﻿@using Cfo.Cats.Application.Common.Validators
+@inherits CatsComponentBase
 
 <MudDialog>
     <DialogContent>
@@ -18,12 +19,47 @@
                 <MudDatePicker @bind-Date="Model.InitiativeStartDate"
                                Label="@Model.GetMemberDescription(x => x.InitiativeStartDate)"
                                For="@(() => Model.InitiativeStartDate)"
+                               MinDate="_selectedInitiative?.LifetimeStart"
+                               MaxDate="@(_selectedInitiative is null ? DateTime.Today.Date : (_selectedInitiative.LifetimeEnd < DateTime.Today.Date ? _selectedInitiative.LifetimeEnd : DateTime.Today.Date))"
                                Class="mt-4" />
+            }
+            @if (HasLinkedInitiative && RequiresElevatedUnlink)
+            {
+                @if (_canUnlinkInitiative)
+                {
+                    <MudTextField @bind-Value="Model.Justification"
+                                  Label="@Model.GetMemberDescription(x => x.Justification)"
+                                  For="@(() => Model.Justification)"
+                                  HelperText="Please explain why the linked initiative is being removed or replaced, e.g. it was recorded against the wrong location."
+                                  Lines="4"
+                                  Class="mt-4"
+                                  MaxLength=@ValidationConstants.NotesLength
+                                  Required="true"
+                                  RequiredError="A justification is required when removing or replacing an initiative from a different tenant/region."
+                                  Immediate="true"
+                                  Counter=@ValidationConstants.NotesLength/>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Warning" Class="mt-4">
+                        This initiative belongs to a different tenant/region. Removing or replacing it is restricted to
+                        Contract & Performance Support Managers (CMPSM) and above. Please select the original initiative
+                        again or ask a CMPSM to make this change.
+                    </MudAlert>
+                }
+            }
+            @if (HasLinkedInitiative && RequiresElevatedUnlink is false && BlockedByActivitiesForRegularUser)
+            {
+                <MudAlert Severity="Severity.Warning" Class="mt-4">
+                    Activities have already been recorded against this objective, so this initiative link
+                    cannot be removed or replaced. Please select the original initiative again, or ask a
+                    Contract & Performance Support Manager (CMPSM) or above to make this change.
+                </MudAlert>
             }
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" Disabled="@SaveDisabled" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
