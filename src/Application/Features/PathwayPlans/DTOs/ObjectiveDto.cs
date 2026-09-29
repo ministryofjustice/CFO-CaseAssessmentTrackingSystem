@@ -16,6 +16,13 @@ public class ObjectiveDto
     public IEnumerable<ObjectiveTaskDto> Tasks { get; set; } = [];
     public string? Justification { get; set; }
     public InitiativeSummaryDto? LinkedInitiative { get; set; }
+
+    /// <summary>
+    /// True when one or more activities have been recorded against this objective. Regular users cannot
+    /// unlink an initiative from an objective that already has activities recorded against it; only
+    /// CMPSM+ can bypass this restriction.
+    /// </summary>
+    public bool HasActivities { get; set; }
     public required int Index { get; set; }
     public string DisplayName => $"{Index}. {Description}";
     public bool IsCompleted => Completed.HasValue;
