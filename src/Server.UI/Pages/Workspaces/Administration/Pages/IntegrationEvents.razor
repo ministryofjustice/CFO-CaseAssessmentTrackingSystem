@@ -1,0 +1,61 @@
+@page "/pages/workspace/administration/integrationevents"
+
+@using Cfo.Cats.Application.Common.Interfaces
+@using Cfo.Cats.Application.Outbox
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
+
+@inherits OwningComponentBase<IUnitOfWork>
+
+<PageTitle>Integration Events</PageTitle>
+
+<AdministrationPageHeader />
+
+@if (_enabled == false)
+{
+    <MudAlert Severity="Severity.Warning" Dense="true" Class="mt-4">
+        Integration event publishing is not enabled in this environment.
+    </MudAlert>
+}
+else
+{
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" md="10" lg="8">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudText Typo="Typo.body1" Class="mb-4">
+                    Select an integration event, edit the generated JSON payload, then publish it to the outbox.
+                    The message will be picked up and dispatched by the outbox publisher. This tool is intended
+                    for development and testing only.
+                </MudText>
+
+                <MudSelect T="Type" Label="Integration Event" Value="_selectedType" ValueChanged="OnEventTypeChanged"
+                           Dense="true" AnchorOrigin="Origin.BottomLeft" Class="mb-4">
+                    @foreach (var type in _eventTypes)
+                    {
+                        <MudSelectItem T="Type" Value="@type">@type.Name</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudTextField T="string" @bind-Value="_json" Label="Payload (JSON)"
+                              Lines="18" Variant="Variant.Outlined"
+                              Disabled="@(_selectedType is null)" Class="mb-4"
+                              Style="font-family: monospace;" />
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                           OnClick="Publish" Disabled="@(_selectedType is null || _publishing)"
+                           StartIcon="@Icons.Material.Filled.Send">
+                    @if (_publishing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Publishing</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Publish</MudText>
+                    }
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
