@@ -59,7 +59,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus
             events.AddRange(hubs.Select(hi => new HubInductionCreatedIntegrationEvent(hi, DateTime.UtcNow)));
             events.AddRange(activities.Select(e => new ActivityApprovedIntegrationEvent(e.Id, e.CompletedOn!.Value)));
             events.AddRange(pris.Select(e => new PRIAssignedIntegrationEvent(e.Id, e.MeetingAttendedOn.ToDateTime(TimeOnly.MinValue))));
-            events.AddRange(mandatoryTasks.Select(task => new PRIThroughTheGateCompletedIntegrationEvent(task.PRI.Id)));
+            events.AddRange(mandatoryTasks.Select(task => new PRIThroughTheGateCompletedIntegrationEvent(task.PRI.Id, task.PRI.CompletedOn!.Value)));
             events.AddRange(reassessments.Select(r => new AssessmentScoredIntegrationEvent(r.Id, r.ParticipantId, r.Completed!.Value)));
 
             foreach (var message in events)

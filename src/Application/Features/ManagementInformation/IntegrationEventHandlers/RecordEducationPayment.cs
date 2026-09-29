@@ -13,7 +13,7 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
-            .SingleOrDefaultAsync(activity => activity.Id == context.Id);
+            .SingleOrDefaultAsync(activity => activity.Id == context.ActivitiyId);
 
         if (activity is null)
         {

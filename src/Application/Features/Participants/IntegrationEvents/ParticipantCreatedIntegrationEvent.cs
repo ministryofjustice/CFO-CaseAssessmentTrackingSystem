@@ -1,3 +1,6 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+﻿using Cfo.Cats.Application.Outbox;
 
-public record ParticipantCreatedIntegrationEvent(string ParticipantId, string? PrimaryRecordKeyAtCreation, DateTime OccurredOn);
+namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+
+public record ParticipantCreatedIntegrationEvent(string ParticipantId, string? PrimaryRecordKeyAtCreation, DateTime OccurredOn)
+    : IntegrationEvent(OccurredOn);

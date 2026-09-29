@@ -8,7 +8,7 @@ public class PublishWingPhaseCompletedDomainEventHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(InductionPhaseCompletedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var e = new WingPhaseCompletedIntegrationEvent(notification.InductionId, notification.Item.Number);
+        var e = new WingPhaseCompletedIntegrationEvent(notification.InductionId, notification.Item.Number, notification.Item.CompletedDate!.Value);
         await unitOfWork.DbContext.InsertOutboxMessage(e);
     }
 }
