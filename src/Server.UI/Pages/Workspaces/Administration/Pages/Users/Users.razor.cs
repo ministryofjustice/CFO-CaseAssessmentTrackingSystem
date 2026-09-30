@@ -571,8 +571,7 @@ public partial class Users
     {
         var parameters = new DialogParameters<Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog>
         {
-            { nameof(Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog.CurrentUser), UserProfile },
-            { nameof(Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog.ShowAllOption), !string.IsNullOrEmpty(_selectedTenantId) }
+            { nameof(Cfo.Cats.Server.UI.Components.Identity.SelectTenantDialog.CurrentUser), UserProfile }
         };
 
         var options = new DialogOptions
@@ -593,7 +592,7 @@ public partial class Users
 
         if (result is { Canceled: false, Data: Cfo.Cats.Server.UI.Components.Identity.SelectedTenant tenant })
         {
-            _selectedTenantId = string.IsNullOrEmpty(tenant.TenantId) ? null : tenant.TenantId;
+            _selectedTenantId = tenant.TenantId;
             _currentPage = 1;
             await LoadUsersAsync();
         }
