@@ -1,7 +1,11 @@
 ﻿using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
+using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
 
@@ -13,6 +17,9 @@ public partial class MyParticipantsComponent
 
     [CascadingParameter(Name="IsDarkMode")]
     public bool IsDarkMode { get; set; }
+
+    [Inject]
+    public CatsSessionStorage SessionStorage { get;set; } = null!;
 
     protected override void OnInitialized() => _chartOptions = new()
     {
@@ -61,7 +68,43 @@ public partial class MyParticipantsComponent
         }
     };
 
-    private string PointColour(DataItem item) => item.Colour;    
+    private string PointColour(DataItem item) => item.Colour;
+
+    private DataItem? _selectedItem;
+
+    private Task OnDataPointSelected(SelectedData<DataItem> selection)
+    {
+        _selectedItem = selection.DataPoint?.Items?.FirstOrDefault();
+
+        if (_selectedItem is not null)
+        {
+            SessionStorage.SetAsync(
+                ParticipantsSessionData.FromQuery(
+                   new ParticipantsWithPagination.Query()
+                    {
+                        JustMyCases = false,
+                        ListView =  _selectedItem.Key switch{
+                            "Enrolling" => ParticipantListView.Enrolling,
+                            "Approved" => ParticipantListView.Approved,
+                            "Identified" => ParticipantListView.Identified,
+                            "Submitted to PQA" => ParticipantListView.SubmittedToProvider,
+                            "Submitted to Authority" => ParticipantListView.SubmittedToQa,
+                             _ => ParticipantListView.Default
+                        },
+                        PageNumber = 1,
+                        PageSize = 10,
+                        Keyword = null,
+                        OrderBy = "Id",
+                        SortDirection = "Ascending"
+                    },
+                    false
+            ));
+            Navigation.NavigateTo(ParticipantLinks.All.Href, false);
+
+        }
+
+        return Task.CompletedTask;
+    }
     
     protected override IQuery<Result<ParticipantCountSummaryDto>> CreateQuery() => 
        new GetMyParticipantsDashboard.Query()
