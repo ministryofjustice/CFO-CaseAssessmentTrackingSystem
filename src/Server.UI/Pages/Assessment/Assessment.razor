@@ -9,9 +9,9 @@
 
 @page "/pages/workspace/participants/{Upci}/assessment/{AssessmentId:guid}"
 
-@if (_model != null && string.IsNullOrEmpty(assessmentWarningMessage))
+@if (_model != null && string.IsNullOrEmpty(AssessmentWarningMessage))
 {
-    <div tabindex="-1" @ref="topOfPageElement"></div>
+    <div tabindex="-1" @ref="_topOfPageElement"></div>
     <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
     MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
     ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
@@ -31,7 +31,7 @@
             {
                 <MudButton Color="Color.Warning" Variant="Variant.Filled" 
                 StartIcon="@Icons.Material.Filled.Delete"
-                OnClick="DeleteAssessment"
+                OnClick="@DeleteAssessment"
                 Style="margin-right: 16px; margin-bottom:4px"
                 IconColor="Color.Surface">@ConstantString.Delete</MudButton>
             }
@@ -41,17 +41,17 @@
 }
 else
 {
-    //Handle inital load
-    if (!string.IsNullOrEmpty(assessmentWarningMessage))
+    //Handle initial load
+    if (!string.IsNullOrEmpty(AssessmentWarningMessage))
     {
         <MudContainer Class="d-flex flex-column align-center justify-center">
 
             <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
-                @assessmentWarningMessage
+                @AssessmentWarningMessage
             </MudAlert>
 
             <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
-                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">
                     @ConstantString.Cancel
                 </MudButton>
             </MudContainer>
@@ -61,13 +61,13 @@ else
 }
 
 @code {
-    private bool _showPrevious = false;
+    private bool _showPrevious;
     private bool _showDelete = true;
 
-    private static string assessmentWarningMessage { get; set; } = string.Empty;
-    private ParticipantSummaryDto? _participant = null;
+    private string AssessmentWarningMessage { get; set; } = string.Empty;
+    private ParticipantSummaryDto? _participant;
 
-    private ElementReference topOfPageElement;
+    private ElementReference _topOfPageElement;
 
     [Parameter]
     public string Upci { get; set; } = string.Empty;
@@ -78,22 +78,22 @@ else
     [Parameter]
     public Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? Model { get; set; }
         
-    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
     private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
 
     private CatsMudStepper Stepper { get; set; } = new();
 
-    private int TabsLength => Stepper.Steps.Count();
+    //private int TabsLength => Stepper.Steps.Count();
 
     //These should be local to result step component in future.
     private bool Processing { get; set; }
-    private bool SubmissionSuccess { get; set; } = false;
+    private bool SubmissionSuccess { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _model ??= Model;
-        assessmentWarningMessage = string.Empty;
+        AssessmentWarningMessage = string.Empty;
 
         if (_model is null)
         {
@@ -114,7 +114,7 @@ else
                 }
                 else
                 {
-                    assessmentWarningMessage = "No Assessment";
+                    AssessmentWarningMessage = "No Assessment";
                 }
             }
         }        
@@ -125,6 +125,12 @@ else
         try
         {
             Processing = true;
+
+            // Update button visibility immediately (before the save completes) so the
+            // Previous/Delete buttons don't briefly flash on the final step while saving.
+            _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+            _showDelete = Stepper.IsResultStep == false;
+
             if (await CheckParticipantActive())
             {
                 var result = await GetNewMediator().Send(new SaveAssessment.Command()
@@ -132,14 +138,9 @@ else
                         Assessment = _model!
                     });
 
-                // Do not show the previous step on the first or last steps.
-                _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
-
-                //Show Delete button if it's not the last step.
-                _showDelete = Stepper.IsResultStep == false;
                 if (result.Succeeded)
                 {
-                    await topOfPageElement.FocusAsync();
+                    await _topOfPageElement.FocusAsync();
 
                     if (step == Stepper.Steps.Count())
                     {
@@ -200,7 +201,7 @@ else
         if (!result!.Canceled)
         {
             Snackbar.Add("Deletion Successful!", Severity.Info);
-            Navigation.NavigateTo(string.Format("/pages/workspace/participants/{0}", Upci), true);
+            Navigation.NavigateTo($"/pages/workspace/participants/{Upci}", true);
         }
     }
 
@@ -217,11 +218,10 @@ else
             return true;
         }
 
-        Snackbar.Add("Paricipant is archived", Severity.Error);
-        assessmentWarningMessage  = "Participant is Inactive";
+        Snackbar.Add("Participant is archived", Severity.Error);
+        AssessmentWarningMessage  = "Participant is Inactive";
         return false;
     }
-
 
     private void Cancel()
     {

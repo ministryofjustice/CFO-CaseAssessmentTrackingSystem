@@ -1,7 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Server.UI.Components.Stepper
 
-
 <style>
     .two-columns {
         display: grid;
@@ -20,17 +19,17 @@
 {
     <CatsMudStep Icon="@Model.Icon" Title="@Model.Title" Condition="@Validate">
         <ChildContent>
-            <MudForm @ref="@form" Model="@Model" Validation="@(Validator.ValidateAsync(Model))" >
-    
+            <MudForm @ref="@_form" Model="@Model" Validation="@(Validator.ValidateAsync(Model))">
+
                 <CascadingValue Value="@Model">
                     <MudGrid Class="mb-4 px-10">
 
                         @foreach (var question in Model.Questions())
                         {
-
                             <MudItem xs="4">
-                                <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentQuestion Question="@question.Question" HelperText="@question.OtherInformation" />
-                                @if (validateCalled && question.IsValid() == false)
+                                <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentQuestion
+                                    Question="@question.Question" HelperText="@question.OtherInformation"/>
+                                @if (_validateCalled && question.IsValid() == false)
                                 {
                                     <MudText Typo="Typo.caption" Color="Color.Error">
                                         You must select an option!
@@ -39,28 +38,34 @@
                             </MudItem>
 
                             <MudItem xs="8">
-                                    @if (question is SingleChoiceQuestion atq)
-                                    {
-                                        <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
-                                            @foreach (var item in atq.Options)
-                                            {
-                                                <MudToggleItem Value="@item" Text="@item" />
-                                            }
-                                        </MudToggleGroup>
+                                @if (question is SingleChoiceQuestion atq)
+                                {
+                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection"
+                                                    @bind-Value="@atq.Answer" CheckMark FixedContent
+                                                    Color="Color.Primary">
+                                        @foreach (var item in atq.Options)
+                                        {
+                                            <MudToggleItem Value="@item" Text="@item"/>
+                                        }
+                                    </MudToggleGroup>
+                                }
 
-                                    }
-                                    
-                                    @if (question is MultipleChoiceQuestion amcq)
-                                    {
-                                        <MudToggleGroup T="string" Class="two-columns" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
-                                            @foreach (var item in amcq.Options)
-                                            {
-                                                <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
-                                            }
-                                        </MudToggleGroup>
-                                    }
+                                @if (question is MultipleChoiceQuestion amcq)
+                                {
+                                    <MudToggleGroup T="string" Class="two-columns" Vertical
+                                                    SelectionMode="SelectionMode.MultiSelection" Values="@amcq.Answers"
+                                                    ValuesChanged="@(values => OnAnswersChanged(amcq, values))"
+                                                    CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
+                                        @foreach (var item in amcq.Options)
+                                        {
+                                            <MudToggleItem Class="toggle-item" Value="@item" Text="@item"
+                                                           UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank"
+                                                           SelectedIcon="@Icons.Material.Filled.CheckBox"/>
+                                        }
+                                    </MudToggleGroup>
+                                }
                             </MudItem>
-                            <MudDivider />
+                            <MudDivider/>
                         }
                     </MudGrid>
                 </CascadingValue>
@@ -70,18 +75,15 @@
 }
 
 @code {
+    private MudForm _form = new();
 
-    private MudForm form = new();
+    private bool _validateCalled;
 
-    private bool validateCalled = false;
-
-
-    [Parameter, EditorRequired]
-    public PathwayBase? Model { get; set; }
+    [Parameter, EditorRequired] public PathwayBase? Model { get; set; }
 
     private async Task<bool> Validate()
     {
-        validateCalled = true;
+        _validateCalled = true;
         AssessmentPathwayValidator validator = new AssessmentPathwayValidator();
         var result = await validator.ValidateAsync(Model!);
         return result.IsValid;
@@ -93,5 +95,35 @@
         {
             await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
         }
+    }
+
+    /// <summary>
+    ///     Enforces mutual exclusivity between a question's <see cref="MultipleChoiceQuestion.ExclusiveOption"/>
+    ///     (e.g. "None of the above") and all other options: selecting the exclusive option clears any other
+    ///     selected answers, and selecting any other option clears the exclusive one.
+    /// </summary>
+    private void OnAnswersChanged(MultipleChoiceQuestion question, IEnumerable<string?>? values)
+    {
+        var newAnswers = values?.Where(v => v is not null).Select(v => v!).ToList() ?? [];
+        var exclusiveOption = question.ExclusiveOption;
+
+        if (!string.IsNullOrEmpty(exclusiveOption))
+        {
+            var wasExclusiveSelected = question.Answers?.Contains(exclusiveOption) ?? false;
+            var isExclusiveSelected = newAnswers.Contains(exclusiveOption);
+
+            if (isExclusiveSelected && !wasExclusiveSelected)
+            {
+                // The exclusive option was just selected - clear any other selections.
+                newAnswers = [exclusiveOption];
+            }
+            else if (isExclusiveSelected && newAnswers.Count > 1)
+            {
+                // Another option was selected while the exclusive option was already selected - clear it.
+                newAnswers.Remove(exclusiveOption);
+            }
+        }
+
+        question.Answers = newAnswers;
     }
 }
