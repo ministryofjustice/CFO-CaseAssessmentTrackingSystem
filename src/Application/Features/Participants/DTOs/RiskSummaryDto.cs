@@ -16,8 +16,22 @@ public class RiskSummaryDto
 
     [Description("Date Risk form completed")]
     public DateTime? ReferredOn { get; init; }
+
     private class Mapping : Profile
     {
         public Mapping() => CreateMap<Risk, RiskSummaryDto>(MemberList.None);
     }
+}
+
+public class RiskUpdateDto
+{
+    /// <summary>
+    /// The date and time the risk update was received from HMPPS.
+    /// </summary>
+    public required DateTime DateTime { get; init; }
+
+    /// <summary>
+    /// The HMPPS identifier the update relates to.
+    /// </summary>
+    public required string HmppsId { get; init; }
 }

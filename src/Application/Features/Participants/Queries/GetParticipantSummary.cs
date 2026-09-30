@@ -79,6 +79,15 @@ public static class GetParticipantSummary
                                      ReferredOn = risk.ReferredOn,
                                      ReviewJustification = risk.ReviewJustification
                                  }).FirstOrDefault(),
+                            RiskUpdates =
+                                (from update in db.ParticipantRiskUpdates
+                                 where update.ParticipantId == participantId
+                                 orderby update.DateTime descending
+                                 select new RiskUpdateDto
+                                 {
+                                     DateTime = update.DateTime,
+                                     HmppsId = update.HmppsId
+                                 }).ToArray(),
                             PathwayPlan =
                                 (from pathwayPlan in db.PathwayPlans
                                  where pathwayPlan.ParticipantId == participantId
