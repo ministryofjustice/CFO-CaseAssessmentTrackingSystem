@@ -136,7 +136,9 @@ public partial class EnrolmentDashboardComponent
                     StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
                     EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
                     TenantId = TenantId,
-                    UserId = UserId
+                    UserId = UserId,
+                    LocationId = LocationId,
+                    LocationType = LocationType
                 }
             });
 
