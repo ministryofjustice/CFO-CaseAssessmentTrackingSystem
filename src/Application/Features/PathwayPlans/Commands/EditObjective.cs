@@ -127,16 +127,6 @@ public static class EditObjective
         private readonly ICurrentUserService _currentUserService;
         private readonly IIdentityService _identityService;
 
-        // The FluentValidation rules below are invoked both server-side (once, sequentially, via the
-        // Mediator pipeline) and client-side per-field by MudForm, which can call several field
-        // validators concurrently (e.g. Initiative, Justification and Start Date all validating at
-        // once). All of these rules share the same scoped DbContext (via _unitOfWork), and EF Core's
-        // DbContext does not support concurrent operations on the same instance — without this, two
-        // rules validating at the same time throw "A second operation was started on this context
-        // instance before a previous operation completed". This semaphore serializes access so the
-        // rules queue up instead of racing.
-        private readonly SemaphoreSlim _dbAccessSemaphore = new(1, 1);
-
         public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IIdentityService identityService)
         {
             _unitOfWork = unitOfWork;
@@ -178,58 +168,36 @@ public static class EditObjective
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>
             {
                 RuleFor(x => x.PathwayPlanId)                    
-                    .MustAsync((pathwayPlanId, token) => Serialized(() => ParticipantMustNotBeArchived(pathwayPlanId, token), token))
+                    .MustAsync((pathwayPlanId, token) => ParticipantMustNotBeArchived(pathwayPlanId, token))
                     .WithMessage("Participant is archived");
 
                 RuleFor(x => x.InitiativeId)
-                    .MustAsync((command, initiativeId, token) => Serialized(() => NotHaveActivitiesWhenChangingInitiative(command.ObjectiveId, initiativeId, token), token))
+                    .MustAsync((command, initiativeId, token) => NotHaveActivitiesWhenChangingInitiative(command.ObjectiveId, initiativeId, token))
                     .WithMessage("The initiative cannot be changed or removed because activities have already been recorded against this objective's tasks");
 
                 RuleFor(x => x.Justification)
-                    .MustAsync((command, justification, token) => Serialized(() => ProvideJustificationWhenUnlinkingInitiative(command.ObjectiveId, command.InitiativeId, justification, token), token))
+                    .MustAsync((command, justification, token) => ProvideJustificationWhenUnlinkingInitiative(command.ObjectiveId, command.InitiativeId, justification, token))
                     .WithMessage("You must provide a justification for removing or replacing this initiative");
 
                 RuleFor(x => x.InitiativeId)
-                    .MustAsync((command, initiativeId, token) => Serialized(() => BeAuthorizedToUnlinkInitiative(command.ObjectiveId, initiativeId, token), token))
+                    .MustAsync((command, initiativeId, token) => BeAuthorizedToUnlinkInitiative(command.ObjectiveId, initiativeId, token))
                     .WithMessage("Removing or replacing this initiative is restricted to Contract & Performance Support Managers (CMPSM) and above");
 
                 RuleFor(x => x.InitiativeStartDate)
-                    .MustAsync((command, startDate, token) => Serialized(() => NotHaveActivitiesWhenChangingStartDate(command.ObjectiveId, command.InitiativeId, startDate, token), token))
+                    .MustAsync((command, startDate, token) => NotHaveActivitiesWhenChangingStartDate(command.ObjectiveId, command.InitiativeId, startDate, token))
                     .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
                     .WithMessage("The participant's first day on the initiative cannot be changed because activities have already been recorded against this objective's tasks");
 
                 RuleFor(x => x.InitiativeStartDate)
-                    .MustAsync((command, startDate, token) => Serialized(() => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token), token))
+                    .MustAsync((command, startDate, token) => BeWithinInitiativeLifetime(command.InitiativeId, startDate, token))
                     .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
                     .WithMessage("The participant's first day on the initiative must fall within the initiative's lifetime");
 
                 RuleFor(x => x.InitiativeStartDate)
-                    .MustAsync((command, startDate, token) => Serialized(() => BeOnOrBeforeInitiativeEndDate(command.ObjectiveId, startDate, token), token))
+                    .MustAsync((command, startDate, token) => BeOnOrBeforeInitiativeEndDate(command.ObjectiveId, startDate, token))
                     .When(x => x.InitiativeId.HasValue && x.InitiativeStartDate.HasValue)
                     .WithMessage("The participant's first day on the initiative must be on or before their last day on the initiative");
             });
-        }
-
-        /// <summary>
-        /// Runs a single DB-touching validation rule at a time. FluentValidation rules for this command
-        /// run both server-side (once, sequentially, via the Mediator pipeline) and client-side per-field
-        /// via MudForm, which can invoke several field validators concurrently (e.g. Initiative,
-        /// Justification and Start Date all validating together). All of these rules share the same
-        /// scoped DbContext, and EF Core's DbContext does not support concurrent operations on the same
-        /// instance — without this, two rules validating at once throw "A second operation was started on
-        /// this context instance before a previous operation completed."
-        /// </summary>
-        private async Task<bool> Serialized(Func<Task<bool>> rule, CancellationToken cancellationToken)
-        {
-            await _dbAccessSemaphore.WaitAsync(cancellationToken);
-            try
-            {
-                return await rule();
-            }
-            finally
-            {
-                _dbAccessSemaphore.Release();
-            }
         }
 
         private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
