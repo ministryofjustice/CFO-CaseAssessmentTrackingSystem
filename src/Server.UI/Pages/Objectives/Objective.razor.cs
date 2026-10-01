@@ -132,9 +132,7 @@ public partial class Objective
         var parameters = new DialogParameters<EditObjectiveDialog>()
         {
             { x => x.Model, command },
-            { x => x.HasLinkedInitiative, Model.LinkedInitiative is not null },
-            { x => x.LinkedInitiativeInCaseTenant, Model.LinkedInitiative?.IsWithinCaseTenant ?? true },
-            { x => x.HasActivities, Model.HasActivities }
+            { x => x.HasLinkedInitiative, Model.LinkedInitiative is not null }
         };
 
         var options = SetDialogOptions();
