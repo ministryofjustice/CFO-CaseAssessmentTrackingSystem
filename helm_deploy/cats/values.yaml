@@ -125,7 +125,7 @@ generic-service:
     config:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
-      Sentry__Dsn: "SentryDsn"
+      Sentry__Dsn: "SentryDsnCats"
       Ordnance__Places__ApiKey: "OrdnanceApiKey"
       Notify__ApiKey: "NotifyApiKey"
     dms-credentials:
@@ -179,7 +179,7 @@ worker:
     config:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
-      Sentry__Dsn: "SentryDsn"
+      Sentry__Dsn: "SentryDsnWorker"
     dms-credentials:
       DMS__ApiKey: "api-key"
       DMS__ClientCertBase64: "client-pfx-base64"
@@ -210,7 +210,7 @@ consumers:
     config:
       RABBIT_USER: "RABBIT_USER"
       RABBIT_PASS: "RABBIT_PASS"
-      Sentry__Dsn: "SentryDsn"
+      Sentry__Dsn: "SentryDsnConsumer"
     s3-bucket-output:
       AWS__Bucket: "bucket_name"
     dms-credentials:
