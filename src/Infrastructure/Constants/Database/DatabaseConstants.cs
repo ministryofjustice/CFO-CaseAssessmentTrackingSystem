@@ -88,6 +88,9 @@ internal static class DatabaseConstants
         public const string Initiative = nameof(Initiative);
         public const string InitiativeObjective = nameof(InitiativeObjective);
 
+        public const string HelpLink = nameof(HelpLink);
+        public const string HelpLinkUrl = nameof(HelpLinkUrl);
+
     }
     
     public static class Schemas
