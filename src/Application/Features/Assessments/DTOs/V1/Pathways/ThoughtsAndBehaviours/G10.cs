@@ -18,6 +18,7 @@ public class G10() : MultipleChoiceQuestion("Which of the following is/are the m
     ])
 {
     public override string Code => nameof(G10);
+    public override string ExclusiveOption => Nothing;
     public const string YourOffending = "Your offending";
     public const string LearningAndEducation = "Learning & education";
     public const string WellbeingAndMentalHealth = "Your wellbeing & mental health";

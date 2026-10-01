@@ -1,12 +1,11 @@
 using Cfo.Cats.Application.Features.Assessments.Commands;
-using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class AddAssessmentDialog
 {
-    private MudForm form = new();
-    private bool saving;
+    private MudForm _form = new();
+    private bool _saving;
 
     [CascadingParameter]
     public required IMudDialogInstance Dialog { get; set; }
@@ -18,11 +17,11 @@ public partial class AddAssessmentDialog
     {
         try
         {
-            saving = true;
+            _saving = true;
 
-            await form.ValidateAsync();
+            await _form.ValidateAsync();
 
-            if (form.IsValid is false)
+            if (_form.IsValid is false)
             {
                 return;
             }
@@ -32,17 +31,15 @@ public partial class AddAssessmentDialog
             if (result.Succeeded)
             {
                 Dialog.Close(DialogResult.Ok(result.Data));
-                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
             }
             else
             {
                 Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
-
         }
         finally
         {
-            saving = false;
+            _saving = false;
         }
     }
 }

@@ -1,35 +1,29 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Assessments.Commands
-@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Components.Locations
-@using Cfo.Cats.Server.UI.Pages.Activities.Components
+﻿@using Cfo.Cats.Server.UI.Components.Locations
 
 @inherits CatsComponentBase
 
-@inject ILocationService Locations;
 @inject ICurrentUserService CurrentUser;
 
 <MudDialog>
     <DialogContent>
         @if (Model is not null)
         {
-            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
                         <LocationSelectComponent
                             TenantId="@(CurrentUser.TenantId!)"
                             Label="@Model.GetMemberDescription(x => x.Location)"
                             @bind-Value="Model.Location"
-                            For="() => Model.Location"/>
+                            For="() => Model.Location" />
                     </MudItem>
                 </MudGrid>
             </MudForm>
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" Loading="@saving" OnClick="Submit">@ConstantString.BeginAssessment</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Dialog.Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" Loading="@_saving" OnClick="@Submit">@ConstantString.BeginAssessment</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 

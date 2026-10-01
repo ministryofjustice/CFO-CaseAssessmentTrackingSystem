@@ -1,4 +1,5 @@
 ﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
+
 public class D4() : MultipleChoiceQuestion("Do you have difficulty with any of the following? (tick all that apply)",
     "Try to think if they affect your day-to-day life in a negative way.",
     [
@@ -16,6 +17,7 @@ public class D4() : MultipleChoiceQuestion("Do you have difficulty with any of t
     ])
 {
     public override string Code => nameof(D4);
+    public override string ExclusiveOption => NoneOfThese;
     public const string ReadingDifficulty = "Reading";
     public const string CoordinationDifficulty = "Coordination";
     public const string WritingDifficulty = "Writing";

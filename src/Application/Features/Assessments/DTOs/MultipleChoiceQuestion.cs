@@ -1,12 +1,8 @@
-using System.Text.Json.Serialization;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Housing;
-
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
-public abstract partial class MultipleChoiceQuestion : QuestionBase
+public abstract class MultipleChoiceQuestion : QuestionBase
 {
     protected MultipleChoiceQuestion()
-        :base()
     {
     }
 
@@ -22,6 +18,13 @@ public abstract partial class MultipleChoiceQuestion : QuestionBase
     ///     The answers the user has provided
     /// </summary>
     public IEnumerable<string>? Answers { get; set; }
+
+    /// <summary>
+    ///     An option that is mutually exclusive with all other options (e.g. "None of the above").
+    ///     When set, selecting this option will automatically clear any other selected answers, and
+    ///     selecting any other option will automatically clear this one.
+    /// </summary>
+    public virtual string? ExclusiveOption => null;
 
     public override bool IsValid()
     {
@@ -40,5 +43,4 @@ public abstract partial class MultipleChoiceQuestion : QuestionBase
 
         return true;
     }
-
 }

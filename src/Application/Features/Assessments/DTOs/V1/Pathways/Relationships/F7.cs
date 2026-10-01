@@ -11,6 +11,7 @@ public class F7() : MultipleChoiceQuestion("Do you feel you can trust, confide i
     ])
 {
     public override string Code => nameof(F7);
+    public override string ExclusiveOption => NoneOfThese;
     public const string PartnerOrSpouse = "A partner / spouse";
     public const string CloseFriend = "A close friend";
     public const string ParentOrGuardian = "A parent / guardian";

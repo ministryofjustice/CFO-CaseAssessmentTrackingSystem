@@ -14,6 +14,7 @@ public class E7() : MultipleChoiceQuestion("Have you previously had a problem or
     ])
 {
     public override string Code => nameof(E7);
+    public override string ExclusiveOption => None;
     public const string Alcohol = "Alcohol";
     public const string Gambling = "Gambling";
     public const string IllegalDrugsOrSubstances = "Illegal drugs / substances";
