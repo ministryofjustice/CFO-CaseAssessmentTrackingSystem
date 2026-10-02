@@ -96,5 +96,7 @@ public static class ExportEmployments
         public required DateTime EndDate { get; init; }
         public string? TenantId { get; init; }
         public string? UserId { get; init; }
+        public int? LocationId { get; init; }
+        public string? LocationType { get; init; }
     }
 }
