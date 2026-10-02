@@ -6,6 +6,7 @@ CREATE TABLE [Participant].[Objective] (
     [PathwayPlanId]   UNIQUEIDENTIFIER NOT NULL,
     [Description]     NVARCHAR (MAX)   NOT NULL,
     [Justification]   NVARCHAR (MAX)   NULL,
+    [InitiativeChangeJustification] NVARCHAR (1000) NULL,
     [Created]         DATETIME2 (7)    NULL,
     [CreatedBy]       NVARCHAR (36)    NULL,
     [LastModified]    DATETIME2 (7)    NULL,

@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
-using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
@@ -31,7 +30,7 @@ public static class EditObjective
         public string? Justification { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, ILogger<Handler> logger) : ICommandHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -49,21 +48,20 @@ public static class EditObjective
                 {
                     var link = InitiativeObjective.Create(objective.Id, request.InitiativeId.Value, pathwayPlan.ParticipantId, DateOnly.FromDateTime(request.InitiativeStartDate!.Value));
                     await unitOfWork.DbContext.InitiativeObjectives.AddAsync(link, cancellationToken);
+
+                    // Clear out any justification left over from a previous unlink/swap — it described that
+                    // earlier change, not this new link, and shouldn't be shown against the new initiative.
+                    objective.RecordInitiativeChangeJustification(null);
                 }
                 else if (objective.LinkedInitiative.InitiativeId != request.InitiativeId.Value)
                 {
                     // Swapping to a different initiative effectively removes the previously linked one, so
-                    // it must be audited the same way an explicit unlink is — otherwise a cross-tenant
-                    // initiative could be silently overwritten by picking a replacement instead of clearing
-                    // the field, bypassing the audit trail entirely.
-                    var previousInitiativeId = objective.LinkedInitiative.InitiativeId;
-
+                    // the justification is recorded the same way an explicit unlink is. It's recorded on the
+                    // objective itself (not the InitiativeObjective row being replaced) because that row's
+                    // InitiativeId is about to be overwritten in place — who made the change is captured by
+                    // the system audit trail (AuditTrail/LastModifiedBy) when this change is saved.
                     objective.LinkedInitiative.Update(request.InitiativeId.Value, DateOnly.FromDateTime(request.InitiativeStartDate!.Value));
-
-                    if (string.IsNullOrWhiteSpace(request.Justification) is false)
-                    {
-                        await RecordUnlinkNote(pathwayPlan.ParticipantId, previousInitiativeId, objective.Description, request.Justification!, cancellationToken);
-                    }
+                    objective.RecordInitiativeChangeJustification(request.Justification);
                 }
                 else
                 {
@@ -72,52 +70,18 @@ public static class EditObjective
             }
             else if (objective.LinkedInitiative is not null)
             {
-                var unlinkedInitiativeId = objective.LinkedInitiative.InitiativeId;
-
-                unitOfWork.DbContext.InitiativeObjectives.Remove(objective.LinkedInitiative);
-
                 // A justification is only collected (and required) when unlinking an initiative that
                 // belongs to a different tenant/region — e.g. correcting an initiative recorded against
-                // the wrong location during the backdating exercise. Record it as an auditable case note
-                // on the participant. Removals within the user's own tenant/region behave exactly as
-                // before and don't generate a note; the row deletion itself is still captured
-                // automatically in the system audit trail.
-                if (string.IsNullOrWhiteSpace(request.Justification) is false)
-                {
-                    await RecordUnlinkNote(pathwayPlan.ParticipantId, unlinkedInitiativeId, objective.Description, request.Justification!, cancellationToken);
-                }
+                // the wrong location during the backdating exercise. It's recorded on the objective itself,
+                // not the InitiativeObjective row, because that row is about to be deleted and wouldn't
+                // survive to persist it; who made the change is captured by the system audit trail
+                // (AuditTrail/LastModifiedBy) when this change is saved.
+                objective.RecordInitiativeChangeJustification(request.Justification);
+
+                unitOfWork.DbContext.InitiativeObjectives.Remove(objective.LinkedInitiative);
             }
 
             return Result.Success();
-        }
-
-        private async Task RecordUnlinkNote(string participantId, Guid unlinkedInitiativeId, string objectiveDescription, string justification, CancellationToken cancellationToken)
-        {
-            var initiative = await unitOfWork.DbContext.Initiatives
-                .Where(i => i.Id == unlinkedInitiativeId)
-                .Select(i => new { i.Code, i.Description })
-                .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var participant = await unitOfWork.DbContext.Participants
-                .FindAsync([participantId], cancellationToken);
-
-            var initiativeDescription = initiative is null
-                ? unlinkedInitiativeId.ToString()
-                : $"{initiative.Code} - {initiative.Description}";
-
-            if (participant is null)
-            {
-                logger.LogWarning(
-                    "Could not record audit note for initiative unlink: participant {ParticipantId} was not found. Initiative '{InitiativeDescription}' unlinked from objective '{ObjectiveDescription}'. Justification: {Justification}",
-                    participantId, initiativeDescription, objectiveDescription, justification);
-                return;
-            }
-
-            participant.AddNote(new Note
-            {
-                Message = $"Initiative '{initiativeDescription}' unlinked from objective '{objectiveDescription}'. Justification: {justification}"
-            });
         }
     }
 
@@ -258,17 +222,12 @@ public static class EditObjective
                 return true;
             }
 
-            // Regular users may only remove/replace an initiative link within the case's own tenant/region,
-            // and only when no activities exist — exactly as before.
-            if (await IsInitiativeWithinCaseTenant(objectiveId, currentInitiativeId.Value, cancellationToken))
-            {
-                return !await _unitOfWork.DbContext.Activities
-                    .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
-            }
-
-            // Changing a link to an initiative outside the case's tenant/region is otherwise blocked by
-            // BeAuthorizedToUnlinkInitiative (requires CMPSM+), so it's safe to allow it through here.
-            return true;
+            // Regular users may never remove/replace an initiative link once activities have been
+            // recorded against the objective, regardless of whether the initiative is within the case's
+            // own tenant/region — tenant is only relevant to BeAuthorizedToUnlinkInitiative, which governs
+            // whether the change is permitted at all, not whether activities block it.
+            return !await _unitOfWork.DbContext.Activities
+                .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
         }
 
         private async Task<bool> ProvideJustificationWhenUnlinkingInitiative(Guid objectiveId, Guid? newInitiativeId, string? justification, CancellationToken cancellationToken)
