@@ -1,0 +1,11 @@
+@inherits OwningComponentBase<IMediator>
+
+@if (_visible)
+{
+    <MudTooltip Text="@(_hasLink ? "Help" : "No help set for this page (System Support)")">
+        <MudIconButton Icon="@Icons.Material.Filled.Help"
+                       Color="@(_hasLink ? Color.Secondary : Color.Warning)"
+                       Size="Size.Large"
+                       OnClick="@OnClickAsync" />
+    </MudTooltip>
+}
