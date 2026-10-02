@@ -27,7 +27,7 @@
         return normalizedSegment switch {
             "" => [home],
             "profile" => [MyAreaLinks.EditProfile.AsMudBreadcrumb()],
-            "passwordreset" => [MyAreaLinks.PasswordReset.AsMudBreadcrumb()],
+            "passwordreset" => [MyAreaLinks.EditProfile.AsMudBreadcrumb(), MyAreaLinks.PasswordReset.AsMudBreadcrumb()],
             "notifications" => [MyAreaLinks.Notifications.AsMudBreadcrumb()],
             "my-documents" => [MyAreaLinks.MyDocuments.AsMudBreadcrumb()],
             _ => throw new NotImplementedException("Unable to workout where we are in the My Area page tree")
