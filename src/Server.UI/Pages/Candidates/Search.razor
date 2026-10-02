@@ -2,8 +2,13 @@
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
 @using Cfo.Cats.Server.UI.Pages.Candidates.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services
+@using Cfo.Cats.Server.UI.Models.Breadcrumb
 
 @inherits CatsComponentBase
+
+<PageHeader Title="@GetTitle()" Items="@_breadcrumbs" />
+
 <MudContainer Style="width: 100%; min-width: 480px">
     <MudCard>
         <MudCardHeader>
@@ -55,7 +60,13 @@
 
 @code 
 {
-
+    private static readonly IReadOnlyList<BreadcrumbItem> _breadcrumbs =
+    [
+        ParticipantLinks.Home.AsMudBreadcrumb(),
+        ParticipantLinks.All.AsMudBreadcrumb(),
+        new BreadcrumbItem("Search a candidate", "/pages/candidates/search", disabled: true)
+    ];
+    
     private void NavigateToEnrolment(string participantId)
     {
         Navigation.NavigateTo($"/pages/enrolments/{participantId}");
