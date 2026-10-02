@@ -28,6 +28,17 @@ public class Objective : BaseAuditableEntity<Guid>
     
     public string? Justification { get; private set; }
 
+    /// <summary>
+    /// Reason given for removing or replacing the linked initiative — recorded here, on the objective
+    /// itself, because the InitiativeObjective row being removed/replaced does not survive the change
+    /// (it's either deleted outright on unlink, or has its InitiativeId overwritten in place on a swap).
+    /// Deliberately separate from <see cref="Justification"/>, which is reserved for objective
+    /// completion, so that completing an objective can never overwrite why its initiative was previously
+    /// changed, or vice versa. Only reflects the most recent justification given; the full history of
+    /// changes to this value is retained in the system audit trail (AuditTrail).
+    /// </summary>
+    public string? InitiativeChangeJustification { get; private set; }
+
     public InitiativeObjective? LinkedInitiative { get; private set; }
 
     public IReadOnlyCollection<ObjectiveTask> Tasks => _tasks.AsReadOnly();
@@ -50,6 +61,8 @@ public class Objective : BaseAuditableEntity<Guid>
     }
 
     public void Rename(string description) => Description = description;
+
+    public void RecordInitiativeChangeJustification(string? justification) => InitiativeChangeJustification = justification;
 
     public void Complete(CompletionStatus status, string completedBy, string? justification)
     {

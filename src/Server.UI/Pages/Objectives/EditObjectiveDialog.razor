@@ -8,10 +8,9 @@
                           Label="@Model.GetMemberDescription(x => x.Description)"
                           For="@(() => Model.Description)"
                           Lines="4" 
-                          MaxLength=2000 
+                          MaxLength=@ValidationConstants.ObjectiveDescription 
                           Immediate="true" 
-                          Counter=2000
-            />
+                          Counter=@ValidationConstants.ObjectiveDescription/>
             <InitiativeAutoComplete @bind-Value="SelectedInitiative"
                                     Label="Initiative (optional)" />
             @if (_selectedInitiative is not null)
@@ -28,12 +27,14 @@
                 <MudTextField @bind-Value="Model.Justification"
                               Label="@Model.GetMemberDescription(x => x.Justification)"
                               For="@(() => Model.Justification)"
-                              HelperText="Please explain why the linked initiative is being removed or replaced, e.g. it was recorded against the wrong location. Only required when removing or replacing an initiative from a different tenant/region."
                               Lines="4"
                               Class="mt-4"
                               MaxLength=@ValidationConstants.NotesLength
                               Immediate="true"
                               Counter=@ValidationConstants.NotesLength/>
+                <MudText Typo="Typo.caption" Class="mud-input-helper-text">
+                    Please explain why the linked initiative is being removed or replaced, e.g. it was recorded against the wrong location. Only required when removing or replacing an initiative from a different tenant/region.
+                </MudText>
             }
         </MudForm>
     </DialogContent>
