@@ -4,8 +4,8 @@
 {
     <MudTooltip Text="@(_hasLink ? "Help" : "No help set for this page (System Support)")">
         <MudIconButton Icon="@Icons.Material.Filled.Help"
-                       Color="@(_hasLink ? Color.Primary : Color.Warning)"
-                       Size="Size.Small"
+                       Color="@(_hasLink ? Color.Secondary : Color.Warning)"
+                       Size="Size.Large"
                        OnClick="@OnClickAsync" />
     </MudTooltip>
 }
