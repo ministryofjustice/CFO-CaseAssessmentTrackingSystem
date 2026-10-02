@@ -1,0 +1,97 @@
+@inherits OwningComponentBase<IMediator>
+@using Cfo.Cats.Application.Features.HelpLinks.DTOs
+@using Cfo.Cats.Domain.HelpLinks
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.subtitle1">
+            Edit Help Link
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper MinHeight="300px" Elevation="0" Class="pa-4">
+            <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField
+                            T="string"
+                            @bind-Value="Model.NewTitle"
+                            For="@(() => Model.NewTitle)"
+                            Label="@Model.LabelFor(x => x.NewTitle)"
+                            HelperText="@Model.HelperTextFor(x => x.NewTitle)"
+                            Required="true"
+                            MaxLength="@HelpLinkConstants.TitleMaximumLength"
+                            Counter="@HelpLinkConstants.TitleMaximumLength" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField
+                            T="string"
+                            @bind-Value="Model.NewDescription"
+                            For="@(() => Model.NewDescription)"
+                            Label="@Model.LabelFor(x => x.NewDescription)"
+                            HelperText="@Model.HelperTextFor(x => x.NewDescription)"
+                            Lines="3"
+                            MaxLength="@HelpLinkConstants.DescriptionMaximumLength"
+                            Counter="@HelpLinkConstants.DescriptionMaximumLength"
+                            Required="true"
+                            Immediate="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Urls</MudText>
+                        @for (var i = 0; i < Model.NewUrls.Count; i++)
+                        {
+                            var index = i;
+                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Class="mb-2">
+                                <MudTextField
+                                    T="string"
+                                    @bind-Value="Model.NewUrls[index].Url"
+                                    Label="Url"
+                                    HelperText="The link the user is taken to for more information"
+                                    Required="true"
+                                    MaxLength="@HelpLinkConstants.UrlMaximumLength" />
+                                <MudTextField
+                                    T="string"
+                                    @bind-Value="Model.NewUrls[index].DisplayName"
+                                    Label="Display Name (optional)"
+                                    HelperText="Shown instead of the url (e.g. 'Guidance')"
+                                    MaxLength="@HelpLinkConstants.DisplayNameMaximumLength" />
+                                <MudIconButton
+                                    Icon="@Icons.Material.Filled.Delete"
+                                    Color="Color.Error"
+                                    Disabled="@(Model.NewUrls.Count <= 1)"
+                                    OnClick="@(() => RemoveUrl(index))" />
+                            </MudStack>
+                        }
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="@AddUrl">
+                            Add another Url
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField
+                            T="string"
+                            @bind-Value="Model.NewPageKey"
+                            For="@(() => Model.NewPageKey)"
+                            Label="@Model.LabelFor(x => x.NewPageKey)"
+                            HelperText="@Model.HelperTextFor(x => x.NewPageKey)"
+                            Required="true"
+                            MaxLength="@HelpLinkConstants.PageKeyMaximumLength" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField
+                            T="string"
+                            @bind-Value="Model.NewTabName"
+                            For="@(() => Model.NewTabName)"
+                            Label="@Model.LabelFor(x => x.NewTabName)"
+                            HelperText="@Model.HelperTextFor(x => x.NewTabName)"
+                            MaxLength="@HelpLinkConstants.TabNameMaximumLength" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Save">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+

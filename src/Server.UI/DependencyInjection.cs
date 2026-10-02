@@ -2,6 +2,7 @@ using BlazorDownloadFile;
 using Cfo.Cats.Infrastructure.Constants.Localization;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
+using Cfo.Cats.Server.UI.Services.Help;
 using Cfo.Cats.Server.UI.Services.JsInterop;
 using Cfo.Cats.Server.UI.Services.Navigation;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -16,6 +17,7 @@ using ApexCharts;
 using StackExchange.Redis;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Infrastructure.Services.Identity;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -42,6 +44,13 @@ public static class DependencyInjection
         services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
         services.AddScoped<IWorkspacePreferenceService, WorkspacePreferenceService>();
+
+        // Replaces the framework's default IComponentActivator so that every MudTabs instance
+        // in the app (present and future) is transparently upgraded to HelpAwareMudTabs.
+        // Must use Replace rather than Add, since the framework registers its own default via
+        // TryAdd - a plain Add would leave two registrations and rely on registration order.
+        services.Replace(ServiceDescriptor.Singleton<IComponentActivator, HelpAwareComponentActivator>());
+        services.AddScoped<HelpContextService>();
         services.AddScoped<INotificationService, NotificationService>();
         services
             .AddMudBlazorDialog()

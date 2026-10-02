@@ -14,6 +14,7 @@ using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
+using Cfo.Cats.Domain.HelpLinks;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -124,6 +125,8 @@ public class ApplicationDbContext
     
     public DbSet<ObjectiveTask> ObjectiveTasks => Set<ObjectiveTask>();
     public DbSet<Label> Labels => Set<Label>();
+
+    public DbSet<HelpLink> HelpLinks => Set<HelpLink>();
 
     public DbSet<PathwayPlanReview> PathwayPlanReviews => Set<PathwayPlanReview>();
     

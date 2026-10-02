@@ -1,0 +1,150 @@
+@inherits OwningComponentBase<IMediator>
+@using Cfo.Cats.Application.Features.HelpLinks.Commands.ImportHelpLinks
+@using Cfo.Cats.Application.Features.HelpLinks.DTOs
+@using Microsoft.AspNetCore.Components.Forms
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.subtitle1">
+            Import Help Links
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper MinHeight="200px" Elevation="0" Class="pa-4" Style="max-height: 60vh; overflow-y: auto;">
+            @if (_errorMessage is not null)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+            }
+
+            @if (_previewItems is null)
+            {
+                <MudText Class="mb-4">
+                    Select a HelpLinks export file (.json) to import. Brand new entries are imported
+                    automatically; any that conflict with an existing entry (same page/tab) will be
+                    shown below for you to resolve before anything is applied.
+                </MudText>
+                <MudFileUpload T="IBrowserFile" FilesChanged="OnFileSelected" Accept=".json" Style="margin-top:0px;">
+                    <CustomContent>
+                        <MudButton HtmlTag="label"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   OnClick="@context.OpenFilePickerAsync"
+                                   StartIcon="@Icons.Material.Filled.Upload"
+                                   Disabled="@_busy">
+                            @if (_busy)
+                            {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            }
+                            Choose File
+                        </MudButton>
+                    </CustomContent>
+                </MudFileUpload>
+            }
+            else
+            {
+                var newItems = _previewItems.Where(x => x.Status == HelpLinkImportMatchStatus.New).ToArray();
+                var unchangedItems = _previewItems.Where(x => x.IsUnchanged).ToArray();
+                var conflicts = _previewItems.Where(x => x.IsConflict).ToArray();
+
+                @if (newItems.Length > 0)
+                {
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">New (@newItems.Length) — will be imported automatically</MudText>
+                    <MudSimpleTable Dense="true" Class="mb-4">
+                        <thead>
+                        <tr><th>Page</th><th>Tab</th><th>Title</th></tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in newItems)
+                        {
+                            <tr>
+                                <td><code>@item.PageKey</code></td>
+                                <td>@(item.TabName ?? "-")</td>
+                                <td>@item.Incoming.Title</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+
+                @if (unchangedItems.Length > 0)
+                {
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">Already up to date (@unchangedItems.Length) — no action needed</MudText>
+                    <MudSimpleTable Dense="true" Class="mb-4">
+                        <thead>
+                        <tr><th>Page</th><th>Tab</th><th>Title</th></tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in unchangedItems)
+                        {
+                            <tr>
+                                <td><code>@item.PageKey</code></td>
+                                <td>@(item.TabName ?? "-")</td>
+                                <td>@item.Incoming.Title</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+
+                @if (conflicts.Length > 0)
+                {
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudText Typo="Typo.subtitle2">Conflicts (@conflicts.Length) — choose which version to keep</MudText>
+                        <MudStack Row="true" Spacing="1">
+                            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => SetAllConflicts(false))">Keep All Existing</MudButton>
+                            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => SetAllConflicts(true))">Use All Imported</MudButton>
+                        </MudStack>
+                    </MudStack>
+
+                    @foreach (var item in conflicts)
+                    {
+                        var key = ConflictKey(item);
+                        <MudPaper Outlined="true" Class="pa-3 mb-3">
+                            <MudText Typo="Typo.body2" Class="mb-2">
+                                <code>@item.PageKey</code> @(item.TabName is not null ? $"— {item.TabName}" : "")
+                            </MudText>
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <MudText Typo="Typo.caption">Existing</MudText>
+                                    <MudText Typo="Typo.body1">@item.Existing!.Title</MudText>
+                                    <MudText Typo="Typo.body2">@item.Existing!.Description</MudText>
+                                    @foreach (var url in item.Existing!.Urls)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="d-block">@(url.DisplayName ?? url.Url)</MudText>
+                                    }
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText Typo="Typo.caption">Imported</MudText>
+                                    <MudText Typo="Typo.body1">@item.Incoming.Title</MudText>
+                                    <MudText Typo="Typo.body2">@item.Incoming.Description</MudText>
+                                    @foreach (var url in item.Incoming.Urls)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="d-block">@(url.DisplayName ?? url.Url)</MudText>
+                                    }
+                                </MudItem>
+                            </MudGrid>
+                            <MudRadioGroup T="bool" Value="@_useImported[key]" ValueChanged="@(v => _useImported[key] = v)" Class="mt-2">
+                                <MudRadio Value="false" Color="Color.Secondary">Keep Existing</MudRadio>
+                                <MudRadio Value="true" Color="Color.Primary">Use Imported</MudRadio>
+                            </MudRadioGroup>
+                        </MudPaper>
+                    }
+                }
+
+                @if (newItems.Length == 0 && unchangedItems.Length == 0 && conflicts.Length == 0)
+                {
+                    <MudText>No HelpLinks were found in the uploaded file.</MudText>
+                }
+            }
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        @if (_previewItems is not null)
+        {
+            <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_busy" OnClick="@Confirm">
+                Confirm Import
+            </MudLoadingButton>
+        }
+    </DialogActions>
+</MudDialog>

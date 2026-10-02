@@ -1,0 +1,38 @@
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary" Style="font-weight:700;">@(HelpLink?.Title ?? "Help")</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (HelpLink is not null)
+        {
+            <MudText Typo="Typo.body1" Class="mb-3">@HelpLink.Description</MudText>
+            <MudDivider Class="mb-3" />
+            @foreach (var url in HelpLink.Urls)
+            {
+                <MudLink Href="@url.Url" Target="_blank" Typo="Typo.body2" Class="d-block mb-1">@(url.DisplayName ?? url.Url)</MudLink>
+            }
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                No help link has been configured for this page@(TabName is not null ? $" (\"{TabName}\" tab)" : "").
+            </MudAlert>
+        }
+
+        @if (IsSystemSupport)
+        {
+            <MudDivider Class="my-3" />
+            <MudText Typo="Typo.caption">System Support</MudText>
+            <MudText Typo="Typo.body2">Page key: <code>@PageKey</code></MudText>
+            <MudText Typo="Typo.body2">Tab name: <code>@(TabName ?? "(none)")</code></MudText>
+            <MudText Typo="Typo.body2">Help link set: @(HelpLink is not null ? "Yes" : "No")</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        @if (IsSystemSupport)
+        {
+            <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="@ManageHelpLinks">Manage Help Links</MudButton>
+        }
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="@Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -1,8 +1,10 @@
 ﻿@inject IStringLocalizer<SharedResource> L
+@inject Cfo.Cats.Server.UI.Services.Help.HelpContextService HelpContextService
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
+            @{ HelpContextService.SetRouteData(routeData); }
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(AppLayout)">
                 <Authorizing>
                     <text>@L["Please wait, we are authorizing you..."]</text>
@@ -16,3 +18,4 @@
         
     </Router>
 </CascadingAuthenticationState>
+

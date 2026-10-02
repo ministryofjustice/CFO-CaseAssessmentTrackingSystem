@@ -15,6 +15,7 @@ using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
+using Cfo.Cats.Domain.HelpLinks;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -120,6 +121,8 @@ public interface IApplicationDbContext
     DbSet<ObjectiveTask> ObjectiveTasks { get; }
     
     DbSet<Label> Labels { get; }
+
+    DbSet<HelpLink> HelpLinks { get; }
  
     DbSet<PathwayPlanReview> PathwayPlanReviews { get; }
     

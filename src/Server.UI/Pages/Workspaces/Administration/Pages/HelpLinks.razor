@@ -1,0 +1,20 @@
+@page "/pages/workspace/administration/helplinks"
+
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components.HelpLinks
+
+@attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
+
+<PageTitle>Help Links</PageTitle>
+
+<AdministrationPageHeader />
+
+<HelpLinksTable InitialPageKey="@PageKey" InitialTabName="@TabName" />
+
+@code {
+    [SupplyParameterFromQuery(Name = "pageKey")]
+    private string? PageKey { get; set; }
+
+    [SupplyParameterFromQuery(Name = "tabName")]
+    private string? TabName { get; set; }
+}

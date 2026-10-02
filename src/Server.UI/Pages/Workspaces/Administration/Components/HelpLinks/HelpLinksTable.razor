@@ -1,0 +1,96 @@
+@using Cfo.Cats.Application.Features.HelpLinks.DTOs
+@inherits CatsComponent<Cfo.Cats.Application.Features.HelpLinks.DTOs.HelpLinkDto[]>
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null)
+{
+    <MudStack Class="mb-4">
+        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+            <MudTextField T="string" Value="@_searchString" Placeholder="@ConstantString.Search"
+                          ValueChanged="@OnSearchChanged" Immediate="true" Clearable="true" ShrinkLabel="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                          AdornmentColor="Color.Secondary" Class="mt-0" />
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled"
+                       Size="Size.Small"
+                       Disabled="@Loading"
+                       OnClick="@OnImport"
+                       StartIcon="@Icons.Material.Filled.Upload"
+                       Color="Color.Primary">
+                Import
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Size="Size.Small"
+                       Disabled="@Loading"
+                       OnClick="@OnExport"
+                       StartIcon="@Icons.Material.Filled.CloudDownload"
+                       Color="Color.Primary">
+                Export
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Size="Size.Small"
+                       Disabled="@Loading"
+                       OnClick="@(() => OnAddHelpLink())"
+                       StartIcon="@Icons.Material.Filled.AddLink"
+                       Color="Color.Primary">
+                Add Help Link
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudTable Items="@FilteredData"
+              Hover="true"
+              Striped="true"
+              Dense="true"
+              SortLabel="Sort By">
+        <HeaderContent>
+            <MudTh>
+
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<HelpLinkDto, object>(x => x.Title)" Class="word-wrap">Title</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<HelpLinkDto, object>(x => x.PageKey)" Class="word-wrap">Page</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<HelpLinkDto, object>(x => x.TabName ?? string.Empty)">Tab</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                Url
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                         Dense="true"
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(() => OnEdit(context))">
+                        @ConstantString.Edit
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@(() => OnDelete(context))">
+                        @ConstantString.Delete
+                    </MudMenuItem>
+                </MudMenu>
+            </MudTd>
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd DataLabel="Page"><code>@context.PageKey</code></MudTd>
+            <MudTd DataLabel="Tab">@(context.TabName ?? "-")</MudTd>
+            <MudTd DataLabel="Url">
+                @foreach (var url in context.Urls)
+                {
+                    <MudLink Href="@url.Url" Target="_blank" Class="d-block">@(url.DisplayName ?? url.Url)</MudLink>
+                }
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
