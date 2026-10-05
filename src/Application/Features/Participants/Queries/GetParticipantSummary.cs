@@ -87,10 +87,10 @@ public static class GetParticipantSummary
                                      Created = pathwayPlan.Created.Value,
                                      pathwayPlan.CreatedBy,
                                      LastReview = (from review in pathwayPlan.PathwayPlanReviews
-                                                   orderby review.Created
+                                                   orderby review.ReviewDate descending
                                                    select new
                                                    {
-                                                       ReviewedOn = review.Created,
+                                                       ReviewedOn = review.ReviewDate,
                                                        ReviewedBy = review.CreatedBy
                                                    }).FirstOrDefault()
                                  }).Select(pathwayPlan => new PathwayPlanSummaryDto
