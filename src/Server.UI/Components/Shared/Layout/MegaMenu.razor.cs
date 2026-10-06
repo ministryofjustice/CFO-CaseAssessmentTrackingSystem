@@ -1,4 +1,6 @@
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.Commands;
+using Cfo.Cats.Server.UI.Extensions;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Navigation;
@@ -14,7 +16,11 @@ public partial class MegaMenu
     [Inject] private ILogger<MegaMenu> Logger { get; set; } = null!;
     [Inject] private IApplicationSettings Settings { get; set; } = default!;
 
+    [Inject] private IUsageTracker UsageTracker { get; set; } = default!;
+
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
+
+    [CascadingParameter] private UserProfile CurrentUser { get; set; } = null!;
 
     private NavigationMenuModel _menuModel = null!;
     private string? _defaultWorkspace;
@@ -85,6 +91,14 @@ public partial class MegaMenu
         else
         {
             Snackbar.Add(result.ErrorMessage, Severity.Error);
+        }
+    }
+
+    private async Task RecordUsage(NavigationMenuItemLinkModel link)
+    {
+        if(link.Track)
+        {
+            await UsageTracker.TrackAsync("Navigation", link.DisplayText, CurrentUser, link.Href?.Left(256));
         }
     }
 

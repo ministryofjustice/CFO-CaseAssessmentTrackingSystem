@@ -12,5 +12,7 @@ public class RabbitSettings
     public required string TasksService { get; set; } = "tasks-service";
     public required string OvernightService { get; set; } = "overnight-service";
 
+    public required string TelemetryService { get; set; } = "telemetry-service";
+
     public required string CatsService { get; set; } = "cats-service";
 }

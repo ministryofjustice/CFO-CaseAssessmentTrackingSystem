@@ -204,6 +204,7 @@ public static class DependencyInjection
         services.AddHostedService<TasksBackgroundService>();
         services.AddHostedService<PaymentBackgroundService>();
         services.AddHostedService<DocumentsBackgroundService>();
+        services.AddHostedService<TelemetryBackgroundService>();
 
         return services;
     }
@@ -265,11 +266,10 @@ public static class DependencyInjection
         });
             
 
-        services.AddSingleton<IBus>(_ =>
+        services.AddSingleton<IBus>(sp =>
         {
-            var provider = services.BuildServiceProvider();
-            var rabbitSettings = provider.GetRequiredService<IOptions<RabbitSettings>>().Value;
-            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var rabbitSettings = sp.GetRequiredService<IOptions<RabbitSettings>>().Value;
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
             return Configure.With(new BuiltinHandlerActivator())
                 .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
@@ -277,6 +277,11 @@ public static class DependencyInjection
                     .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
                 .Start();
         });
+
+        // Create and start the singleton IBus during host startup (off any request path) so
+        // the first publish from a Blazor circuit reuses an already-started bus and never
+        // triggers Rebus's blocking connect on the render synchronisation context.
+        services.AddHostedService<BusWarmupService>();
 
         return services;
     }
@@ -505,6 +510,7 @@ public static class DependencyInjection
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
+            .AddSingleton<IUsageTracker, UsageTracker>()
             .AddScoped<ITenantProvider, TenantProvider>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IDateTime, DateTimeService>()

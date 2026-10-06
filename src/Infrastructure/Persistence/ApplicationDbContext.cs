@@ -116,6 +116,8 @@ public class ApplicationDbContext
 
     public DbSet<ParticipantEngagement> ParticipantEngagements => Set<ParticipantEngagement>();
 
+    public DbSet<UsageEvent> UsageEvents => Set<UsageEvent>();
+
     public DbSet<SupportAndReferralPayment> SupportAndReferralPayments => Set<SupportAndReferralPayment>();
     public DbSet<ReassessmentPayment> ReassessmentPayments => Set<ReassessmentPayment>();
 

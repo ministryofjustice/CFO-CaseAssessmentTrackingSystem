@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.HelpLinks.DTOs;
 using Cfo.Cats.Application.Features.HelpLinks.Queries;
 using Cfo.Cats.Application.SecurityConstants;
@@ -18,6 +19,9 @@ public partial class HelpIcon : IDisposable
 {
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = null!;
+
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = null!;
 
     [Inject]
     private HelpContextService HelpContext { get; set; } = null!;
@@ -83,7 +87,8 @@ public partial class HelpIcon : IDisposable
             { x => x.HelpLink, _helpLink },
             { x => x.PageKey, HelpContext.PageKey },
             { x => x.TabName, HelpContext.TabName },
-            { x => x.IsSystemSupport, _isSystemSupport }
+            { x => x.IsSystemSupport, _isSystemSupport },
+            { x => x.CurrentUser, CurrentUser }
         };
 
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };

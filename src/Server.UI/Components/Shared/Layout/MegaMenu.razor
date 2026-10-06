@@ -32,7 +32,8 @@
                                         Target="@link.Target"
                                         aria-description="@link.AccessibilityText"
                                         Class="pa-1"
-                                        Underline="Underline.Always">
+                                        Underline="Underline.Always"
+                                        OnClick="() => RecordUsage(link)">
                                         @L[@link.DisplayText]
                                     </MudLink>
                             </MudStack>

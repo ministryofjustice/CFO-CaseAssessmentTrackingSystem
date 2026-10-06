@@ -108,6 +108,8 @@ public interface IApplicationDbContext
 
     DbSet<ParticipantEngagement> ParticipantEngagements { get; }
 
+    DbSet<UsageEvent> UsageEvents { get; }
+
     DbSet<PriCode> PriCodes { get; }
 
     DbSet<SupportAndReferralPayment> SupportAndReferralPayments { get; }

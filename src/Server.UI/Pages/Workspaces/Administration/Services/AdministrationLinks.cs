@@ -8,6 +8,7 @@ public static class AdministrationLinks
     public static readonly BreadcrumbLinkModel Jobs = new("Jobs", "View and manage quartz jobs.", $"{Home.Href}/jobs", Group: "System Management");
     public static readonly BreadcrumbLinkModel CacheManagement = new("Cache Management", "Manage the in memory cache for CATS", $"{Home.Href}/cachemanagement", Group: "System Management");
     public static readonly BreadcrumbLinkModel AuditTrails = new("Audit Trails", "View the system audit of edits, updates and inserts", $"{Home.Href}/audittrails", Group: "System Management");
+    public static readonly BreadcrumbLinkModel UsageTelemetry = new("Usage Telemetry", "View local usage telemetry for areas of concern", $"{Home.Href}/usage", Group: "System Management");
     public static readonly BreadcrumbLinkModel PickList = new("Picklist", "Manage the simple lookup lists.", $"{Home.Href}/picklist", Group: "Meta Data");
     public static readonly BreadcrumbLinkModel Outbox = new("Outbox Messages", "View and reschedule outbox messages.", $"{Home.Href}/outbox", "System Management");
     public static readonly BreadcrumbLinkModel IntegrationEvents = new("Integration Events", "Publish integration events to the outbox for testing.", $"{Home.Href}/integrationevents", Group: "System Management");
