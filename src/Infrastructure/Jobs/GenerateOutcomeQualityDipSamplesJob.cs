@@ -14,7 +14,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
     public static readonly JobKey Key = new(name: nameof(GenerateOutcomeQualityDipSamplesJob));
     public static readonly string Description = "A job to generate dip samples for quality checks.";
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         using var scope = logger.BeginScope(new Dictionary<string, object>
         {
@@ -114,10 +114,8 @@ public class GenerateOutcomeQualityDipSamplesJob(
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error generating dip samples on attempt {RefireCount}.", context.RefireCount);
-            throw new JobExecutionException(
-                msg: "An unexpected error occurred executing job",
-                cause: ex,
-                refireImmediately: context.RefireCount < 3);
+            throw new JobExecutionException("An unexpected error occurred executing job", ex)
+                { RefireImmediately = context.RefireCount < 3 };
         }
     }
 

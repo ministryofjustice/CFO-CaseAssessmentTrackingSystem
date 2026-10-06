@@ -15,7 +15,7 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
     public static readonly JobKey Key = new JobKey(name: nameof(PublishOutboxMessagesJob));
     public static readonly string Description = "A job to publish outbox messages to the queue";
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         using (logger.BeginScope(new Dictionary<string, object>
         {
@@ -75,8 +75,8 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
         catch (Exception ex)
         {
             logger.LogError(ex, "Exeception publishing outbox messages");
-            throw new JobExecutionException(msg: $"Quartz Job - {Key}: An unexpected error occurred executing job",
-                refireImmediately: true, cause: ex);
+            throw new JobExecutionException($"Quartz Job - {Key}: An unexpected error occurred executing job", ex)
+                { RefireImmediately = true };
         }
         finally
         {

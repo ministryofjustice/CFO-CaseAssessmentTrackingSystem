@@ -31,6 +31,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
         <PackageReference Include="Quartz" />
         <PackageReference Include="Quartz.AspNetCore" />
+        <PackageReference Include="Quartz.Extensions.Hosting" />
         <PackageReference Include="Rebus.RabbitMq" />
         <PackageReference Include="Rebus.Microsoft.Extensions.Logging" />
         <PackageReference Include="Rebus.ServiceProvider" />

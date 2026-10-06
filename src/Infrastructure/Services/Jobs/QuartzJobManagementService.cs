@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Interfaces;
 using Quartz;
-using Quartz.Impl.Matchers;
 
 namespace Cfo.Cats.Infrastructure.Services.Jobs;
 
@@ -15,8 +14,10 @@ public class QuartzJobManagementService(ISchedulerFactory schedulerFactory) : IJ
     {
         var scheduler = await schedulerFactory.GetScheduler(cancellationToken);
         var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup(), cancellationToken);
-        var executingJobs = await scheduler.GetCurrentlyExecutingJobs(cancellationToken);
-        var executingKeys = executingJobs.Select(j => j.JobDetail.Key).ToHashSet();
+        var executingJobs = await scheduler.QueryFireInstances(
+            new FireInstanceQuery { State = FireInstanceState.Executing },
+            cancellationToken);
+        var executingKeys = executingJobs.Items.Select(j => j.JobKey).ToHashSet();
 
         var summaries = new List<JobSummary>(jobKeys.Count);
 
@@ -33,11 +34,11 @@ public class QuartzJobManagementService(ISchedulerFactory schedulerFactory) : IJ
             {
                 // Use the earliest next-fire trigger as the representative trigger
                 var primaryTrigger = triggers
-                    .OrderBy(t => t.GetNextFireTimeUtc())
+                    .OrderBy(t => t.NextFireTimeUtc)
                     .First();
 
-                nextFireTime = primaryTrigger.GetNextFireTimeUtc();
-                previousFireTime = primaryTrigger.GetPreviousFireTimeUtc();
+                nextFireTime = primaryTrigger.NextFireTimeUtc;
+                previousFireTime = primaryTrigger.PreviousFireTimeUtc;
 
                 var triggerState = await scheduler.GetTriggerState(primaryTrigger.Key, cancellationToken);
                 status = executingKeys.Contains(jobKey) ? "Executing" : triggerState.ToString();
@@ -59,7 +60,7 @@ public class QuartzJobManagementService(ISchedulerFactory schedulerFactory) : IJ
     public async Task TriggerJobAsync(string jobName, CancellationToken cancellationToken = default)
     {
         var scheduler = await schedulerFactory.GetScheduler(cancellationToken);
-        await scheduler.TriggerJob(new JobKey(jobName), cancellationToken);
+        await scheduler.TriggerJob(new JobKey(jobName), cancellationToken: cancellationToken);
     }
 
     public async Task PauseJobAsync(string jobName, CancellationToken cancellationToken = default)
@@ -79,9 +80,9 @@ public class QuartzJobManagementService(ISchedulerFactory schedulerFactory) : IJ
         var scheduler = await schedulerFactory.GetScheduler(cancellationToken);
         return new SchedulerInfo(
             scheduler.SchedulerName,
-            scheduler.IsStarted,
-            scheduler.InStandbyMode,
-            scheduler.IsShutdown
+            scheduler.Status == SchedulerStatus.Running,
+            scheduler.Status == SchedulerStatus.Standby,
+            scheduler.Status == SchedulerStatus.Shutdown
         );
     }
 
