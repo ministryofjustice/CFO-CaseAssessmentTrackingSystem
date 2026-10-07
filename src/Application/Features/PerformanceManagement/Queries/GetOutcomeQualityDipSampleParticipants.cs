@@ -50,6 +50,9 @@ public static class GetOutcomeQualityDipSampleParticipants
                     sample.CsoIsCompliant,
                     sample.CpmIsCompliant,
                     sample.FinalIsCompliant,
+                    sample.CsoComments,
+                    sample.CpmComments,
+                    sample.FinalComments,
                     sample.CsoReviewedOn,
                     ReviewedBy = reviewer.DisplayName
                 };
@@ -74,6 +77,9 @@ public static class GetOutcomeQualityDipSampleParticipants
                     dsp.CsoIsCompliant,
                     dsp.CpmIsCompliant,
                     dsp.FinalIsCompliant,
+                    dsp.CsoComments,
+                    dsp.CpmComments,
+                    dsp.FinalComments,
                     dsp.CsoReviewedOn,
                     dsp.ReviewedBy))
                 .ToListAsync(cancellationToken);

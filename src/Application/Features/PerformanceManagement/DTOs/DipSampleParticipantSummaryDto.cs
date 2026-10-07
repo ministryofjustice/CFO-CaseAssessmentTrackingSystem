@@ -12,6 +12,9 @@ public record DipSampleParticipantSummaryDto(
     ComplianceAnswer CsoComplianceAnswer,
     ComplianceAnswer CpmComplianceAnswer,
     ComplianceAnswer FinalComplianceAnswer,
+    string? CsoComments = null,
+    string? CpmComments = null,
+    string? FinalComments = null,
     DateTime? ReviewedOn = null,
     string? ReviewedBy = null)
 {
@@ -43,4 +46,9 @@ public record DipSampleParticipantSummaryDto(
             return CsoComplianceAnswer;
         }
     }
+
+    public bool HasAnyComments =>
+        !string.IsNullOrWhiteSpace(CsoComments)
+        || !string.IsNullOrWhiteSpace(CpmComments)
+        || !string.IsNullOrWhiteSpace(FinalComments);
 }

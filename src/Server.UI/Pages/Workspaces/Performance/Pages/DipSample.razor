@@ -80,6 +80,7 @@
         </ToolBarContent>
         <ColGroup>
             <col style="width: 50px;" />
+            <col style="width: 50px;" />
             <col />
             <col />
             <col />
@@ -88,6 +89,7 @@
             <col />
         </ColGroup>
         <Columns>
+            <HierarchyColumn ButtonDisabledFunc="@(x => x.HasAnyComments is false)" />
             <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
@@ -166,6 +168,35 @@
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
+        <ChildRowContent>
+            <MudCard Outlined="false" Elevation="0" Class="pa-2">
+                @if (!string.IsNullOrWhiteSpace(context.Item.CsoComments))
+                {
+                    <div class="mb-2">
+                        <MudText Typo="Typo.body2">CSO</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.CsoComments</MudText>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(context.Item.CpmComments))
+                {
+                    <div class="mb-2">
+                        <MudText Typo="Typo.body2">CPM</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.CpmComments</MudText>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(context.Item.FinalComments))
+                {
+                    <div class="mb-2">
+                        <MudText Typo="Typo.subtitle2">Final</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.FinalComments</MudText>
+                    </div>
+                }
+                @if (context.Item.HasAnyComments is false)
+                {
+                    <MudText Typo="Typo.caption">No notes found.</MudText>
+                }
+            </MudCard>
+        </ChildRowContent>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>
         </NoRecordsContent>
