@@ -1,5 +1,5 @@
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Common.Enums;
@@ -12,18 +12,24 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Pages;
 
 public partial class Participant
 {
+
+    [Inject]
+    public ILocationService LocationService { get; set; } = null!;
+
     [Parameter] public string Id { get; set; } = null!;
 
     [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
     private ParticipantCascadingDetails? ParticipantCascadingDetails { get; set; }
 
-    private bool _pathwaySummaryView = false;
+    private bool _pathwaySummaryView;
 
     private CasePathwayPlan? _casePathwayPlan;
     private OutcomeQualityDipSamplePathwayPlanComponent? _summaryObjectives;
     private PathwayPlanReviewHistory? _summaryReviewHistory;
     private readonly string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
+
+    private readonly string _ownerLacksLocationVisibilityAlertMessage = ConstantString.OwnerLacksLocationVisibilityWarning;
 
     private readonly string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
 
@@ -70,6 +76,9 @@ public partial class Participant
     private bool ShowRightToWorkWarning() => Data!.IsRightToWorkRequired
                                   && Data!.ConsentStatus == ConsentStatus.GrantedStatus
                                   && Data.HasActiveRightToWork == false;
+
+    private bool ShowOwnerLocationVisibilityWarning() => LocationService.GetVisibleLocations(CurrentUser.TenantId!)
+        .Any(l => l.Name.Equals(Data!.Location, StringComparison.CurrentCultureIgnoreCase)) == false;
 
     protected override void OnDataLoaded(ParticipantSummaryDto data)
     {
