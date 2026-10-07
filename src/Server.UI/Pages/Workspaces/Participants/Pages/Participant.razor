@@ -95,6 +95,11 @@
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
                     }
 
+                    @if (ShowOwnerLocationVisibilityWarning())
+                    {
+                        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@_ownerLacksLocationVisibilityAlertMessage</MudAlert>
+                    }
+
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true" Style="height: 100%;">
 
                         <MudTabPanel Text="Case Summary">

@@ -105,7 +105,7 @@
                                     StartIcon="@Icons.Material.Filled.DoneAll"
                                     OnClick="@(() => DismissNotification(item.Id))" 
                                     Disabled="Loading">
-                                    Mark as Read
+                                    @ConstantString.MarkAsRead
                                 </MudButton>
                             }
                             else
@@ -116,7 +116,7 @@
                                     StartIcon="@Icons.Material.Filled.MarkAsUnread"
                                     OnClick="@(() => UnreadNotification(item.Id))" 
                                     Disabled="Loading">
-                                    Mark as Unread
+                                    @ConstantString.MarkAsUnread
                                 </MudButton>
                             }
                         </MudStack>

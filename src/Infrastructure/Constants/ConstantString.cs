@@ -20,7 +20,6 @@ public static class ConstantString
     public static string Refresh => Localize("Refresh");
     public static string Edit => Localize("Edit");
     public static string View => Localize("View");
-    public static string ViewAll => Localize("View All");
     public static string Verify => Localize("Verify");
     public static string Submit => Localize("Submit");
     public static string Delete => Localize("Delete");
@@ -29,11 +28,9 @@ public static class ConstantString
     public static string Clone => Localize("Clone");
     public static string New => Localize("New");
     public static string Export => Localize("Export");
-    public static string ExportPDF => Localize("Export to PDF");
     public static string Import => Localize("Import from Excel");
     public static string Actions => Localize("Actions");
     public static string Save => Localize("Save");
-    public static string SaveAndNew => Localize("Save & New");
     public static string SaveChanges => Localize("Save Changes");
     public static string Saving => Localize("Saving");
     public static string Cancel => Localize("Cancel");
@@ -62,63 +59,28 @@ public static class ConstantString
 
     public static string SaveSuccess => Localize("Save successfully");
     public static string DeleteSuccess => Localize("Delete successfully");
-    public static string DeleteFail => Localize("Delete fail");
-
-    public static string ArchiveSuccess => Localize("Archive successfully");
-    public static string ArchiveFail => Localize("Archive fail");
     public static string UpdateSuccess => Localize("Update succeeded");
     public static string CreateSuccess => Localize("Create successfully");
     public static string LoginSuccess => Localize("Login successfully");
     public static string LogoutSuccess => Localize("Logout successfully");
-    public static string LoginFail => Localize("Login fail");
-    public static string LogoutFail => Localize("Logout fail");
-    public static string ImportSuccess => Localize("Import successfully");
-    public static string ImportFail => Localize("Import fail");
     public static string ExportSuccess => Localize("Export requested. File will be available for download in 'My Documents' shortly.");
-    public static string UploadSuccess => Localize("Upload successfully");
-
+  
     public static string Selected => Localize("Selected");
     public static string SelectedTotal => Localize("Selected Total");
-    public static string AdvancedSearch => Localize("Advanced Search");
     public static string OrderBy => Localize("Order By");
     public static string CreateAnItem => Localize("Create a new {0}");
-    public static string EditTheItem => Localize("Edit the {0}");
+    
     public static string DeleteHeader => Localize("Confirm deletion");
-    public static string DeleteTheItem => Localize("Delete the {0}");
-    public static string DeleteItems => Localize("Delete selected items: {0}");
-    public static string DeleteConfirmation =>
+   public static string DeleteConfirmation =>
         Localize("Are you sure you want to delete this item: {0}?");
-
-    public static string DeleteConfirmationWithId =>
-        Localize("Are you sure you want to delete this item with Id: {0}?");
-
-    public static string DeleteConfirmWithSelected =>
-        Localize("Are you sure you want to delete the selected items: {0}?");
-
-    public static string ArchiveTheItem => Localize("Archive the {0}");
-    public static string ArchiveItems => Localize("Archive selected items: {0}");
-    public static string ArchiveConfirmation =>
-        Localize("Are you sure you want to archive this item: {0}?");
-
-    public static string ArchiveConfirmationWithId =>
-        Localize("Are you sure you want to archive this item with Id: {0}?");
-
-    public static string ArchiveConfirmWithSelected =>
-        Localize("Are you sure you want to archive the selected items: {0}?");
-
+   
     public static string NoRecords => Localize("There are no records to view.");
     public static string Loading => Localize("Loading...");
     public static string Waiting => Localize("Wating...");
     public static string Processing => Localize("Processing...");
     public static string DeleteConfirmationTitle => Localize("Delete Confirmation");
-    public static string ArchiveConfirmationTitle => Localize("Archive Confirmation");
-    public static string LogoutConfirmationTitle => Localize("Logout Confirmation");
+   public static string LogoutConfirmationTitle => Localize("Logout Confirmation");
 
-    public static string NewEnrolment => Localize("New Enrolment");
-    public static string ResumeEnrolment => Localize("Resume Enrolment");
-    
-    public static string LogoutConfirmation =>
-        Localize("You are attempting to log out of application. Do you really want to log out?");
     public static string AddRightToWork =>
     Localize("Add Right To Work");
 
@@ -133,6 +95,8 @@ public static class ConstantString
     Localize("Right To Work");
     public static string RightToWorkIsRequiredMessage =>
     Localize("No active Right To Work documentation found for the participant, it is a requirement for non-British/Irish participants.");
+    public static string OwnerLacksLocationVisibilityWarning =>
+    Localize("The participant's current location is not visible to the owner of this case. This may indicate the case needs to be reassigned.");
     public static string AddConsent =>
     Localize("Add Consent");
 
@@ -142,11 +106,7 @@ public static class ConstantString
     Localize("Mark As Read");
     public static string MarkAsUnread =>
     Localize("Mark As Unread");
-    public static string ShowReadNotification =>
-    Localize("Show Read Notification");
-    public static string ShowUnreadNotification =>
-    Localize("Show Unread Notification");
-
+   
     public static string AddActualReleaseDate =>
     Localize("Add Actual Release Date");
     public static string CompletePRI =>
@@ -169,7 +129,6 @@ public static class ConstantString
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");
 
     public static string ContinueEnrolment => Localize("Continue Enrolment");
-
     
     public static string Unarchive => Localize("Unarchive");
     
@@ -241,7 +200,6 @@ public static class ConstantString
 
     public static string EditActivity => Localize("Edit Activity");
     public static string Payable => Localize("Payable");
-    public static string NonPayable => Localize("Non-Payable");
     public static string PreReleaseSupport => Localize("Pre-Release Support");
     public static string ThroughTheGate => Localize("Through the Gate");
 
@@ -288,9 +246,7 @@ public static class ConstantString
     
     public static string AddPickList =>
         Localize("Add PickList");
-    public static string EditPickList =>
-        Localize("Edit PickList");
-    public static string DeletePickList =>
+      public static string DeletePickList =>
         Localize("Delete PickList");
     
     public static string AddUser =>
