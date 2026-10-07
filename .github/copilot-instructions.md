@@ -1,36 +1,5 @@
 # Copilot Instructions
 
-## Overview
-
-CATS (Case Assessment and Tracking System) is a .NET 10 Blazor Server application for HMPPS Creating Future Opportunities (CFO). It tracks rehabilitative work with offenders in custody and the community, supporting ~600 users from non-government organisations.
-
-External offender data (from Nomis and Delius) is sourced via the [CFO External Data Integration System](https://github.com/ministryofjustice/CFO-ExternalDataIntegrationSystem).
-
----
-
-## Build, Test & Run
-
-```bash
-# Run all tests
-dotnet cake.cs --target=Test
-
-# Run a single test project
-dotnet test test/Application.UnitTests/Application.UnitTests.csproj
-
-# Run a single test by name
-dotnet test test/Application.UnitTests/Application.UnitTests.csproj --filter "FullyQualifiedName~AddLabelCommandTests"
-
-# Build only
-dotnet cake.cs --target=Build
-
-# Full publish (Clean → Restore → Build → Test → Publish)
-dotnet cake.cs
-```
-
-Run the application via .NET Aspire — use the `Cats.AppHost` project (F5 in VS Code with the default configuration, or select `Cats.AppHost` in VS/Rider).
-
----
-
 ## Architecture
 
 The solution follows **Clean Architecture** with four main layers:
@@ -47,6 +16,11 @@ Supporting projects:
 ---
 
 ## Key Conventions
+
+### Core Framework Guardrails
+- **CQRS Engine:** Use `Cortex.Mediator` (`ICommand<T>`, `IQuery<T>`, `INotificationHandler<T>`). **DO NOT** use `MediatR`.
+- **Testing Stack:** Unit tests use NUnit and `Shouldly` assertions (`test/Application.UnitTests`). Architecture tests use `NetArchTest` (`test/ArchitectureTests`). **DO NOT** use `FluentAssertions` or `Assert`.
+- **UI Base Component:** Blazor components must inherit `CatsComponent<T>`. **DO NOT** inherit from the legacy `CatsComponentBase`.
 
 ### CQRS & Cortex.Mediator
 
@@ -98,27 +72,17 @@ RuleFor(v => v.Name)
     .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
 ```
 
-### Cortex.Mediator Pipeline Behaviours (order matters)
-
-Registered in `Application/DependencyInjection.cs`:
-1. `TraceMetricsBehaviour` — OpenTelemetry traces and metrics (Aspire dashboard / Grafana)
-2. `ValidationBehaviour` — runs FluentValidation validators
-3. `UnhandledExceptionBehaviour` — catches and logs unhandled exceptions
-4. `SessionValidatingBehaviour`
-5. `AuthorizationBehaviour` — checks `[RequestAuthorize]` policy
-6. `TransactionBehaviour` — wraps commands and queries in a DB transaction
-7. `AccessAuditingBehaviour` — records participant access audit trails (for `IAuditableRequest`)
-
 ### Blazor UI Patterns
 
 - Pages use code-behind: `Foo.razor` + `Foo.razor.cs` (partial class).
+- Components that access data via mediator ect **must inherit `CatsComponent<T>`**. Move away from `CatsComponentBase`.
 - `_Imports.cs` and `_Imports.razor` in each layer/folder provide global using directives — new types rarely need explicit `using` statements.
 - MudBlazor components are used throughout for UI.
 
 ### Feature Folder Structure
 
 Features follow a consistent structure under `Application/Features/{Feature}/`:
-```
+```text
 Commands/
   {CommandName}/
     {CommandName}Command.cs
