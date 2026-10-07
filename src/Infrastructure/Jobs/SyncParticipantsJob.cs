@@ -15,7 +15,7 @@ public class SyncParticipantsJob(
     public static readonly JobKey Key = new JobKey(name: nameof(SyncParticipantsJob));
     public static readonly string Description = "A job to synchronise participant information retrieved by the Candidate Service";
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         using (logger.BeginScope(new Dictionary<string, object>
         {
@@ -56,8 +56,8 @@ public class SyncParticipantsJob(
         }
         catch (Exception ex)
         {
-            throw new JobExecutionException(msg: $"Quartz Job - {Key}: An unexpected error occurred executing job",
-                refireImmediately: true, cause: ex);
+            throw new JobExecutionException($"Quartz Job - {Key}: An unexpected error occurred executing job", ex)
+                { RefireImmediately = true };
         }
         finally
         {

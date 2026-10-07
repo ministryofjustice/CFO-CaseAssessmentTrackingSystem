@@ -13,7 +13,7 @@ public class DisableDormantAccountsJob(
     public static readonly JobKey Key = new JobKey(name: nameof(DisableDormantAccountsJob));
     public static readonly string Description = "A job to deactivate accounts that have not logged in within the last 30 days.";
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         using (logger.BeginScope(new Dictionary<string, object>
         {
@@ -74,7 +74,7 @@ public class DisableDormantAccountsJob(
         catch (Exception ex)
         {
             logger.LogError(ex, "Quartz job {Key} failed", Key.Name);
-            throw new JobExecutionException(msg: "An unexpected error occurred executing Disable Dormant Accounts job", refireImmediately: true, cause: ex);
+            throw new JobExecutionException("An unexpected error occurred executing Disable Dormant Accounts job", ex) { RefireImmediately = true };
         }
     }
 }

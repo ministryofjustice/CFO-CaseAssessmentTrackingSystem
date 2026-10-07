@@ -10,7 +10,7 @@ public class ArchiveParticipantsJob(
     public static readonly JobKey Key = new JobKey(name: nameof(ArchiveParticipantsJob));
     public static readonly string Description = "A job to archive participants that have been inactive in the data feed for the last 30 days.";
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken = default)
     {
         using (logger.BeginScope(new Dictionary<string, object>
         {
@@ -66,8 +66,12 @@ public class ArchiveParticipantsJob(
         catch (Exception ex)
         {
             logger.LogError(ex, "Quartz job {Key} failed", Key.Name);
-            throw new JobExecutionException(msg: $"An unexpected error occurred executing {Key.Name} job", refireImmediately: true, cause: ex);
+            throw new JobExecutionException($"An unexpected error occurred executing {Key.Name} job", ex)
+            {
+                RefireImmediately = true,
+            };
         }
 
     }
+
 }

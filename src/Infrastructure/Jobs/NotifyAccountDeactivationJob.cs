@@ -14,7 +14,7 @@ public class NotifyAccountDeactivationJob(
     public static readonly string Description = "A job to notify accounts that are due to deactivate.";
     public static readonly DateTime sevenDaysFromDeactivationDate = DateTime.Today.AddDays(-23); // exactly 23 days ago, ignoring time
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         using (logger.BeginScope(new Dictionary<string, object>
         {
@@ -52,7 +52,7 @@ public class NotifyAccountDeactivationJob(
         }
         catch (Exception ex)
         {
-            throw new JobExecutionException(msg: $"An unexpected error occurred executing notifying accounts that will be deactivated soon job", refireImmediately: true, cause: ex);
+            throw new JobExecutionException($"An unexpected error occurred executing notifying accounts that will be deactivated soon job", ex) { RefireImmediately = true };
         }
     }
 }

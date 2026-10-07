@@ -743,7 +743,7 @@ public static class DependencyInjection
             }
         });
 
-        services.AddQuartzServer(options =>
+        services.AddQuartzHostedService(options =>
         {
             options.WaitForJobsToComplete = true;
         });

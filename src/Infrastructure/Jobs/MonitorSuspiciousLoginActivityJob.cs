@@ -37,7 +37,7 @@ public class MonitorSuspiciousLoginActivityJob(
         IdentityActionType.UserAccountLockedOut
     ];
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         using (logger.BeginScope(new Dictionary<string, object>
         {
@@ -59,7 +59,6 @@ public class MonitorSuspiciousLoginActivityJob(
             var threshold = Math.Max(1, settings.FailedAttemptThreshold);
             var windowSeconds = Math.Max(1, settings.EvaluationWindowSeconds);
             var windowStart = DateTime.Now.AddSeconds(-windowSeconds);
-            var cancellationToken = context.CancellationToken;
 
             logger.LogInformation(
                 "Starting suspicious login activity check. Threshold={Threshold} failed attempts within {WindowSeconds}s window",
@@ -180,7 +179,7 @@ public class MonitorSuspiciousLoginActivityJob(
         catch (Exception ex)
         {
             logger.LogError(ex, "Quartz job {Key} failed", Key.Name);
-            throw new JobExecutionException(msg: "An unexpected error occurred executing Monitor Suspicious Login Activity job", refireImmediately: true, cause: ex);
+            throw new JobExecutionException("An unexpected error occurred executing Monitor Suspicious Login Activity job", ex) { RefireImmediately = true };
         }
     }
 
