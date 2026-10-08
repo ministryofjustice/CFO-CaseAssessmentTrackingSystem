@@ -187,8 +187,8 @@
                 @if (!string.IsNullOrWhiteSpace(context.Item.FinalComments))
                 {
                     <div class="mb-2">
-                        <MudText Typo="Typo.subtitle2">Final</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.FinalComments</MudText>
+                        <MudText Typo="Typo.body2">Final</MudText>
+                        <MudText Typo="Typo.body1">@context.Item.FinalComments</MudText>
                     </div>
                 }
                 @if (context.Item.HasAnyComments is false)
