@@ -1,3 +1,4 @@
+@using Cfo.Cats.Application.Features.HelpLinks.DTOs
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary" Style="font-weight:700;">@(HelpLink?.Title ?? "Help")</MudText>
@@ -11,10 +12,10 @@
                 <MudText Typo="Typo.body2">Help links (opens in new tab)</MudText>
                 @foreach (var url in HelpLink.Urls)
                 {
-                    <MudLink Href="@url.Url" Target="_blank" Typo="Typo.body1" Class="d-block mb-1">@(url.DisplayName ?? url.Url)</MudLink>
+                    <MudLink Href="@url.Url" Target="_blank" Typo="Typo.body1" Class="d-block mb-1" OnClick="@(() => RegisterUsage(url) )">@(url.DisplayName ?? url.Url)</MudLink>
                 }
             </MudStack>
-            
+
         }
         else
         {

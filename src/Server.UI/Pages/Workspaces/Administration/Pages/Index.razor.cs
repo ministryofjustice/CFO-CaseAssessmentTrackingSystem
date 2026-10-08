@@ -48,6 +48,7 @@ public partial class Index
         if(_showServiceDeskManagement)
         {
             links.Add(AdministrationLinks.AuditTrails);
+            links.Add(AdministrationLinks.UsageTelemetry);
             links.Add(AdministrationLinks.Outbox);
             links.Add(AdministrationLinks.PickList);
 

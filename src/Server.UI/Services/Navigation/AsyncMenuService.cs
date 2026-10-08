@@ -59,7 +59,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
         new NavigationMenuItemLinkModel("CFO Website", "https://www.creatingfutureopportunities.gov.uk/", "Navigates to the CFO website on a new tab", "_blank"),
         new NavigationMenuItemLinkModel("CFO Maps", "https://www.creatingfutureopportunities.gov.uk/map/", "Navigates to the CFO Maps website on a new tab", "_blank"),
         new NavigationMenuItemLinkModel("GitHub", "https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/", "Navigates to the GitHub repository on a new tab", "_blank"),
-        new NavigationMenuItemLinkModel("TELP", "https://teams.microsoft.com/l/channel/19%3ArRzKtP9i3r2_LPPzQ7Yytoz-zGm0Xplhj3Reqe1FQOQ1%40thread.tacv2/General?groupId=1008d424-cc9b-43db-96ae-b299f509b708&tenantId=c6874728-71e6-41fe-a9e1-2e8c36776ad8", "Opens TELP in Microsoft Teams", "_blank")
+        new NavigationMenuItemLinkModel("TELP", "https://teams.microsoft.com/l/channel/19%3ArRzKtP9i3r2_LPPzQ7Yytoz-zGm0Xplhj3Reqe1FQOQ1%40thread.tacv2/General?groupId=1008d424-cc9b-43db-96ae-b299f509b708&tenantId=c6874728-71e6-41fe-a9e1-2e8c36776ad8", "Opens TELP in Microsoft Teams", "_blank", true)
     ]);
     
     private async Task<bool> PassesPolicy(ClaimsPrincipal principal, string policy)

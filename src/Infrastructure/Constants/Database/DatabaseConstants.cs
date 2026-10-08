@@ -181,9 +181,9 @@ internal static class DatabaseConstants
         public const int InitiativeCode = 8;
 
         /// <summary>
-        /// The maximum length for the description of an initiative.
+        /// The maximum length of a medium length description.
         /// </summary>
-        public const int InitiativeDescription = 256;
+        public const int MediumLengthDescription = 256;
 
         public const int Fifty = 50;
     }

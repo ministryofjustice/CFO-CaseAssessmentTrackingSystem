@@ -37,7 +37,7 @@ public sealed record NavigationMenuItemButtonModel(string DisplayText, string? H
 /// <param name="Href">The URL of the link</param>
 /// <param name="AccessibilityText">Accessibility description</param>
 /// <param name="Target">HTML standard for target</param>
-public sealed record NavigationMenuItemLinkModel(string DisplayText, string? Href, string AccessibilityText, string? Target = null)
+public sealed record NavigationMenuItemLinkModel(string DisplayText, string? Href, string AccessibilityText, string? Target = null, bool Track = false)
     : NavigationMenuItemModel;
 
 /// <summary>

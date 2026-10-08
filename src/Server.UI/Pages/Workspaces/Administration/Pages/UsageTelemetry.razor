@@ -1,0 +1,93 @@
+@page "/pages/workspace/administration/usage"
+
+@attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
+
+@using Cfo.Cats.Application.Features.Telemetry.DTOs
+@using Cfo.Cats.Application.Features.Telemetry.Specifications
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
+@inherits CatsComponent<PaginatedData<UsageEventDto>>
+
+<PageTitle>Usage Telemetry</PageTitle>
+
+<AdministrationPageHeader />
+
+<MudStack Spacing="2">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <MudMenu Size="Size.Small" Label="@($"Period: {GetListViewLabel(Query.ListView)}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="All" OnClick="@(() => OnChangedListView(UsageEventListView.All))" />
+            <MudMenuItem Label="Today" OnClick="@(() => OnChangedListView(UsageEventListView.Today))" />
+            <MudMenuItem Label="Last 7 days" OnClick="@(() => OnChangedListView(UsageEventListView.Last7Days))" />
+            <MudMenuItem Label="Last 30 days" OnClick="@(() => OnChangedListView(UsageEventListView.Last30Days))" />
+        </MudMenu>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudTextField T="string" ValueChanged="OnSearch" Value="@Query.Keyword"
+                          Placeholder="Search area, activity, user" Adornment="Adornment.End"
+                          Style="min-width:220px" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" />
+            <MudButton Variant="Variant.Filled" Size="Size.Small" OnClick="OnRefresh"
+                       StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Secondary">
+                @ConstantString.Refresh
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+        <MudPagination Rectangular="true" Variant="Variant.Text" Selected="Query.PageNumber"
+                       Count="@(Data?.TotalPages ?? 0)" MiddleCount="2" BoundaryCount="1"
+                       SelectedChanged="OnPaginationChanged" Size="Size.Small" />
+        <MudText>@(Data?.TotalItems ?? 0) records</MudText>
+        <MudSpacer />
+        <MudMenu Size="Size.Small" Label="@($"Sort: {GetSortLabel(Query.OrderBy)} ({Query.SortDirection})")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="When" OnClick="@(() => OnSort(nameof(UsageEventDto.OccurredOn)))" />
+            <MudMenuItem Label="Area" OnClick="@(() => OnSort(nameof(UsageEventDto.Area)))" />
+            <MudMenuItem Label="Activity" OnClick="@(() => OnSort(nameof(UsageEventDto.Activity)))" />
+            <MudMenuItem Label="User" OnClick="@(() => OnSort(nameof(UsageEventDto.UserName)))" />
+            <MudMenuItem Label="Tenant" OnClick="@(() => OnSort(nameof(UsageEventDto.TenantId)))" />
+            <MudMenuItem Label="Context" OnClick="@(() => OnSort(nameof(UsageEventDto.Context)))" />
+        </MudMenu>
+    </MudStack>
+
+    @if (Loading)
+    {
+        <MudLoading Text="Loading" />
+    }
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+            @ErrorMessage
+        </MudAlert>
+    }
+
+    @if (Data is not null)
+    {
+        <MudTable Dense="true" Striped="true" Hover="true" Items="Data.Items" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>When</MudTh>
+                <MudTh>Area</MudTh>
+                <MudTh>Activity</MudTh>
+                <MudTh>User</MudTh>
+                <MudTh>Tenant</MudTh>
+                <MudTh>Context</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="When">
+                    <ToLocal DateTime="@context.OccurredOn.ToLocalTime()" Format="dd/MM/yyyy HH:mm:ss" />
+                </MudTd>
+                <MudTd DataLabel="Area">@context.Area</MudTd>
+                <MudTd DataLabel="Activity">@context.Activity</MudTd>
+                <MudTd DataLabel="User">
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body1">@context.UserName</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.UserId</MudText>
+                    </div>
+                </MudTd>
+                <MudTd DataLabel="Tenant">@context.TenantId</MudTd>
+                <MudTd DataLabel="Context">@context.Context</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>@ConstantString.NoRecords</MudText>
+            </NoRecordsContent>
+        </MudTable>
+    }
+</MudStack>

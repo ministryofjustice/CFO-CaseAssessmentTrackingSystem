@@ -1,4 +1,6 @@
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.HelpLinks.DTOs;
+using Cfo.Cats.Server.UI.Extensions;
 
 namespace Cfo.Cats.Server.UI.Components.Shared.Help;
 
@@ -12,6 +14,12 @@ public partial class HelpDialog
 {
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Inject]
+    public IUsageTracker UsageTracker { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public UserProfile CurrentUser { get; set;} = null!;
 
     [Parameter]
     public HelpLinkDto? HelpLink { get; set; }
@@ -39,4 +47,8 @@ public partial class HelpDialog
         MudDialog.Close();
         Navigation.NavigateTo(uri);
     }
+
+    private async Task RegisterUsage(HelpLinkUrlDto url) 
+        => await UsageTracker.TrackAsync("Help", url.DisplayName ?? string.Empty, CurrentUser, url.Url.Left(256));
+
 }

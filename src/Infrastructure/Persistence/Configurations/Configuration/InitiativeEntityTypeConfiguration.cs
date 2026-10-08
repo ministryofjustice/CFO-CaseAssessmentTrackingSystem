@@ -24,7 +24,7 @@ public class InitiativeEntityTypeConfiguration : IEntityTypeConfiguration<Initia
 
         builder.Property(f => f.Description)
             .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.InitiativeDescription);
+            .HasMaxLength(DatabaseConstants.FieldLengths.MediumLengthDescription);
 
         builder.OwnsOne(f => f.Lifetime, lifetime =>
         {
