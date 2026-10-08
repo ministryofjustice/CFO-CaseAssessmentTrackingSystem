@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Exports;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
@@ -22,6 +23,7 @@ public static class ExportInductions
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUser,
         ITenantService tenantService,
+        ILocationService locationService,
         IUserService userService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
@@ -38,10 +40,16 @@ public static class ExportInductions
                 ? null
                 : userService.GetDisplayName(request.Request.UserId);
 
+            var locationName = request.Request.LocationId.HasValue
+                ? locationService.DataSource.FirstOrDefault(l => l.Id == request.Request.LocationId.Value)?.Name
+                : null;
+
             var description = ExportDocumentNaming.BuildDescription(
                 "Performance Inductions Export",
                 ("Tenant", tenantName),
                 ("User", userName),
+                ("Location", locationName),
+                ("Location Type", request.Request.LocationType),
                 ("Start Date", request.Request.StartDate.ToString("dd MMM yyyy")),
                 ("End Date", request.Request.EndDate.ToString("dd MMM yyyy")));
 
@@ -96,5 +104,7 @@ public static class ExportInductions
         public required DateTime EndDate { get; init; }
         public string? TenantId { get; init; }
         public string? UserId { get; init; }
+        public int? LocationId { get; init; }
+        public string? LocationType { get; init; }
     }
 }

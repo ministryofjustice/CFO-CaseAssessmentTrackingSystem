@@ -53,6 +53,8 @@ public class DocumentExportPerformanceActivitiesIntegrationEventConsumer(
                 CurrentUser = stubUser,
                 UserId = request.UserId,
                 TenantId = request.TenantId,
+                LocationId = request.LocationId,
+                LocationType = request.LocationType,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate
             };
