@@ -398,6 +398,7 @@ public static class DependencyInjection
         }); 
 
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
+        services.AddHostedService<NotifyConfigurationStartupCheck>();
 
         var options = configuration.GetAWSOptions();
 
@@ -508,7 +509,7 @@ public static class DependencyInjection
             .AddScoped<ITenantProvider, TenantProvider>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IDateTime, DateTimeService>()
-            .AddScoped<ICommunicationsService, CommunicationsService>()
+            .AddSingleton<ICommunicationsService, CommunicationsService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<ICumulativeExcelService, CumulativeExcelService>()
             .AddScoped<IOutcomeQualityDipSampleExcelService, OutcomeQualityDipSampleExcelService>()

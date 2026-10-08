@@ -2,10 +2,8 @@
 
 @using System.ComponentModel.DataAnnotations
 @using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
-@using Cfo.Cats.Application.Features.Identity.Notifications.SendTwoFactorCode
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Infrastructure.Services
-@using Microsoft.AspNetCore.Identity
 
 @inject IStringLocalizer<LoginWith2fa> L
 @inject SignInManager<ApplicationUser> SignInManager
@@ -14,6 +12,7 @@
 @inject ILogger<LoginWith2fa> Logger
 @inject IMediator Sender
 @inject INetworkIpProvider NetworkIpProvider
+@inject ICommunicationsService CommunicationsService
 
 <PageTitle>@L["Two-factor authentication"]</PageTitle>
 <MudText Typo="Typo.h4" GutterBottom="true">@L["Two-factor authentication"]</MudText>
@@ -24,7 +23,7 @@
     <div class="d-flex flex-column">
         <EditForm Model="Input" FormName="login-with-2fa" OnValidSubmit="OnValidSubmitAsync" method="post">
             <DataAnnotationsValidator />
-            <StatusMessage Message="@message"  Error="true"/>
+            <StatusMessage Message="@_message"  Error="true"/>
             <div class="mud-input-control mud-input-input-control my-4">
                 <div class="mud-input-control-input-container">
                     <!--!--><!--!-->
@@ -61,8 +60,8 @@
 
 @code {
     public const string PageUrl = "/pages/authentication/loginwith2fa";
-    private string? message;
-    private ApplicationUser user = default!;
+    private string? _message;
+    private ApplicationUser? _user;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -70,60 +69,83 @@
     protected override async Task OnInitializedAsync()
     {
         // Ensure the user has gone through the username & password screen first
-        user = await SignInManager.GetTwoFactorAuthenticationUserAsync() ??
-               throw new InvalidOperationException(L["Unable to load two-factor authentication user."]);
+        _user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+        
+        if (_user is null)
+        {
+            Logger.LogWarning("Attempt to access 2FA page without valid two-factor authentication session");
+            RedirectManager.RedirectTo(Login.PageUrl);
+        }
     }
-
-
 
     private async Task OnValidSubmitAsync()
     {
+        if (_user is null)
+        {
+            Logger.LogWarning("Attempt to submit 2FA form with invalid session");
+            _message = L["Error: Your session has expired. Please login again."];
+            return;
+        }
+
         if (Input.UseSms)
         {
-            var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
-            await Sender.Publish(new SendTwoFactorTextCodeNotification(user!.PhoneNumber!, user.UserName!, token));
             Input.UseSms = false;
-            message = L["Info: A new code has been sent to your registered phone number."];
+
+            if (string.IsNullOrWhiteSpace(_user.PhoneNumber))
+            {
+                Logger.LogWarning("User {UserName} requested an SMS two-factor code but has no phone number on file.", _user.UserName);
+                _message = L["Error: No phone number is registered for this account. Please use the emailed code or contact support."];
+                return;
+            }
+
+            var token = await UserManager.GenerateTwoFactorTokenAsync(_user, "Email");
+            var sendResult = await CommunicationsService.SendSmsCodeAsync(_user.PhoneNumber, token);
+
+            if (sendResult.Succeeded is false)
+            {
+                _message = L["Error: Unable to send verification code. Please try again later or contact support."];
+                return;
+            }
+
+            _message = L["Info: A new code has been sent to your registered phone number."];
         }
         else
         {
             var authenticatorCode = Input.TwoFactorCode!.Replace(" ", string.Empty).Replace("-", string.Empty);
-            var isCodeValid = await UserManager.VerifyTwoFactorTokenAsync(user, "Email", authenticatorCode);
+            var isCodeValid = await UserManager.VerifyTwoFactorTokenAsync(_user, "Email", authenticatorCode);
             if (isCodeValid == false)
             {
-                await UserManager.AccessFailedAsync(user);
-                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!, NetworkIpProvider.IpAddress));
-                if (await UserManager.IsLockedOutAsync(user))
+                await UserManager.AccessFailedAsync(_user);
+                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(_user.UserName!, NetworkIpProvider.IpAddress));
+                if (await UserManager.IsLockedOutAsync(_user))
                 {
-                    await Sender.Publish(IdentityAuditNotification.UserLockedOut(user.UserName!, NetworkIpProvider.IpAddress));
-                    Logger.LogWarning("User with ID '{UserId}' account locked out.", user.Id);
+                    await Sender.Publish(IdentityAuditNotification.UserLockedOut(_user.UserName!, NetworkIpProvider.IpAddress));
+                    Logger.LogWarning("User with ID '{UserId}' account locked out.", _user.Id);
                     RedirectManager.RedirectTo(Lockout.PageUrl);
                 }
                 else
                 {
-                    message = L["Error: Login failed."];
+                    _message = L["Error: Login failed."];
                 }                
                 return;
             }
             var result = await SignInManager.TwoFactorSignInAsync("Email", authenticatorCode, false, false);
-            var userId = await UserManager.GetUserIdAsync(user);
             if (result.Succeeded)
             {
-                await Sender.Publish(IdentityAuditNotification.LoginSucceededTwoFactorRequired(user.UserName!, NetworkIpProvider.IpAddress));
-                RedirectManager.RedirectTo(user.HomePage ?? "/");
+                await Sender.Publish(IdentityAuditNotification.LoginSucceededTwoFactorRequired(_user.UserName!, NetworkIpProvider.IpAddress));
+                RedirectManager.RedirectTo(_user.HomePage ?? "/");
             }
             else if (result.IsLockedOut)
             {
-                await Sender.Publish(IdentityAuditNotification.UserLockedOut(user.UserName!, NetworkIpProvider.IpAddress));
+                await Sender.Publish(IdentityAuditNotification.UserLockedOut(_user.UserName!, NetworkIpProvider.IpAddress));
                 RedirectManager.RedirectTo(Lockout.PageUrl);
             }
             else
             {
-                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!, NetworkIpProvider.IpAddress));
-                message = L["Error: Login failed."];
+                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(_user.UserName!, NetworkIpProvider.IpAddress));
+                _message = L["Error: Login failed."];
             }
         }
-
     }
 
     private sealed class InputModel : IValidatableObject
@@ -157,8 +179,6 @@
                     yield return new ValidationResult("Authenticator code should not be provided when asking for a text message.", [nameof(UseSms)]);
                 }
             }
-
         }
     }
-
 }

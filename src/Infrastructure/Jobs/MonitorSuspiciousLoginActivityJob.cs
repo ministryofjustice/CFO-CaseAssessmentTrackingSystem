@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
@@ -210,12 +209,25 @@ public class MonitorSuspiciousLoginActivityJob(
                     + Environment.NewLine + Environment.NewLine
                     + "Review the Login Monitoring dashboard in CATS Administration for full details.";
 
+            var successCount = 0;
             foreach (var recipient in recipients)
             {
-                await communicationsService.SendLoginThresholdAlertEmailAsync(recipient, subject, body);
+                var sendResult = await communicationsService.SendLoginThresholdAlertEmailAsync(recipient, subject, body);
+
+                if (sendResult.Succeeded is false)
+                {
+                    logger.LogWarning(
+                        "Suspicious login activity alert email was not sent to {Recipient}: {Errors}",
+                        recipient,
+                        sendResult.ErrorMessage);
+                }
+                else
+                {
+                    successCount++;
+                }
             }
 
-            logger.LogInformation("Sent suspicious login activity alert email to {RecipientCount} recipient(s)", recipients.Length);
+            logger.LogInformation("Sent suspicious login activity alert email to {SuccessfulCount} of {TotalCount} recipient(s)", successCount, recipients.Length);
         }
         catch(Exception ex)
         {

@@ -6,7 +6,6 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Text
-@using Cfo.Cats.Application.Features.Identity.Notifications.SendTwoFactorCode
 @using Cfo.Cats.Infrastructure.Services
 @using static Cfo.Cats.Infrastructure.Services.Identity.CustomSigninManager
 
@@ -17,6 +16,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject IMediator Sender
 @inject INetworkIpProvider NetworkIpProvider
+@inject ICommunicationsService CommunicationsService
 
 
 <PageTitle>@_title</PageTitle>
@@ -43,8 +43,8 @@
             <MudText Typo="Typo.body1" Class="mt-2">
                 By continuing to use the website, you are hereby notified that strictly necessary cookies to manage authentication and to ensure content is personalised appropriately are stored on your computer.                      
             </MudText>
-
         </MudItem>
+        
         <MudItem xs="12" md="6" Class="pa-4">
             <div class="d-flex justify-center">
                 <MudImage Src="/img/cfo-burgundy-logo.svg" alt="The CFO three step logo" style="max-width: 128px;"/>
@@ -105,8 +105,6 @@
         </MudItem>
     </MudGrid>
 </MudPaper>
-
-
 
 @code {
     public const string PageUrl = "/pages/authentication/login";
@@ -173,8 +171,22 @@
         else if (result.RequiresTwoFactor)
         {
             user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
-            var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
-            await Sender.Publish(new SendTwoFactorEmailCodeNotification(user!.Email!, user.UserName!, token));
+
+            if (user is null || string.IsNullOrWhiteSpace(user.Email))
+            {
+                Logger.LogError("Unable to send two-factor code for {UserName}: user or email is missing after password sign-in.", Input.UserName);
+                _errorMessage = L["Error: Unable to send verification code. Please try again later or contact support."];
+                return;
+            }
+
+            var token = await UserManager.GenerateTwoFactorTokenAsync(user, "Email");
+            var sendResult = await CommunicationsService.SendEmailCodeAsync(user.Email, token);
+
+            if (sendResult.Succeeded is false)
+            {
+                _errorMessage = L["Error: Unable to send verification code. Please try again later or contact support."];
+                return;
+            }
 
             RedirectManager.RedirectTo(LoginWith2fa.PageUrl);
         }
