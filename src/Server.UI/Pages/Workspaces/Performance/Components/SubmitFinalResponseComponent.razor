@@ -9,13 +9,11 @@
 
 <MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
     <MudGrid>
-        <MudItem xs="12" md="3">
-            <MudText Typo="Typo.subtitle1">
-                @Command.GetMemberDescription(x => x.Comments)
-            </MudText>
-        </MudItem>
-        <MudItem xs="12" md="9">
-            <MudStack Spacing="2">
+        <MudItem xs="12">
+            <MudStack Row="true" Justify="Justify.FlexStart" Spacing="4" AlignItems="AlignItems.Center" Class="mb-1">
+                <MudText Typo="Typo.subtitle1">
+                    @Command.GetMemberDescription(x => x.Comments)
+                </MudText>
                 @if (!ReadOnly && !string.IsNullOrWhiteSpace(CpmComments))
                 {
                     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
@@ -24,29 +22,34 @@
                                    Size="Size.Small"
                                    StartIcon="@Icons.Material.Filled.ContentCopy"
                                    Style="width: fit-content;"
-                                   OnClick="CopyFromVerification">
+                                   OnClick="@CopyFromVerification">
                             Copy from Verification
                         </MudButton>
                         <MudTooltip Text="Click to view Verification comments">
                             <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
                                           Size="Size.Small" 
                                           Color="Color.Info"
-                                          OnClick="() => _showCpmComments = !_showCpmComments" />
+                                          OnClick="@(() => _showCpmComments = !_showCpmComments)" />
                         </MudTooltip>
                     </MudStack>
-                    @if (_showCpmComments)
-                    {
-                        <MudPaper Class="pa-3" Elevation="1" Style="background-color: var(--mud-palette-background-grey);">
-                            <MudStack Spacing="1">
-                                <MudText Typo="Typo.caption" Color="Color.Secondary">Verification Comments (CPM):</MudText>
-                                <MudText Typo="Typo.body1">@CpmComments</MudText>
-                            </MudStack>
-                        </MudPaper>
-                    }
+                }
+            </MudStack>
+            <MudStack Spacing="2">
+                @if (!ReadOnly && !string.IsNullOrWhiteSpace(CpmComments) && _showCpmComments)
+                {
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Dense="true" NoIcon="false">
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">Verification Comments (CPM)</MudText>
+                            <MudText Typo="Typo.body1">@CpmComments</MudText>
+                        </MudStack>
+                    </MudAlert>
                 }
                 <MudTextField @bind-Value="@Command.Comments"
                               For="@(() => Command.Comments)"
-                              Lines="5"
+                              Variant="Variant.Outlined"
+                              Lines="12"
+                              MaxLines="30"
+                              FullWidth="true"
                               MaxLength=@ValidationConstants.NotesLength_Outcomes
                               Counter=@ValidationConstants.NotesLength_Outcomes
                               Immediate="true">
@@ -59,7 +62,7 @@
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
                     ?
                 </MudAvatar>
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
+                <MudText Typo="Typo.subtitle1">
                     @Command.GetMemberDescription(x => x.ComplianceAnswer)
                 </MudText>
             </MudStack>
@@ -78,7 +81,7 @@
         </MudItem>
 
         <MudItem xs="12">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Disabled="@ReadOnly" OnClick="OnSubmit">Submit</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Disabled="@ReadOnly" OnClick="@OnSubmit">Submit</MudButton>
         </MudItem>
     </MudGrid>
 </MudForm>

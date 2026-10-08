@@ -4,7 +4,6 @@
 @using Cfo.Cats.Application.Common.Validators
 
 @inject IAuthorizationService AuthorizationService
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (CpmHasReviewed)
 {
@@ -27,7 +26,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
                     A
                 </MudAvatar>
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
+                <MudText Typo="Typo.subtitle1">
                     @Command.GetMemberDescription(x => x.HasClearParticipantJourney)
                 </MudText>
             </MudStack>
@@ -45,7 +44,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
                     B
                 </MudAvatar>            
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
+                <MudText Typo="Typo.subtitle1">
                     @Command.GetMemberDescription(x => x.ShowsTaskProgression)
                 </MudText>
             </MudStack>
@@ -62,7 +61,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
 				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
 					C
 				</MudAvatar>
-				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+				<MudText Typo="Typo.subtitle1">
 					@Command.GetMemberDescription(x => x.SupportsJourney)
 				</MudText>
 			</MudStack>
@@ -79,7 +78,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
 				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
 					D
 				</MudAvatar>
-				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+				<MudText Typo="Typo.subtitle1">
 					@Command.GetMemberDescription(x => x.AlignsWithDoS)
 				</MudText>
 			</MudStack>
@@ -97,7 +96,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
 				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
 					E
 				</MudAvatar>
-				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+				<MudText Typo="Typo.subtitle1">
 					@Command.GetMemberDescription(x => x.PreReleasePractical)
 				</MudText>
 			</MudStack>
@@ -115,7 +114,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
                     F
                 </MudAvatar>            
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
+                <MudText Typo="Typo.subtitle1">
                     @Command.GetMemberDescription(x => x.TTGDemonstratesGoodPRIProcess)
                 </MudText>
             </MudStack>
@@ -134,7 +133,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
 				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
 					G
 				</MudAvatar>
-				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+				<MudText Typo="Typo.subtitle1">
 					@Command.GetMemberDescription(x => x.TTGObjectiveTasks)
 				</MudText>
 			</MudStack>
@@ -149,16 +148,17 @@ else if (Status != DipSampleStatus.AwaitingReview)
 		</MudItem>
 
         
-        <MudItem xs="12" md="3">
-            <MudText Typo="Typo.subtitle1">
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle1" Class="mb-1">
                 @Command.GetMemberDescription(x => x.Comments)
             </MudText>
-        </MudItem>
-        <MudItem xs="12" md="9" Class="d-flex align-center">
             <MudTextField Label=""
                           @bind-Value="@Command.Comments"
                           For="@(() => Command.Comments)"
-                          Lines="5"
+                          Variant="Variant.Outlined"
+                          Lines="12"
+                          MaxLines="30"
+                          FullWidth="true"
                           MaxLength=@ValidationConstants.NotesLength_Outcomes
                           Counter=@ValidationConstants.NotesLength_Outcomes
                           Immediate="true"> 
@@ -170,7 +170,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
                     ?
                 </MudAvatar> 
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
+                <MudText Typo="Typo.subtitle1">
                     @Command.GetMemberDescription(x => x.ComplianceAnswer)
                 </MudText>
             </MudStack>
@@ -185,7 +185,7 @@ else if (Status != DipSampleStatus.AwaitingReview)
         </MudItem>
         
         <MudItem xs="12">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Disabled="@ReadOnly" OnClick="OnSubmit">Submit</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Disabled="@ReadOnly" OnClick="@OnSubmit">Submit</MudButton>
         </MudItem>
         
     </MudGrid>
