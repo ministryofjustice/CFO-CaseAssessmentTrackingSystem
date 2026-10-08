@@ -22,7 +22,7 @@
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
     <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="9.1.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="13.5.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="13.6.0" />
     <PackageVersion Include="Dapper" Version="2.1.89" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
