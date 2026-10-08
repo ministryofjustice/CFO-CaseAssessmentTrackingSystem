@@ -82,7 +82,7 @@ public partial class MyParticipantsComponent
                 ParticipantsSessionData.FromQuery(
                    new ParticipantsWithPagination.Query()
                     {
-                        JustMyCases = false,
+                        OwnerId = CurrentUser.AssignedRoles.Length == 0 ? CurrentUser.UserId : null,
                         ListView =  _selectedItem.Key switch{
                             "Enrolling" => ParticipantListView.Enrolling,
                             "Approved" => ParticipantListView.Approved,
