@@ -23,7 +23,7 @@ generic-service:
       memory: 2Gi
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
-    Sentry__Environment: "PreProduction-CloudPlatform"
+    Sentry__Environment: "PreProduction"
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-preprod.svc.cluster.local:8080"
@@ -39,7 +39,7 @@ worker:
       memory: 768Mi
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
-    Sentry__Environment: "PreProduction-CloudPlatform"
+    Sentry__Environment: "PreProduction"
     Features__PresenceHub__RelayUserPresenceNotifications: "false"
 
 consumers:
@@ -52,7 +52,7 @@ consumers:
       memory: 768Mi
   env:
     DOTNET_ENVIRONMENT: "PreProduction"
-    Sentry__Environment: "PreProduction-CloudPlatform"
+    Sentry__Environment: "PreProduction"
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-preprod.svc.cluster.local:8080"
