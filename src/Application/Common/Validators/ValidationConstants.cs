@@ -60,6 +60,9 @@ public static class ValidationConstants
     public const int ParticipantIdLength = 9;
     public const int ContactDetailsDescription = 100;
     
+    public const int ObjectiveDescription = 2000;
+
+    
     public static class RuleSet
     {
         /// <summary>
