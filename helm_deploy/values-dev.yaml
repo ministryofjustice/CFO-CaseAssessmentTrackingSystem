@@ -22,7 +22,7 @@ generic-service:
       memory: 1Gi
   env:
     DOTNET_ENVIRONMENT: "Development"
-    Sentry__Environment: "Development-CloudPlatform"
+    Sentry__Environment: "Development"
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-dev.svc.cluster.local:8080"
@@ -38,7 +38,7 @@ worker:
       memory: 512Mi
   env:
     DOTNET_ENVIRONMENT: "Development"
-    Sentry__Environment: "Development-CloudPlatform"
+    Sentry__Environment: "Development"
 
 consumers:
   resources:
@@ -50,7 +50,7 @@ consumers:
       memory: 512Mi
   env:
     DOTNET_ENVIRONMENT: "Development"
-    Sentry__Environment: "Development-CloudPlatform"
+    Sentry__Environment: "Development"
     # Fully-qualified in-cluster DNS (<service>.<namespace>.svc.cluster.local)
     # so this matches NO_PROXY and bypasses the egress-controls Envoy proxy.
     WorkerOptions__BaseUrl: "http://cats-worker.hmpps-cfo-case-assessment-tracking-system-dev.svc.cluster.local:8080"
