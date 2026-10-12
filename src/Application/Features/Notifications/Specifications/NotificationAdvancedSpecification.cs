@@ -13,6 +13,7 @@ public sealed class NotificationAdvancedSpecification : Specification<Notificati
             .Where(n => n.Heading == "Participant assigned", filter.Type == NotificationType.Assigned)
             .Where(n => n.Heading == "Participant unassigned", filter.Type == NotificationType.Unassigned)
             .Where(n => n.Heading == "PRI assigned", filter.Type == NotificationType.Pri)
+            .Where(n => n.Heading == "Announcement published", filter.Type == NotificationType.Announcements)
             .Where(n => n.Heading.Contains(filter.Keyword!) || n.Details.Contains(filter.Keyword!),
                 string.IsNullOrEmpty(filter.Keyword) == false);
 }

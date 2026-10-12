@@ -1,0 +1,183 @@
+@inherits CatsComponentBase
+@using Cfo.Cats.Domain.Announcements
+
+<MudContainer MaxWidth="MaxWidth.False" Class="py-6">
+<MudStack Spacing="6">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap" Spacing="3">
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            @(Manage ? "Review submissions and manage published announcements." : "Latest updates and previous announcements, newest first.")
+        </MudText>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap" Spacing="2">
+        <MudMenu Size="Size.Small" Label="@($"Type: {(string.IsNullOrEmpty(_selectedType) ? "All types" : _selectedType)}")"
+                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Disabled="_busy">
+            <MudMenuItem OnClick="@(() => _selectedType = null)">All types</MudMenuItem>
+            @foreach (var type in AvailableTypes)
+            {
+                <MudMenuItem OnClick="@(() => _selectedType = type)">@type</MudMenuItem>
+            }
+        </MudMenu>
+        <MudButton OnClick="LoadAsync" StartIcon="@Icons.Material.Filled.Refresh" Disabled="_busy"
+                   Size="Size.Small" Variant="Variant.Filled" Color="Color.Info">@ConstantString.Refresh</MudButton>
+        @if (Manage)
+        {
+            <MudButton OnClick="ManageTypesAsync" Variant="Variant.Outlined" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Settings" Disabled="_busy" Size="Size.Small">
+                Manage types
+            </MudButton>
+            <MudButton OnClick="@(() => EditAsync(null))" Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Add" Disabled="_busy" Size="Size.Small">
+                Add announcement
+            </MudButton>
+        }
+        </MudStack>
+    </MudStack>
+
+    @if (_busy)
+    {
+        <MudLoading Text="Announcements" />
+    }
+    @if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (!_busy && _announcements.Length == 0)
+    {
+        <MudAlert Severity="Severity.Info">
+            There are no announcements to display.
+        </MudAlert>
+    }
+    else if (!_busy && FilteredAnnouncements.Length == 0)
+    {
+        <MudAlert Severity="Severity.Info">There are no announcements matching the selected type.</MudAlert>
+    }
+
+    @foreach (var announcement in FilteredAnnouncements)
+    {
+        <MudPaper Outlined="true" Class="pa-6" @key="announcement.Id">
+            @if (!Manage && announcement.Published is { } published)
+            {
+                <AnnouncementContent Revision="published" />
+            }
+            @if (Manage)
+            {
+                var current = announcement.Pending ?? announcement.Published!;
+                <MudStack Spacing="4">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap">
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h5" Style="overflow-wrap: anywhere;">@current.Title</MudText>
+                            <MudText Typo="Typo.caption">
+                                @current.TypeName &middot; @(current.Audience == AnnouncementAudience.InternalStaff ? "Internal staff" : "All staff")
+                            </MudText>
+                        </MudStack>
+                        <MudChip T="string" Size="Size.Small" Color="@(announcement.Pending is null ? Color.Success : Color.Warning)">
+                            @(announcement.Pending is null ? "Published" : announcement.Published is null ? "Pending approval" : "Changes awaiting approval")
+                        </MudChip>
+                    </MudStack>
+                    <MudGrid Spacing="3">
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption">Author</MudText>
+                            <MudText Typo="Typo.body2">@current.PostedBy</MudText>
+                            @if (current.PostedByOverridden)
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Warning">Author overridden &middot; Account: @AccountName(current.SubmittedBy)</MudText>
+                            }
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption">@(announcement.Pending is null ? "Published (UTC)" : "Submitted (UTC)")</MudText>
+                            <MudText Typo="Typo.body2">@((current.PublishedAt ?? current.SubmittedAt).ToString("dd MMM yyyy HH:mm"))</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudStack>
+                <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="my-4">
+                    <MudExpansionPanel Text="@(announcement.Pending is null ? "Announcement content" : "Review pending content")">
+                        <AnnouncementContent Revision="current" />
+                    </MudExpansionPanel>
+                    @if (announcement.Pending is not null && announcement.Published is { } previous)
+                    {
+                        <MudExpansionPanel Text="Current published content">
+                            <AnnouncementContent Revision="previous" />
+                        </MudExpansionPanel>
+                    }
+                    <MudExpansionPanel Text="Posting and approval history">
+                        <MudSimpleTable Dense="true" Bordered="true" Style="overflow-x: auto;">
+                            <thead>
+                                <tr>
+                                    <th>Version</th>
+                                    <th>Title / Type / Audience</th>
+                                    <th>Displayed author</th>
+                                    <th>Posted / Edited by</th>
+                                    <th>Submitted (UTC)</th>
+                                    <th>Approved by</th>
+                                    <th>Published (UTC)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < announcement.History.Length; i++)
+                                {
+                                    var revision = announcement.History[i];
+                                    <tr>
+                                        <td>@(i + 1) @(i == 0 ? "(Original)" : "(Edit)")</td>
+                                        <td>
+                                            @revision.Title<br />
+                                            @revision.TypeName &middot; @(revision.Audience == AnnouncementAudience.InternalStaff ? "Internal staff" : "All staff")
+                                        </td>
+                                        <td>
+                                            @revision.PostedBy
+                                            @if (revision.PostedByOverridden)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">Author overridden</MudChip>
+                                            }
+                                        </td>
+                                        <td>@AccountName(revision.SubmittedBy)</td>
+                                        <td>@revision.SubmittedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>
+                                            @if (revision.ApprovedBy is { } approver)
+                                            {
+                                                @AccountName(approver)
+                                                @if (revision.AutoApproved)
+                                                {
+                                                    <MudChip T="string" Size="Size.Small" Color="Color.Info">System Support override</MudChip>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span>Not approved</span>
+                                            }
+                                        </td>
+                                        <td>@(revision.PublishedAt?.ToString("dd MMM yyyy HH:mm") ?? "-")</td>
+                                        <td>
+                                            @(revision.Id == announcement.Pending?.Id ? "Pending approval"
+                                                : revision.Id == announcement.Published?.Id ? "Current published version"
+                                                : revision.PublishedAt.HasValue ? "Previously published" : "Superseded before approval")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+                <MudDivider Class="mb-4" />
+                <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap" Spacing="3">
+                    @if (announcement.Pending is not null)
+                    {
+                        <MudButton OnClick="@(() => ApproveAsync(announcement))" Color="Color.Primary" Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.Check"
+                                   Disabled="@(_busy || !CanApprove(announcement))">
+                            Approve and publish
+                        </MudButton>
+                    }
+                    <MudButton OnClick="@(() => EditAsync(announcement))" Color="Color.Primary" Variant="Variant.Outlined"
+                               StartIcon="@Icons.Material.Filled.Edit" Disabled="_busy">Edit</MudButton>
+                    <MudButton OnClick="@(() => DeleteAsync(announcement))" Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.Delete" Disabled="_busy">Delete</MudButton>
+                </MudStack>
+                @if (announcement.Pending is not null && !CanApprove(announcement))
+                {
+                    <MudText Typo="Typo.caption" Class="mt-3" Align="Align.Right">Another senior user must approve this announcement.</MudText>
+                }
+            }
+        </MudPaper>
+    }
+</MudStack>
+</MudContainer>
