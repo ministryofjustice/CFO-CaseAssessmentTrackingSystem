@@ -86,7 +86,7 @@
                     <MudStack Row="true" Justify="Justify.FlexStart">
                         <ParticipantActionMenu OnUpdate="() => RefreshAsync()"/>
                         <MudDivider Vertical="true" FlexItem="true" />
-                        <RagBar ParticipantId="@Id" AssessmentId="@Data.Assessments.OrderByDescending(l => l.Created).FirstOrDefault()?.AssessmentId" />
+                        <RagBar ParticipantId="@Id" AssessmentId="@Data.Assessments.OrderByDescending(l => l.AssessmentDate).FirstOrDefault()?.AssessmentId" />
                     </MudStack>
                     
                    
