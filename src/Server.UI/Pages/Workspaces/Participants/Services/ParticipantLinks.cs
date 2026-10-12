@@ -5,6 +5,7 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 public static class ParticipantLinks
 {
     public static BreadcrumbLinkModel Home => new ( "Participants", "" ,"/pages/workspace/participants");
+    
     public static BreadcrumbLinkModel All = new(nameof(All), "Access all participants" , $"{Home.Href}/all");
     public static BreadcrumbLinkModel Participant(string id) => new(id, "Participant by id" , $"{Home.Href}/{id}");
 
@@ -19,4 +20,6 @@ public static class ParticipantLinks
     public static BreadcrumbLinkModel AllActivities = new ("Activities", "Access all activities" ,$"{Home.Href}/activities");
 
     public static BreadcrumbLinkModel TasksDue = new ("Tasks Due", "Pathway plan tasks that are overdue, due imminently, or due soon" ,$"{Home.Href}/tasks-due");
+
+    public static BreadcrumbLinkModel AdvancedSearch = new ("Participant Advanced Search", "Find anyone by CATS, NOMIS or NDelius identifier, whether or not they are a participant", $"{Home.Href}/advanced-search");
 }
