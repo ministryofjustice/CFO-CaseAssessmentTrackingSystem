@@ -15,6 +15,7 @@ using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
 using Cfo.Cats.Domain.HelpLinks;
+using Cfo.Cats.Domain.Announcements;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -129,6 +130,8 @@ public class ApplicationDbContext
     public DbSet<Label> Labels => Set<Label>();
 
     public DbSet<HelpLink> HelpLinks => Set<HelpLink>();
+    public DbSet<Announcement> Announcements => Set<Announcement>();
+    public DbSet<AnnouncementType> AnnouncementTypes => Set<AnnouncementType>();
 
     public DbSet<PathwayPlanReview> PathwayPlanReviews => Set<PathwayPlanReview>();
     

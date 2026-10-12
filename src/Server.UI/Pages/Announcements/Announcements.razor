@@ -1,0 +1,32 @@
+@page "/pages/workspace/my-area/announcements"
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+@using Cfo.Cats.Domain.Announcements
+
+<PageTitle>Announcements</PageTitle>
+
+<PageHeader Title="Announcements" Items="@_breadcrumbs" />
+
+@if (_loading)
+{
+    <MudLoading Text="Announcements" />
+}
+else
+{
+    <MudTabs @bind-ActivePanelIndex="_activeTab" Rounded="true" Border="true" Class="mt-4">
+        <MudTabPanel Text="Announcements" Icon="@Icons.Material.Filled.Campaign">
+            <AnnouncementList Audience="AnnouncementAudience.AllStaff" />
+        </MudTabPanel>
+        @if (_canViewInternal)
+        {
+            <MudTabPanel Text="Internal" Icon="@Icons.Material.Filled.Business">
+                <AnnouncementList Audience="AnnouncementAudience.InternalStaff" />
+            </MudTabPanel>
+        }
+        @if (_canManage)
+        {
+            <MudTabPanel Text="Manage announcements" Icon="@Icons.Material.Filled.Edit">
+                <AnnouncementList Manage="true" CanViewInternal="_canViewInternal" CanPublishImmediately="_canPublishImmediately" />
+            </MudTabPanel>
+        }
+    </MudTabs>
+}

@@ -1,0 +1,35 @@
+@using Cfo.Cats.Application.Features.Announcements.DTOs
+
+<MudStack Spacing="3">
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.h2" Style="overflow-wrap: anywhere;">@Revision.Title</MudText>
+        <MudText Typo="Typo.caption" Color="Color.Secondary">
+            @Revision.TypeName &middot; Author: @Revision.PostedBy &middot;
+            @if (Revision.PublishedAt is { } publishedAt)
+            {
+                <span>Published @publishedAt.ToString("dd MMM yyyy HH:mm") UTC</span>
+            }
+            else
+            {
+                <span>Submitted @Revision.SubmittedAt.ToString("dd MMM yyyy HH:mm") UTC</span>
+            }
+        </MudText>
+    </MudStack>
+    <MudText Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.75;">@Revision.Description</MudText>
+    @if (Revision.Links.Count > 0)
+    {
+        <MudDivider />
+        <MudStack Spacing="2">
+            @foreach (var link in Revision.Links)
+            {
+                <MudLink Href="@link.Url" Target="_blank" rel="noopener noreferrer" Style="overflow-wrap: anywhere;">
+                    @(string.IsNullOrWhiteSpace(link.DisplayName) ? link.Url : link.DisplayName)
+                </MudLink>
+            }
+        </MudStack>
+    }
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public AnnouncementRevisionDto Revision { get; set; } = null!;
+}

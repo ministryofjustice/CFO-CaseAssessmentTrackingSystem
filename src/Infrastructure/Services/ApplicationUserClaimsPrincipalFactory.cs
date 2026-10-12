@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using ZiggyCreatures.Caching.Fusion;
@@ -69,7 +70,7 @@ public class ApplicationUserClaimsPrincipalFactory(
                 claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.ProfilePictureDataUrl, user.ProfilePictureDataUrl));
             }
 
-            if (user.UserName!.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase))
+            if (UserProfile.IsInternalUser(user.UserName))
             {
                 claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.InternalStaff, "True"));
             }

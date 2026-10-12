@@ -1,0 +1,92 @@
+@inherits CatsComponentBase
+@using Cfo.Cats.Domain.Announcements
+@using Cfo.Cats.Application.Features.Announcements.DTOs
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudStack Spacing="4" Class="py-2">
+                @if (_error is not null)
+                {
+                    <MudAlert Severity="Severity.Error">@_error</MudAlert>
+                }
+                @if (TypeUnavailable)
+                {
+                    <MudAlert Severity="Severity.Warning">The previous type has been renamed or deleted. Select an available type for this revision. Previous revisions will retain their original type.</MudAlert>
+                }
+                <MudGrid Spacing="3">
+                    <MudItem xs="12">
+                        <MudTextField T="string" @bind-Value="Model.Title" Label="Title" For="@(() => Model.Title)"
+                                      Required="true" MaxLength="@AnnouncementConstants.TitleMaximumLength" Disabled="_saving" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="string" @bind-Value="Model.TypeName" Label="Type" For="@(() => Model.TypeName)" Required="true" Disabled="_saving">
+                            @foreach (var type in Types)
+                            {
+                                <MudSelectItem Value="@type">@type</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="AnnouncementAudience" @bind-Value="Model.Audience" Label="Audience" For="@(() => Model.Audience)" Disabled="_saving">
+                            <MudSelectItem Value="AnnouncementAudience.AllStaff">All staff</MudSelectItem>
+                            @if (CanViewInternal)
+                            {
+                                <MudSelectItem Value="AnnouncementAudience.InternalStaff">Internal staff</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField T="string" @bind-Value="Model.PostedBy" Label="Author" For="@(() => Model.PostedBy)"
+                                      Required="true" MaxLength="@AnnouncementConstants.PostedByMaximumLength" Disabled="_saving"
+                                      HelperText="Defaults to your profile name. Author changes are flagged in management." />
+                    </MudItem>
+                </MudGrid>
+                <MudTextField T="string" @bind-Value="Model.Description" Label="Description" Lines="8"
+                              For="@(() => Model.Description)" Required="true" Immediate="true" Disabled="_saving"
+                              MaxLength="@AnnouncementConstants.DescriptionMaximumLength"
+                              Counter="@AnnouncementConstants.DescriptionMaximumLength" />
+                <MudStack Spacing="2">
+                <MudText Typo="Typo.subtitle2">Links (optional)</MudText>
+                @for (var i = 0; i < Model.Links.Count; i++)
+                {
+                    var index = i;
+                    <MudGrid Spacing="2">
+                        <MudItem xs="12" sm="7">
+                        <MudTextField T="string" @bind-Value="Model.Links[index].Url" Label="URL" Required="true"
+                                      MaxLength="@AnnouncementConstants.UrlMaximumLength" Disabled="_saving" />
+                        </MudItem>
+                        <MudItem xs="10" sm="4">
+                        <MudTextField T="string" @bind-Value="Model.Links[index].DisplayName" Label="Link label (optional)"
+                                      MaxLength="@AnnouncementConstants.DisplayNameMaximumLength" Disabled="_saving" />
+                        </MudItem>
+                        <MudItem xs="2" sm="1" Class="d-flex align-center">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       OnClick="@(() => Model.Links.RemoveAt(index))" Disabled="_saving" aria-label="Remove link" />
+                        </MudItem>
+                    </MudGrid>
+                }
+                <MudButton OnClick="@(() => Model.Links.Add(new AnnouncementLinkDto()))"
+                           StartIcon="@Icons.Material.Filled.Add" Disabled="_saving">Add link</MudButton>
+                </MudStack>
+                <MudDivider />
+                @if (CanPublishImmediately)
+                {
+                    <MudCheckBox T="bool" @bind-Value="Model.PublishImmediately" Disabled="_saving"
+                                 Label="Approve and publish immediately (System Support)" />
+                }
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    @(Model.PublishImmediately
+                        ? "Saving will publish this announcement immediately and notify its audience."
+                        : "Another senior user must approve this announcement before it is published. Any current published version stays visible until the changes are approved.")
+                </MudText>
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => MudDialog.Cancel())" Disabled="_saving">Cancel</MudButton>
+        <MudLoadingButton OnClick="SaveAsync" Loading="_saving" Color="Color.Primary" Variant="Variant.Filled">
+            @(Model.PublishImmediately ? "Publish" : "Submit for approval")
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
