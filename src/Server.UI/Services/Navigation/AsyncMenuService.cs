@@ -17,7 +17,6 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
         NavigationMenuSectionModel[] sections = [
             await CreateWorkspaceMenu(principal),
             await CreateExternalLinksMenu(),
-            //await CreateProfileMenu(),            
         ];     
 
         return new NavigationMenuModel(sections);
@@ -27,8 +26,8 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
     {
         List<NavigationMenuItemLinkModel> items =
         [
-            new NavigationMenuItemLinkModel("Participants", "/pages/workspace/participants", "Navigates to the root workspace for accessing participant management functions"),
-            new NavigationMenuItemLinkModel("Delivery Management", "/pages/workspace/deliverymanagement", "Navigates to the root workspace for accessing delivery management information and functions"),
+            new("Participants", "/pages/workspace/participants", "Navigates to the root workspace for accessing participant management functions"),
+            new("Delivery Management", "/pages/workspace/deliverymanagement", "Navigates to the root workspace for accessing delivery management information and functions"),
         ];
 
         if(await PassesPolicy( principal, SecurityPolicies.ServiceDesk))
@@ -48,20 +47,24 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
         
         return new("Workspaces", items.ToArray(), IsBookmarkable: true);
     }
-
-    private async Task<NavigationMenuSectionModel> CreateProfileMenu() => new("Profile", [
-        new NavigationMenuItemLinkModel("My Area", "/pages/workspace/my-area", "Manage my account, documents and notifications"),
-        new NavigationMenuItemDividerModel(),
-        new NavigationMenuItemLinkModel("Logout", "/pages/authentication/logout", "Logs out of the system"),
-    ]);
-
-    private async Task<NavigationMenuSectionModel> CreateExternalLinksMenu() => new("External Links", [
-        new NavigationMenuItemLinkModel("CFO Website", "https://www.creatingfutureopportunities.gov.uk/", "Navigates to the CFO website on a new tab", "_blank"),
-        new NavigationMenuItemLinkModel("CFO Maps", "https://www.creatingfutureopportunities.gov.uk/map/", "Navigates to the CFO Maps website on a new tab", "_blank"),
-        new NavigationMenuItemLinkModel("GitHub", "https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/", "Navigates to the GitHub repository on a new tab", "_blank"),
-        new NavigationMenuItemLinkModel("TELP", "https://teams.microsoft.com/l/channel/19%3ArRzKtP9i3r2_LPPzQ7Yytoz-zGm0Xplhj3Reqe1FQOQ1%40thread.tacv2/General?groupId=1008d424-cc9b-43db-96ae-b299f509b708&tenantId=c6874728-71e6-41fe-a9e1-2e8c36776ad8", "Opens TELP in Microsoft Teams", "_blank", true)
-    ]);
     
+    private Task<NavigationMenuSectionModel> CreateExternalLinksMenu()
+    {
+        try
+        {
+            return Task.FromResult<NavigationMenuSectionModel>(new("External Links", [
+                new NavigationMenuItemLinkModel("CFO Website", "https://www.creatingfutureopportunities.gov.uk/", "Navigates to the CFO website on a new tab", "_blank"),
+                new NavigationMenuItemLinkModel("CFO Maps", "https://www.creatingfutureopportunities.gov.uk/map/", "Navigates to the CFO Maps website on a new tab", "_blank"),
+                new NavigationMenuItemLinkModel("GitHub", "https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/", "Navigates to the GitHub repository on a new tab", "_blank"),
+                new NavigationMenuItemLinkModel("TELP", "https://teams.microsoft.com/l/channel/19%3ArRzKtP9i3r2_LPPzQ7Yytoz-zGm0Xplhj3Reqe1FQOQ1%40thread.tacv2/General?groupId=1008d424-cc9b-43db-96ae-b299f509b708&tenantId=c6874728-71e6-41fe-a9e1-2e8c36776ad8", "Opens TELP in Microsoft Teams", "_blank", true)
+            ]));
+        }
+        catch (Exception exception)
+        {
+            return Task.FromException<NavigationMenuSectionModel>(exception);
+        }
+    }
+
     private async Task<bool> PassesPolicy(ClaimsPrincipal principal, string policy)
     {
         var result = await authorizationService.AuthorizeAsync(principal, policy);
