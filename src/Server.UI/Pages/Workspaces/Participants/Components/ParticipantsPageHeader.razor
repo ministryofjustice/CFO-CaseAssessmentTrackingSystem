@@ -91,11 +91,25 @@
                 "riskdue" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.RiskDue.AsMudBreadcrumb(), participant],
                 "qa-enrolment-results" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.QaEnrolmentResults.AsMudBreadcrumb(), participant],
                 "latest-engagements" => [DeliveryManagementLinks.Home.AsMudBreadcrumb(), DeliveryManagementLinks.LatestEngagements.AsMudBreadcrumb(), participant],
+                "participant-advanced-search" => [home, BuildAdvancedSearchBreadcrumb(parsedQuery), participant],
                 _ => [home, ParticipantLinks.All.AsMudBreadcrumb(), participant]
             };
         }
 
         return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
+    }
+
+    private static BreadcrumbItem BuildAdvancedSearchBreadcrumb(Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
+    {
+        if (parsedQuery.TryGetValue("identifier", out var identifier)
+            && !string.IsNullOrWhiteSpace(identifier.ToString()))
+        {
+            return new BreadcrumbItem(
+                ParticipantLinks.AdvancedSearch.Title,
+                QueryHelpers.AddQueryString(ParticipantLinks.AdvancedSearch.Href, "identifier", identifier.ToString()));
+        }
+
+        return ParticipantLinks.AdvancedSearch.AsMudBreadcrumb();
     }
 
     private static BreadcrumbItem BuildQueueBreadcrumb(BreadcrumbLinkModel queueLink, Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
@@ -141,7 +155,7 @@
             : "qa1";
 
         var stageTitle = stage == "escalation" ? "Escalation" : stage.ToUpperInvariant();
-        title = string.Format("{0} - {1}", title, stageTitle);
+        title = $"{title} - {stageTitle}";
 
         if (stage == "escalation"
             && parsedQuery.TryGetValue("id", out var escalationId)

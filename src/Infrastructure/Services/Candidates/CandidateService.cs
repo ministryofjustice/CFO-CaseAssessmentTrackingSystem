@@ -48,6 +48,35 @@ public class CandidateService(
         }
     }
 
+    public async Task<Result<SearchResult[]>> SearchByIdentifierAsync(string identifier)
+    {
+        try
+        {
+            var result = await client.GetFromJsonAsync<SearchResult[]>($"/search?identifier={Uri.EscapeDataString(identifier)}");
+
+            if (result is null)
+            {
+                return Result<SearchResult[]>.Failure("DMS Search returned no data.");
+            }
+
+            return Result<SearchResult[]>.Success(result);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Result<SearchResult[]>.NotFound();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "DMS Search is currently unavailable");
+            return Result<SearchResult[]>.Failure("DMS Search service is currently unavailable.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error calling DMS search by identifier.");
+            return Result<SearchResult[]>.Failure("Error getting search results");
+        }
+    }
+
     public async Task<Result<CandidateDto>> GetByUpciAsync(string upci)
     {
         try

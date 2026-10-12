@@ -6,6 +6,12 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 public interface ICandidateService
 {
     Task<Result<SearchResult[]>> SearchAsync(CandidateSearchQuery searchQuery);
+
+    /// <summary>
+    /// Searches the DMS using only an identifier (CATS / NOMIS / NDelius CRN).
+    /// </summary>
+    Task<Result<SearchResult[]>> SearchByIdentifierAsync(string identifier);
+
     Task<Result<CandidateDto>> GetByUpciAsync(string upci);
 
     Task<Result<bool>> SetStickyLocation(string upci, string location);
