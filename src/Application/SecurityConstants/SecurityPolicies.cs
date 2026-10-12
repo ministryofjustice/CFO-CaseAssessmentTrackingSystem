@@ -17,7 +17,7 @@ public static class SecurityPolicies
     public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
-    /// Any authorized user is permitted to perform this action
+    /// Any authorised user is permitted to perform this action
     /// </summary>
     public const string AuthorizedUser = nameof(AuthorizedUser);
 
@@ -89,4 +89,10 @@ public static class SecurityPolicies
     public const string MarkUserInReview = nameof(MarkUserInReview);
 
     public const string UserManagement = nameof(UserManagement);
+
+    /// <summary>
+    /// Allows searching for any offender by CATS / NOMIS / NDelius identifier, regardless of participant status.
+    /// Aligns with QA Support Manager and above.
+    /// </summary>
+    public const string ParticipantAdvancedSearch = nameof(ParticipantAdvancedSearch);
 }

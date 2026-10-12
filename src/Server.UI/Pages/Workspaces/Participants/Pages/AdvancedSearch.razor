@@ -1,0 +1,205 @@
+@page "/pages/workspace/participants/advanced-search"
+
+@using Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Offloc
+
+@inherits CatsComponent<ParticipantAdvancedSearchResult>
+
+@attribute [Authorize(Policy = SecurityPolicies.ParticipantAdvancedSearch)]
+
+<PageTitle>Participant Advanced Search</PageTitle>
+
+<PageHeader Title="Participant Advanced Search" Items="@Breadcrumbs" />
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" Class="mb-2">
+            Search by CATS Id, NOMIS number or NDelius CRN. Offenders do not need to be participants.
+        </MudText>
+        <MudForm>
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudTextField T="string"
+                              @bind-Value="_identifier"
+                              Label="CATS Id / NOMIS Id / NDelius Id"
+                              Immediate="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              MaxLength="20"
+                              Required="true"
+                              RequiredError="Identifier is required"
+                              OnKeyDown="@OnKeyDown"
+                              Style="max-width: 400px" />
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Search"
+                           Disabled="@Loading"
+                           OnClick="@SearchAsync">
+                    Search
+                </MudButton>
+            </MudStack>
+        </MudForm>
+    </MudPaper>
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mb-4">@ErrorMessage</MudAlert>
+    }
+
+    @if (_warning is not null)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mb-4">@_warning</MudAlert>
+    }
+
+    @if (Loading && _searched)
+    {
+        <MudProgressLinear Indeterminate="true" Class="mb-4" />
+    }
+    else if (_searched && ErrorMessage is null && _warning is null && Data is { Results.Length: 0 })
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">No matching person found on CATS or DMS for '@_searchedIdentifier'.</MudAlert>
+    }
+    else if (Data is { Results.Length: > 0 })
+    {
+        <MudTable Items="@Data.Results" Dense="true" Hover="true" Striped="true" T="ParticipantAdvancedSearchDto"
+                  OnRowClick="@(e => _selected = e.Item)"
+                  Class="mb-4">
+            <ToolBarContent>
+                <MudText Typo="Typo.subtitle1">Results</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>CATS Id</MudTh>
+                <MudTh>NOMIS Id</MudTh>
+                <MudTh>NDelius Id (CRN)</MudTh>
+                <MudTh>Location</MudTh>
+                <MudTh>On CATS</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context.FullName</MudTd>
+                <MudTd DataLabel="CATS Id">@context.Identifier</MudTd>
+                <MudTd DataLabel="NOMIS Id">@context.NomisNumber</MudTd>
+                <MudTd DataLabel="NDelius Id">@context.Crn</MudTd>
+                <MudTd DataLabel="Location">@context.LocationDescription</MudTd>
+                <MudTd DataLabel="Participant">
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsParticipant ? Color.Success : Color.Default)">
+                        @(context.IsParticipant ? "Yes" : "No")
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+    @if (_selected is not null)
+    {
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="pa-4 fill-height">
+                    <MudText Typo="Typo.h6" Class="mb-2">Offender</MudText>
+                    <MudSimpleTable Dense="true" Elevation="0">
+                        <tbody>
+                        <tr><th>Name</th><td>@_selected.FullName</td></tr>
+                        <tr><th>Date of Birth</th><td>@_selected.DateOfBirth.ToString("dd/MM/yyyy")</td></tr>
+                        <tr><th>Gender</th><td>@_selected.Gender</td></tr>
+                        <tr><th>Status</th><td>@(_selected.IsActive ? "Active" : "Inactive")</td></tr>
+                        <tr>
+                            <th>Participant</th>
+                            <td>
+                                @if (_selected.IsParticipant)
+                                {
+                                    <MudLink Href="@ParticipantHref">View participant</MudLink>
+                                }
+                                else
+                                {
+                                    <span>Not a participant</span>
+                                }
+                            </td>
+                        </tr>
+                        </tbody>
+                    </MudSimpleTable>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="pa-4 fill-height">
+                    <MudText Typo="Typo.h6" Class="mb-2">Identifiers</MudText>
+                    <MudSimpleTable Dense="true" Elevation="0">
+                        <tbody>
+                        <tr><th>CATS Id</th><td>@_selected.Identifier</td></tr>
+                        <tr><th>NOMIS Id</th><td>@_selected.NomisNumber</td></tr>
+                        <tr><th>NDelius Id (CRN)</th><td>@_selected.Crn</td></tr>
+                        <tr><th>PNC Number</th><td>@_selected.PncNumber</td></tr>
+                        <tr><th>Primary Source</th><td>@_selected.PrimarySource</td></tr>
+                        </tbody>
+                    </MudSimpleTable>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="pa-4 fill-height">
+                    <MudText Typo="Typo.h6" Class="mb-2">Location</MudText>
+                    <MudSimpleTable Dense="true" Elevation="0">
+                        <tbody>
+                        <tr><th>Current</th><td>@_selected.LocationDescription</td></tr>
+                        <tr><th>In Custody</th><td>@(_selected.IsInCustody ? "Yes" : "No")</td></tr>
+                        <tr><th>Custody</th><td>@_selected.CustodyLocation</td></tr>
+                        <tr><th>Community</th><td>@_selected.CommunityLocation</td></tr>
+                        </tbody>
+                    </MudSimpleTable>
+                </MudPaper>
+            </MudItem>
+            @if (_selected.IsParticipant)
+            {
+                <MudItem xs="12" md="6">
+                    <MudPaper Class="pa-4 fill-height">
+                        <MudText Typo="Typo.h6" Class="mb-2">Supervising Officer / Offender Manager (held on CATS)</MudText>
+                        @if (_selected.HasSupervisor)
+                        {
+                            <MudSimpleTable Dense="true" Elevation="0">
+                                <tbody>
+                                <tr><th>Name</th><td>@_selected.SupervisorName</td></tr>
+                                <tr><th>Telephone</th><td>@_selected.SupervisorTelephoneNumber</td></tr>
+                                <tr><th>Mobile</th><td>@_selected.SupervisorMobileNumber</td></tr>
+                                <tr><th>Email</th><td>@_selected.SupervisorEmailAddress</td></tr>
+                                <tr><th>Address</th><td>@_selected.SupervisorAddress</td></tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                        else
+                        {
+                            <MudText>No supervisor information held.</MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudPaper Class="pa-4 fill-height">
+                        <MudText Typo="Typo.h6" Class="mb-2">Registrations</MudText>
+                        @if (_selected.RegistrationDetails.Length > 0)
+                        {
+                            <MudStack Spacing="1">
+                                @foreach (var registration in _selected.RegistrationDetails)
+                                {
+                                    <MudText>@registration</MudText>
+                                }
+                            </MudStack>
+                        }
+                        else
+                        {
+                            <MudText>No registrations held.</MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+            }
+            <MudItem xs="12">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-2">Sentence Information</MudText>
+                    @if (string.IsNullOrWhiteSpace(_selected.NomisNumber))
+                    {
+                        <MudAlert Severity="Severity.Info">No NOMIS record, so no sentence information is available.</MudAlert>
+                    }
+                    else
+                    {
+                        <OffLocDetails @key="_selected.NomisNumber" NomisNumber="@_selected.NomisNumber" />
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>

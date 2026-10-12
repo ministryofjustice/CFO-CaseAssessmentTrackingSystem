@@ -196,5 +196,11 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
             policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
         });
+
+        options.AddPolicy(SecurityPolicies.ParticipantAdvancedSearch, policy => {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager);
+        });
     }
 }
