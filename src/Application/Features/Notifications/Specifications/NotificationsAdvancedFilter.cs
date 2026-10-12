@@ -25,5 +25,6 @@ public enum NotificationType
     [Description("Enrolments")] Enrolments = 2,
     [Description("Assigned")] Assigned = 3,
     [Description("Unassigned")] Unassigned = 4,
-    [Description("Pri")] Pri = 5
+    [Description("Pri")] Pri = 5,
+    [Description("Announcements")] Announcements = 6
 }

@@ -22,6 +22,16 @@ public abstract class UnhandledExceptionBehaviour<TRequest, TResponse>(
 
             throw;
         }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            LogError(request, ex);
+            if (TryCreateFailure(["This record has changed. Refresh the page and try again."], out var failure))
+            {
+                return failure;
+            }
+
+            throw;
+        }
         catch (DbUpdateException ex)
         {
             LogError(request, ex);
