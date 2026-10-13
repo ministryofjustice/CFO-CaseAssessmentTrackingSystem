@@ -37,16 +37,13 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             var request = JsonConvert.DeserializeObject<ExportProviderFeedback.ProviderFeedbackExportRequest>(context.SearchCriteria!)
                 ?? throw new Exception("Failed to deserialise export request.");
 
-            // Stub user profile for handlers that require a CurrentUser context. Access to this
-            // consumer's exports is already gated by the SeniorInternal/Internal policy on the
-            // commands that trigger it (ExportProviderFeedback / ExportMyFeedback).
             var stubUser = new UserProfile
             {
                 UserName = "system",
                 Email = "system@system",
                 UserId = context.UserId,
                 TenantId = context.TenantId,
-                AssignedRoles = [RoleNames.SystemSupport]
+                AssignedRoles = request.IncludeInternalData ? [RoleNames.SystemSupport] : []
             };
 
             var justMySheets = string.IsNullOrWhiteSpace(request.UserId) == false;
@@ -59,6 +56,17 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 [
                     await BuildEnrolmentFeedbackSheet(request, stubUser),
                     await BuildActivitiesFeedbackSheet(request, stubUser),
+                ];
+            }
+            else if (request.IncludeInternalData is false)
+            {
+                request.TenantId = context.TenantId;
+                sheets =
+                [
+                    await BuildEnrolmentReturnsSheet(request, stubUser),
+                    await BuildEnrolmentAdvisoriesSheet(request, stubUser),
+                    await BuildActivitiesReturnsSheet(request, stubUser),
+                    await BuildActivitiesAdvisoriesSheet(request, stubUser),
                 ];
             }
             else
@@ -108,6 +116,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             TenantId = request.TenantId,
+            IncludeInternalData = request.IncludeInternalData,
             CurrentUser = stubUser
         };
         var data = await new GetEnrolmentsToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
@@ -116,7 +125,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             throw new Exception(data.ErrorMessage);
         }
 
-        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+        var sheet = await ExportProviderSheet(data.Data!.TabularData,
             new Dictionary<string, Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object?>>
             {
                 { "Contract",           r => r.ContractName },
@@ -128,8 +137,8 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "PQA Submitted Date", r => r.PqaSubmittedDate },
                 { "Return Reason",      r => r.ReturnReason },
                 { "Returned Date",      r => r.ReturnedDate },
-                { "Advisory Notes",     r => r.Message },
-            });
+                { "Message",            r => r.Message },
+            }, request.IncludeInternalData);
         return ("Enrolment Returns", sheet);
     }
 
@@ -141,6 +150,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             TenantId = request.TenantId,
+            IncludeInternalData = request.IncludeInternalData,
             CurrentUser = stubUser
         };
         var data = await new GetActivitiesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
@@ -149,7 +159,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             throw new Exception(data.ErrorMessage);
         }
 
-        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+        var sheet = await ExportProviderSheet(data.Data!.TabularData,
             new Dictionary<string, Func<GetActivitiesToProvider.ActivitiesTabularData, object?>>
             {
                 { "Contract",           r => r.ContractName },
@@ -162,8 +172,8 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "PQA Submitted Date", r => r.PqaSubmittedDate },
                 { "Return Reason",      r => r.ReturnReason },
                 { "Returned Date",      r => r.ReturnedDate },
-                { "Advisory Notes",     r => r.Message },
-            });
+                { "Message",            r => r.Message },
+            }, request.IncludeInternalData);
         return ("Activities Returns", sheet);
     }
 
@@ -175,6 +185,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             TenantId = request.TenantId,
+            IncludeInternalData = request.IncludeInternalData,
             CurrentUser = stubUser
         };
         var data = await new GetEnrolmentAdvisoriesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
@@ -183,7 +194,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             throw new Exception(data.ErrorMessage);
         }
 
-        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+        var sheet = await ExportProviderSheet(data.Data!.TabularData,
             new Dictionary<string, Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object?>>
             {
                 { "Contract",           r => r.ContractName },
@@ -196,7 +207,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Advisory Date",      r => r.AdvisoryDate },
                 { "Feedback Type",      r => r.FeedbackType.HasValue ? ((FeedbackType)r.FeedbackType.Value).ToString() : null },
                 { "Advisory Notes",     r => r.Message },
-            });
+            }, request.IncludeInternalData);
         return ("Enrolment Advisories", sheet);
     }
 
@@ -208,6 +219,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             TenantId = request.TenantId,
+            IncludeInternalData = request.IncludeInternalData,
             CurrentUser = stubUser
         };
         var data = await new GetActivitiesAdvisoriesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
@@ -216,7 +228,7 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             throw new Exception(data.ErrorMessage);
         }
 
-        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+        var sheet = await ExportProviderSheet(data.Data!.TabularData,
             new Dictionary<string, Func<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesTabularData, object?>>
             {
                 { "Contract",           r => r.ContractName },
@@ -230,8 +242,22 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
                 { "Advisory Date",      r => r.AdvisoryDate },
                 { "Feedback Type",      r => r.FeedbackType.HasValue ? ((FeedbackType)r.FeedbackType.Value).ToString() : null },
                 { "Advisory Notes",     r => r.Message },
-            });
+            }, request.IncludeInternalData);
         return ("Activities Advisories", sheet);
+    }
+
+    private Task<byte[]> ExportProviderSheet<TData>(IEnumerable<TData> data,
+        Dictionary<string, Func<TData, object?>> mappers, bool includeInternalData)
+    {
+        if (includeInternalData is false)
+        {
+            mappers.Remove("Queue");
+            mappers.Remove("Provider QA");
+            mappers.Remove("CFO User");
+            mappers.Remove("PQA Submitted Date");
+        }
+
+        return excelService.ExportAsync(data, mappers);
     }
 
     private async Task<(string SheetName, byte[] Data)> BuildEnrolmentFeedbackSheet(
