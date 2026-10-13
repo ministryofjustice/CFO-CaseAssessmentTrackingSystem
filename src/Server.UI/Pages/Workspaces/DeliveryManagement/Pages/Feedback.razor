@@ -1,8 +1,9 @@
 @page "/pages/workspace/deliverymanagement/feedback"
-@inherits CatsComponentBase
+@inherits CatsComponent<GetEnrolmentsToProvider.EnrolmentToProviderDto>
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components
 
 <DeliveryManagementPageHeader />
@@ -29,6 +30,16 @@
             <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
         </PickerActions>
     </MudDateRangePicker>
+
+    <MudLoadingButton Loading="@_downloading"
+                      Disabled="@(_dateRange.Start is null || _dateRange.End is null)"
+                      Variant="Variant.Filled"
+                      Color="Color.Secondary"
+                      StartIcon="@Icons.Material.Filled.CloudDownload"
+                      Size="Size.Small"
+                      OnClick="OnExport">
+        @ConstantString.Export
+    </MudLoadingButton>
 </MudStack>
 
 <MudTabs Outlined="true" Class="pa-0 ma-0">
