@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Commands;
 
 public static class ExportDeliveryFeedback
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
+    [RequestAuthorize(Policy = SecurityPolicies.DeliveryFeedbackView)]
     public class Command : ICommand<Result>
     {
         public required DateTime StartDate { get; set; }

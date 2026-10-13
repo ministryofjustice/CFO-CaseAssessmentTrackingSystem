@@ -1,6 +1,6 @@
 @page "/pages/workspace/deliverymanagement/feedback"
 @inherits CatsComponent<GetEnrolmentsToProvider.EnrolmentToProviderDto>
-@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+@attribute [Authorize(Policy = SecurityPolicies.DeliveryFeedbackView)]
 
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
 @using Cfo.Cats.Application.Features.Dashboard.Queries
