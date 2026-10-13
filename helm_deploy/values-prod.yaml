@@ -75,7 +75,6 @@ sqlBackup:
   suspend: false
 
 generic-prometheus-alerts:
-  alertSeverity: hmpps-cfo-alerts
   rdsAlertsDatabases:
     hmpps-cfo-case-assessment-tracking-system-db-production: prod sql server
   elastiCacheAlertsClusterIds:
