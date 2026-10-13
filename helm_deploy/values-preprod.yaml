@@ -69,7 +69,6 @@ redisPortForward:
 
 generic-prometheus-alerts:
   businessHoursOnly: true
-  alertSeverity: hmpps-cfo-alerts-nonprod
   rdsAlertsDatabases:
     hmpps-cfo-case-assessment-tracking-system-db-preproduction: preprod sql server
   elastiCacheAlertsClusterIds:
