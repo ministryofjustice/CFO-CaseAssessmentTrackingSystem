@@ -11,6 +11,10 @@
       "enabled": false
     },
     {
+      "matchCurrentValue": "/\\d-[A-Za-z]/",
+      "ignoreUnstable": false
+    },
+    {
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch"
