@@ -15,6 +15,7 @@ public class UsageEventAdvancedSpecification : Specification<UsageEvent>
             .Where(p => p.OccurredOn >= today, filter.ListView == UsageEventListView.Today)
             .Where(p => p.OccurredOn >= last7day, filter.ListView == UsageEventListView.Last7Days)
             .Where(p => p.OccurredOn >= last30day, filter.ListView == UsageEventListView.Last30Days)
+            .Where(p => p.TenantId!.StartsWith(filter.CurrentUser!.TenantId!), filter.CurrentUser is not null)
             .Where(
                 p => p.Area.Contains(filter.Keyword!)
                      || p.Activity.Contains(filter.Keyword!)

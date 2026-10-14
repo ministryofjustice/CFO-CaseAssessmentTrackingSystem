@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Models;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Telemetry.DTOs;
 using Cfo.Cats.Application.Features.Telemetry.Queries.GetUsageWithPagination;
 using Cfo.Cats.Application.Features.Telemetry.Specifications;
@@ -8,8 +9,9 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages;
 public partial class UsageTelemetry
 {
     private GetUsageWithPaginationQuery Query { get; } = new();
-
     protected override IQuery<Result<PaginatedData<UsageEventDto>>> CreateQuery() => Query;
+
+    protected override void OnInitialized() => Query.CurrentUser = CurrentUser;
 
     private async Task OnChangedListView(UsageEventListView listView)
     {
