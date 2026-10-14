@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Models;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch;
+using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -17,28 +18,30 @@ namespace Cfo.Cats.Application.UnitTests.Candidates.AdvancedSearch;
 
 public class ParticipantAdvancedSearchQueryHandlerTests
 {
+    private static readonly DateTime DateOfBirth = new(1990, 1, 1);
+
     [Test]
     public async Task Handle_WhenCatsMatchesAndDmsFails_ReturnsCatsResultsWithWarning()
     {
         await using var context = CreateContext();
         var location = Location.Create("Test location", 0, LocationType.Community, "TEST", DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1));
-        var participant = Participant.CreateFrom("AB1234567", "Test", null, "Person", "Male", new DateTime(1990, 1, 1), null, "Test", null, 1, null, null, null);
+        var participant = Participant.CreateFrom("AB1234567", "Test", null, "Person", "Male", DateOfBirth, null, "Test", null, 1, null, null, null);
         context.Locations.Add(location);
         context.Participants.Add(participant);
         await context.SaveChangesAsync();
 
         var candidateService = new Mock<ICandidateService>();
         candidateService
-            .Setup(x => x.SearchByIdentifierAsync("AB1234567"))
+            .Setup(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()))
             .ReturnsAsync(Result<SearchResult[]>.Failure("DMS unavailable"));
 
         var handler = CreateHandler(context, candidateService);
-        var result = await handler.Handle(CreateQuery("AB1234567"), CancellationToken.None);
+        var result = await handler.Handle(CreateQuery("AB1234567", "Person", DateOfBirth), CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
         result.Data!.Results.Length.ShouldBe(1);
         result.Data.Warning!.ShouldContain("DMS search could not be completed");
-        candidateService.Verify(x => x.SearchByIdentifierAsync("AB1234567"), Times.Once);
+        candidateService.Verify(x => x.SearchAsync(It.Is<CandidateSearchQuery>(q => q.ExternalIdentifier == "AB1234567")), Times.Once);
     }
 
     [Test]
@@ -47,11 +50,11 @@ public class ParticipantAdvancedSearchQueryHandlerTests
         await using var context = CreateContext();
         var candidateService = new Mock<ICandidateService>();
         candidateService
-            .Setup(x => x.SearchByIdentifierAsync("AB1234567"))
+            .Setup(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()))
             .ReturnsAsync(Result<SearchResult[]>.Failure("DMS unavailable"));
 
         var handler = CreateHandler(context, candidateService);
-        var result = await handler.Handle(CreateQuery("AB1234567"), CancellationToken.None);
+        var result = await handler.Handle(CreateQuery("AB1234567", "Person", DateOfBirth), CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
         result.Data!.Results.ShouldBeEmpty();
@@ -64,7 +67,7 @@ public class ParticipantAdvancedSearchQueryHandlerTests
         await using var context = CreateContext();
         var candidateService = new Mock<ICandidateService>();
         candidateService
-            .Setup(x => x.SearchByIdentifierAsync("AB1234567"))
+            .Setup(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()))
             .ReturnsAsync(Result<SearchResult[]>.Success([new SearchResult("UPCI-1", 1)]));
         candidateService
             .Setup(x => x.GetByUpciAsync("UPCI-1"))
@@ -81,7 +84,7 @@ public class ParticipantAdvancedSearchQueryHandlerTests
             }));
 
         var handler = CreateHandler(context, candidateService);
-        var result = await handler.Handle(CreateQuery("AB1234567"), CancellationToken.None);
+        var result = await handler.Handle(CreateQuery("AB1234567", "Candidate", new DateTime(1985, 5, 5)), CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
         result.Data!.Results.Length.ShouldBe(1);
@@ -97,11 +100,11 @@ public class ParticipantAdvancedSearchQueryHandlerTests
         await using var context = CreateContext();
         var candidateService = new Mock<ICandidateService>();
         candidateService
-            .Setup(x => x.SearchByIdentifierAsync("AB1234567"))
+            .Setup(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()))
             .ReturnsAsync(Result<SearchResult[]>.NotFound());
 
         var handler = CreateHandler(context, candidateService);
-        var result = await handler.Handle(CreateQuery("AB1234567"), CancellationToken.None);
+        var result = await handler.Handle(CreateQuery("AB1234567", "Person", DateOfBirth), CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
         result.Data!.Results.ShouldBeEmpty();
@@ -115,18 +118,33 @@ public class ParticipantAdvancedSearchQueryHandlerTests
         await using var context = CreateContext();
         var candidateService = new Mock<ICandidateService>();
         candidateService
-            .Setup(x => x.SearchByIdentifierAsync("AB1234567"))
+            .Setup(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()))
             .ReturnsAsync(Result<SearchResult[]>.Success([new SearchResult("UPCI-1", 1)]));
         candidateService
             .Setup(x => x.GetByUpciAsync("UPCI-1"))
             .ReturnsAsync(Result<CandidateDto>.Failure("DMS details unavailable"));
 
         var handler = CreateHandler(context, candidateService);
-        var result = await handler.Handle(CreateQuery("AB1234567"), CancellationToken.None);
+        var result = await handler.Handle(CreateQuery("AB1234567", "Person", DateOfBirth), CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
         result.Data!.Results.ShouldBeEmpty();
         result.Data.Warning!.ShouldContain("DMS details could not be loaded");
+    }
+
+    [Test]
+    public async Task Handle_WhenLastNameOrDateOfBirthMissing_DoesNotCallDms()
+    {
+        await using var context = CreateContext();
+        var candidateService = new Mock<ICandidateService>();
+
+        var handler = CreateHandler(context, candidateService);
+        var result = await handler.Handle(CreateQuery("AB1234567", null, null), CancellationToken.None);
+
+        result.Succeeded.ShouldBeTrue();
+        result.Data!.Results.ShouldBeEmpty();
+        result.Data.Warning.ShouldBeNull();
+        candidateService.Verify(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()), Times.Never);
     }
 
     private static ParticipantAdvancedSearchQueryHandler CreateHandler(
@@ -146,9 +164,11 @@ public class ParticipantAdvancedSearchQueryHandlerTests
             NullLogger<ParticipantAdvancedSearchQueryHandler>.Instance);
     }
 
-    private static ParticipantAdvancedSearchQuery CreateQuery(string identifier) => new()
+    private static ParticipantAdvancedSearchQuery CreateQuery(string identifier, string lastName, DateTime? dateOfBirth) => new()
     {
         Identifier = identifier,
+        LastName = lastName,
+        DateOfBirth = dateOfBirth,
         CurrentUser = new UserProfile
         {
             UserName = "test",
@@ -166,4 +186,3 @@ public class ParticipantAdvancedSearchQueryHandlerTests
         return new ApplicationDbContext(options);
     }
 }
-
