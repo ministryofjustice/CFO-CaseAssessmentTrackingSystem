@@ -11,5 +11,15 @@ public class ParticipantAdvancedSearchQuery : IQuery<Result<ParticipantAdvancedS
     /// </summary>
     public string? Identifier { get; set; }
 
+    /// <summary>
+    /// Optional. Required together with <see cref="DateOfBirth"/> to search DMS.
+    /// </summary>
+    public string? LastName { get; set; }
+
+    /// <summary>
+    /// Optional. Required together with <see cref="LastName"/> to search DMS.
+    /// </summary>
+    public DateTime? DateOfBirth { get; set; }
+
     public required UserProfile CurrentUser { get; init; }
 }
