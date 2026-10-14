@@ -1,0 +1,231 @@
+@page "/pages/workspace/administration/hmppsperson"
+
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
+@attribute [Authorize(SecurityPolicies.SystemSupportFunctions)]
+
+@inject IServiceProvider ServiceProvider
+
+<PageTitle>HMPPS Core Person Record</PageTitle>
+
+<AdministrationPageHeader />
+
+<HmppsExternalApiStatus Service="_service" />
+
+@if (_service is not null)
+{
+    <MudStack Row="true" Class="mt-4" AlignItems="AlignItems.Center">
+        <MudTextField T="string" @bind-Value="_hmppsId" Label="HMPPS ID" Immediate="true" Style="max-width:250px" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(_loading || string.IsNullOrWhiteSpace(_hmppsId))" OnClick="LoadPerson">
+            Get Core Person Record
+        </MudButton>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Class="mt-4" Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (_person is not null)
+    {
+        <MudCard Class="mt-4">
+            <MudCardContent>
+                <MudText Typo="Typo.h2" Class="mb-2">@FullName(_person.Title, _person.FirstName, _person.MiddleNames, _person.LastName)</MudText>
+
+                <MudText Typo="Typo.h3" Class="mt-2">Identifiers</MudText>
+                @foreach (var (label, values) in IdentifierItems)
+                {
+                    <MudText Typo="Typo.body2">@label: @(values is { Count: > 0 } ? string.Join(", ", values) : "Not recorded")</MudText>
+                }
+
+                <MudText Typo="Typo.h3" Class="mt-4">Personal details</MudText>
+                <MudText Typo="Typo.body2">Date of birth: @Show(_person.DateOfBirth)</MudText>
+                <MudText Typo="Typo.body2">Sex: @Show(_person.Sex)</MudText>
+                <MudText Typo="Typo.body2">Sexual orientation: @Show(_person.SexualOrientation)</MudText>
+                <MudText Typo="Typo.body2">Religion: @Show(_person.Religion)</MudText>
+                <MudText Typo="Typo.body2">Ethnicity: @Show(_person.Ethnicity)</MudText>
+                <MudText Typo="Typo.body2">Disability: @Show(_person.Disability)</MudText>
+                <MudText Typo="Typo.body2">Interest to immigration: @Show(_person.InterestToImmigration)</MudText>
+                <MudText Typo="Typo.body2">
+                    Nationalities:
+                    @(_person.Nationalities is { Count: > 0 } ? string.Join(", ", _person.Nationalities.Select(n => Show(n))) : "Not recorded")
+                </MudText>
+
+                <MudText Typo="Typo.h3" Class="mt-4">Aliases</MudText>
+                @if (_person.Aliases is { Count: > 0 })
+                {
+                    <MudSimpleTable Class="mt-1" Dense="true" Hover="true">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Sex</th>
+                                <th>Addresses</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var alias in _person.Aliases)
+                            {
+                                <tr>
+                                    <td>@FullName(alias.Title, alias.FirstName, alias.MiddleNames, alias.LastName)</td>
+                                    <td>@Show(alias.Sex)</td>
+                                    <td>
+                                        @if (alias.Addresses is { Count: > 0 })
+                                        {
+                                            @foreach (var address in alias.Addresses)
+                                            {
+                                                <div>@FormatAddress(address)</div>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">None recorded</MudText>
+                }
+
+                <MudText Typo="Typo.h3" Class="mt-4">Addresses</MudText>
+                @if (_person.Addresses is { Count: > 0 })
+                {
+                    <MudSimpleTable Class="mt-1" Dense="true" Hover="true">
+                        <thead>
+                            <tr>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Usages</th>
+                                <th>Contacts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var address in _person.Addresses)
+                            {
+                                <tr>
+                                    <td>
+                                        @FormatAddress(address)
+                                        @if (address.NoFixedAbode == true)
+                                        {
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Warning">No fixed abode</MudChip>
+                                        }
+                                    </td>
+                                    <td>@Show(address.Status)</td>
+                                    <td>@Show(address.StartDate)</td>
+                                    <td>@Show(address.EndDate)</td>
+                                    <td>
+                                        @foreach (var usage in address.Usages ?? [])
+                                        {
+                                            <MudChip T="string" Size="Size.Small" Color="@(usage.IsActive == true ? Color.Success : Color.Default)">@(usage.Description ?? usage.Code)</MudChip>
+                                        }
+                                    </td>
+                                    <td>
+                                        @foreach (var contact in address.Contacts ?? [])
+                                        {
+                                            <div>@Show(contact.Type): @contact.Value@(string.IsNullOrWhiteSpace(contact.Extension) ? "" : $" (ext. {contact.Extension})")</div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">None recorded</MudText>
+                }
+            </MudCardContent>
+        </MudCard>
+    }
+}
+
+@code {
+    private IHmppsExternalApiService? _service;
+
+    private string? _hmppsId;
+    private bool _loading;
+    private string? _error;
+    private PersonDto? _person;
+
+    protected override void OnInitialized()
+    {
+        // The HMPPS External API client is only registered when the feature is enabled.
+        // Resolve it optionally so this page degrades gracefully when the feature is gated off.
+        _service = ServiceProvider.GetService<IHmppsExternalApiService>();
+    }
+
+    private async Task LoadPerson()
+    {
+        if (_service is null || string.IsNullOrWhiteSpace(_hmppsId))
+        {
+            return;
+        }
+
+        _loading = true;
+        _error = null;
+        _person = null;
+
+        var result = await _service.GetPersonAsync(_hmppsId, CancellationToken.None);
+
+        if (result.Succeeded)
+        {
+            _person = result.Data;
+        }
+        else
+        {
+            _error = result.ErrorMessage is { Length: > 0 } ? result.ErrorMessage : "No person record found.";
+        }
+
+        _loading = false;
+    }
+
+    private IEnumerable<(string Label, List<string>? Values)> IdentifierItems => new (string, List<string>?)[]
+    {
+        ("CRNs", _person?.Identifiers?.Crns),
+        ("Prison numbers", _person?.Identifiers?.PrisonNumbers),
+        ("PNCs", _person?.Identifiers?.Pncs),
+        ("CROs", _person?.Identifiers?.Cros),
+        ("CIDs", _person?.Identifiers?.Cids),
+        ("Defendant IDs", _person?.Identifiers?.DefendantIds),
+        ("National Insurance numbers", _person?.Identifiers?.NationalInsuranceNumbers),
+        ("Driver licence numbers", _person?.Identifiers?.DriverLicenseNumbers),
+        ("Arrest summons numbers", _person?.Identifiers?.ArrestSummonsNumbers),
+    };
+
+    private static string Show(string? value) => string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+
+    private static string Show(bool? value) => value is null ? "Not recorded" : value.Value ? "Yes" : "No";
+
+    private static string Show(CodeDescriptionDto? value) =>
+        Show(string.IsNullOrWhiteSpace(value?.Description) ? value?.Code : value.Description);
+
+    private static string FullName(CodeDescriptionDto? title, params string?[] parts)
+    {
+        var name = string.Join(" ", new[] { title?.Description }.Concat(parts).Where(p => !string.IsNullOrWhiteSpace(p)));
+        return name.Length > 0 ? name : "Unknown";
+    }
+
+    private static string FormatAddress(PersonAddressDto address)
+    {
+        var parts = new[]
+        {
+            address.SubBuildingName,
+            address.BuildingName,
+            $"{address.BuildingNumber} {address.ThoroughfareName}".Trim(),
+            address.DependentLocality,
+            address.PostTown,
+            address.County,
+            address.Postcode,
+            address.Country,
+        };
+
+        var formatted = string.Join(", ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+        return formatted.Length > 0 ? formatted : "Not recorded";
+    }
+}

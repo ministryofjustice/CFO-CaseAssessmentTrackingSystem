@@ -1,24 +1,20 @@
-@page "/system/hmpps-external-api-status"
+@page "/pages/workspace/administration/hmppsrisk"
 
 @using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
 
 @attribute [Authorize(SecurityPolicies.SystemSupportFunctions)]
 
 @inject IServiceProvider ServiceProvider
 
-<PageTitle>HMPPS External API Status</PageTitle>
+<PageTitle>HMPPS Risk of Serious Harm</PageTitle>
 
-@if (!_enabled)
-{
-    <MudAlert Severity="Severity.Info">
-        The HMPPS External API integration is experimental and currently disabled. Enable it via the
-        "Features:HmppsExternalApi:Enabled" configuration flag.
-    </MudAlert>
-}
-else
-{
-    <MudChip T="string" Color="@_color">@_status</MudChip>
+<AdministrationPageHeader />
 
+<HmppsExternalApiStatus Service="_service" />
+
+@if (_service is not null)
+{
     <MudStack Row="true" Class="mt-4" AlignItems="AlignItems.Center">
         <MudTextField T="string" @bind-Value="_hmppsId" Label="HMPPS ID" Immediate="true" Style="max-width:250px" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(_loading || string.IsNullOrWhiteSpace(_hmppsId))" OnClick="LoadRisks">
@@ -126,33 +122,18 @@ else
 }
 
 @code {
-    private bool _enabled;
     private IHmppsExternalApiService? _service;
-
-    private string _status = "Checking...";
-    private Color _color = Color.Default;
 
     private string? _hmppsId;
     private bool _loading;
     private string? _riskError;
     private RisksDto? _risks;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         // The HMPPS External API client is only registered when the feature is enabled.
         // Resolve it optionally so this page degrades gracefully when the feature is gated off.
         _service = ServiceProvider.GetService<IHmppsExternalApiService>();
-        _enabled = _service is not null;
-
-        if (!_enabled)
-        {
-            return;
-        }
-
-        var result = await _service!.GetStatusAsync(CancellationToken.None);
-
-        _status = result.Succeeded ? "Connected" : "Disconnected";
-        _color = result.Succeeded ? Color.Success : Color.Error;
     }
 
     private async Task LoadRisks()

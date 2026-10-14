@@ -70,6 +70,12 @@ public partial class Index
         {
             links.Add(AdministrationLinks.Jobs);
             links.Add(AdministrationLinks.CacheManagement);
+
+            if (Config.GetValue<bool>("Features:HmppsExternalApi:Enabled"))
+            {
+                links.Add(AdministrationLinks.HmppsRisk);
+                links.Add(AdministrationLinks.HmppsPerson);
+            }
         }
         
         Links = links.ToArray();
