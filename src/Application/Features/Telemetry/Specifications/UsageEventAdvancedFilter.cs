@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Models;
+using Cfo.Cats.Application.Common.Security;
 
 namespace Cfo.Cats.Application.Features.Telemetry.Specifications;
 
@@ -18,4 +19,6 @@ public class UsageEventAdvancedFilter : PaginationFilter
 {
     public UsageEventListView ListView { get; set; } = UsageEventListView.Last30Days;
     public string? Area { get; set; }
+
+    public UserProfile? CurrentUser { get; set; }
 }
