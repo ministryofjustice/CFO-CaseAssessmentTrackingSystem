@@ -1,0 +1,35 @@
+@if (Service is null)
+{
+    <MudAlert Severity="Severity.Info">
+        The HMPPS External API integration is experimental and currently disabled. Enable it via the
+        "Features:HmppsExternalApi:Enabled" configuration flag.
+    </MudAlert>
+}
+else
+{
+    <MudChip T="string" Color="@_color">@_status</MudChip>
+}
+
+@code {
+    /// <summary>
+    /// Null when the feature is gated off (the client is only registered when enabled).
+    /// </summary>
+    [Parameter]
+    public IHmppsExternalApiService? Service { get; set; }
+
+    private string _status = "Checking...";
+    private Color _color = Color.Default;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Service is null)
+        {
+            return;
+        }
+
+        var result = await Service.GetStatusAsync(CancellationToken.None);
+
+        _status = result.Succeeded ? "Connected" : "Disconnected";
+        _color = result.Succeeded ? Color.Success : Color.Error;
+    }
+}

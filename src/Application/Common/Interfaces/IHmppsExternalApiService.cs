@@ -19,4 +19,10 @@ public interface IHmppsExternalApiService
     /// </summary>
     /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number).</param>
     Task<Result<RisksDto>> GetSeriousHarmRiskAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns the core person record for a person.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number).</param>
+    Task<Result<PersonDto>> GetPersonAsync(string hmppsId, CancellationToken cancellationToken);
 }
