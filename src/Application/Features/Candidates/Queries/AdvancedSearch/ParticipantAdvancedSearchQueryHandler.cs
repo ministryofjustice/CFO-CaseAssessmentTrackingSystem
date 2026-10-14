@@ -1,5 +1,6 @@
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
+using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
 namespace Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch;
 
@@ -34,21 +35,35 @@ public class ParticipantAdvancedSearchQueryHandler(
         var known = results.Select(r => r.Identifier).ToHashSet();
         var warnings = new List<string>();
 
-        var search = await candidateService.SearchByIdentifierAsync(identifier);
-        if (!search.Succeeded && search is not NotFoundResult<SearchResult[]>)
+        // DMS search requires last name and date of birth; without them only CATS is searched.
+        List<string> upcis = [];
+        if (!string.IsNullOrWhiteSpace(request.LastName) && request.DateOfBirth is not null)
         {
-            warnings.Add(results.Count == 0
-                ? $"No participant found on CATS. DMS search could not be completed: {search.ErrorMessage}"
-                : $"DMS search could not be completed: {search.ErrorMessage}");
-        }
+            var search = await candidateService.SearchAsync(new CandidateSearchQuery
+            {
+                ExternalIdentifier = identifier,
+                FirstName = string.Empty,
+                LastName = request.LastName.Trim(),
+                DateOfBirth = request.DateOfBirth,
+                CurrentUser = request.CurrentUser
+            });
 
-        var upcis = search is { Succeeded: true, Data: not null }
-            ? ParticipantAdvancedSearchMerge.SelectDmsUpcis(
-                search.Data,
-                known,
-                identifier,
-                MaximumResults)
-            : [];
+            if (!search.Succeeded && search is not NotFoundResult<SearchResult[]>)
+            {
+                warnings.Add(results.Count == 0
+                    ? $"No participant found on CATS. DMS search could not be completed: {search.ErrorMessage}"
+                    : $"DMS search could not be completed: {search.ErrorMessage}");
+            }
+
+            if (search is { Succeeded: true, Data: not null })
+            {
+                upcis = ParticipantAdvancedSearchMerge.SelectDmsUpcis(
+                    search.Data,
+                    known,
+                    identifier,
+                    MaximumResults);
+            }
+        }
 
         foreach (var upci in upcis)
         {

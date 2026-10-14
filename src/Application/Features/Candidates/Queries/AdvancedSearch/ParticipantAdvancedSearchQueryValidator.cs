@@ -9,8 +9,12 @@ public class ParticipantAdvancedSearchQueryValidator : AbstractValidator<Partici
         RuleFor(x => x.Identifier)
             .NotEmpty()
             .WithMessage("Identifier is required")
-            .MaximumLength(20)
+            .MaximumLength(9)
             .Matches(ValidationConstants.AlphaNumeric)
             .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"));
+
+        RuleFor(x => x.LastName)
+            .MaximumLength(50)
+            .WithMessage("Last name must be 100 characters or fewer");
     }
 }

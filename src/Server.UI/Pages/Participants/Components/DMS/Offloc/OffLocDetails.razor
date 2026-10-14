@@ -1,9 +1,7 @@
 ﻿@using Cfo.Cats.Application.Features.Offloc.DTOs
 
-
 @if (SentenceData is not null)
 {
-
     @if (SentenceData is NotFoundResult<SentenceDataDto>)
     {
         <MudAlert Severity="Severity.Warning">
@@ -12,7 +10,7 @@
     }
     else if (SentenceData is { Succeeded: false })
     {
-        <MudAlert Severity="Severity.Warning">
+        <MudAlert Severity="Severity.Info">
             @SentenceData.ErrorMessage
         </MudAlert>
     }
@@ -101,4 +99,3 @@
         </MudGrid>
     }
 }
-

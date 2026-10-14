@@ -24,11 +24,26 @@
                               Immediate="true"
                               Variant="Variant.Outlined"
                               Margin="Margin.Dense"
-                              MaxLength="20"
-                              Required="true"
-                              RequiredError="Identifier is required"
+                               MaxLength="10"
+                               Required="true"
+                               RequiredError="Identifier is required"
+                               OnKeyDown="@OnKeyDown"
+                               Style="max-width: 320px" />
+                <MudTextField T="string"
+                              @bind-Value="_lastName"
+                              Label="Last name (for DMS search)"
+                              Immediate="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              MaxLength="100"
                               OnKeyDown="@OnKeyDown"
-                              Style="max-width: 400px" />
+                              Style="max-width: 250px" />
+                <MudDatePicker @bind-Date="_dateOfBirth"
+                               Label="Date of birth (for DMS search)"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"
+                               Editable="true"
+                               Style="max-width: 320px" />
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            StartIcon="@Icons.Material.Filled.Search"
@@ -63,9 +78,6 @@
         <MudTable Items="@Data.Results" Dense="true" Hover="true" Striped="true" T="ParticipantAdvancedSearchDto"
                   OnRowClick="@(e => _selected = e.Item)"
                   Class="mb-4">
-            <ToolBarContent>
-                <MudText Typo="Typo.subtitle1">Results</MudText>
-            </ToolBarContent>
             <HeaderContent>
                 <MudTh>Name</MudTh>
                 <MudTh>CATS Id</MudTh>
@@ -168,7 +180,7 @@
                         }
                     </MudPaper>
                 </MudItem>
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" md="6" Class="d-flex">
                     <MudPaper Class="pa-4 fill-height">
                         <MudText Typo="Typo.h6" Class="mb-2">Registrations</MudText>
                         @if (_selected.RegistrationDetails.Length > 0)
