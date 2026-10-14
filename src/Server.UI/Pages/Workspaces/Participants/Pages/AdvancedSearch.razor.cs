@@ -13,6 +13,8 @@ public partial class AdvancedSearch
     ];
 
     private string? _identifier;
+    private string? _lastName;
+    private DateTime? _dateOfBirth;
     private string? _searchedIdentifier;
     private bool _searched;
     private ParticipantAdvancedSearchDto? _selected;
@@ -41,6 +43,8 @@ public partial class AdvancedSearch
     protected override IQuery<Result<ParticipantAdvancedSearchResult>> CreateQuery() => new ParticipantAdvancedSearchQuery
     {
         Identifier = _identifier?.Trim(),
+        LastName = _lastName?.Trim(),
+        DateOfBirth = _dateOfBirth,
         CurrentUser = CurrentUser
     };
 
