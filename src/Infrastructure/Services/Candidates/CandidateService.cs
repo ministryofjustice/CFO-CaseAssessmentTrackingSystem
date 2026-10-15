@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Globalization;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Cfo.Cats.Domain.Entities.Administration;
@@ -18,9 +19,9 @@ public class CandidateService(
         {
             var queryParams = new[]
             {
-                $"identifier={searchQuery.ExternalIdentifier}",
-                $"lastName={searchQuery.LastName}",
-                $"dateOfBirth={searchQuery.DateOfBirth!.Value:yyyy-MM-dd}"
+                $"identifier={Uri.EscapeDataString(searchQuery.ExternalIdentifier)}",
+                $"lastName={Uri.EscapeDataString(searchQuery.LastName)}",
+                $"dateOfBirth={searchQuery.DateOfBirth!.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"
             };
             
             var result = await client.GetFromJsonAsync<SearchResult[]>($"/search?{string.Join('&', queryParams)}");
@@ -44,35 +45,6 @@ public class CandidateService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error calling DMS search.");
-            return Result<SearchResult[]>.Failure("Error getting search results");
-        }
-    }
-
-    public async Task<Result<SearchResult[]>> SearchByIdentifierAsync(string identifier)
-    {
-        try
-        {
-            var result = await client.GetFromJsonAsync<SearchResult[]>($"/search?identifier={Uri.EscapeDataString(identifier)}");
-
-            if (result is null)
-            {
-                return Result<SearchResult[]>.Failure("DMS Search returned no data.");
-            }
-
-            return Result<SearchResult[]>.Success(result);
-        }
-        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
-        {
-            return Result<SearchResult[]>.NotFound();
-        }
-        catch (HttpRequestException ex)
-        {
-            logger.LogError(ex, "DMS Search is currently unavailable");
-            return Result<SearchResult[]>.Failure("DMS Search service is currently unavailable.");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error calling DMS search by identifier.");
             return Result<SearchResult[]>.Failure("Error getting search results");
         }
     }

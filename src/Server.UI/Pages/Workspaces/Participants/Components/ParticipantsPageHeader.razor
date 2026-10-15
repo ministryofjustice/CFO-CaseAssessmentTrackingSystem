@@ -99,6 +99,8 @@
         return [home, ParticipantLinks.All.AsMudBreadcrumb(), participant];
     }
 
+    // Only the identifier travels in the URL. Last name / date of birth are restored
+    // by the advanced search page from session storage to keep personal data out of URLs.
     private static BreadcrumbItem BuildAdvancedSearchBreadcrumb(Dictionary<string, Microsoft.Extensions.Primitives.StringValues> parsedQuery)
     {
         if (parsedQuery.TryGetValue("identifier", out var identifier)
