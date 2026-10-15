@@ -20,11 +20,13 @@ public class ParticipantAdvancedSearchQueryHandler(
 
         logger.LogInformation("Participant advanced search performed by {UserId}", request.CurrentUser.UserId);
 
-        var participants = await unitOfWork.DbContext.Participants
+        var participantQuery = unitOfWork.DbContext.Participants
             .AsNoTracking()
             .Include(p => p.Supervisor)
             .Include(p => p.CurrentLocation)
-            .Include(p => p.ExternalIdentifiers)
+            .Include(p => p.ExternalIdentifiers);
+
+        var participants = await participantQuery
             .Where(p => p.Id == identifier || p.ExternalIdentifiers.Any(ei => ei.Value == identifier))
             .OrderBy(p => p.LastName)
             .ThenBy(p => p.FirstName)
@@ -37,8 +39,10 @@ public class ParticipantAdvancedSearchQueryHandler(
 
         // DMS search requires last name and date of birth; without them only CATS is searched.
         List<string> upcis = [];
+        var dmsSearched = false;
         if (!string.IsNullOrWhiteSpace(request.LastName) && request.DateOfBirth is not null)
         {
+            dmsSearched = true;
             var search = await candidateService.SearchAsync(new CandidateSearchQuery
             {
                 ExternalIdentifier = identifier,
@@ -65,8 +69,25 @@ public class ParticipantAdvancedSearchQueryHandler(
             }
         }
 
+        var dmsParticipants = upcis.Count == 0
+            ? new Dictionary<string, Participant>()
+            : await participantQuery
+                .Where(p => upcis.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, cancellationToken);
+
         foreach (var upci in upcis)
         {
+            if (results.Count >= MaximumResults)
+            {
+                break;
+            }
+
+            if (dmsParticipants.TryGetValue(upci, out var participant))
+            {
+                results.Add(FromParticipant(participant));
+                continue;
+            }
+
             var candidate = await candidateService.GetByUpciAsync(upci);
 
             if (candidate is { Succeeded: true, Data: not null })
@@ -79,9 +100,20 @@ public class ParticipantAdvancedSearchQueryHandler(
             }
         }
 
+        // Searching across all participants and DMS is privileged, so record who searched for what.
+        // Name and date of birth are deliberately not logged.
+        logger.LogInformation(
+            "Participant advanced search by {UserId} for {SearchIdentifier}. DMS searched: {DmsSearched}. Results: {ResultCount}. Warnings: {HasWarnings}",
+            request.CurrentUser.UserId,
+            identifier,
+            dmsSearched,
+            results.Count,
+            warnings.Count > 0);
+
         return new ParticipantAdvancedSearchResult
         {
-            Results = results.Take(MaximumResults).ToArray(),
+            Results = results.ToArray(),
+            DmsSearched = dmsSearched,
             Warning = warnings.Count == 0 ? null : string.Join(" ", warnings)
         };
     }
@@ -104,6 +136,9 @@ public class ParticipantAdvancedSearchQueryHandler(
             PncNumber = Identifier(ExternalIdentifierType.PncNumber),
             PrimarySource = "CATS",
             LocationDescription = p.CurrentLocation.Name,
+            IsInCustody = p.CurrentLocation.LocationType.IsCustody,
+            CustodyLocation = p.CurrentLocation.LocationType.IsCustody ? p.CurrentLocation.Name : null,
+            CommunityLocation = p.CurrentLocation.LocationType.IsCommunity ? p.CurrentLocation.Name : null,
             IsActive = p.IsActive(),
             IsParticipant = true,
             EnrolmentStatus = p.EnrolmentStatus?.Name,

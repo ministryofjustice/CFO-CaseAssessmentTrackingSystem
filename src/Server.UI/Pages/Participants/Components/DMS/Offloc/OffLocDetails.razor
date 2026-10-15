@@ -10,7 +10,7 @@
     }
     else if (SentenceData is { Succeeded: false })
     {
-        <MudAlert Severity="Severity.Info">
+        <MudAlert Severity="Severity.Warning">
             @SentenceData.ErrorMessage
         </MudAlert>
     }

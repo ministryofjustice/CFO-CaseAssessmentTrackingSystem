@@ -5,7 +5,6 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 public static class ParticipantLinks
 {
     public static BreadcrumbLinkModel Home => new ( "Participants", "" ,"/pages/workspace/participants");
-    
     public static BreadcrumbLinkModel All = new(nameof(All), "Access all participants" , $"{Home.Href}/all");
     public static BreadcrumbLinkModel Participant(string id) => new(id, "Participant by id" , $"{Home.Href}/{id}");
 

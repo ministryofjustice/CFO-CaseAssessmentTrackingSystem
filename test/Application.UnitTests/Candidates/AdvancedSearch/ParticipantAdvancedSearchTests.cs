@@ -33,6 +33,57 @@ public class ParticipantAdvancedSearchTests
         result.IsValid.ShouldBeFalse();
     }
 
+    [TestCase(50, true)]
+    [TestCase(51, false)]
+    public void Validator_ShouldEnforceLastNameLimit(int length, bool isValid)
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(new ParticipantAdvancedSearchQuery
+        {
+            Identifier = "AB1234567",
+            LastName = new string('A', length),
+            CurrentUser = null!
+        });
+
+        result.IsValid.ShouldBe(isValid);
+        if (!isValid)
+        {
+            var error = result.Errors.ShouldHaveSingleItem();
+            error.PropertyName.ShouldBe(nameof(ParticipantAdvancedSearchQuery.LastName));
+            error.ErrorMessage.ShouldBe("Last name must be 50 characters or fewer");
+        }
+    }
+
+    [TestCase(null, true)]
+    [TestCase("", true)]
+    [TestCase("   ", true)]
+    [TestCase("Smith", true)]
+    [TestCase("O'Connor", true)]
+    [TestCase("O’Connor", true)]
+    [TestCase("Smith-Jones", true)]
+    [TestCase("De la Cruz", true)]
+    [TestCase("García", true)]
+    [TestCase("Smith&Jones", false)]
+    [TestCase("Smith#Jones", false)]
+    [TestCase("Smith+Jones", false)]
+    [TestCase("Smith123", false)]
+    public void Validator_ShouldEnforceDmsSurnameFormat(string lastName, bool isValid)
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(new ParticipantAdvancedSearchQuery
+        {
+            Identifier = "AB1234567",
+            LastName = lastName,
+            CurrentUser = null!
+        });
+
+        result.IsValid.ShouldBe(isValid);
+        if (!isValid)
+        {
+            result.Errors.ShouldHaveSingleItem().PropertyName.ShouldBe(nameof(ParticipantAdvancedSearchQuery.LastName));
+        }
+    }
+
     [Test]
     public void SelectDmsUpcis_ShouldRemoveDuplicatesAndCatsMatches()
     {
