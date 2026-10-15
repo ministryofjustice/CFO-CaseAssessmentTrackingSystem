@@ -77,8 +77,9 @@ public partial class Participant
                                   && Data!.ConsentStatus == ConsentStatus.GrantedStatus
                                   && Data.HasActiveRightToWork == false;
 
-    private bool ShowOwnerLocationVisibilityWarning() => LocationService.GetVisibleLocations(CurrentUser.TenantId!)
-        .Any(l => l.Name.Equals(Data!.Location, StringComparison.CurrentCultureIgnoreCase)) == false;
+    private bool ShowOwnerLocationVisibilityWarning() => Data!.OwnerTenantId is not null
+        && LocationService.GetVisibleLocations(Data.OwnerTenantId)
+            .Any(l => l.Name.Equals(Data.Location, StringComparison.CurrentCultureIgnoreCase)) == false;
 
     protected override void OnDataLoaded(ParticipantSummaryDto data)
     {
