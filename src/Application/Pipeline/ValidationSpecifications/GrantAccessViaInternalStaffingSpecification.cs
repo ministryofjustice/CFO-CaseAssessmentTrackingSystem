@@ -5,5 +5,5 @@ public sealed class GrantAccessViaInternalStaffingSpecification(ICurrentUserServ
     public override int Order => 0;
 
     protected override Task<AccessGrant> CheckAccessAsync(string identifier) => 
-        Task.FromResult(currentUserService.TenantId is "1." or "1.1." ? AccessGrant.Granted : AccessGrant.NotGranted);
+        Task.FromResult(currentUserService.IsInternalUser.GetValueOrDefault() ? AccessGrant.Granted : AccessGrant.NotGranted);
 }

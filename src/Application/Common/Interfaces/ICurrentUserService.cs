@@ -7,4 +7,5 @@ public interface ICurrentUserService
     string? TenantId { get; }
     string? TenantName { get; }
     string? DisplayName { get; }
+    bool? IsInternalUser { get; }
 }
