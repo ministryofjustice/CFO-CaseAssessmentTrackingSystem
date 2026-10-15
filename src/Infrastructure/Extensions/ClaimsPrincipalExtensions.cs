@@ -31,6 +31,7 @@ public static class ClaimsPrincipalExtensions
             profile.ProfilePictureDataUrl = claimsPrincipal.GetProfilePictureDataUrl();
             profile.Status = UserStatus.Active;
             profile.Contracts = claimsPrincipal.GetContracts();
+            profile.IsInternalUser = claimsPrincipal.GetIsIntenernalUser();
         }
 
         return profile;
@@ -59,6 +60,8 @@ public static class ClaimsPrincipalExtensions
     public static string? GetTenantId(this ClaimsPrincipal claimsPrincipal) => claimsPrincipal.FindFirstValue(ApplicationClaimTypes.TenantId);
 
     public static bool GetStatus(this ClaimsPrincipal claimsPrincipal) => Convert.ToBoolean(claimsPrincipal.FindFirstValue(ApplicationClaimTypes.Status));
+
+    public static bool GetIsIntenernalUser(this ClaimsPrincipal claimsPrincipal) => claimsPrincipal.FindFirstValue(ApplicationClaimTypes.InternalStaff) == "True";
 
     public static string[] GetRoles(this ClaimsPrincipal claimsPrincipal) => claimsPrincipal
             .Claims.Where(x => x.Type == ClaimTypes.Role)

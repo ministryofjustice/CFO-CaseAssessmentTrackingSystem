@@ -5,8 +5,6 @@ namespace Cfo.Cats.Application.Common.Security;
 
 public class UserProfile
 {
-    
-
     public string? Provider { get; set; }
     public string? SuperiorName { get; set; }
     public string? SuperiorId { get; set; }
@@ -46,4 +44,7 @@ public class UserProfile
                 : $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
         }
     }
+
+    public bool IsInternalUser { get; set; }
+
 }
