@@ -18,4 +18,3 @@ public class ParticipantAdvancedSearchConventionsTests
         attribute!.Policy.ShouldBe(SecurityPolicies.ParticipantAdvancedSearch);
     }
 }
-

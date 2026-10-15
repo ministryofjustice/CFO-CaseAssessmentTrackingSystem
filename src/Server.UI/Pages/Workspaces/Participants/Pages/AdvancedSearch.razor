@@ -17,38 +17,49 @@
             Search by CATS Id, NOMIS number or NDelius CRN. Offenders do not need to be participants.
         </MudText>
         <MudForm>
-            <MudStack Row="true" AlignItems="AlignItems.Center">
-                <MudTextField T="string"
-                              @bind-Value="_identifier"
-                              Label="CATS Id / NOMIS Id / NDelius Id"
-                              Immediate="true"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
-                               MaxLength="10"
-                               Required="true"
-                               RequiredError="Identifier is required"
-                               OnKeyDown="@OnKeyDown"
-                               Style="max-width: 320px" />
-                <MudTextField T="string"
-                              @bind-Value="_lastName"
-                              Label="Last name (for DMS search)"
-                              Immediate="true"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
-                              MaxLength="100"
-                              OnKeyDown="@OnKeyDown"
-                              Style="max-width: 250px" />
-                <MudDatePicker @bind-Date="_dateOfBirth"
-                               Label="Date of birth (for DMS search)"
-                               Variant="Variant.Outlined"
-                               Margin="Margin.Dense"
-                               Editable="true"
-                               Style="max-width: 320px" />
+            <MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap" Spacing="4">
+                <div style="width: 280px">
+                    <MudTextField T="string"
+                                  @bind-Value="_identifier"
+                                  Label="Identifier"
+                                  HelperText="CATS Id, NOMIS Id or NDelius CRN"
+                                  Immediate="true"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  MaxLength="9"
+                                  Required="true"
+                                  RequiredError="Identifier is required"
+                                  Clearable="true"
+                                  OnKeyDown="@OnKeyDown" />
+                </div>
+                <div style="width: 280px">
+                    <MudTextField T="string"
+                                  @bind-Value="_lastName"
+                                  Label="Last name"
+                                  HelperText="Needed (with date of birth) to search DMS"
+                                  Immediate="true"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  MaxLength="50"
+                                  Clearable="true"
+                                  OnKeyDown="@OnKeyDown" />
+                </div>
+                <div style="width: 280px">
+                    <MudDatePicker @bind-Date="_dateOfBirth"
+                                   Label="Date of birth"
+                                   HelperText="Needed (with last name) to search DMS"
+                                   Variant="Variant.Outlined"
+                                   Margin="Margin.Dense"
+                                   Editable="true"
+                                   Clearable="true"
+                                   MaxDate="@DateTime.Today" />
+                </div>
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            StartIcon="@Icons.Material.Filled.Search"
                            Disabled="@Loading"
-                           OnClick="@SearchAsync">
+                           OnClick="@SearchAsync"
+                           Class="mt-2">
                     Search
                 </MudButton>
             </MudStack>
@@ -71,7 +82,16 @@
     }
     else if (_searched && ErrorMessage is null && _warning is null && Data is { Results.Length: 0 })
     {
-        <MudAlert Severity="Severity.Info" Class="mb-4">No matching person found on CATS or DMS for '@_searchedIdentifier'.</MudAlert>
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            @if (Data.DmsSearched)
+            {
+                <span>No matching person found on CATS or DMS for '@_searchedIdentifier'.</span>
+            }
+            else
+            {
+                <span>No matching participant found on CATS for '@_searchedIdentifier'. DMS was not searched. Enter a last name and date of birth to search DMS.</span>
+            }
+        </MudAlert>
     }
     else if (Data is { Results.Length: > 0 })
     {
@@ -92,7 +112,7 @@
                 <MudTd DataLabel="NOMIS Id">@context.NomisNumber</MudTd>
                 <MudTd DataLabel="NDelius Id">@context.Crn</MudTd>
                 <MudTd DataLabel="Location">@context.LocationDescription</MudTd>
-                <MudTd DataLabel="Participant">
+                <MudTd DataLabel="On CATS">
                     <MudChip T="string" Size="Size.Small" Color="@(context.IsParticipant ? Color.Success : Color.Default)">
                         @(context.IsParticipant ? "Yes" : "No")
                     </MudChip>
@@ -180,7 +200,7 @@
                         }
                     </MudPaper>
                 </MudItem>
-                <MudItem xs="12" md="6" Class="d-flex">
+                <MudItem xs="12" md="6">
                     <MudPaper Class="pa-4 fill-height">
                         <MudText Typo="Typo.h6" Class="mb-2">Registrations</MudText>
                         @if (_selected.RegistrationDetails.Length > 0)
