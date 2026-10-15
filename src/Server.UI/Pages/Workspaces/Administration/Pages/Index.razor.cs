@@ -75,6 +75,7 @@ public partial class Index
             {
                 links.Add(AdministrationLinks.HmppsRisk);
                 links.Add(AdministrationLinks.HmppsPerson);
+                links.Add(AdministrationLinks.HmppsTier);
             }
         }
         

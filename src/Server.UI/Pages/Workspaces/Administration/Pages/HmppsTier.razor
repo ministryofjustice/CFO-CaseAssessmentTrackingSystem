@@ -1,0 +1,419 @@
+@page "/pages/workspace/administration/hmppstier"
+
+@using System.Globalization
+@using System.Text.RegularExpressions
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+
+@attribute [Authorize(SecurityPolicies.SystemSupportFunctions)]
+
+@inject IServiceProvider ServiceProvider
+
+<PageTitle>HMPPS Tier</PageTitle>
+
+<AdministrationPageHeader />
+
+<HmppsExternalApiStatus Service="_service" />
+
+@if (_service is not null)
+{
+    <MudStack Row="true" Class="mt-4" AlignItems="AlignItems.Center">
+        <MudTextField T="string" @bind-Value="_hmppsId" Label="HMPPS ID" Immediate="true" Style="max-width:250px" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(_loading || string.IsNullOrWhiteSpace(_hmppsId))" OnClick="LoadTier">
+            Get Tier Details
+        </MudButton>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Class="mt-4" Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (_tier is not null)
+    {
+        var calculation = _tier.Data;
+        var delius = calculation?.DeliusInputs;
+        var registrations = delius?.Registrations;
+        var assessment = calculation?.AssessmentSummary?.Assessment;
+        var predictors = calculation?.OasysInputs?.Predictors;
+
+        <MudCard Class="mt-4">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap" Class="mb-2">
+                    <MudText Typo="Typo.h2">Tier</MudText>
+                    <MudChip T="string" Color="@TierColor(TierScore)" Variant="Variant.Outlined">Tier: @(TierScore ?? "Unknown")</MudChip>
+                    @if (IsProvisional)
+                    {
+                        <MudChip T="string" Color="Color.Warning">Provisional</MudChip>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(registrations?.Rosh))
+                    {
+                        <MudChip T="string" Color="@BandColor(registrations.Rosh)" Variant="Variant.Outlined">ROSH @Humanise(registrations.Rosh)</MudChip>
+                    }
+                    @if (delius?.RsrScore is not null)
+                    {
+                        <MudChip T="string" Variant="Variant.Outlined">RSR @delius.RsrScore.Value.ToString("0.##", CultureInfo.InvariantCulture)%</MudChip>
+                    }
+                </MudStack>
+                <MudText Typo="Typo.body2">Last calculated: @Show(_tier.CalculationDate)</MudText>
+
+                <MudTabs Class="mt-4" Elevation="0" ApplyEffectsToContainer="true" TabPanelsClass="pt-4">
+                    <MudTabPanel Text="Summary">
+                        <MudSimpleTable Dense="true" Hover="true">
+                            <thead>
+                                <tr>
+                                    <th>Factor</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Risk of serious harm (ROSH)</td>
+                                    <td><MudChip T="string" Size="Size.Small" Color="@BandColor(registrations?.Rosh)">@Show(Humanise(registrations?.Rosh))</MudChip></td>
+                                </tr>
+                                <tr>
+                                    <td>RSR score</td>
+                                    <td>@Show(delius?.RsrScore)</td>
+                                </tr>
+                                <tr>
+                                    <td>OGRS score</td>
+                                    <td>@Show(delius?.OgrsScore)</td>
+                                </tr>
+                                <tr>
+                                    <td>MAPPA</td>
+                                    <td>@FormatMappa(registrations)</td>
+                                </tr>
+                                @foreach (var (label, value) in RegistrationFlags)
+                                {
+                                    <tr>
+                                        <td>@label</td>
+                                        <td><MudChip T="string" Size="Size.Small" Color="@FlagColor(value)" Disabled="@(value is null)">@Show(value)</MudChip></td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td>Complexity factors</td>
+                                    <td>
+                                        @if (registrations?.ComplexityFactors is { Count: > 0 })
+                                        {
+                                            @foreach (var factor in registrations.ComplexityFactors)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">@Humanise(factor)</MudChip>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>None recorded</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Result</strong></td>
+                                    <td><strong>@(TierScore ?? "Unknown")</strong></td>
+                                </tr>
+                            </tbody>
+                        </MudSimpleTable>
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Delius inputs">
+                        @if (delius is null)
+                        {
+                            <MudText Typo="Typo.body2">No Delius inputs recorded.</MudText>
+                        }
+                        else
+                        {
+                            <MudSimpleTable Dense="true" Hover="true">
+                                <tbody>
+                                    @foreach (var (label, value) in DeliusItems(delius))
+                                    {
+                                        <tr>
+                                            <td>@label</td>
+                                            <td>@value</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="OASys assessment">
+                        @if (calculation?.AssessmentSummary is null)
+                        {
+                            <MudText Typo="Typo.body2">No OASys assessment recorded.</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2">Assessment ID: @(assessment?.Id?.ToString() ?? "Not recorded")</MudText>
+                            <MudText Typo="Typo.body2">Type: @Show(assessment?.Type)</MudText>
+                            <MudText Typo="Typo.body2">Status: @Show(Humanise(assessment?.Status))</MudText>
+                            <MudText Typo="Typo.body2">Completed: @Show(assessment?.CompletedDate)</MudText>
+                            <MudText Typo="Typo.body2">SAN indicator: @Show(assessment?.SanIndicator)</MudText>
+                            <MudText Typo="Typo.body2">Ever committed sexual offence: @Show(calculation.OasysInputs?.EverCommittedSexualOffence)</MudText>
+
+                            <MudGrid Class="mt-2">
+                                @foreach (var (label, section) in AssessmentSections)
+                                {
+                                    <MudItem xs="12" md="6">
+                                        <MudPaper Class="pa-3" Outlined="true" Style="height:100%">
+                                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                                <MudText Typo="Typo.body1"><strong>@label</strong></MudText>
+                                                <MudChip T="string" Size="Size.Small" Disabled="@(section?.Score is null)">Score: @(section?.Score?.ToString("0.##", CultureInfo.InvariantCulture) ?? "Not recorded")</MudChip>
+                                            </MudStack>
+                                            @if (section is null)
+                                            {
+                                                <MudText Typo="Typo.body2">Not recorded</MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudStack Row="true" Spacing="1" Class="mb-2">
+                                                    <MudChip T="string" Size="Size.Small" Color="@FlagColor(section.LinkedToReOffending)">Linked to reoffending: @Show(section.LinkedToReOffending)</MudChip>
+                                                    <MudChip T="string" Size="Size.Small" Color="@FlagColor(section.LinkedToHarm)">Linked to harm: @Show(section.LinkedToHarm)</MudChip>
+                                                </MudStack>
+                                                <MudSimpleTable Dense="true" Elevation="0">
+                                                    <tbody>
+                                                        @foreach (var (question, answer) in SectionAnswers(section))
+                                                        {
+                                                            <tr>
+                                                                <td>@question</td>
+                                                                <td>@Show(answer)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </MudSimpleTable>
+                                            }
+                                        </MudPaper>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Predictors">
+                        @if (predictors is null)
+                        {
+                            <MudText Typo="Typo.body2">No OASys predictors recorded.</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2">Assessment type: @Show(predictors.AssessmentType)</MudText>
+                            <MudText Typo="Typo.body2">Output version: @Show(predictors.OutputVersion)</MudText>
+                            <MudText Typo="Typo.body2">Completed: @Show(predictors.CompletedDate)</MudText>
+
+                            <MudSimpleTable Class="mt-2" Dense="true" Hover="true">
+                                <thead>
+                                    <tr>
+                                        <th>Predictor</th>
+                                        <th>Score</th>
+                                        <th>Band</th>
+                                        <th>Static / dynamic</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var (label, predictor) in PredictorItems(predictors.Output))
+                                    {
+                                        <tr>
+                                            <td>@label</td>
+                                            <td>@Show(predictor?.Score)</td>
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(predictor?.Band))
+                                                {
+                                                    <MudChip T="string" Size="Size.Small" Color="@BandColor(predictor.Band)">@Humanise(predictor.Band)</MudChip>
+                                                }
+                                                else
+                                                {
+                                                    <span>Not recorded</span>
+                                                }
+                                            </td>
+                                            <td>@Show(Humanise(predictor?.StaticOrDynamic))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudTabPanel>
+                </MudTabs>
+            </MudCardContent>
+        </MudCard>
+    }
+}
+
+@code {
+    private IHmppsExternalApiService? _service;
+
+    private string? _hmppsId;
+    private bool _loading;
+    private string? _error;
+    private TierDetailsDto? _tier;
+
+    protected override void OnInitialized()
+    {
+        // The HMPPS External API client is only registered when the feature is enabled.
+        // Resolve it optionally so this page degrades gracefully when the feature is gated off.
+        _service = ServiceProvider.GetService<IHmppsExternalApiService>();
+    }
+
+    private async Task LoadTier()
+    {
+        if (_service is null || string.IsNullOrWhiteSpace(_hmppsId))
+        {
+            return;
+        }
+
+        _loading = true;
+        _error = null;
+        _tier = null;
+
+        var result = await _service.GetTierDetailsAsync(_hmppsId, CancellationToken.None);
+
+        if (result.Succeeded)
+        {
+            _tier = result.Data;
+        }
+        else
+        {
+            _error = result.ErrorMessage is { Length: > 0 } ? result.ErrorMessage : "No tier details found.";
+        }
+
+        _loading = false;
+    }
+
+    private string? TierScore => _tier?.TierScore ?? _tier?.Data?.Tier;
+
+    private bool IsProvisional => _tier?.Provisional == true || _tier?.Data?.Provisional == true;
+
+    private IEnumerable<(string Label, bool? Value)> RegistrationFlags => new (string, bool?)[]
+    {
+        ("Lifer/IPP", _tier?.Data?.DeliusInputs?.Registrations?.HasLiferIpp),
+        ("Domestic abuse", _tier?.Data?.DeliusInputs?.Registrations?.HasDomesticAbuse),
+        ("Stalking", _tier?.Data?.DeliusInputs?.Registrations?.HasStalking),
+        ("Child protection", _tier?.Data?.DeliusInputs?.Registrations?.HasChildProtection),
+        ("IOM nominal", _tier?.Data?.DeliusInputs?.Registrations?.HasIomNominal),
+        ("Ever committed sexual offence", _tier?.Data?.OasysInputs?.EverCommittedSexualOffence),
+    };
+
+    private static IEnumerable<(string Label, string Value)> DeliusItems(TierDeliusInputsDto delius) => new (string, string)[]
+    {
+        ("Female", Show(delius.IsFemale)),
+        ("RSR score", Show(delius.RsrScore)),
+        ("OGRS score", Show(delius.OgrsScore)),
+        ("No mandate", Show(delius.HasNoMandate)),
+        ("Active event", Show(delius.HasActiveEvent)),
+        ("Previous enforcement activity", Show(delius.PreviousEnforcementActivity)),
+        ("Unsupervised", Show(delius.Registrations?.Unsupervised)),
+        ("Latest release date", Show(delius.LatestReleaseDate)),
+        ("Latest Sentencing Act 2026 excluded offence date", Show(delius.LatestSentencingAct2026ExcludedOffenceDate)),
+        ("Latest child sexual exploitation sentence date", Show(delius.LatestChildSexualExploitationSentenceDate)),
+    };
+
+    private IEnumerable<(string Label, TierAssessmentSectionDto? Section)> AssessmentSections => new (string, TierAssessmentSectionDto?)[]
+    {
+        ("Accommodation", _tier?.Data?.AssessmentSummary?.Accommodation),
+        ("Education, training and employability", _tier?.Data?.AssessmentSummary?.EducationTrainingEmployability),
+        ("Relationships", _tier?.Data?.AssessmentSummary?.Relationships),
+        ("Lifestyle and associates", _tier?.Data?.AssessmentSummary?.LifestyleAndAssociates),
+        ("Drug misuse", _tier?.Data?.AssessmentSummary?.DrugMisuse),
+        ("Alcohol misuse", _tier?.Data?.AssessmentSummary?.AlcoholMisuse),
+        ("Thinking and behaviour", _tier?.Data?.AssessmentSummary?.ThinkingAndBehaviour),
+        ("Attitudes", _tier?.Data?.AssessmentSummary?.Attitudes),
+    };
+
+    // Question answers plus the section-specific extra fields, which are only populated on some sections.
+    private static IEnumerable<(string Question, string? Answer)> SectionAnswers(TierAssessmentSectionDto section)
+    {
+        foreach (var (key, value) in section.QuestionAnswers ?? [])
+        {
+            yield return (Humanise(key)!, value);
+        }
+
+        if (section.ParentalResponsibilities is not null)
+        {
+            yield return ("Parental responsibilities", section.ParentalResponsibilities);
+        }
+
+        if (section.Impulsivity is not null)
+        {
+            yield return ("Impulsivity", section.Impulsivity);
+        }
+
+        if (section.TemperControl is not null)
+        {
+            yield return ("Temper control", section.TemperControl);
+        }
+    }
+
+    private static IEnumerable<(string Label, TierPredictorDto? Predictor)> PredictorItems(TierPredictorOutputDto? output) => new (string, TierPredictorDto?)[]
+    {
+        ("All reoffending", output?.AllReoffendingPredictor),
+        ("Violent reoffending", output?.ViolentReoffendingPredictor),
+        ("Serious violent reoffending", output?.SeriousViolentReoffendingPredictor),
+        ("Direct contact sexual reoffending", output?.DirectContactSexualReoffendingPredictor),
+        ("Indirect image contact sexual reoffending", output?.IndirectImageContactSexualReoffendingPredictor),
+        ("Combined serious reoffending", output?.CombinedSeriousReoffendingPredictor),
+    };
+
+    private static string FormatMappa(TierRegistrationsDto? registrations)
+    {
+        var parts = new[]
+        {
+            string.IsNullOrWhiteSpace(registrations?.MappaCategory) ? null : $"Cat {registrations.MappaCategory}",
+            string.IsNullOrWhiteSpace(registrations?.MappaLevel) ? null : $"Level {registrations.MappaLevel}",
+        }.Where(p => p is not null);
+
+        var formatted = string.Join("/", parts);
+        return formatted.Length > 0 ? formatted : "Not recorded";
+    }
+
+    private static string Show(string? value) => string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+
+    private static string Show(bool? value) => value is null ? "Not recorded" : value.Value ? "Yes" : "No";
+
+    private static string Show(decimal? value) => value?.ToString("0.##", CultureInfo.InvariantCulture) ?? "Not recorded";
+
+    private static string Show(DateTime? value) => value?.ToString("dd/MM/yyyy HH:mm") ?? "Not recorded";
+
+    private static string Show(DateOnly? value) => value?.ToString("dd/MM/yyyy") ?? "Not recorded";
+
+    // Converts API codes ("VERY_HIGH", "permanenceOfAccommodation") into readable text ("Very high", "Permanence of accommodation").
+    private static string? Humanise(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var spaced = Regex.Replace(value.Replace('_', ' '), "(?<=[a-z0-9])(?=[A-Z])", " ").ToLowerInvariant();
+        return char.ToUpperInvariant(spaced[0]) + spaced[1..];
+    }
+
+    private static Color TierColor(string? tier) => tier?.ToUpperInvariant() switch
+    {
+        "A" or "B" => Color.Error,
+        "C" or "D" => Color.Warning,
+        null or "" => Color.Default,
+        _ => Color.Success,
+    };
+
+    private static Color BandColor(string? band) => band?.ToUpperInvariant() switch
+    {
+        "VERY_HIGH" or "HIGH" => Color.Error,
+        "MEDIUM" => Color.Warning,
+        "LOW" => Color.Success,
+        _ => Color.Default,
+    };
+
+    private static Color FlagColor(bool? value) => value switch
+    {
+        true => Color.Error,
+        false => Color.Success,
+        _ => Color.Default,
+    };
+
+    private static Color FlagColor(string? value) => value?.ToUpperInvariant() switch
+    {
+        "YES" => Color.Error,
+        "NO" => Color.Success,
+        _ => Color.Default,
+    };
+}
