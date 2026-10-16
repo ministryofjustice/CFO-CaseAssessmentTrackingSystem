@@ -23,11 +23,9 @@ public class AnnouncementAccessTests
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.SetupGet(x => x.UserId).Returns("provider");
         var unitOfWork = new Mock<IUnitOfWork>(MockBehavior.Strict);
-        var users = new Mock<IUserService>();
-        users.SetupGet(x => x.DataSource).Returns(
-            [new ApplicationUserDto { Id = "provider", UserName = "provider@example.com" }]);
+        currentUser.SetupGet(x => x.IsInternalUser).Returns(false);
         var handler = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object,
-            users.Object, new Mock<IMapper>().Object);
+            new Mock<IMapper>().Object);
 
         Should.Throw<ForbiddenException>(async () => await handler.Handle(
             new GetAnnouncements.Query { Audience = AnnouncementAudience.InternalStaff }, CancellationToken.None));
@@ -54,7 +52,7 @@ public class AnnouncementAccessTests
     [TestCase("", false)]
     [TestCase(null, false)]
     public void InternalClassificationUsesTheExistingClaimRule(string userName, bool expected)
-        => UserProfile.IsInternalUser(userName).ShouldBe(expected);
+        => UserProfile.IsInternalEmail(userName).ShouldBe(expected);
 
     [Test]
     public void InternalClassificationDoesNotRequireAnInternalRoleOrAnUnlockedAccount()
@@ -67,7 +65,7 @@ public class AnnouncementAccessTests
             LockoutEnd = DateTimeOffset.MaxValue
         };
         Should.NotThrow(() => Cfo.Cats.Application.Features.Announcements.AnnouncementAccess.EnsureAudience(
-            user, AnnouncementAudience.InternalStaff));
+            true, AnnouncementAudience.InternalStaff));
     }
 
     [Test]
@@ -80,6 +78,6 @@ public class AnnouncementAccessTests
             AssignedRoles = [RoleNames.SystemSupport, RoleNames.SMT]
         };
         Should.Throw<ForbiddenException>(() => Cfo.Cats.Application.Features.Announcements.AnnouncementAccess.EnsureAudience(
-            user, AnnouncementAudience.InternalStaff));
+            false, AnnouncementAudience.InternalStaff));
     }
 }

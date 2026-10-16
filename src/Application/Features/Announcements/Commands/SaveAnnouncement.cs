@@ -55,7 +55,8 @@ public static class SaveAnnouncement
         {
             var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to manage announcements.");
             var user = AnnouncementAccess.GetUser(userService, userId);
-            AnnouncementAccess.EnsureAudience(user, request.Audience);
+            var isInternalUser = currentUserService.IsInternalUser.GetValueOrDefault();
+            AnnouncementAccess.EnsureAudience(isInternalUser, request.Audience);
             var typeName = await repository.GetTypeNameAsync(request.TypeName, cancellationToken);
             var canAutoApprove = request.PublishImmediately
                 && user.IsInRole(RoleNames.SystemSupport);
@@ -70,7 +71,7 @@ public static class SaveAnnouncement
             if (request.Id is { } id)
             {
                 announcement = await repository.GetByIdAsync(id, cancellationToken);
-                AnnouncementAccess.EnsureManagementAudience(user, announcement);
+                AnnouncementAccess.EnsureManagementAudience(isInternalUser, announcement);
                 announcement.Edit(request.Version, typeName, request.Audience, request.Description, links, userId,
                     request.Title, request.PostedBy, submittedByName);
             }

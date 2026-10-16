@@ -33,7 +33,8 @@ public static class ApproveAnnouncement
             var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to approve announcements.");
             var announcement = await repository.GetByIdAsync(request.Id, cancellationToken);
             var user = AnnouncementAccess.GetUser(userService, userId);
-            AnnouncementAccess.EnsureManagementAudience(user, announcement);
+            var isInternalUser = currentUserService.IsInternalUser.GetValueOrDefault();
+            AnnouncementAccess.EnsureManagementAudience(isInternalUser, announcement);
             if (user.IsInRole(RoleNames.SystemSupport)
                 && announcement.PendingRevision?.SubmittedBy == userId)
             {

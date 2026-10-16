@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
-using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Domain.Announcements;
 
@@ -12,24 +11,24 @@ public static class AnnouncementAccess
             ?? throw new NotFoundException("User not found.");
 
     public static void EnsureAudience(
-        ApplicationUserDto user,
+        bool isInternalUser,
         AnnouncementAudience audience)
     {
         if (audience == AnnouncementAudience.InternalStaff
-            && !UserProfile.IsInternalUser(user.UserName))
+            && !isInternalUser)
         {
             throw new ForbiddenException("Only internal staff can access internal announcements.");
         }
     }
 
     public static void EnsureManagementAudience(
-        ApplicationUserDto user,
+        bool isInternalUser,
         Announcement announcement)
     {
         if (announcement.PendingRevision?.Audience == AnnouncementAudience.InternalStaff
             || announcement.PublishedRevision?.Audience == AnnouncementAudience.InternalStaff)
         {
-            EnsureAudience(user, AnnouncementAudience.InternalStaff);
+            EnsureAudience(isInternalUser, AnnouncementAudience.InternalStaff);
         }
     }
 }

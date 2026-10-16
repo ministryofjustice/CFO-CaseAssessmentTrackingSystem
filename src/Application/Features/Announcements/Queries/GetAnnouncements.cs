@@ -25,13 +25,11 @@ public static class GetAnnouncements
     public class Handler(
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUserService,
-        IUserService userService,
         IMapper mapper) : IQueryHandler<Query, Result<AnnouncementDto[]>>
     {
         public async Task<Result<AnnouncementDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to view announcements.");
-            AnnouncementAccess.EnsureAudience(AnnouncementAccess.GetUser(userService, userId), request.Audience);
+            AnnouncementAccess.EnsureAudience(currentUserService.IsInternalUser.GetValueOrDefault(), request.Audience);
             var query = unitOfWork.DbContext.Announcements.AsNoTracking()
                 .Where(a => a.DeletedAt == null
                     && a.Revisions.Any(r => r.Id == a.PublishedRevisionId && r.Audience == request.Audience));

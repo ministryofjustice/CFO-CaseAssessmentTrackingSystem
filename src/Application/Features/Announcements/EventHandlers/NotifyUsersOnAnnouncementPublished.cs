@@ -17,7 +17,7 @@ public class NotifyUsersOnAnnouncementPublished(
         foreach (var user in userService.DataSource.Where(u => u.Status == UserStatus.Active))
         {
             if (revision.Audience == AnnouncementAudience.InternalStaff
-                && !UserProfile.IsInternalUser(user.UserName))
+                && !UserProfile.IsInternalEmail(user.UserName))
             {
                 continue;
             }
