@@ -76,6 +76,13 @@ public class ParticipantSummaryDto
 
     public RiskSummaryDto? LatestRisk { get; init; }
 
+    /// <summary>
+    /// History log of risk updates received from the HMPPS External API.
+    /// Populated independently of <see cref="LatestRisk"/> so updates surface
+    /// even when no user-entered risk record exists.
+    /// </summary>
+    public IReadOnlyCollection<RiskUpdateDto> RiskUpdates { get; init; } = [];
+
     public BioSummaryDto? BioSummary { get; init; }
 
     public PathwayPlanSummaryDto? PathwayPlan { get; init; }
