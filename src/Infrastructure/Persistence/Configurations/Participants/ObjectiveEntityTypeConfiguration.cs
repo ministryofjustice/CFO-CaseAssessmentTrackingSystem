@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -27,6 +28,9 @@ public class ObjectiveEntityTypeConfiguration : IEntityTypeConfiguration<Objecti
 
         objective.Property(o => o.CompletedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        objective.Property(o => o.InitiativeChangeJustification)
+            .HasMaxLength(ValidationConstants.NotesLength);
 
         objective.HasOne(o => o.CreatedByUser)
             .WithMany()

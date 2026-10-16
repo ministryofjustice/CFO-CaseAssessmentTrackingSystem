@@ -1,4 +1,5 @@
-﻿@inherits CatsComponentBase
+﻿@using Cfo.Cats.Application.Common.Validators
+@inherits CatsComponentBase
 
 <MudDialog>
     <DialogContent>
@@ -8,9 +9,9 @@
                 Label="@Model.GetMemberDescription(x => x.Description)"
                 For="@(() => Model.Description)"
                 Lines="4" 
-                MaxLength="2000" 
+                MaxLength=@ValidationConstants.ObjectiveDescription
                 Immediate="true" 
-                Counter="2000"/>
+                Counter=@ValidationConstants.ObjectiveDescription/>
             <InitiativeAutoComplete @bind-Value="SelectedInitiative"
                                     Label="Initiative (optional)" />
             @if (_selectedInitiative is not null)
@@ -18,12 +19,14 @@
                 <MudDatePicker @bind-Date="Model.InitiativeStartDate"
                                Label="@Model.GetMemberDescription(x => x.InitiativeStartDate)"
                                For="@(() => Model.InitiativeStartDate)"
+                               MinDate="_selectedInitiative?.LifetimeStart"
+                               MaxDate="@(_selectedInitiative is null ? DateTime.Today.Date : (_selectedInitiative.LifetimeEnd < DateTime.Today.Date ? _selectedInitiative.LifetimeEnd : DateTime.Today.Date))"
                                Class="mt-4" />
             }
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
         <MudLoadingButton StartIcon="@Icons.Material.Filled.Save" Loading="_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
