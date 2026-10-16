@@ -1,6 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -28,6 +27,15 @@ public static class EditObjective
 
         [Description("Justification")]
         public string? Justification { get; set; }
+
+        /// <summary>
+        /// Set by the caller (UI) when the current user satisfies SecurityPolicies.ManageInitiatives
+        /// (CMPSM and above). Defaults to false so non-UI callers get the restrictive behaviour.
+        /// KNOWN TRADE-OFF: this value is trusted as supplied and is not re-checked server-side (doing so
+        /// needs IIdentityService, which isn't available in all hosts e.g. Cats.Consumers). Only set it
+        /// from a verified policy check against the signed-in user.
+        /// </summary>
+        public bool CanOverrideInitiativeRestrictions { get; init; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
@@ -88,14 +96,10 @@ public static class EditObjective
     public class Validator : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IIdentityService _identityService;
 
-        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IIdentityService identityService)
+        public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _currentUserService = currentUserService;
-            _identityService = identityService;
 
             RuleFor(x => x.ObjectiveId)
                 .NotNull();
@@ -136,7 +140,7 @@ public static class EditObjective
                     .WithMessage("Participant is archived");
 
                 RuleFor(x => x.InitiativeId)
-                    .MustAsync((command, initiativeId, token) => NotHaveActivitiesWhenChangingInitiative(command.ObjectiveId, initiativeId, token))
+                    .MustAsync((command, initiativeId, token) => NotHaveActivitiesWhenChangingInitiative(command.ObjectiveId, initiativeId, command.CanOverrideInitiativeRestrictions, token))
                     .WithMessage("The initiative cannot be changed or removed because activities have already been recorded against this objective's tasks");
 
                 RuleFor(x => x.Justification)
@@ -144,7 +148,7 @@ public static class EditObjective
                     .WithMessage("You must provide a justification for removing or replacing this initiative");
 
                 RuleFor(x => x.InitiativeId)
-                    .MustAsync((command, initiativeId, token) => BeAuthorizedToUnlinkInitiative(command.ObjectiveId, initiativeId, token))
+                    .MustAsync((command, initiativeId, token) => BeAuthorizedToUnlinkInitiative(command.ObjectiveId, initiativeId, command.CanOverrideInitiativeRestrictions, token))
                     .WithMessage("Removing or replacing this initiative is restricted to Contract & Performance Support Managers (CMPSM) and above");
 
                 RuleFor(x => x.InitiativeStartDate)
@@ -200,7 +204,7 @@ public static class EditObjective
                 .AnyAsync(a => a.ObjectiveId == objectiveId, cancellationToken);
         }
 
-        private async Task<bool> NotHaveActivitiesWhenChangingInitiative(Guid objectiveId, Guid? newInitiativeId, CancellationToken cancellationToken)
+        private async Task<bool> NotHaveActivitiesWhenChangingInitiative(Guid objectiveId, Guid? newInitiativeId, bool canOverride, CancellationToken cancellationToken)
         {
             var currentInitiativeId = await _unitOfWork.DbContext.InitiativeObjectives
                 .Where(io => io.ObjectiveId == objectiveId)
@@ -217,7 +221,7 @@ public static class EditObjective
             // been recorded against the objective — this is the whole point of the ability, so they can
             // correct objectives linked to the wrong initiative regardless of tenant, whether that means
             // clearing the link or swapping in the correct replacement.
-            if (await UserIsCmpsmOrAbove(cancellationToken))
+            if (canOverride)
             {
                 return true;
             }
@@ -253,7 +257,7 @@ public static class EditObjective
             return string.IsNullOrWhiteSpace(justification) is false;
         }
 
-        private async Task<bool> BeAuthorizedToUnlinkInitiative(Guid objectiveId, Guid? newInitiativeId, CancellationToken cancellationToken)
+        private async Task<bool> BeAuthorizedToUnlinkInitiative(Guid objectiveId, Guid? newInitiativeId, bool canOverride, CancellationToken cancellationToken)
         {
             var currentInitiativeId = await _unitOfWork.DbContext.InitiativeObjectives
                 .Where(io => io.ObjectiveId == objectiveId)
@@ -272,21 +276,7 @@ public static class EditObjective
                 return true;
             }
 
-            return await UserIsCmpsmOrAbove(cancellationToken);
-        }
-
-        /// <summary>
-        /// True when the current user holds the ManageInitiatives permission (aligns with CMPSM and above).
-        /// </summary>
-        private async Task<bool> UserIsCmpsmOrAbove(CancellationToken cancellationToken)
-        {
-            var userId = _currentUserService.UserId;
-            if (string.IsNullOrEmpty(userId))
-            {
-                return false;
-            }
-
-            return await _identityService.AuthorizeAsync(userId, SecurityPolicies.ManageInitiatives, cancellationToken);
+            return canOverride;
         }
 
         /// <summary>
