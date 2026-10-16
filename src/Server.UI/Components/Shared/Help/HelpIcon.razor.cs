@@ -15,7 +15,7 @@ namespace Cfo.Cats.Server.UI.Components.Shared.Help;
 /// (with a warning colour when no link is configured) so they can identify gaps in help
 /// coverage as they navigate the app.
 /// </summary>
-public partial class HelpIcon : IDisposable
+public partial class HelpIcon
 {
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = null!;
@@ -45,6 +45,11 @@ public partial class HelpIcon : IDisposable
     {
         var state = await AuthState;
         _isSystemSupport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
+        if (IsDisposed)
+        {
+            return;
+        }
+
         HelpContext.Changed += OnHelpContextChanged;
         await LoadHelpLinkAsync();
     }
@@ -59,14 +64,14 @@ public partial class HelpIcon : IDisposable
         try
         {
             // A newer reload was queued while we were waiting for the gate - let that one win.
-            if (version != _loadVersion)
+            if (IsDisposed || version != _loadVersion)
             {
                 return;
             }
 
             var result = await Service.Send(new GetHelpLinkForPage.Query(HelpContext.PageKey, HelpContext.TabName));
 
-            if (version != _loadVersion)
+            if (IsDisposed || version != _loadVersion)
             {
                 return;
             }
@@ -96,5 +101,13 @@ public partial class HelpIcon : IDisposable
         await DialogService.ShowAsync<HelpDialog>("Help", parameters, options);
     }
 
-    public void Dispose() => HelpContext.Changed -= OnHelpContextChanged;
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            HelpContext.Changed -= OnHelpContextChanged;
+        }
+
+        base.Dispose(disposing);
+    }
 }
