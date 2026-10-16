@@ -88,6 +88,7 @@ public static class ExportProviderFeedback
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public string? TenantId { get; set; }
+        public bool IncludeInternalData { get; set; } = true;
 
         /// <summary>
         /// When set, the export is scoped to only the feedback personally received by this

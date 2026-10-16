@@ -101,6 +101,15 @@ internal static class PolicyExtensions
                 || context.User.HasClaim(ApplicationClaimTypes.Permission, Permissions.PQA));
         });
 
+        options.AddPolicy(SecurityPolicies.DeliveryFeedbackView, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireAssertion(context =>
+                context.User.HasClaim(ApplicationClaimTypes.Permission, Permissions.PQA)
+                || context.User.IsInRole(RoleNames.CPM));
+        });
+
         options.AddPolicy(SecurityPolicies.SystemSupportFunctions, policy =>
         {
             policy.RequireAuthenticatedUser();

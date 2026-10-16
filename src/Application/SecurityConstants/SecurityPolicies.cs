@@ -12,6 +12,8 @@ public static class SecurityPolicies
 
     public const string ProviderFeedback = nameof(ProviderFeedback);
 
+    public const string DeliveryFeedbackView = nameof(DeliveryFeedbackView);
+
     public const string ServiceDesk = nameof(ServiceDesk);
 
     public const string SeniorInternal = nameof(SeniorInternal);
