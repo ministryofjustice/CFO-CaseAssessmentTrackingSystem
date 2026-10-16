@@ -3,7 +3,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+        <MudForm @ref="_form" Model="Model" Validation="@ValidateValue">
             <MudTextField @bind-Value="Model.Description"
                           Label="@Model.GetMemberDescription(x => x.Description)"
                           For="@(() => Model.Description)"

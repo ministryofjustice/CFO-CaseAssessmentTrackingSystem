@@ -7,6 +7,23 @@ namespace Cfo.Cats.Server.UI.Pages.Objectives;
 public partial class EditObjectiveDialog
 {
     [Inject] private IInitiativeService InitiativeService { get; set; } = null!;
+    [Inject] private IServiceScopeFactory ScopeFactory { get; set; } = null!;
+
+    /// <summary>
+    /// Field-level validation. IncludeProperties without IncludeRuleSets runs every rule set for the
+    /// property — including the database-backed Mediator rules (e.g. justification required) — so users
+    /// get inline feedback. Each validation runs in its own DI scope (and therefore its own UnitOfWork /
+    /// DbContext) because MudForm can fire validations concurrently (e.g. on every keystroke of an
+    /// Immediate field), which would otherwise overlap on the circuit's shared, scoped DbContext.
+    /// Rules not bound to a form field (e.g. on InitiativeId) are still enforced when Submit sends the
+    /// command, and the dialog stays open if they fail.
+    /// </summary>
+    private Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+    {
+        await using var scope = ScopeFactory.CreateAsyncScope();
+        var validationService = scope.ServiceProvider.GetRequiredService<IValidationService>();
+        return await validationService.ValidatePropertyAsync((EditObjective.Command)model, propertyName.Split('.').Last());
+    };
 
     private MudForm? _form;
     private bool _saving;
@@ -69,15 +86,27 @@ public partial class EditObjectiveDialog
 
             if (_form is null)
             {
-                _saving = false;
                 return;
             }
 
             await _form.ValidateAsync();
 
-            if (_form.IsValid)
+            if (_form.IsValid is false)
+            {
+                return;
+            }
+
+            // Send from here (rather than the caller) so the Mediator rule set is evaluated before the
+            // dialog closes — if it fails, the error is shown and the user's edits are kept.
+            var result = await GetNewMediator().Send(Model);
+
+            if (result.Succeeded)
             {
                 MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
         finally
