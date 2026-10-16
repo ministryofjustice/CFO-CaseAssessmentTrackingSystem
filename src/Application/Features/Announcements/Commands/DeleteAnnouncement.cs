@@ -25,14 +25,13 @@ public static class DeleteAnnouncement
 
     public class Handler(
         IAnnouncementRepository repository,
-        ICurrentUserService currentUserService,
-        IUserService userService) : ICommandHandler<Command, Result>
+        ICurrentUserService currentUserService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to delete announcements.");
             var announcement = await repository.GetByIdAsync(request.Id, cancellationToken);
-            AnnouncementAccess.EnsureManagementAudience(AnnouncementAccess.GetUser(userService, userId), announcement);
+            AnnouncementAccess.EnsureManagementAudience(currentUserService.IsInternalUser.GetValueOrDefault(), announcement);
             announcement.Delete(request.Version, userId);
             return Result.Success();
         }

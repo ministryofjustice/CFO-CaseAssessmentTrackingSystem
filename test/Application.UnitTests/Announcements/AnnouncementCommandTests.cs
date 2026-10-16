@@ -103,6 +103,7 @@ public class AnnouncementCommandTests
     public async Task InternalUserCanCreateInternalAnnouncement()
     {
         _user.UserName = "manager@justice.gov.uk";
+        _currentUser.SetupGet(x => x.IsInternalUser).Returns(true);
         var command = Command();
         command.Audience = AnnouncementAudience.InternalStaff;
         (await _handler.Handle(command, CancellationToken.None)).Succeeded.ShouldBeTrue();
@@ -128,7 +129,7 @@ public class AnnouncementCommandTests
             "General", AnnouncementAudience.InternalStaff, "Internal", [], "creator");
         _repository.Setup(x => x.GetByIdAsync(announcement.Id, It.IsAny<CancellationToken>())).ReturnsAsync(announcement);
         var approve = new ApproveAnnouncement.Handler(_repository.Object, _currentUser.Object, _users.Object);
-        var delete = new DeleteAnnouncement.Handler(_repository.Object, _currentUser.Object, _users.Object);
+        var delete = new DeleteAnnouncement.Handler(_repository.Object, _currentUser.Object);
         Should.Throw<ForbiddenException>(async () => await approve.Handle(
             new ApproveAnnouncement.Command { Id = announcement.Id, Version = announcement.Version }, CancellationToken.None));
         Should.Throw<ForbiddenException>(async () => await delete.Handle(

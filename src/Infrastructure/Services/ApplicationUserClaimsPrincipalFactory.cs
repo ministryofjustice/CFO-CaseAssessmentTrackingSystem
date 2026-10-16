@@ -70,7 +70,7 @@ public class ApplicationUserClaimsPrincipalFactory(
                 claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.ProfilePictureDataUrl, user.ProfilePictureDataUrl));
             }
 
-            if (UserProfile.IsInternalUser(user.UserName))
+            if (UserProfile.IsInternalEmail(user.UserName))
             {
                 claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.InternalStaff, "True"));
             }
