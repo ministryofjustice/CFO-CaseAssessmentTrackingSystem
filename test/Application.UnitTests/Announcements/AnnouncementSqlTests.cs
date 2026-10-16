@@ -114,6 +114,7 @@ public class AnnouncementSqlTests
 
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.SetupGet(x => x.UserId).Returns("manager");
+        currentUser.SetupGet(x => x.IsInternalUser).Returns(true);
         var users = new Mock<IUserService>();
         users.SetupGet(x => x.DataSource).Returns(
             [new ApplicationUserDto { Id = "manager", UserName = "manager@justice.gov.uk", DisplayName = "Manager Name" }]);
@@ -313,12 +314,9 @@ public class AnnouncementSqlTests
         unitOfWork.SetupGet(x => x.DbContext).Returns(context);
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.SetupGet(x => x.UserId).Returns("reader");
-        var user = new ApplicationUserDto { Id = "reader", UserName = "reader@provider.org" };
-        var users = new Mock<IUserService>();
-        users.SetupGet(x => x.DataSource).Returns(() => new[] { user });
         var mapper = new MapperConfiguration(c => c.AddMaps(typeof(AnnouncementDto).Assembly)).CreateMapper();
-        var reader = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, users.Object, mapper);
-        var management = new GetAnnouncementsForManagement.Handler(unitOfWork.Object, currentUser.Object, users.Object, mapper);
+        var reader = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, mapper);
+        var management = new GetAnnouncementsForManagement.Handler(unitOfWork.Object, currentUser.Object, mapper);
 
         var sharedResult = await reader.Handle(new GetAnnouncements.Query(), CancellationToken.None);
         var sharedData = sharedResult.Data;
@@ -331,7 +329,7 @@ public class AnnouncementSqlTests
 
         var externalManagement = await management.Handle(new GetAnnouncementsForManagement.Query(), CancellationToken.None);
         externalManagement.Data!.Select(a => a.Id).ShouldBe(new[] { shared.Id, draft.Id }, ignoreOrder: true);
-        user.UserName = "reader@justice.gov.uk";
+        currentUser.SetupGet(x => x.IsInternalUser).Returns(true);
         var internalResult = await reader.Handle(new GetAnnouncements.Query
             { Audience = AnnouncementAudience.InternalStaff }, CancellationToken.None);
         internalResult.Data!.ShouldHaveSingleItem().Id.ShouldBe(internalAnnouncement.Id);
@@ -357,11 +355,8 @@ public class AnnouncementSqlTests
         unitOfWork.SetupGet(x => x.DbContext).Returns(context);
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.SetupGet(x => x.UserId).Returns("reader");
-        var users = new Mock<IUserService>();
-        users.SetupGet(x => x.DataSource).Returns(
-            [new ApplicationUserDto { Id = "reader", UserName = "reader@provider.org" }]);
         var mapper = new MapperConfiguration(c => c.AddMaps(typeof(AnnouncementDto).Assembly)).CreateMapper();
-        var handler = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, users.Object, mapper);
+        var handler = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, mapper);
 
         var history = await handler.Handle(new GetAnnouncements.Query(), CancellationToken.None);
         history.Data!.Select(a => a.Id).ShouldBe(new[] { newer.Id, older.Id });
@@ -452,11 +447,9 @@ public class AnnouncementSqlTests
         unitOfWork.SetupGet(x => x.DbContext).Returns(context);
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.SetupGet(x => x.UserId).Returns("manager");
-        var users = new Mock<IUserService>();
-        users.SetupGet(x => x.DataSource).Returns(
-            [new ApplicationUserDto { Id = "manager", UserName = "manager@justice.gov.uk" }]);
+        currentUser.SetupGet(x => x.IsInternalUser).Returns(true);
         var mapper = new MapperConfiguration(c => c.AddMaps(typeof(AnnouncementDto).Assembly)).CreateMapper();
-        var management = new GetAnnouncementsForManagement.Handler(unitOfWork.Object, currentUser.Object, users.Object, mapper);
+        var management = new GetAnnouncementsForManagement.Handler(unitOfWork.Object, currentUser.Object, mapper);
         var result = await management.Handle(new GetAnnouncementsForManagement.Query(), CancellationToken.None);
         var dto = result.Data!.ShouldHaveSingleItem();
         dto.History.Length.ShouldBe(3);
@@ -467,7 +460,7 @@ public class AnnouncementSqlTests
         dto.Published!.Title.ShouldBe("Second title");
         dto.Pending!.Title.ShouldBe("Pending title");
 
-        var reader = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, users.Object, mapper);
+        var reader = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, mapper);
         var readerResult = await reader.Handle(new GetAnnouncements.Query(), CancellationToken.None);
         readerResult.Data!.ShouldHaveSingleItem().History.ShouldBeEmpty();
     }
