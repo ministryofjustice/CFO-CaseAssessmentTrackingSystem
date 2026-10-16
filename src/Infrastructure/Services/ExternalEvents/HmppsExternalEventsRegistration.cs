@@ -25,9 +25,11 @@ public static class HmppsExternalEventsRegistration
     {
         services.Configure<HmppsExternalApiOptions>(configuration.GetSection(HmppsExternalApiOptions.HmppsExternalApi));
 
-        // Only activate when the HMPPS External API integration is enabled; otherwise leave dormant so
+        // Only activate when the HMPPS External API integration and its events consumer are enabled; otherwise leave dormant so
         // environments without the queue / certificate provisioned are unaffected.
-        if (configuration.GetValue<bool>("Features:HmppsExternalApi:Enabled") == false)
+        if (configuration.GetValue<bool>("Features:HmppsExternalApi:Enabled") == false
+            || configuration.GetValue<bool>("Features:HmppsExternalApi:Events:Enabled") == false
+            || string.IsNullOrWhiteSpace(configuration[$"{HmppsExternalApiOptions.HmppsExternalApi}:Events:QueueUrl"]))
         {
             return services;
         }

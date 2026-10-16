@@ -50,7 +50,7 @@ public class HmppsExternalEventsOptions
     /// endpoint that returns temporary AWS credentials for the queue. Authenticated with the same mTLS
     /// certificate and API key as the rest of the HMPPS External API.
     /// </summary>
-    public string CredentialsEndpoint { get; set; } = string.Empty;
+    public string CredentialsEndpoint { get; set; } = "token";
 
     /// <summary>
     /// Fully-qualified URL of the SQS queue to poll.
