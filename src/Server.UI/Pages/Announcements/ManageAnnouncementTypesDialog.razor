@@ -1,0 +1,55 @@
+@inherits CatsComponentBase
+@using Cfo.Cats.Domain.Announcements
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="4" Class="py-2">
+            <MudText Typo="Typo.body2">Manage the types available when creating or editing announcements. Renaming or deleting a type does not change existing announcements.</MudText>
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error">@_error</MudAlert>
+            }
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.subtitle1">Available types</MudText>
+                <MudButton OnClick="RefreshAsync" StartIcon="@Icons.Material.Filled.Refresh" Disabled="_busy">Refresh</MudButton>
+            </MudStack>
+            <MudTable Items="_types" Loading="_busy" Hover="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Type">@context.Name</MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudButton OnClick="@(() => Edit(context))" StartIcon="@Icons.Material.Filled.Edit" Disabled="_busy" Size="Size.Small">Edit</MudButton>
+                        <MudButton OnClick="@(() => DeleteAsync(context))" StartIcon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error" Disabled="_busy" Size="Size.Small">Delete</MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No types are available. Add a type below.</MudText>
+                </NoRecordsContent>
+            </MudTable>
+            <MudDivider />
+            <MudForm @ref="_form" Model="_model" Validation="@(Validator.ValidateValue(_model))">
+                <MudStack Spacing="3">
+                    <MudText Typo="Typo.subtitle1">@(_editing is null ? "Add type" : $"Edit type: {_editing.Name}")</MudText>
+                    <MudTextField T="string" @bind-Value="_model.Name" Label="Type name" For="@(() => _model.Name)"
+                                  Required="true" MaxLength="@AnnouncementConstants.TypeNameMaximumLength" Disabled="_busy" />
+                    <MudStack Row="true" Spacing="2">
+                        <MudLoadingButton OnClick="SaveAsync" Loading="_busy" Color="Color.Primary" Variant="Variant.Filled">
+                            @(_editing is null ? "Add type" : "Save changes")
+                        </MudLoadingButton>
+                        @if (_editing is not null)
+                        {
+                            <MudButton OnClick="CancelEdit" Disabled="_busy">Cancel edit</MudButton>
+                        }
+                    </MudStack>
+                </MudStack>
+            </MudForm>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => MudDialog.Close())" Disabled="_busy">Close</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -28,7 +28,10 @@ public class UserProfile
             UserId,
             UserName,
             TenantId!,
-            Email.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase));
+            IsInternalEmail(Email));
+
+    public static bool IsInternalEmail(string? email)
+        => email?.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase) == true;
 
     public bool HasInternalRole()
         => AssignedRoles.Any(a => RoleNames.InternalRoles.Contains(a));
