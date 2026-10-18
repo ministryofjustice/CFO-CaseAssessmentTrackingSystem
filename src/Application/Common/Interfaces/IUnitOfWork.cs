@@ -4,7 +4,7 @@ public interface IUnitOfWork
 {
     IApplicationDbContext DbContext { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    Task BeginTransactionAsync();
-    Task CommitTransactionAsync();
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
     Task RollbackTransactionAsync();
 }
