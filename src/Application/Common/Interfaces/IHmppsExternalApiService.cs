@@ -25,4 +25,10 @@ public interface IHmppsExternalApiService
     /// </summary>
     /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number).</param>
     Task<Result<PersonDto>> GetPersonAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns the latest tier calculation for a person, including the Delius and OASys inputs used to calculate it.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. CRN).</param>
+    Task<Result<TierDetailsDto>> GetTierDetailsAsync(string hmppsId, CancellationToken cancellationToken);
 }
