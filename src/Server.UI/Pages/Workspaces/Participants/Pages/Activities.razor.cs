@@ -12,6 +12,7 @@ using Cfo.Cats.Server.UI.Components.Identity;
 using Cfo.Cats.Server.UI.Components.Locations;
 using Cfo.Cats.Server.UI.Pages.Activities;
 using Cfo.Cats.Server.UI.Pages.Activities.Components;
+using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -100,6 +101,7 @@ public partial class Activities
             Query.LocationName = sd.LocationName;
             Query.Status = sd.Status;
             Query.TypeFilter = sd.TypeFilter;
+            Query.CategoryFilter = sd.CategoryFilter;
             Query.ReturnedWithinDays = sd.ReturnedWithinDays;
             Query.ApprovedWithinDays = sd.ApprovedWithinDays;
             Query.Keyword = sd.Keyword;
@@ -237,11 +239,37 @@ public partial class Activities
         await OnRefresh();
     }
 
-    private async Task ActivityTypeChanged(ActivityType? type)
+    private async Task ShowActivityTypeCategoryDialog()
     {
-        Query.TypeFilter = type?.Value;
-        Query.PageNumber = 1;
-        await OnRefresh();
+        var parameters = new DialogParameters<ActivityTypeCategoryFilterDialog>
+        {
+            { x => x.TypeFilter, Query.TypeFilter },
+            { x => x.CategoryFilter, Query.CategoryFilter }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ActivityTypeCategoryFilterDialog>("Activity Filters", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: ActivityTypeCategorySelection selection })
+        {
+            Query.TypeFilter = selection.TypeFilter;
+            Query.CategoryFilter = selection.CategoryFilter;
+            Query.PageNumber = 1;
+            await OnRefresh();
+        }
+    }
+
+    private string GetActivityTypeFilterLabel()
+    {
+        if (Query.TypeFilter is not { } typeValue)
+        {
+            return "All Types";
+        }
+
+        var typeName = ActivityType.FromValue(typeValue).Name;
+        return Query.CategoryFilter is { } categoryValue
+            ? $"{typeName}: {ActivityCategory.FromValue(categoryValue).Name}"
+            : typeName;
     }
 
     private async Task ShowSubmittedByDialog()
@@ -345,6 +373,7 @@ public partial class Activities
         Query.LocationName = null;
         Query.Status = null;
         Query.TypeFilter = null;
+        Query.CategoryFilter = null;
         Query.ReturnedWithinDays = null;
         Query.ApprovedWithinDays = null;
         Query.Keyword = null;
