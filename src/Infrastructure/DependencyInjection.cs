@@ -651,6 +651,9 @@ public static class DependencyInjection
 
         services.AddQuartz(quartz =>
         {
+            quartz.ConfigureScheduler(scheduler =>
+                scheduler.ShutdownJobInterruption = ShutdownJobInterruption.Always);
+
             if (options.GetSection(SyncParticipantsJob.Key.Name).Get<JobOptions>() is 
                 { Enabled: true } syncParticipantsJobOptions)
             {

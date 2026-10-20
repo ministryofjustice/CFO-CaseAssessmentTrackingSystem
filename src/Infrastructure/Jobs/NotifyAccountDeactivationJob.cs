@@ -42,13 +42,18 @@ public class NotifyAccountDeactivationJob(
                        user.LastLogin.HasValue
                      ? user.LastLogin.Value.Date == sevenDaysFromDeactivationDate
                      : user.Created.HasValue && user.Created.Value.Date == sevenDaysFromDeactivationDate)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             foreach(var user in users)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 await bus.Publish(new NotifyInactiveUserCommand(user.Email!));
             }
 
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

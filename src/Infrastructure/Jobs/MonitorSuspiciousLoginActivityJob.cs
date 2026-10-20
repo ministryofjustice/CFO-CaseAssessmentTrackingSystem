@@ -87,6 +87,7 @@ public class MonitorSuspiciousLoginActivityJob(
 
             foreach (var offender in offendingIps)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (existingAlerts.Any(a => a.IpAddress == offender.IpAddress && a.UserName == null))
                 {
                     continue;
@@ -110,6 +111,7 @@ public class MonitorSuspiciousLoginActivityJob(
 
             foreach (var target in targetedUsers)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (existingAlerts.Any(a => a.UserName == target.UserName))
                 {
                     continue;
@@ -140,12 +142,14 @@ public class MonitorSuspiciousLoginActivityJob(
 
                 foreach (var keyword in monitoredUserNames)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var matches = attemptedUserNames
                         .Where(u => u.ToLowerInvariant().Contains(keyword))
                         .ToList();
 
                     foreach (var matchedUserName in matches)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         // Skip if already alerted on this username via any rule in the window.
                         if (existingAlerts.Any(a => a.UserName == matchedUserName)
                             || newAlerts.Any(a => a.UserName == matchedUserName))
@@ -169,12 +173,16 @@ public class MonitorSuspiciousLoginActivityJob(
                 await unitOfWork.SaveChangesAsync(cancellationToken);
                 logger.LogWarning("Raised {AlertCount} new suspicious login activity alert(s)", newAlerts.Count);
 
-                await SendAlertEmailAsync(settings, alertSummaries, windowSeconds);
+                await SendAlertEmailAsync(settings, alertSummaries, windowSeconds, cancellationToken);
             }
             else
             {
                 logger.LogInformation("No suspicious login activity detected");
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -186,7 +194,7 @@ public class MonitorSuspiciousLoginActivityJob(
     /// <summary>
     /// Sends a single GOV.UK Notify digest email per scan to each configured recipient.
     /// </summary>
-    private async Task SendAlertEmailAsync(SuspiciousLoginMonitoringOptions settings, IReadOnlyList<string> alertSummaries, int windowSeconds)
+    private async Task SendAlertEmailAsync(SuspiciousLoginMonitoringOptions settings, IReadOnlyList<string> alertSummaries, int windowSeconds, CancellationToken cancellationToken)
     {
         try
         {
@@ -212,10 +220,15 @@ public class MonitorSuspiciousLoginActivityJob(
 
             foreach (var recipient in recipients)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 await communicationsService.SendLoginThresholdAlertEmailAsync(recipient, subject, body);
             }
 
             logger.LogInformation("Sent suspicious login activity alert email to {RecipientCount} recipient(s)", recipients.Length);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch(Exception ex)
         {
