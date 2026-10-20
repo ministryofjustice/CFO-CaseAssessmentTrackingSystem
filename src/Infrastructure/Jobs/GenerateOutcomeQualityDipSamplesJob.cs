@@ -39,7 +39,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
             logger.LogInformation("Generating dip samples for period {Period} (offset {Offset} months)",
                 periodFrom.ToString("MMM yyyy"), options.Value.MonthOffset);
 
-            if (await unitOfWork.DbContext.OutcomeQualityDipSamples.AnyAsync(ds => ds.PeriodFrom == periodFrom))
+            if (await unitOfWork.DbContext.OutcomeQualityDipSamples.AnyAsync(ds => ds.PeriodFrom == periodFrom, cancellationToken))
             {
                 logger.LogInformation("Dip sample already exists for {Period}, nothing to do.", periodFrom.ToString("MMM yyyy"));
                 return;
@@ -63,16 +63,18 @@ public class GenerateOutcomeQualityDipSamplesJob(
 
             var enrolments = await query
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             List<Sample> samples = [];
 
             foreach (var contractGroup in enrolments.GroupBy(p => p.ContractId))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var samplesByLocationType = contractGroup
                     .GroupBy(g => Group(g.LocationType, g.LocationId))
                     .Select(g =>
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         int sampleSize = g.Key.LocationType switch
                         {
                             var type when type == LocationType.Wing.Name => options.Value.Wing,
@@ -105,11 +107,15 @@ public class GenerateOutcomeQualityDipSamplesJob(
                 return;
             }
 
-            await PersistSamplesAsync(samples, periodFrom, periodTo);
+            await PersistSamplesAsync(samples, periodFrom, periodTo, cancellationToken);
 
             var participantCount = samples.Sum(s => s.Samples.Sum(l => l.ParticipantIds.Count()));
             logger.LogInformation("Persisted {SampleCount} dip samples ({ParticipantCount} participants) for {Period}.",
                 samples.Count, participantCount, periodFrom.ToString("MMM yyyy"));
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -119,9 +125,9 @@ public class GenerateOutcomeQualityDipSamplesJob(
         }
     }
 
-    private async Task PersistSamplesAsync(List<Sample> samples, DateTime periodFrom, DateTime periodTo)
+    private async Task PersistSamplesAsync(List<Sample> samples, DateTime periodFrom, DateTime periodTo, CancellationToken cancellationToken)
     {
-        await using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
+        await using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
@@ -135,7 +141,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
                     size: sample.Samples.SelectMany(s => s.ParticipantIds).Count())
             }).ToList();
 
-            await unitOfWork.DbContext.OutcomeQualityDipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity));
+            await unitOfWork.DbContext.OutcomeQualityDipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity), cancellationToken);
 
             var dipSampleParticipants = dipSamples.SelectMany(participant =>
                 participant.Value.Samples.SelectMany(locationSample =>
@@ -144,10 +150,15 @@ public class GenerateOutcomeQualityDipSamplesJob(
                             pid, locationSample.LocationType
                         ))));
 
-            await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.AddRangeAsync(dipSampleParticipants);
+            await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.AddRangeAsync(dipSampleParticipants, cancellationToken);
 
-            await unitOfWork.SaveChangesAsync();
-            await transaction.CommitAsync();
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
         }
         catch (Exception ex)
         {

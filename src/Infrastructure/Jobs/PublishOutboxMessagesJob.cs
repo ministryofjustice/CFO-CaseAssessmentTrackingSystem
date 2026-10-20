@@ -32,7 +32,7 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
             }
         }
 
-        if (await Semaphore.WaitAsync(TimeSpan.Zero) == false)
+        if (await Semaphore.WaitAsync(TimeSpan.Zero, cancellationToken) == false)
         {
             // Job is already running, skip this execution
             logger.LogInformation($"Quartz Job - {Key}: is already running. Skipping this call");
@@ -41,14 +41,15 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
 
         try
         {
-            var outboxMessages = unitOfWork.DbContext.OutboxMessages
+            var outboxMessages = await unitOfWork.DbContext.OutboxMessages
                 .Where(x => x.ProcessedOnUtc == null)
                 .OrderBy(x => x.OccurredOnUtc)
                 .Take(BatchSize)
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             foreach (var outboxMessage in outboxMessages)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
                     var messageType = typeof(OutboxMessage).Assembly.GetType(outboxMessage.Type)!;
@@ -62,6 +63,10 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                     await bus.Publish(deserializedMessage);
                     outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
                 }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw;
+                }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Exeception publishing outbox messages");
@@ -70,7 +75,11 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                 }
             }
 
-            await unitOfWork.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

@@ -43,7 +43,7 @@ public class ArchiveParticipantsJob(
                 .IgnoreAutoIncludes()
                 .Where(p => p.DeactivatedInFeed < thirtyDaysAgo)
                 .Where(p => exclusions.Contains(p.EnrolmentStatus) == false)
-                .ToListAsync(context.CancellationToken);
+                .ToListAsync(cancellationToken);
 
             if(participantsToDeactivate is not { Count: > 0 })
             {
@@ -53,15 +53,20 @@ public class ArchiveParticipantsJob(
 
             foreach (var participant in participantsToDeactivate)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 participant.TransitionTo(EnrolmentStatus.ArchivedStatus, ArchiveReason.LicenceEnd.Name, null);
                 logger.LogInformation("Archived participant {Id}", participant.Id);
             }
 
-            await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, context.CancellationToken);
-            await unitOfWork.SaveChangesAsync(context.CancellationToken);
+            await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation("Archived {deactivated} participant(s)", participantsToDeactivate.Count);
 
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
