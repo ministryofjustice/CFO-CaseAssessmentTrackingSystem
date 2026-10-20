@@ -70,6 +70,9 @@ else
                     <MudTabPanel Text="Risk">
                         <Cfo.Cats.Server.UI.Pages.Risk.RiskComponents.RiskHistory ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
+                    <MudTabPanel Text="PRI">
+                        <CasePRI ParticipantId="@_participant.ParticipantId"/>
+                    </MudTabPanel>
                     <MudTabPanel Text="Notes">
                         <CaseNotes ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
