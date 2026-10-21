@@ -81,8 +81,8 @@ public static class DependencyInjection
             .AddFusionCacheService(configuration);
 
         // Run the Rebus message consumers in CATS only when a separate consumer Worker process is not handling them.
-        // When Features:UseWorkerForConsumers is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
-        if (!configuration.GetValue<bool>("Features:UseWorkerForConsumers"))
+        // When Features:UseConsumer is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
+        if (!configuration.GetValue<bool>("Features:UseConsumer"))
         {
             services.AddMessageConsumers();
             // The HMPPS external events SQS consumer runs in-process alongside the other consumers.

@@ -147,7 +147,7 @@ generic-service:
     ConnectionStrings__redis: *redis
     AWS__RootFolder: "Files"
     Features__UseWorkerForJobs: "true"
-    Features__UseWorkerForConsumers: "true"
+    Features__UseConsumer: "true"
     Features__PresenceHub__Enabled: "true"
     Features__PresenceHub__RelayUserPresenceNotifications: "true"
     Features__Redis__Enabled: "true"
