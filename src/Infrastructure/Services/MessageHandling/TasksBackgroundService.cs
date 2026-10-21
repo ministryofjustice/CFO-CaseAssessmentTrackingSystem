@@ -43,7 +43,8 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordHomelessLabelStatusConsumer>(provider)
             .Handle<RecordNeurodiverseLabelStatusConsumer>(provider)
             .Handle<ParticipantCreatedIntegrationEventConsumer>(provider)
-            .Handle<RiskOfSeriousSelfHarmChangedIntegrationEventHandler>(provider);
+            .Handle<RiskOfSeriousSelfHarmChangedIntegrationEventHandler>(provider)
+            .Handle<TierDetailsChangedIntegrationEventHandler>(provider);
 
         var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
@@ -66,6 +67,7 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
         await _bus.Subscribe<ParticipantCreatedIntegrationEvent>();
         await _bus.Subscribe<RiskOfSeriousHarmChangedIntegrationEvent>();
+        await _bus.Subscribe<TierDetailsChangedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
