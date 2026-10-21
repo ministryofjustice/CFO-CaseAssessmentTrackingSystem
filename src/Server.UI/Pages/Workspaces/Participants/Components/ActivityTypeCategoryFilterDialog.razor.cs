@@ -17,8 +17,7 @@ public partial class ActivityTypeCategoryFilterDialog
     private int? SelectedCategory { get; set; }
 
     private bool CategoryDisabled => SelectedType is null
-        || SelectedType == ActivityType.EducationAndTraining.Value
-        || SelectedType == ActivityType.Employment.Value;
+        || Categories.Count <= 1;
 
     private IReadOnlyList<ActivityCategory> Categories => SelectedType is null
         ? []
