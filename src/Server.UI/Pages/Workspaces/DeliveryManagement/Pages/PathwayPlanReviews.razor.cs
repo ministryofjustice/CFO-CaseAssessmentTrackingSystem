@@ -13,6 +13,7 @@ public partial class PathwayPlanReviews
     private IParticipantDialogService ParticipantDialogService { get; set; } = null!;
 
     private bool _showOverdueOnly;
+    private string? _keyword;
 
     // Sentinel-backed filter selections: 0 / null represent "All".
     private int _participantLocationId;
@@ -51,6 +52,7 @@ public partial class PathwayPlanReviews
     {
         VisualMode = sd.VisualMode;
         _showOverdueOnly = sd.ShowOverdueOnly;
+        _keyword = sd.Keyword;
 
         if (sd.ParticipantLocationId != 0 && sd.ParticipantLocationName is not null)
         {
@@ -73,6 +75,12 @@ public partial class PathwayPlanReviews
 
         OnTenantSelected(string.IsNullOrWhiteSpace(sd.TenantId) ? null : sd.TenantId);
         OnUserSelected(string.IsNullOrWhiteSpace(sd.UserId) ? null : sd.UserId);
+    }
+
+    private async Task OnSearchChanged(string? keyword)
+    {
+        _keyword = keyword;
+        await SaveSessionState();
     }
 
     private async Task OnVisualModeChanged(bool visualMode)
@@ -140,6 +148,7 @@ public partial class PathwayPlanReviews
 
     private async Task ClearSearch()
     {
+        _keyword = null;
         _showOverdueOnly = false;
         _participantLocationId = 0;
         _participantLocationName = null;
@@ -165,5 +174,6 @@ public partial class PathwayPlanReviews
             _participantLocationName,
             _reviewLocationId,
             _reviewLocationName,
-            _reviewReason));
+            _reviewReason,
+            _keyword));
 }

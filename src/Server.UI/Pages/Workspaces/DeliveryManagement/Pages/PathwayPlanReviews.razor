@@ -7,8 +7,21 @@
 
 <DeliveryManagementPageHeader />
 
-<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+<PathwayPlanReviewDashboardComponent UserId="@EffectiveUserId"
+                                     TenantId="@EffectiveTenantId"
+                                     @key="@SelectionKey"
+                                     VisualMode="@VisualMode"
+                                     ShowOverdueOnly="@_showOverdueOnly"
+                                     ParticipantLocationId="@(_participantLocationId == 0 ? null : _participantLocationId)"
+                                     ReviewLocationId="@(_reviewLocationId == 0 ? null : _reviewLocationId)"
+                                     ReviewReason="@_reviewReason"
+                                     Keyword="@_keyword">
+    <ToolbarContent>
     <MudSwitch T="bool" Value="VisualMode" ValueChanged="OnVisualModeChanged" Color="Color.Info" Label="Visual Mode" />
+    <MudTextField T="string" Value="@_keyword" Placeholder="@ConstantString.Search"
+                  ValueChanged="@OnSearchChanged" Clearable="true" ShrinkLabel="true"
+                  AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                  AdornmentColor="Color.Secondary" />
     <MudSpacer />
 
     <MudSwitch T="bool" Value="_showOverdueOnly" Color="Color.Info"
@@ -48,13 +61,5 @@
     <MudTooltip Text="Clear search parameters">
         <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
     </MudTooltip>
-</MudStack>
-
-<PathwayPlanReviewDashboardComponent UserId="@EffectiveUserId"
-                                     TenantId="@EffectiveTenantId"
-                                     @key="@SelectionKey"
-                                     VisualMode="@VisualMode"
-                                     ShowOverdueOnly="@_showOverdueOnly"
-                                     ParticipantLocationId="@(_participantLocationId == 0 ? null : _participantLocationId)"
-                                     ReviewLocationId="@(_reviewLocationId == 0 ? null : _reviewLocationId)"
-                                     ReviewReason="@_reviewReason" />
+    </ToolbarContent>
+</PathwayPlanReviewDashboardComponent>
