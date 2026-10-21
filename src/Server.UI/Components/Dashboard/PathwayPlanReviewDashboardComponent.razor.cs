@@ -1,14 +1,15 @@
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
 public partial class PathwayPlanReviewDashboardComponent
 {
     [Parameter]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
     [Parameter]
-    public string TenantId { get; set; } = null!;
+    public string? TenantId { get; set; }
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
@@ -16,13 +17,25 @@ public partial class PathwayPlanReviewDashboardComponent
     [Parameter]
     public bool ShowOverdueOnly { get; set; }
 
+    /// <summary>Optional filter on the participant's current location (null = all).</summary>
     [Parameter]
-    public EventCallback<bool> ShowOverdueOnlyChanged { get; set; }
+    public int? ParticipantLocationId { get; set; }
+
+    /// <summary>Optional filter on the location of the latest review (null = all).</summary>
+    [Parameter]
+    public int? ReviewLocationId { get; set; }
+
+    /// <summary>
+    /// Optional filter on the latest review reason value (null = all).
+    /// <see cref="PathwayPlanReviewReason.Default"/> matches plans that have not been reviewed yet.
+    /// </summary>
+    [Parameter]
+    public int? ReviewReason { get; set; }
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    private GetPathwayPlans.Query Query { get; set; } = null!;
+    //private GetPathwayPlans.Query Query { get; set; } = null!;
 
     protected override IQuery<Result<GetPathwayPlans.PathwayPlanDto>> CreateQuery()
      => new GetPathwayPlans.Query()
@@ -93,14 +106,14 @@ public partial class PathwayPlanReviewDashboardComponent
                 OffsetY = 5
             }
         },
-        Yaxis = new List<YAxis>
-        {
+        Yaxis =
+        [
             new YAxis
             {
                 Min = 0,
                 ForceNiceScale = true
             }
-        },
+        ],
         Responsive =
         [
             new()
@@ -119,44 +132,79 @@ public partial class PathwayPlanReviewDashboardComponent
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
         },
-        Colors = new List<string> { "#5cb85c", "#d9534f" }
+        Colors = ["#5cb85c", "#d9534f"]
     };
 
+    private IEnumerable<GetPathwayPlans.PathwayPlanReviewTabularData> AllRows =>
+        Data?.TabularData ?? Enumerable.Empty<GetPathwayPlans.PathwayPlanReviewTabularData>();
+
+    /// <summary>
+    /// Rows matching the location/reason filters (ignores the overdue toggle).
+    /// </summary>
+    private GetPathwayPlans.PathwayPlanReviewTabularData[] FilteredRows
+    {
+        get
+        {
+            var rows = AllRows;
+
+            if (ParticipantLocationId is { } participantLocationId)
+            {
+                rows = rows.Where(x => x.ParticipantCurrentLocationId == participantLocationId);
+            }
+
+            if (ReviewLocationId is { } reviewLocationId)
+            {
+                rows = rows.Where(x => x.ReviewLocationId == reviewLocationId);
+            }
+
+            if (ReviewReason is { } reviewReason)
+            {
+                rows = rows.Where(x => (x.ReviewReason ?? PathwayPlanReviewReason.Default).Value == reviewReason);
+            }
+
+            return rows.ToArray();
+        }
+    }
+
     private IEnumerable<GetPathwayPlans.PathwayPlanReviewTabularData> FilteredTabularData =>
-        ShowOverdueOnly && Data is not null 
-            ? Data.TabularData.Where(x => x.IsOverdue) 
-            : Data?.TabularData ?? Enumerable.Empty<GetPathwayPlans.PathwayPlanReviewTabularData>();
+        ShowOverdueOnly
+            ? FilteredRows.Where(x => x.IsOverdue)
+            : FilteredRows;
+
+    private GetPathwayPlans.LocationDetail[] ChartData => FilteredRows
+        .GroupBy(td => new { td.ParticipantCurrentLocation, td.ParticipantCurrentLocationType })
+        .OrderBy(g => g.Key.ParticipantCurrentLocation)
+        .ThenBy(g => g.Key.ParticipantCurrentLocationType)
+        .Select(g => new GetPathwayPlans.LocationDetail(
+            g.Key.ParticipantCurrentLocation!,
+            g.Key.ParticipantCurrentLocationType,
+            g.Count(),
+            g.Count(d => d.IsOverdue)))
+        .ToArray();
 
     private GetPathwayPlans.LocationDetail[] FilteredChartData =>
-        ShowOverdueOnly && Data is not null
-            ? Data.ChartData.Select(x => new GetPathwayPlans.LocationDetail(
-                x.LocationName, 
-                x.LocationType, 
-                x.OverdueCount, 
+        ShowOverdueOnly
+            ? ChartData.Select(x => new GetPathwayPlans.LocationDetail(
+                x.LocationName,
+                x.LocationType,
+                x.OverdueCount,
                 x.OverdueCount))
               .Where(x => x.TotalCount > 0)
               .ToArray()
-            : Data?.ChartData ?? Array.Empty<GetPathwayPlans.LocationDetail>();
+            : ChartData;
+
+    private int TotalReviewed => FilteredRows.Count(d => d.IsOverdue == false);
+
+    private int TotalOverdueCount => FilteredRows.Count(d => d.IsOverdue);
 
     private int CustodyCount =>
-        ShowOverdueOnly && Data is not null
-            ? Data.ChartData.Where(d => d.LocationType?.IsCustody == true).Sum(d => d.OverdueCount)
-            : Data?.Custody ?? 0;
+        FilteredTabularData.Count(d => d.ParticipantCurrentLocationType?.IsCustody == true);
 
     private int CommunityCount =>
-        ShowOverdueOnly && Data is not null
-            ? Data.ChartData.Where(d => d.LocationType?.IsCommunity == true).Sum(d => d.OverdueCount)
-            : Data?.Community ?? 0;
+        FilteredTabularData.Count(d => d.ParticipantCurrentLocationType?.IsCommunity == true);
 
-    private async Task OnShowOverdueOnlyChanged(bool value)
-    {
-        ShowOverdueOnly = value;
-
-        if (ShowOverdueOnlyChanged.HasDelegate)
-        {
-            await ShowOverdueOnlyChanged.InvokeAsync(value);
-        }
-    }
+    private string ChartKey =>
+        $"{ShowOverdueOnly}|{ParticipantLocationId}|{ReviewLocationId}|{ReviewReason}";
 
     private async Task ShowReviewNotes(string notes)
     {

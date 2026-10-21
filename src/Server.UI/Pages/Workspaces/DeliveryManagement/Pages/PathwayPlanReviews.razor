@@ -8,8 +8,32 @@
 <DeliveryManagementPageHeader />
 
 <MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-    <MudSwitch Label="Visual Mode" Color="Color.Info" Value="VisualMode" ValueChanged="OnVisualModeChanged" T="bool" />
+    <MudSwitch T="bool" Value="VisualMode" ValueChanged="OnVisualModeChanged" Color="Color.Info" Label="Visual Mode" />
     <MudSpacer />
+
+    <MudSwitch T="bool" Value="_showOverdueOnly" Color="Color.Info"
+               ValueChanged="OnShowOverdueOnlyChanged" Label="Reviewed 3+ months ago" />
+
+    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowParticipantLocationDialog"
+               EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @(_participantLocationName ?? "All Participant Locations")
+    </MudButton>
+
+    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowReviewLocationDialog"
+               EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        @(_reviewLocationName ?? "All Review Locations")
+    </MudButton>
+
+    <MudMenu Size="Size.Small" Variant="Variant.Text"
+             Label="@ReviewReasonLabel"
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+        <MudMenuItem OnClick="@(() => OnReviewReasonChanged(null))">All Review Reasons</MudMenuItem>
+        @foreach (var reason in ReviewReasonOptions)
+        {
+            <MudMenuItem OnClick="@(() => OnReviewReasonChanged(reason.Value))">@ReviewReasonText(reason)</MudMenuItem>
+        }
+    </MudMenu>
+
     @if (CanFilter)
     {
         <ProviderDashboardFilter CurrentUser="CurrentUser"
@@ -17,13 +41,20 @@
                                  SelectedUserId="@SelectedUserId"
                                  TenantSelected="OnTenantSelectedWithSave"
                                  UserSelected="OnUserSelectedWithSave"
-                                 ClearRequested="OnClearFilterWithSave" />
+                                 ClearRequested="ClearSearch"
+                                 ShowClear="false" />
     }
+
+    <MudTooltip Text="Clear search parameters">
+        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearSearch" />
+    </MudTooltip>
 </MudStack>
 
 <PathwayPlanReviewDashboardComponent UserId="@EffectiveUserId"
-                                    TenantId="@EffectiveTenantId"
-                                    @key="@SelectionKey"
-                                    VisualMode="@VisualMode"
-                                    ShowOverdueOnly="@_showOverdueOnly"
-                                    ShowOverdueOnlyChanged="OnShowOverdueOnlyChanged" />
+                                     TenantId="@EffectiveTenantId"
+                                     @key="@SelectionKey"
+                                     VisualMode="@VisualMode"
+                                     ShowOverdueOnly="@_showOverdueOnly"
+                                     ParticipantLocationId="@(_participantLocationId == 0 ? null : _participantLocationId)"
+                                     ReviewLocationId="@(_reviewLocationId == 0 ? null : _reviewLocationId)"
+                                     ReviewReason="@_reviewReason" />
