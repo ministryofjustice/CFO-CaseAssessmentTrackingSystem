@@ -2,6 +2,24 @@
 
 @inherits CatsComponent<GetPathwayPlans.PathwayPlanDto>
 
+<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    @if (VisualMode is false && Data is not null)
+    {
+        <MudPagination Rectangular="true"
+                       Variant="Variant.Text"
+                       Selected="@(_currentTablePage + 1)"
+                       SelectedChanged="OnPageChanged"
+                       Count="@TotalPages"
+                       MiddleCount="2"
+                       BoundaryCount="1"
+                       Size="Size.Small" />
+
+        <MudText>@TotalItems records</MudText>
+    }
+
+    @ToolbarContent
+</MudStack>
+
 @if (Loading)
 {
     <MudLoading Text="Loading" />
@@ -52,7 +70,8 @@
     }
     else
     {
-        <MudTable Dense="true" Items="FilteredTabularData" Hover="true" Striped="true">
+        <MudTable Dense="true" Items="FilteredTabularData" Hover="true" Striped="true"
+                  RowsPerPage="PageSize" @bind-CurrentPage="_currentTablePage">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantName!)">
@@ -140,9 +159,6 @@
             <NoRecordsContent>
                 <MudText Typo="Typo.body1" Color="Color.Secondary">No pathway plans match the selected filters</MudText>
             </NoRecordsContent>
-			<PagerContent>
-				<MudTablePager PageSizeOptions="[10, 20, 30]" />
-			</PagerContent>
         </MudTable>
     }
 }

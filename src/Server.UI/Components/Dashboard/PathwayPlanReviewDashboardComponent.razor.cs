@@ -32,6 +32,32 @@ public partial class PathwayPlanReviewDashboardComponent
     [Parameter]
     public int? ReviewReason { get; set; }
 
+    [Parameter]
+    public string? Keyword { get; set; }
+
+    [Parameter]
+    public RenderFragment? ToolbarContent { get; set; }
+
+    private const int PageSize = 15;
+    private int _currentTablePage;
+    private string? _pagingFilterKey;
+
+    private int TotalItems => FilteredTabularData.Count();
+    private int TotalPages => (int)Math.Ceiling(TotalItems / (double)PageSize);
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_pagingFilterKey != ChartKey)
+        {
+            _currentTablePage = 0;
+            _pagingFilterKey = ChartKey;
+        }
+    }
+
+    private void OnPageChanged(int page) => _currentTablePage = page - 1;
+
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
@@ -139,13 +165,19 @@ public partial class PathwayPlanReviewDashboardComponent
         Data?.TabularData ?? Enumerable.Empty<GetPathwayPlans.PathwayPlanReviewTabularData>();
 
     /// <summary>
-    /// Rows matching the location/reason filters (ignores the overdue toggle).
+    /// Rows matching the keyword and location/reason filters (ignores the overdue toggle).
     /// </summary>
     private GetPathwayPlans.PathwayPlanReviewTabularData[] FilteredRows
     {
         get
         {
             var rows = AllRows;
+
+            if (string.IsNullOrWhiteSpace(Keyword) is false)
+            {
+                var keyword = Keyword.Trim();
+                rows = rows.Where(row => MatchesKeyword(row, keyword));
+            }
 
             if (ParticipantLocationId is { } participantLocationId)
             {
@@ -165,6 +197,23 @@ public partial class PathwayPlanReviewDashboardComponent
             return rows.ToArray();
         }
     }
+
+    private static bool MatchesKeyword(GetPathwayPlans.PathwayPlanReviewTabularData row, string keyword)
+    {
+        var reason = row.ReviewReason is null || row.ReviewReason == PathwayPlanReviewReason.Default
+            ? "Not reviewed yet"
+            : row.ReviewReason.Name;
+
+        return ContainsKeyword(row.ParticipantName, keyword)
+            || ContainsKeyword(row.ParticipantId, keyword)
+            || ContainsKeyword(row.ParticipantCurrentLocation, keyword)
+            || ContainsKeyword(row.ReviewLocation, keyword)
+            || ContainsKeyword(reason, keyword)
+            || ContainsKeyword(row.ReviewedBy, keyword);
+    }
+
+    private static bool ContainsKeyword(string? value, string keyword) =>
+        value?.Contains(keyword, StringComparison.OrdinalIgnoreCase) == true;
 
     private IEnumerable<GetPathwayPlans.PathwayPlanReviewTabularData> FilteredTabularData =>
         ShowOverdueOnly
@@ -204,7 +253,7 @@ public partial class PathwayPlanReviewDashboardComponent
         FilteredTabularData.Count(d => d.ParticipantCurrentLocationType?.IsCommunity == true);
 
     private string ChartKey =>
-        $"{ShowOverdueOnly}|{ParticipantLocationId}|{ReviewLocationId}|{ReviewReason}";
+        $"{ShowOverdueOnly}|{ParticipantLocationId}|{ReviewLocationId}|{ReviewReason}|{Keyword}";
 
     private async Task ShowReviewNotes(string notes)
     {

@@ -15,6 +15,7 @@ public record PathwayPlanReviewsSessionData
     public int ReviewLocationId { get; init; }
     public string? ReviewLocationName { get; init; }
     public int? ReviewReason { get; init; }
+    public string? Keyword { get; init; }
 
     internal static PathwayPlanReviewsSessionData FromState(
         bool visualMode,
@@ -25,7 +26,8 @@ public record PathwayPlanReviewsSessionData
         string? participantLocationName,
         int reviewLocationId,
         string? reviewLocationName,
-        int? reviewReason)
+        int? reviewReason,
+        string? keyword)
         => new()
         {
             VisualMode = visualMode,
@@ -36,6 +38,7 @@ public record PathwayPlanReviewsSessionData
             ParticipantLocationName = participantLocationName,
             ReviewLocationId = reviewLocationId,
             ReviewLocationName = reviewLocationName,
-            ReviewReason = reviewReason
+            ReviewReason = reviewReason,
+            Keyword = keyword
         };
 }
