@@ -9,6 +9,7 @@ namespace Cfo.Cats.Application.Features.HmppsExternalApi.IntegrationEvents;
 /// </summary>
 /// <param name="HmppsId">The HMPPS identifier of the person whose name changed.</param>
 /// <param name="EventId">The originating HMPPS event identifier.</param>
+/// <param name="EventType">The raw HMPPS event type.</param>
 /// <param name="OccurredOn">When the event was processed.</param>
-public record RiskOfSeriousHarmChangedIntegrationEvent(string HmppsId, long EventId, DateTime OccurredOn)
+public record RiskOfSeriousHarmChangedIntegrationEvent(string HmppsId, long EventId, string EventType, DateTime OccurredOn)
     : IntegrationEvent(OccurredOn);

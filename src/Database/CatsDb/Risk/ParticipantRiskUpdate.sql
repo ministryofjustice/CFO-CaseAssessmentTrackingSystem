@@ -2,6 +2,7 @@ CREATE TABLE [Risk].[ParticipantRiskUpdate] (
     [Id] INT    IDENTITY(1,1) NOT NULL,
     [ParticipantId] NVARCHAR(9) NOT NULL,
     [HmppsId] NVARCHAR(50) NOT NULL,
+    [EventType] NVARCHAR(100) NOT NULL,
     [DateTime] DATETIME2 (7) NOT NULL
 )
 

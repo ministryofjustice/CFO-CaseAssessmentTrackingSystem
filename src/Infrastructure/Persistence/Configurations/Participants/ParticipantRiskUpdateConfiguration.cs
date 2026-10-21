@@ -21,6 +21,10 @@ public class ParticipantRiskUpdateConfiguration : IEntityTypeConfiguration<Parti
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(x => x.EventType)
+            .HasMaxLength(100)
+            .IsRequired();
+
         builder.Property(x => x.DateTime)
             .IsRequired();
 

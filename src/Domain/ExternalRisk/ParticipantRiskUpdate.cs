@@ -11,11 +11,12 @@ public class ParticipantRiskUpdate : IEntity<int>
     {
     }
 
-    public static ParticipantRiskUpdate Create(string participantId, string hmppsId, DateTime dateTime)
+    public static ParticipantRiskUpdate Create(string participantId, string hmppsId, string eventType, DateTime dateTime)
         => new()
         {
             ParticipantId = participantId,
             HmppsId = hmppsId,
+            EventType = eventType,
             DateTime = dateTime
         };
     
@@ -24,6 +25,9 @@ public class ParticipantRiskUpdate : IEntity<int>
     public string ParticipantId { get; private set; }
 
     public string HmppsId { get; private set; }
+
+    /// <summary>The raw HMPPS event type, e.g. RISK_OF_SERIOUS_HARM_CHANGED.</summary>
+    public string EventType { get; private set; }
 
     public DateTime DateTime { get; private set; }
 

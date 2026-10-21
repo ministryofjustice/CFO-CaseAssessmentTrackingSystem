@@ -24,7 +24,7 @@ public class RiskOfSeriousSelfHarmChangedIntegrationEventHandler(IUnitOfWork uni
         {
             logger.LogDebug("Writing risk update for {participantId} - {hmppsId}", participantId, message.HmppsId);
 
-            var update = ParticipantRiskUpdate.Create(participantId, message.HmppsId, message.CreatedDate);
+            var update = ParticipantRiskUpdate.Create(participantId, message.HmppsId, message.EventType, message.CreatedDate);
             unitOfWork.DbContext.ParticipantRiskUpdates.Add(update);
             await unitOfWork.SaveChangesAsync();
         }

@@ -24,7 +24,7 @@ public class TierDetailsChangedIntegrationEventHandler(IUnitOfWork unitOfWork, I
 
         logger.LogDebug("Writing tier details update for {participantId} - {hmppsId}", participantId, message.HmppsId);
 
-        var update = ParticipantRiskUpdate.Create(participantId, message.HmppsId, message.CreatedDate);
+        var update = ParticipantRiskUpdate.Create(participantId, message.HmppsId, message.EventType, message.CreatedDate);
         unitOfWork.DbContext.ParticipantRiskUpdates.Add(update);
         await unitOfWork.SaveChangesAsync();
     }

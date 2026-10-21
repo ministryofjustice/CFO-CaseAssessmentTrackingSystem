@@ -29,6 +29,7 @@ public class TierDetailsChangedHandler(
         var @event = new TierDetailsChangedIntegrationEvent(
             notification.HmppsId,
             notification.EventId,
+            notification.EventType,
             DateTime.UtcNow);
 
         await unitOfWork.DbContext.InsertOutboxMessage(@event);

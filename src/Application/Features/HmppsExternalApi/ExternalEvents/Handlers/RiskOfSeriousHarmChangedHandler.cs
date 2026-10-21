@@ -30,6 +30,7 @@ public class RiskOfSeriousHarmChangedHandler(
         var @event = new RiskOfSeriousHarmChangedIntegrationEvent(
             notification.HmppsId,
             notification.EventId,
+            notification.EventType,
             DateTime.UtcNow);
 
         await unitOfWork.DbContext.InsertOutboxMessage(@event);
