@@ -74,7 +74,6 @@ public class GenerateOutcomeQualityDipSamplesJob(
                     .GroupBy(g => Group(g.LocationType, g.LocationId))
                     .Select(g =>
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
                         int sampleSize = g.Key.LocationType switch
                         {
                             var type when type == LocationType.Wing.Name => options.Value.Wing,
