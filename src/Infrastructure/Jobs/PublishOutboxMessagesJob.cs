@@ -49,7 +49,11 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
 
             foreach (var outboxMessage in outboxMessages)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 try
                 {
                     var messageType = typeof(OutboxMessage).Assembly.GetType(outboxMessage.Type)!;
@@ -65,7 +69,7 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
-                    throw;
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +79,7 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                 }
             }
 
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(CancellationToken.None);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {

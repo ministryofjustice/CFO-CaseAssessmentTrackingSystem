@@ -173,7 +173,7 @@ public class MonitorSuspiciousLoginActivityJob(
                 await unitOfWork.SaveChangesAsync(cancellationToken);
                 logger.LogWarning("Raised {AlertCount} new suspicious login activity alert(s)", newAlerts.Count);
 
-                await SendAlertEmailAsync(settings, alertSummaries, windowSeconds, cancellationToken);
+                await SendAlertEmailAsync(settings, alertSummaries, windowSeconds);
             }
             else
             {
@@ -193,8 +193,9 @@ public class MonitorSuspiciousLoginActivityJob(
 
     /// <summary>
     /// Sends a single GOV.UK Notify digest email per scan to each configured recipient.
+    /// Completes despite job cancellation because saved alerts are skipped by subsequent scans.
     /// </summary>
-    private async Task SendAlertEmailAsync(SuspiciousLoginMonitoringOptions settings, IReadOnlyList<string> alertSummaries, int windowSeconds, CancellationToken cancellationToken)
+    private async Task SendAlertEmailAsync(SuspiciousLoginMonitoringOptions settings, IReadOnlyList<string> alertSummaries, int windowSeconds)
     {
         try
         {
@@ -220,15 +221,10 @@ public class MonitorSuspiciousLoginActivityJob(
 
             foreach (var recipient in recipients)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 await communicationsService.SendLoginThresholdAlertEmailAsync(recipient, subject, body);
             }
 
             logger.LogInformation("Sent suspicious login activity alert email to {RecipientCount} recipient(s)", recipients.Length);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            throw;
         }
         catch(Exception ex)
         {
