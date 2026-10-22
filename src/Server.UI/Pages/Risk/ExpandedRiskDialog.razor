@@ -26,7 +26,7 @@
                             <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
                         </dt>
                         <dd>
-                            <MudText Typo="Typo.body1">@UserService.GetDisplayName(Model.CreatedBy)</MudText>
+                            <MudText Typo="Typo.body1">@(UserService.GetDisplayName(Model.CreatedBy) ?? "Unknown")</MudText>
                         </dd>
                     </div>
                     <div class="description-pair">

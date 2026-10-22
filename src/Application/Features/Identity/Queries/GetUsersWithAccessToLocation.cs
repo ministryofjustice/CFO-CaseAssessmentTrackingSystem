@@ -46,7 +46,8 @@ public static class GetUsersWithAccessToLocation
                 {
                     Id = user.Id,
                     UserName = user.UserName ?? string.Empty,
-                    DisplayName = user.DisplayName ?? string.Empty
+                    DisplayName = user.DisplayName ?? string.Empty,
+                    TenantId = user.TenantId
                 })
                 .ToList();
 

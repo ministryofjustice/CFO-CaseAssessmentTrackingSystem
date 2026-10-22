@@ -32,7 +32,7 @@
                                 @if(ParticipantSummaryDto.PathwayPlan.LastReviewedBy is not null)
                                 {
                                     <MudText>
-                                        @UserService.GetDisplayName(ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!)
+                                        @(UserService.GetDisplayName(ParticipantSummaryDto.PathwayPlan!.LastReviewedBy) ?? "Unknown")
                                     </MudText>
                                 }
                                 else

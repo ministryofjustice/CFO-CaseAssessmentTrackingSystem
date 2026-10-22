@@ -27,7 +27,7 @@
                             @_latestAssessment.AssessmentDate!.Value.ToShortDateString()
                     </DataListItem>
                     <DataListItem Label="Created By">
-                        @UserService.GetDisplayName(_latestAssessment.AssessmentCreator)
+                        @(UserService.GetDisplayName(_latestAssessment.AssessmentCreator) ?? "Unknown")
                     </DataListItem>
                     @if(_latestAssessment.Completed.HasValue)
                     {

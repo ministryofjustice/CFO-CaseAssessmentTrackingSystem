@@ -21,7 +21,7 @@
                         @ParticipantSummaryDto.LatestRisk.Created.ToShortDateString() 
                     </DataListItem>
                     <DataListItem Label="Reviewed By">
-                        @UserService.GetDisplayName(ParticipantSummaryDto.LatestRisk!.CreatedBy)
+                        @(UserService.GetDisplayName(ParticipantSummaryDto.LatestRisk!.CreatedBy) ?? "Unknown")
                     </DataListItem>
                 }
                 <DataListItem Label="Risk Due" HelperText="@(ParticipantSummaryDto.RiskDue.HasValue ? ParticipantSummaryDto.RiskDue.Value.Humanize() : "")">
