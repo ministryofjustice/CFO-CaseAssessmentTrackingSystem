@@ -54,7 +54,7 @@ public partial class ProviderDashboardFilter
 
     protected override void OnInitialized()
     {
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(CurrentUser.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 

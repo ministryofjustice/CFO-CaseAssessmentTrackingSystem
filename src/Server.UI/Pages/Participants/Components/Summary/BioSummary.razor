@@ -28,7 +28,7 @@
                     </DataListItem>
                     <DataListItem Label="Created By">
                         <MudText>
-                            @UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName
+                            @(UserService.GetDisplayName(_bio.BioCreator) ?? "Unknown")
                         </MudText>
                     </DataListItem>
                     <DataListItem Label="Status">

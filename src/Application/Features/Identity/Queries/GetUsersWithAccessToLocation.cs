@@ -8,14 +8,14 @@ namespace Cfo.Cats.Application.Features.Identity.Queries;
 public static class GetUsersWithAccessToLocation
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IQuery<Result<IEnumerable<ApplicationUserDto>>>
+    public class Query : IQuery<Result<IEnumerable<ApplicationUserSummaryDto>>>
     {
         public required int LocationId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService userService) : IQueryHandler<Query, Result<IEnumerable<ApplicationUserDto>>>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService userService) : IQueryHandler<Query, Result<IEnumerable<ApplicationUserSummaryDto>>>
     {
-        public async Task<Result<IEnumerable<ApplicationUserDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<ApplicationUserSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var location = await unitOfWork.DbContext.Locations
                 .Where(l => l.Id == request.LocationId)
@@ -24,26 +24,34 @@ public static class GetUsersWithAccessToLocation
 
             if(location is null)
             {
-                return Result<IEnumerable<ApplicationUserDto>>.Failure();
+                return Result<IEnumerable<ApplicationUserSummaryDto>>.Failure();
             }
 
-            // Filter based on current user id
-            var users = await unitOfWork.DbContext.Users
+            // Filter based on current user id; only load the columns we need
+            var candidates = await unitOfWork.DbContext.Users
                 .Where(u => u.TenantId!.StartsWith(userService.TenantId!)
                             && u.Status == UserStatus.Active)
-                .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
+                .Select(u => new { u.Id, u.UserName, u.DisplayName, u.TenantId })
                 .ToListAsync(cancellationToken);
 
             // Note: This query seems to be non-EF-translatable :(
             // This resolves an issue where someone higher in the multitenancy tree (who has access to a given location)
             // assigns it to someone else lower in the tree (who may not necessarily have access to that same location).
-            users = users
+            IEnumerable<ApplicationUserSummaryDto> users = candidates
                 .Where(user => location.Tenants
                     .Any(tenant => tenant.Id.StartsWith(user.TenantId!))
-                ).OrderBy(user => user.DisplayName)
+                )
+                .OrderBy(user => user.DisplayName)
+                .Select(user => new ApplicationUserSummaryDto
+                {
+                    Id = user.Id,
+                    UserName = user.UserName ?? string.Empty,
+                    DisplayName = user.DisplayName ?? string.Empty,
+                    TenantId = user.TenantId
+                })
                 .ToList();
 
-            return Result<IEnumerable<ApplicationUserDto>>.Success(users);
+            return Result<IEnumerable<ApplicationUserSummaryDto>>.Success(users);
         }
     }
 

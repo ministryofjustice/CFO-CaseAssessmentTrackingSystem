@@ -76,7 +76,7 @@ public partial class Activities
         var state = await AuthState;
         Query.IncludeInternalNotes = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
 
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
@@ -409,5 +409,4 @@ public partial class Activities
 
     private void ViewParticipant(string participantId)
         => Navigation.NavigateTo($"/pages/workspace/participants/{participantId}?from=activities");
-
 }

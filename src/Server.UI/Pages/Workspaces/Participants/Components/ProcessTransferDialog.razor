@@ -7,15 +7,16 @@
 
 <MudDialog>
     <DialogContent>
-        @if (Model is not null && loading is false)
+        @if (Model is not null && _loading is false)
         {
-            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
                         <MudSelect @bind-Value="Model.Assignee"
+                                   Comparer="ApplicationUserSummaryDto.IdComparer"
                                    Label="@Model.GetMemberDescription(x => x.Assignee)"
-                                   For="() => Model.Assignee">
-                            @foreach(var user in users)
+                                   For="() => Model.Assignee!">
+                            @foreach(var user in _users)
                             {
                                 <MudSelectItem Value="user">
                                     @user.DisplayName
@@ -28,19 +29,19 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@saving" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    private MudForm form = new();
-    private bool loading;
-    private bool saving;
-    private IEnumerable<ApplicationUserDto> users = [];
+    private MudForm _form = new();
+    private bool _loading;
+    private bool _saving;
+    private IEnumerable<ApplicationUserSummaryDto> _users = [];
 
     [CascadingParameter] 
-    IMudDialogInstance MudDialog { get; set; } = default!;
+    IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired] 
     public required ProcessIncomingTransfer.Command Model { get; set; }
@@ -49,7 +50,7 @@
     {
         try
         {
-            loading = true;
+            _loading = true;
 
             var result = await GetNewMediator().Send(new GetUsersWithAccessToLocation.Query()
             {
@@ -62,7 +63,7 @@
                 return;
             }
 
-            users = result.Data;
+            _users = result.Data;
 
             var owner = await GetNewMediator().Send(new GetOwnerByParticipantId.Query()
             {
@@ -71,13 +72,13 @@
 
             if (owner is { Succeeded: true, Data: not null })
             {
-                Model.Assignee = users.FirstOrDefault(user => user.Id == owner.Data.Id);
+                Model.Assignee = _users.FirstOrDefault(user => user.Id == owner.Data.Id);
             }
 
         }
         finally
         {
-            loading = false;
+            _loading = false;
             await base.OnInitializedAsync();
         }
     }
@@ -91,9 +92,9 @@
     {
         try
         {
-            saving = true;
+            _saving = true;
 
-            if(form.IsValid is false)
+            if(_form.IsValid is false)
             {
                 return;
             }
@@ -113,8 +114,7 @@
         }
         finally
         {
-            saving = false;
+            _saving = false;
         }
     }
-
 }

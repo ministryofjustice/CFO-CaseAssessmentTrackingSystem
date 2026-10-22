@@ -59,7 +59,7 @@ public partial class ActivePRIs
         _locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
             .ToDictionary(k => k.Id, e => e.Name);
 
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
@@ -370,5 +370,4 @@ public partial class ActivePRIs
         Query.IncludeIncoming = true;
         await OnRefresh();
     }
-
 }
