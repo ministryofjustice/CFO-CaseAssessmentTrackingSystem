@@ -31,13 +31,13 @@ public class AuditTrailDto
     public List<string>? AffectedColumns { get; set; }
 
     [Description("Primary Key")]
-    public string PrimaryKey { get; set; } = default!;
+    public string PrimaryKey { get; set; } = null!;
 
     [Description("Show Details")]
     public bool ShowDetails { get; set; }
 
     [Description("Owner")]
-    public ApplicationUserDto? Owner { get; set; }
+    public ApplicationUserSummaryDto? Owner { get; set; }
 
     private class Mapping : Profile
     {
