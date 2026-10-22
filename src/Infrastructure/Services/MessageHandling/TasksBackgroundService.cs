@@ -13,6 +13,8 @@ using Rebus.Activation;
 using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Retry.Simple;
+using Cfo.Cats.Application.Features.Notifications.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.HmppsExternalApi.IntegrationEvents;
 
 namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
 
@@ -40,7 +42,9 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordDisabledLabelStatusConsumer>(provider)
             .Handle<RecordHomelessLabelStatusConsumer>(provider)
             .Handle<RecordNeurodiverseLabelStatusConsumer>(provider)
-            .Handle<ParticipantCreatedIntegrationEventConsumer>(provider);
+            .Handle<ParticipantCreatedIntegrationEventConsumer>(provider)
+            .Handle<RiskOfSeriousSelfHarmChangedIntegrationEventHandler>(provider)
+            .Handle<TierDetailsChangedIntegrationEventHandler>(provider);
 
         var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
@@ -62,6 +66,8 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<BioSubmittedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
         await _bus.Subscribe<ParticipantCreatedIntegrationEvent>();
+        await _bus.Subscribe<RiskOfSeriousHarmChangedIntegrationEvent>();
+        await _bus.Subscribe<TierDetailsChangedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

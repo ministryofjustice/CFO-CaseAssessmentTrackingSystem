@@ -147,7 +147,7 @@ generic-service:
     ConnectionStrings__redis: *redis
     AWS__RootFolder: "Files"
     Features__UseWorkerForJobs: "true"
-    Features__UseWorkerForConsumers: "true"
+    Features__UseConsumer: "true"
     Features__PresenceHub__Enabled: "true"
     Features__PresenceHub__RelayUserPresenceNotifications: "true"
     Features__Redis__Enabled: "true"
@@ -204,6 +204,8 @@ consumers:
   env:
     ConnectionStrings__rabbit: *rabbit
     AWS__RootFolder: "Files"
+    Features__HmppsExternalApi__Enabled: "true"
+    Features__HmppsExternalApi__Events__Enabled: "false"
   # Same shape/convention as generic-service's own `namespace_secrets` (secretName -> {envVar: secretKey}),
   # rendered via the shared `cats.namespaceSecretsEnv` helper in templates/consumers.yaml.
   namespace_secrets:
@@ -221,6 +223,11 @@ consumers:
       HTTPS_PROXY: "HTTPS_PROXY"
       HTTP_PROXY: "HTTP_PROXY"
       NO_PROXY: "NO_PROXY"
+    hmpps-external-api-credentials:
+      HmppsExternalApi__ClientCertBase64: "client-pfx-base64"
+      HmppsExternalApi__ClientCertPassword: "pfx-password"
+      HmppsExternalApi__ApiKey: "api-key"
+      HmppsExternalApi__Events__QueueUrl: "events-queue-url"
 
 rabbitmq:
   image: "rabbitmq:4.3-management-alpine@sha256:3ef7f7e89fed709a78f79b8b5f4e30e1312a1d4089da752e23595566d9d61a95"

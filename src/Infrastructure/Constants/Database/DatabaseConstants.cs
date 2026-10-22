@@ -88,6 +88,8 @@ internal static class DatabaseConstants
         public const string Initiative = nameof(Initiative);
         public const string InitiativeObjective = nameof(InitiativeObjective);
 
+        public const string ParticipantRiskUpdate = nameof(ParticipantRiskUpdate);
+
         public const string HelpLink = nameof(HelpLink);
         public const string HelpLinkUrl = nameof(HelpLinkUrl);
 
@@ -106,6 +108,7 @@ internal static class DatabaseConstants
         public const string Activities = nameof(Activities);
         public const string Mi = nameof(Mi);
         public const string PRI = nameof(PRI);
+        public const string Risk = nameof(Risk);
     }
 
     public static class FieldLengths

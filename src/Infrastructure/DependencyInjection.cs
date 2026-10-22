@@ -31,6 +31,7 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Initiatives;
 using Cfo.Cats.Infrastructure.Services.Delius;
+using Cfo.Cats.Infrastructure.Services.ExternalEvents;
 using Cfo.Cats.Infrastructure.Services.HmppsExternalApi;
 using Cfo.Cats.Infrastructure.Services.Jobs;
 using Cfo.Cats.Infrastructure.Services.Locations;
@@ -80,10 +81,12 @@ public static class DependencyInjection
             .AddFusionCacheService(configuration);
 
         // Run the Rebus message consumers in CATS only when a separate consumer Worker process is not handling them.
-        // When Features:UseWorkerForConsumers is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
-        if (!configuration.GetValue<bool>("Features:UseWorkerForConsumers"))
+        // When Features:UseConsumer is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
+        if (!configuration.GetValue<bool>("Features:UseConsumer"))
         {
             services.AddMessageConsumers();
+            // The HMPPS external events SQS consumer runs in-process alongside the other consumers.
+            services.AddHmppsExternalEvents(configuration);
         }
 
         services.AddCatsConsumer();
@@ -179,6 +182,9 @@ public static class DependencyInjection
 
         // Host the Rebus message consumers here.
         services.AddMessageConsumers();
+
+        // Host the HMPPS external events SQS consumer here too.
+        services.AddHmppsExternalEvents(configuration);
 
         return services;
     }

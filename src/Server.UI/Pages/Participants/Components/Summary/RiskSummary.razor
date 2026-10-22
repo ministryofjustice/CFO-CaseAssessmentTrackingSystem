@@ -25,6 +25,17 @@
                         @UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName
                     </DataListItem>
                 }
+                @if (ParticipantSummaryDto.RiskUpdates.Count > 0)
+                {
+                    <DataListItem Label="HMPPS Risk Updates" HelperText="@ParticipantSummaryDto.RiskUpdates.First().DateTime.Humanize()">
+                        <MudStack Spacing="1">
+                            @foreach (var update in ParticipantSummaryDto.RiskUpdates)
+                            {
+                                <MudText Typo="Typo.body2">@update.DateTime.ToShortDateString()</MudText>
+                            }
+                        </MudStack>
+                    </DataListItem>
+                }
                 <DataListItem Label="Risk Due" HelperText="@(ParticipantSummaryDto.RiskDue.HasValue ? ParticipantSummaryDto.RiskDue.Value.Humanize() : "")">
                     <MudStack Row="true" StretchItems="StretchItems.Start">
                         <MudText>
@@ -58,30 +69,3 @@
         }        
     </MudCardActions>
 </MudCard>
-
-@* 
-
-
-
-
-        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText Typo="Typo.subtitle2">Next Review Due</MudText>
-            @if (ParticipantSummaryDto.RiskDue.HasValue)
-            {
-                <MudText> ()</MudText>
-            }
-        </MudStack>
-        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText Typo="Typo.subtitle2">Risk Due Reason</MudText>
-            <MudChip Size="Size.Small"
-                     T="string"
-                     Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
-                @ParticipantSummaryDto.RiskDueReason
-            </MudChip>
-        </MudStack>
-    </MudCardContent>
-
-    <MudCardActions>
-
-    </MudCardActions>
-</MudCard> *@

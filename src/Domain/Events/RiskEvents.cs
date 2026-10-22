@@ -1,18 +1,16 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿namespace Cfo.Cats.Domain.Events;
 
-namespace Cfo.Cats.Domain.Events;
-
-public sealed class RiskInformationAddedDomainEvent(Risk risk) : DomainEvent
+public sealed class RiskInformationAddedDomainEvent(Entities.Participants.Risk risk) : DomainEvent
 {
-    public Risk Item { get; set; } = risk;
+    public Entities.Participants.Risk Item { get; set; } = risk;
 }
 
-public sealed class RiskInformationReviewedDomainEvent(Risk risk) : DomainEvent
+public sealed class RiskInformationReviewedDomainEvent(Entities.Participants.Risk risk) : DomainEvent
 {
-    public Risk Item { get; set; } = risk;
+    public Entities.Participants.Risk Item { get; set; } = risk;
 }
 
-public sealed class RiskInformationCompletedDomainEvent(Risk risk) : DomainEvent
+public sealed class RiskInformationCompletedDomainEvent(Entities.Participants.Risk risk) : DomainEvent
 {
-    public Risk Item { get; set; } = risk;
+    public Entities.Participants.Risk Item { get; set; } = risk;
 }
