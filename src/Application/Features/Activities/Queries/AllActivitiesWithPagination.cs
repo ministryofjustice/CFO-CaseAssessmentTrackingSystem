@@ -121,6 +121,13 @@ public static class AllActivitiesWithPagination
                 RuleFor(x => x.OrderBy)
                     .Matches(ValidationConstants.AlphaNumeric)
                     .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "OrderBy"));
+
+                RuleFor(x => x.CategoryFilter)
+                    .Must((query, categoryFilter) => categoryFilter is null
+                        || query.TypeFilter is not null && ActivityDefinition.List.Any(definition =>
+                            definition.Type.Value == query.TypeFilter
+                            && definition.Category.Value == categoryFilter))
+                    .WithMessage("The selected category must belong to the selected activity type.");
             }
         }
     }
