@@ -34,8 +34,13 @@ public class CachingUserService(IFusionCache cache, IUserService userService, IL
 
     public event Action? OnChange;
 
-    public string? GetDisplayName(string userId)
+    public string? GetDisplayName(string? userId)
     {
+        if (userId is null)
+        {
+            return null;
+        }
+
         var result = DataSource.FirstOrDefault(r => r.Id == userId)?.DisplayName;
         return result;
     }

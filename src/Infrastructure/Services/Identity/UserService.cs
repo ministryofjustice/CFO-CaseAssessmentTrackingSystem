@@ -32,8 +32,13 @@ public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILog
         }
     }
 
-    public string? GetDisplayName(string userId)
+    public string? GetDisplayName(string? userId)
     {
+        if (userId is null)
+        {
+            return null;
+        }
+
         logger.LogDebug("GetDisplayName called, getting from the database");
 
         using var scope = scopeFactory.CreateScope();
@@ -45,7 +50,6 @@ public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILog
 
         return query.FirstOrDefault();
     }
-
    
     public void Refresh()
     {
