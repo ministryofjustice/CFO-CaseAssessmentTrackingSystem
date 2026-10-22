@@ -12,124 +12,181 @@
 
 @inject IUserService UserService
 
-<style>
-    .mud-list-item:focus,
-    .mud-list-item:hover {
-        background-color: initial !important;
-    }
-</style>
-
 <DeliveryManagementPageHeader />
 
-	@if (Loading)
-	{
-		<MudLoading Text="Loading" />
-	}
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
 
-	@if (ErrorMessage is not null)
-	{
-		<MudAlert Variant="Variant.Filled" Severity="Severity.Error">
-			@ErrorMessage
-		</MudAlert>
-	}
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
 
-	@if (Data is not null)
-	{
-        
-        <MudStack Spacing="2">
-            <MudStack Row="true">
-                <LocationSelectComponent
-                    TenantId="@(CurrentUser.TenantId!)"
-                    @bind-Value="_selectedLocation"
-                    @bind-Value:after="LoadDataAsync"
-                    For="() => _selectedLocation"/>
-                      <MudCheckBox T="bool" ValueChanged="OnExcludeEnrolmentsNotInProgress" Label="Hide enrolments that don't require my attention" /> 
-            
-            </MudStack>
+@if (Data is not null)
+{
+    <MudStack Spacing="2">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudPagination Rectangular="true" Variant="Variant.Text" Size="Size.Small"
+                           Selected="_pageNumber" Count="@Data.TotalPages" MiddleCount="2" BoundaryCount="1"
+                           SelectedChanged="OnPaginationChanged" />
+            <MudText>@Data.TotalItems records</MudText>
+            <MudSwitch Label="Tabular" @bind-Value="_tabular" Color="Color.Info" T="bool" />
+            <MudSpacer />
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @(_selectedLocation is null ? "All Locations" : _selectedLocation.Name)
+            </MudButton>
+            <MudCheckBox T="bool" Value="@(_status is not null)" ValueChanged="OnExcludeEnrolmentsNotInProgress" Label="Hide enrolments that don't require my attention" />
+        </MudStack>
 
-            <MudList T="QAEnrolmentsResultsSummaryDto" ReadOnly="true">
+        @if (!Data.Items.Any())
+        {
+            <MudAlert Severity="Severity.Info">No enrolments match the current filters.</MudAlert>
+        }
+        else if (_tabular)
+        {
+            <MudTable Dense="true" T="QAEnrolmentsResultsSummaryDto" Items="@Data.Items" Hover="true" Striped="true">
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh>Participant</MudTh>
+                    <MudTh>Submitted By</MudTh>
+                    <MudTh>Submitted On</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Approved / Returned On</MudTh>
+                    <MudTh>Originally Submitted</MudTh>
+                    <MudTh>Took Place At</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudIconButton Size="Size.Small"
+                                       aria-label="@(IsExpanded(context.ParticipantId) ? "Collapse notes" : "Expand notes")"
+                                       aria-expanded="@(IsExpanded(context.ParticipantId) ? "true" : "false")"
+                                       Icon="@(IsExpanded(context.ParticipantId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                       OnClick="@(() => SetExpanded(context.ParticipantId, !IsExpanded(context.ParticipantId)))" />
+                    </MudTd>
+                    <MudTd DataLabel="Participant">@context.Participant @context.ParticipantId</MudTd>
+                    <MudTd DataLabel="Submitted By">@UserService.GetDisplayName(context.SubmittedBy)</MudTd>
+                    <MudTd DataLabel="Submitted On">@context.SubmittedOn?.ToLocalTime().ToString("g")</MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Style="@($"background-color:{context.Status.Colour}; color:white;")" Size="Size.Small">
+                            @context.Status.Name
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Approved / Returned On">@context.CompletedOn?.ToLocalTime().ToString("g")</MudTd>
+                    <MudTd DataLabel="Originally Submitted">@context.OriginallySubmitted.ToShortDateOrEmptyString()</MudTd>
+                    <MudTd DataLabel="Took Place At">@context.TookPlaceAtLocationName</MudTd>
+                    <MudTd>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AnchorOrigin="Origin.BottomLeft">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconColor="Color.Secondary"
+                                         OnClick="@(() => EditParticipant(context.ParticipantId))">
+                                @ConstantString.EditParticipant
+                            </MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
+                </RowTemplate>
+                <ChildRowContent>
+                    @if (IsExpanded(context.ParticipantId))
+                    {
+                        <MudTr>
+                            <td colspan="9" class="pa-0">
+                                <MudPaper Elevation="0" Class="pa-2">
+                                    <MudText Typo="Typo.subtitle1" Class="mb-2">Notes</MudText>
+                                    @RenderNotes(context)
+                                </MudPaper>
+                            </td>
+                        </MudTr>
+                    }
+                </ChildRowContent>
+            </MudTable>
+        }
+        else
+        {
+            <MudStack Class="mt-4">
                 @foreach (var enrolment in Data.Items)
                 {
-                    var created = enrolment.OriginallySubmitted;
-                    var today = DateTime.Today.ToLocalTime();
-                    var notes = enrolment.GetNotes();
-                <MudListItem Class="flex-row-reverse">
-                    <ChildContent>
-                    <div class="d-flex justify-space-between align-center ml-2">
-                        <div class="d-flex align-center">                            
-                            <div class="pr-2">
-                                <MudText Typo="Typo.body1">
-                                    Participant: @enrolment.Participant @enrolment.ParticipantId
-                                </MudText>
-
-                                <div class="d-flex gap-2 align-center">
-                                    <MudText Typo="Typo.body1">
-                                        Submitted by: @UserService.GetDisplayName(@enrolment.SubmittedBy) on @enrolment.SubmittedOn.
-                                    </MudText>
-
-                                <MudText Typo="Typo.body1">
-                                    @(enrolment.Status == EnrolmentStatus.ApprovedStatus
-                                                        ? $"Approved On: {enrolment.CompletedOn?.ToString("g")}"
-                                                        : $"Returned On: {enrolment.CompletedOn?.ToString("g")}")
-                                </MudText>
-                                    
-                                <MudText Typo="Typo.body1">
-                                    Originally submitted on @created.ToShortDateOrEmptyString() (@created.Humanize()) at @enrolment.TookPlaceAtLocationName.
-                                </MudText>                             
-                                
+                    <MudPaper @key="enrolment.ParticipantId" Outlined="true" Class="pa-4">
+                        <MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.h5">@enrolment.ParticipantId @enrolment.Participant</MudText>
+                                <MudSpacer />
                                 <MudChip T="string" Style="@($"background-color:{enrolment.Status.Colour}; color:white;")" Size="Size.Small">
                                     @enrolment.Status.Name
                                 </MudChip>
-                            </div>
-                            </div>
-                        </div>
+                            </MudStack>
+                            <MudStack Row="true">
+                                <MudText Typo="Typo.body1">
+                                    Submitted by @UserService.GetDisplayName(enrolment.SubmittedBy) on @enrolment.SubmittedOn?.ToLocalTime().ToString("g").
+                                </MudText>
+                                <MudSpacer />
+                                <MudText Typo="Typo.body1">
+                                    @(enrolment.Status == EnrolmentStatus.ApprovedStatus
+                                        ? $"Approved On: {enrolment.CompletedOn?.ToLocalTime().ToString("g")}"
+                                        : $"Returned On: {enrolment.CompletedOn?.ToLocalTime().ToString("g")}")
+                                </MudText>
+                            </MudStack>
+                            <MudStack Row="true">
+                                <MudText Typo="Typo.body1">
+                                    Originally submitted on @enrolment.OriginallySubmitted.ToShortDateOrEmptyString() (@enrolment.OriginallySubmitted.Humanize())
+                                </MudText>
+                                <MudSpacer />
+                                <MudText Typo="Typo.body1">Took place at @enrolment.TookPlaceAtLocationName</MudText>
+                            </MudStack>
+                        </MudStack>
 
-                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                                    Dense="true"
-                                    EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        <MudExpansionPanels Elevation="0" Class="mt-2">
+                            <MudExpansionPanel Text="Notes"
+                                               Expanded="@IsExpanded(enrolment.ParticipantId)"
+                                               ExpandedChanged="@(expanded => SetExpanded(enrolment.ParticipantId, expanded))">
+                                @if (IsExpanded(enrolment.ParticipantId))
+                                {
+                                    @RenderNotes(enrolment)
+                                }
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
 
-                            <MudMenuItem OnClick="@(() => EditParticipant(enrolment.ParticipantId))">
-                                    @ConstantString.EditParticipant
-                            </MudMenuItem>                              
-                        </MudMenu>
-            
-                    </div>
-                    <MudDivider />
-                </ChildContent>
-                <NestedList>
-                    <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
-                        <MudText Typo="Typo.body1">
-                            Notes
-                        </MudText>
-
-                        @if (notes != null && notes.Any())
-                        {
-                            @foreach (var note in notes)
-                            {
-                                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
-                                    <MudCard Outlined="false" Elevation="25">
-                                        <MudCardContent>
-                                            <MudText Typo="Typo.body1">
-                                                @note.Message
-                                            </MudText>
-                                            <MudText Typo="Typo.caption">
-                                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
-                                            </MudText>
-                                        </MudCardContent>
-                                    </MudCard>
-                                </MudTooltip>
-                            }
-                        }
-                    </MudListItem>
-                </NestedList>
-        
-                     
-                </MudListItem>
-                
+                        <MudDivider Class="mt-4 mb-2" />
+                        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditParticipant(enrolment.ParticipantId))">
+                                @ConstantString.EditParticipant
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
                 }
-            </MudList>
+            </MudStack>
+        }
 
-        
-            <MudPagination Rectangular="true" Variant="Variant.Text" Size="Size.Small" Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
-        </MudStack>
-    }
+        <MudPagination Rectangular="true" Variant="Variant.Text" Size="Size.Small" Selected="_pageNumber"
+                       Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+    </MudStack>
+}
+
+@code {
+    private RenderFragment RenderNotes(QAEnrolmentsResultsSummaryDto enrolment) =>
+        @<MudStack Spacing="2">
+            @{
+                var notes = enrolment.GetNotes();
+            }
+            @if (notes.Length == 0)
+            {
+                <MudText Typo="Typo.body1">No notes recorded.</MudText>
+            }
+            @foreach (var note in notes)
+            {
+                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                    <MudCard Outlined="false" Elevation="25">
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">@note.Message</MudText>
+                            <MudText Typo="Typo.caption">
+                                @note.CreatedBy (@note.TenantName) @note.Created.Humanize()
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTooltip>
+            }
+        </MudStack>;
+}
