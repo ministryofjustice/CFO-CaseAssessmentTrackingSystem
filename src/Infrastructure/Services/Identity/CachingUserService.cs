@@ -61,6 +61,29 @@ public class CachingUserService(IFusionCache cache, IUserService userService, IL
 
     public event Action? OnChange;
 
+    private IReadOnlyDictionary<string, string> DisplayNames
+    {
+        get
+        {
+            const string cacheKey = "CachingUserService-displaynames";
+
+            var cached = cache.TryGet<IReadOnlyDictionary<string, string>>(cacheKey);
+
+            if (cached.HasValue)
+            {
+                return cached.Value;
+            }
+
+            var result = Summaries.ToDictionary(u => u.Id, u => u.DisplayName);
+            if (result.Count > 0)
+            {
+                cache.Set(cacheKey, (IReadOnlyDictionary<string, string>)result, TimeSpan.FromMinutes(20), tags: ["users"]);
+            }
+
+            return result;
+        }
+    }
+
     public string? GetDisplayName(string? userId)
     {
         if (userId is null)
@@ -68,8 +91,7 @@ public class CachingUserService(IFusionCache cache, IUserService userService, IL
             return null;
         }
 
-        var result = Summaries.FirstOrDefault(r => r.Id == userId)?.DisplayName;
-        return result;
+        return DisplayNames.TryGetValue(userId, out var name) ? name : null;
     }
 
     public void Refresh()

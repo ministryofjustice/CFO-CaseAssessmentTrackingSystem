@@ -13,8 +13,9 @@
                 <MudGrid>
                     <MudItem xs="12">
                         <MudSelect @bind-Value="Model.Assignee"
+                                   Comparer="ApplicationUserSummaryDto.IdComparer"
                                    Label="@Model.GetMemberDescription(x => x.Assignee)"
-                                   For="() => Model.Assignee">
+                                   For="() => Model.Assignee!">
                             @foreach(var user in _users)
                             {
                                 <MudSelectItem Value="user">
