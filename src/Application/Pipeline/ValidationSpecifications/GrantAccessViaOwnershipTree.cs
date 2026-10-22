@@ -4,7 +4,7 @@ public sealed class GrantAccessViaOwnershipTree(IUnitOfWork unitOfWork, ICurrent
 {
     public override int Order => 10;
 
-    protected override async Task<AccessGrant> CheckAccessAsync(string identifier)
+    protected override async Task<AccessGrant> CheckAccessAsync(string identifier, CancellationToken cancellationToken)
     {
         var cutoff = DateTime.Today.AddMonths(-3);
         
@@ -14,7 +14,8 @@ public sealed class GrantAccessViaOwnershipTree(IUnitOfWork unitOfWork, ICurrent
                         .Select(h => h.TenantId!)
                         .Distinct();
 
-        return owners.Any(x => x.StartsWith(currentUserService.TenantId!)) ? AccessGrant.Granted : AccessGrant.NotGranted;
+        return await owners.AnyAsync(x => x.StartsWith(currentUserService.TenantId!), cancellationToken)
+            ? AccessGrant.Granted : AccessGrant.NotGranted;
 
     }
                  

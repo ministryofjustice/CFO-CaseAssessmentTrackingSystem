@@ -5,6 +5,17 @@ namespace Cfo.Cats.Server.UI.Components;
 public abstract class CatsComponent<TData> : OwningComponentBase<IMediator>
     where TData : class
 {
+
+    private readonly CancellationTokenSource _cts = new();
+    private bool _disposing;
+
+    protected CancellationToken CancellationToken { get; }
+
+    protected CatsComponent()
+    {
+        CancellationToken = _cts.Token;
+    }
+
     [Inject]
     protected ILogger<CatsComponent<TData>> Logger { get; set; } = null!;
     
@@ -53,13 +64,18 @@ public abstract class CatsComponent<TData> : OwningComponentBase<IMediator>
     /// </summary>
     protected async Task<bool> LoadDataAsync()
     {
+        if (_disposing || IsDisposed)
+        {
+            return false;
+        }
+
         try
         {
             Loading = true;
             var query = CreateQuery();
-            var result = await Service.Send(query);
+            var result = await Service.Send(query, CancellationToken);
 
-            if (IsDisposed)
+            if (_disposing || IsDisposed)
             {
                 return false;
             }
@@ -78,16 +94,26 @@ public abstract class CatsComponent<TData> : OwningComponentBase<IMediator>
                 return false;
             }
         }
+        catch (OperationCanceledException) when (CancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Unhandled exception has made it's way to the UI thread.");
-            OnError("An unexpected error has occurred");
+            if (!_disposing && !IsDisposed)
+            {
+                OnError("An unexpected error has occurred");
+            }
             return false;
         }
         finally
         {
-            Loading = false;
-            StateHasChanged();
+            if (!_disposing && !IsDisposed)
+            {
+                Loading = false;
+                StateHasChanged();
+            }
         }
     }
 
@@ -95,5 +121,31 @@ public abstract class CatsComponent<TData> : OwningComponentBase<IMediator>
     /// Refreshes the component data
     /// </summary>
     public Task RefreshAsync() => LoadDataAsync();
-    
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposing)
+        {
+            return;
+        }
+
+        _disposing = true;
+        try
+        {
+            if (disposing)
+            {
+                _cts.Cancel();
+            }
+        }
+        finally
+        {
+            if (disposing)
+            {
+                _cts.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
 }
