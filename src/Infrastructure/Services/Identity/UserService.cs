@@ -32,6 +32,24 @@ public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILog
         }
     }
 
+    public IReadOnlyList<ApplicationUserSummaryDto> Summaries
+    {
+        get
+        {
+            logger.LogDebug("Summaries called, getting from the database");
+
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            return unitOfWork.DbContext.Users
+                .AsNoTracking()
+                .OrderBy(u => u.UserName)
+                .ProjectTo<ApplicationUserSummaryDto>(mapper.ConfigurationProvider)
+                .ToList()
+                .AsReadOnly();
+        }
+    }
+
     public string? GetDisplayName(string? userId)
     {
         if (userId is null)
@@ -56,5 +74,4 @@ public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILog
         logger.LogInformation("Refresh of UserService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
-
 }

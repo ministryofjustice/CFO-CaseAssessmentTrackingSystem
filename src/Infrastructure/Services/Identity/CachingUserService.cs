@@ -32,6 +32,33 @@ public class CachingUserService(IFusionCache cache, IUserService userService, IL
         }
     }
 
+    public IReadOnlyList<ApplicationUserSummaryDto> Summaries
+    {
+        get
+        {
+            const string cacheKey = "CachingUserService-summaries";
+
+            var cached = cache.TryGet<IReadOnlyList<ApplicationUserSummaryDto>>(cacheKey);
+
+            if (cached.HasValue)
+            {
+                logger.LogDebug($"Cache entry found for {cacheKey}");
+                return cached.Value;
+            }
+
+            logger.LogDebug($"Cache entry not found for {cacheKey}");
+
+            var result = userService.Summaries;
+            if (result is { Count: > 0 })
+            {
+                cache.Set(cacheKey, result, TimeSpan.FromMinutes(20), tags: ["users"]);
+                logger.LogDebug($"Cache entry set for {cacheKey}");
+            }
+
+            return result;
+        }
+    }
+
     public event Action? OnChange;
 
     public string? GetDisplayName(string? userId)
@@ -41,7 +68,7 @@ public class CachingUserService(IFusionCache cache, IUserService userService, IL
             return null;
         }
 
-        var result = DataSource.FirstOrDefault(r => r.Id == userId)?.DisplayName;
+        var result = Summaries.FirstOrDefault(r => r.Id == userId)?.DisplayName;
         return result;
     }
 

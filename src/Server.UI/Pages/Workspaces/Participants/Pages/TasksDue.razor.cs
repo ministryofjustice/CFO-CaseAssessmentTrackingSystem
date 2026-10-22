@@ -49,7 +49,7 @@ public partial class TasksDue
     {
         Query.CurrentUser = UserProfile;
 
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 

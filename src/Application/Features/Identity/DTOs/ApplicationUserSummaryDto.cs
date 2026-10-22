@@ -14,6 +14,8 @@ public class ApplicationUserSummaryDto
 
     [Description("Display Name")] public string DisplayName { get; set; } = string.Empty;
 
+    [Description("Tenant Id")] public string? TenantId { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping() => CreateMap<ApplicationUser, ApplicationUserSummaryDto>(MemberList.None);

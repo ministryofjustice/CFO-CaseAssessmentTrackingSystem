@@ -13,7 +13,6 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Services;
 using Cfo.Cats.Server.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -107,7 +106,7 @@ public partial class Participants
         var authState = await AuthState;
         _canReassign = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Reassign)).Succeeded;
 
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
