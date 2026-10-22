@@ -20,6 +20,7 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
 using Cfo.Cats.Domain.HelpLinks;
+using Cfo.Cats.Domain.Announcements;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
@@ -330,6 +331,7 @@ public static class DependencyInjection
         services.AddScoped<IParticipantLabelRepository, ParticipantLabelRepository>();
         services.AddScoped<IInitiativeRepository, InitiativeRepository>();
         services.AddScoped<IHelpLinkRepository, HelpLinkRepository>();
+        services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
         
         SqlMapper.AddTypeHandler(typeof(LabelScope), new SmartEnumIntHandler<LabelScope>());
         
