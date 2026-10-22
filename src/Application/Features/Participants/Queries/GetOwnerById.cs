@@ -8,27 +8,33 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetOwnerByParticipantId
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IQuery<Result<ApplicationUserDto>>
+    public class Query : IQuery<Result<ApplicationUserSummaryDto>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<ApplicationUserDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<ApplicationUserSummaryDto>>
     {
-        public async Task<Result<ApplicationUserDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<ApplicationUserSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var participant = await unitOfWork.DbContext.Participants
-                .Include(p => p.Owner)
-                .SingleOrDefaultAsync(p => p.Id == request.ParticipantId, cancellationToken);
+            var exists = await unitOfWork.DbContext.Participants
+                .AnyAsync(p => p.Id == request.ParticipantId, cancellationToken);
 
-            if(participant is null)
+            if(!exists)
             {
-                return Result<ApplicationUserDto>.Failure();
+                return Result<ApplicationUserSummaryDto>.Failure();
             }
 
-            return Result<ApplicationUserDto>.Success(mapper.Map<ApplicationUserDto>(participant.Owner));
+            var owner = await unitOfWork.DbContext.Participants
+                .Where(p => p.Id == request.ParticipantId && p.Owner != null)
+                .Select(p => p.Owner!)
+                .ProjectTo<ApplicationUserSummaryDto>(mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync(cancellationToken);
+
+            return Result<ApplicationUserSummaryDto>.Success(owner!);
         }
     }
+    
     public class Validator : AbstractValidator<Query>
     {
         public Validator()
