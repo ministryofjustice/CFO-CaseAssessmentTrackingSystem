@@ -1,6 +1,5 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Infrastructure.Services.Identity
 @using Humanizer
 
 @inject IUserService UserService
@@ -27,7 +26,7 @@
                             <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
                         </dt>
                         <dd>
-                            <MudText Typo="Typo.body1">@UserService.DataSource.First(u => u.Id == Model.CreatedBy).DisplayName</MudText>
+                            <MudText Typo="Typo.body1">@UserService.GetDisplayName(Model.CreatedBy)</MudText>
                         </dd>
                     </div>
                     <div class="description-pair">
@@ -63,13 +62,13 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton StartIcon="@Icons.Material.Filled.Close" Variant="Variant.Filled" Color="Color.Secondary" OnClick="Cancel">@ConstantString.Close</MudButton>
+        <MudButton StartIcon="@Icons.Material.Filled.Close" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@Cancel">@ConstantString.Close</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public required RiskSummaryDto Model { get; set; }

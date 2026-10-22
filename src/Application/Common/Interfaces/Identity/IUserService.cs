@@ -7,5 +7,5 @@ public interface IUserService
     IReadOnlyList<ApplicationUserDto> DataSource { get; }
     event Action? OnChange;
     void Refresh();
-    string? GetDisplayName(string userId);
+    string? GetDisplayName(string? userId);
 }

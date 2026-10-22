@@ -34,7 +34,7 @@ else if (_participantAssessments.Any())
                         @if (_assessmentsById.TryGetValue(assessment.Id, out var assessmentById))
                         {
                             <MudText Typo="Typo.subtitle2" Class="ma-3">
-                                Completed by <strong>@(UserService.DataSource.SingleOrDefault(x => x.Id == assessment.CompletedBy)?.DisplayName ?? "Unknown")</strong> on <strong>@assessment.Completed</strong>
+                                Completed by <strong>@(UserService.GetDisplayName(assessment.CompletedBy) ?? "Unknown")</strong> on <strong>@assessment.Completed</strong>
                             </MudText>
                             foreach (var pathway in assessmentById!.Pathways)
                             {
