@@ -204,7 +204,7 @@ public class Participant : OwnerPropertyEntity<string>
             .Where(c => c.Lifetime.EndDate == DateTime.MaxValue.Date)
             .MaxBy(c => c.Lifetime.StartDate);
 
-        previousConsent?.EndOn(consentDate);
+        previousConsent?.EndOn(DateTime.UtcNow);
 
         _consents.Add(Consent.Create( Id, consentDate, documentId ));
         return this;
