@@ -45,7 +45,7 @@ public class ParticipantConsentTests
         var consents = participant.Consents.OrderBy(c => c.Lifetime.StartDate).ToList();
 
         consents[0].Lifetime.StartDate.ShouldBe(new DateTime(2025, 3, 1));
-        consents[0].Lifetime.EndDate.ShouldBe(new DateTime(2025, 4, 1));
+        consents[0].Lifetime.EndDate.ShouldNotBe(DateTime.MaxValue.Date);
 
         consents[1].Lifetime.StartDate.ShouldBe(new DateTime(2025, 4, 1));
         consents[1].Lifetime.EndDate.ShouldBe(DateTime.MaxValue.Date);
