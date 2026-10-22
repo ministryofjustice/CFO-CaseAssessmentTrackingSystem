@@ -87,6 +87,7 @@ public class MonitorSuspiciousLoginActivityJob(
 
             foreach (var offender in offendingIps)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (existingAlerts.Any(a => a.IpAddress == offender.IpAddress && a.UserName == null))
                 {
                     continue;
@@ -110,6 +111,7 @@ public class MonitorSuspiciousLoginActivityJob(
 
             foreach (var target in targetedUsers)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (existingAlerts.Any(a => a.UserName == target.UserName))
                 {
                     continue;
@@ -140,12 +142,14 @@ public class MonitorSuspiciousLoginActivityJob(
 
                 foreach (var keyword in monitoredUserNames)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var matches = attemptedUserNames
                         .Where(u => u.ToLowerInvariant().Contains(keyword))
                         .ToList();
 
                     foreach (var matchedUserName in matches)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         // Skip if already alerted on this username via any rule in the window.
                         if (existingAlerts.Any(a => a.UserName == matchedUserName)
                             || newAlerts.Any(a => a.UserName == matchedUserName))
@@ -176,6 +180,10 @@ public class MonitorSuspiciousLoginActivityJob(
                 logger.LogInformation("No suspicious login activity detected");
             }
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Quartz job {Key} failed", Key.Name);
@@ -185,6 +193,7 @@ public class MonitorSuspiciousLoginActivityJob(
 
     /// <summary>
     /// Sends a single GOV.UK Notify digest email per scan to each configured recipient.
+    /// Completes despite job cancellation because saved alerts are skipped by subsequent scans.
     /// </summary>
     private async Task SendAlertEmailAsync(SuspiciousLoginMonitoringOptions settings, IReadOnlyList<string> alertSummaries, int windowSeconds)
     {
