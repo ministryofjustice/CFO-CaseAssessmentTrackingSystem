@@ -51,6 +51,7 @@
             <MudTable Dense="true" T="QAEnrolmentsResultsSummaryDto" Items="@Data.Items" Hover="true" Striped="true">
                 <HeaderContent>
                     <MudTh></MudTh>
+                    <MudTh>@ConstantString.Actions</MudTh>
                     <MudTh>Participant</MudTh>
                     <MudTh>Submitted By</MudTh>
                     <MudTh>Submitted On</MudTh>
@@ -58,7 +59,6 @@
                     <MudTh>Approved / Returned On</MudTh>
                     <MudTh>Originally Submitted</MudTh>
                     <MudTh>Took Place At</MudTh>
-                    <MudTh></MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd>
@@ -67,6 +67,15 @@
                                        aria-expanded="@(IsExpanded(context.ParticipantId) ? "true" : "false")"
                                        Icon="@(IsExpanded(context.ParticipantId) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
                                        OnClick="@(() => SetExpanded(context.ParticipantId, !IsExpanded(context.ParticipantId)))" />
+                    </MudTd>
+                    <MudTd DataLabel="@ConstantString.Actions">
+                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                 Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" AnchorOrigin="Origin.CenterLeft">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconColor="Color.Secondary"
+                                         OnClick="@(() => EditParticipant(context.ParticipantId))">
+                                @ConstantString.EditParticipant
+                            </MudMenuItem>
+                        </MudMenu>
                     </MudTd>
                     <MudTd DataLabel="Participant">@context.Participant @context.ParticipantId</MudTd>
                     <MudTd DataLabel="Submitted By">@UserService.GetDisplayName(context.SubmittedBy)</MudTd>
@@ -79,14 +88,6 @@
                     <MudTd DataLabel="Approved / Returned On">@context.CompletedOn?.ToLocalTime().ToString("g")</MudTd>
                     <MudTd DataLabel="Originally Submitted">@context.OriginallySubmitted.ToShortDateOrEmptyString()</MudTd>
                     <MudTd DataLabel="Took Place At">@context.TookPlaceAtLocationName</MudTd>
-                    <MudTd>
-                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AnchorOrigin="Origin.BottomLeft">
-                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconColor="Color.Secondary"
-                                         OnClick="@(() => EditParticipant(context.ParticipantId))">
-                                @ConstantString.EditParticipant
-                            </MudMenuItem>
-                        </MudMenu>
-                    </MudTd>
                 </RowTemplate>
                 <ChildRowContent>
                     @if (IsExpanded(context.ParticipantId))
