@@ -57,6 +57,7 @@ public class DocumentExportActivePrisIntegrationEventConsumer(
                 CommunitySupportWorker = request.CommunitySupportWorker,
                 ExpectedReleaseRegionId = request.ExpectedReleaseRegionId,
                 ActiveStatus = request.ActiveStatus,
+                StatusFilter = request.StatusFilter,
                 OrderBy = request.OrderBy ?? "Id",
                 SortDirection = request.SortDirection ?? "Descending",
                 PageNumber = 1,

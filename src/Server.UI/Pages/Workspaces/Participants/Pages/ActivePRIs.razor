@@ -1,12 +1,10 @@
 @page "/pages/workspace/participants/pre-release-inventory"
-@inherits CatsComponentBase
+@inherits CatsComponent<PaginatedData<PRIPaginationDto>>
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Participants.Components
 @using Cfo.Cats.Application.Features.PRIs.DTOs
 @using Humanizer
-
-@inject ICurrentUserService CurrentUser
 
 <ParticipantsPageHeader/>
 
@@ -30,16 +28,19 @@
     OnShowCommunityWorkerDialog="@ShowCommunityWorkerDialog"
     OnShowRegionDialog="@ShowRegionDialog"
     OnActiveStatusChanged="@OnActiveStatusChanged"
+    OnStatusFilterChanged="@OnStatusFilterChanged"
     OnSortBy="@(new EventCallback<string>(this, SortBy))"
     OnClearSearch="@ClearSearch"/>
 
 @if (Tabular)
 {
-    <MudTable Dense="true" T="PRIPaginationDto" Items="@_data" Hover="true" Striped="true" Loading="@_loading">
+    <MudTable Dense="true" T="PRIPaginationDto" Items="@_data" Hover="true" Striped="true" Loading="@Loading">
         <HeaderContent>
+            <MudTh></MudTh>
             <MudTh>Actions</MudTh>
             <MudTh>Participant</MudTh>
-            <MudTh>Active</MudTh>
+            <MudTh>PRI Status</MudTh>
+            <MudTh>Participant Status</MudTh>
             <MudTh>Custody Support Worker</MudTh>
             <MudTh>Community Support Worker</MudTh>
             <MudTh>Expected Release Region</MudTh>
@@ -47,6 +48,13 @@
             <MudTh>Actual Release Date</MudTh>
         </HeaderContent>
         <RowTemplate>
+            <MudTd>
+                <MudTooltip Text="View tasks">
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@(_expanded.Contains(context.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@(() => ToggleTasks(context))"/>
+                </MudTooltip>
+            </MudTd>
             <MudTd>
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
@@ -56,7 +64,7 @@
                         @ConstantString.ViewParticipant
                     </MudMenuItem>
 
-                    @if (context.ParticipantIsActive)
+                    @if (context.ParticipantIsActive && context.Status.IsActive)
                     {
                         @if (context.ActualReleaseDate == null
                              && (CurrentUser.UserId == context.AssignedTo || CurrentUser.UserId == context.CreatedBy))
@@ -87,8 +95,14 @@
             <MudTd>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
-                    <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
+                    <MudLink Typo="Typo.body1" Href="@ParticipantUrl(context.ParticipantId)">@context.ParticipantId</MudLink>
                 </div>
+            </MudTd>
+            <MudTd>
+                <MudChip T="string" Size="Size.Small"
+                         Color="@PriStatusColor(context.Status)">
+                    @context.Status.Name
+                </MudChip>
             </MudTd>
             <MudTd>
                 @if (context.ParticipantIsActive)
@@ -137,6 +151,16 @@
                 </div>
             </MudTd>
         </RowTemplate>
+        <ChildRowContent>
+            @if (_expanded.Contains(context.Id))
+            {
+                <MudTr>
+                    <td colspan="10">
+                        <PriTasksList Tasks="@(_tasks.GetValueOrDefault(context.Id))"/>
+                    </td>
+                </MudTr>
+            }
+        </ChildRowContent>
     </MudTable>
 }
 else
@@ -151,17 +175,21 @@ else
                         <!-- Header: Name, ID and Status -->
                         <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                             <MudText Typo="Typo.subtitle1" Style="font-weight: 500">@item.ParticipantName</MudText>
-                            <MudText Typo="Typo.body2" Class="mud-text-secondary">(@item.ParticipantId)</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">(<MudLink Typo="Typo.body2" Href="@ParticipantUrl(item.ParticipantId)">@item.ParticipantId</MudLink>)</MudText>
+                            <MudChip T="string" Size="Size.Small"
+                                     Color="@PriStatusColor(item.Status)">
+                                PRI: @item.Status.Name
+                            </MudChip>
                             @if (item.ParticipantIsActive)
                             {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Success"
-                                         Icon="@Icons.Material.Filled.CheckCircle">@ConstantString.Active
+                                         Icon="@Icons.Material.Filled.CheckCircle">Participant: @ConstantString.Active
                                 </MudChip>
                             }
                             else
                             {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Default"
-                                         Icon="@Icons.Material.Filled.Cancel">@ConstantString.Inactive
+                                         Icon="@Icons.Material.Filled.Cancel">Participant: @ConstantString.Inactive
                                 </MudChip>
                             }
                         </MudStack>
@@ -208,16 +236,27 @@ else
                             </MudItem>
                         </MudGrid>
                     </MudStack>
+
+                    @if (_expanded.Contains(item.Id))
+                    {
+                        <MudDivider Class="mt-3 mb-2"/>
+                        <PriTasksList Tasks="@(_tasks.GetValueOrDefault(item.Id))"/>
+                    }
                     <MudDivider Class="mt-3 mb-2"/>
 
                     <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                        <MudButton Variant="Variant.Text" Color="Color.Default" Size="Size.Small"
+                                   EndIcon="@(_expanded.Contains(item.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@(() => ToggleTasks(item))">
+                            Tasks
+                        </MudButton>
                         <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
                                    StartIcon="@Icons.Material.Filled.Visibility"
                                    OnClick="@(() => ViewParticipant(item))">
                             @ConstantString.ViewParticipant
                         </MudButton>
 
-                        @if (item.ParticipantIsActive)
+                        @if (item is { ParticipantIsActive: true, Status.IsActive: true })
                         {
                             @if (item.ActualReleaseDate == null)
                             {

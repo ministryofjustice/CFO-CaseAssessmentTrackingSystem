@@ -6,7 +6,7 @@
     <MudStack Row="true" Justify="Justify.FlexEnd">
         <MudMenu Label="@($"Filters: {GetQuickFilterLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(false))">All</MudMenuItem>
-            <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(true))">My Active PRIs</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnQuickFilterChanged.InvokeAsync(true))">My PRIs</MudMenuItem>
         </MudMenu>
         
         <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
@@ -57,6 +57,26 @@
 
         <MudSpacer />
 
+        <!-- PRI Status Filter -->
+        <MudMenu Size="Size.Small" Label="@($"PRI Status: {Query.StatusFilter}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @foreach (var option in Enum.GetValues<PriStatusFilter>())
+            {
+                var selected = option;
+                <MudMenuItem OnClick="@(() => OnStatusFilterChanged.InvokeAsync(selected))">@selected</MudMenuItem>
+            }
+        </MudMenu>
+
+        <!-- Active Status Filter -->
+        <MudMenu Size="Size.Small" Label="@GetActiveStatusLabel()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(null))">All</MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(true))">
+                <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
+            </MudMenuItem>
+            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(false))">
+                <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
+            </MudMenuItem>
+        </MudMenu>
+
         <!-- Direction Filter (Outgoing/Incoming) -->
         <MudMenu Size="Size.Small" Label="@($"Direction: {GetPriTypeLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             <MudMenuItem OnClick="@(() => OnSetPriType.InvokeAsync(PriTypeFilter.All))">All</MudMenuItem>
@@ -103,16 +123,6 @@
             }
         </MudButton>
 
-        <!-- Active Status Filter -->
-        <MudMenu Size="Size.Small" Label="@GetActiveStatusLabel()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(null))">All</MudMenuItem>
-            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(true))">
-                <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Active</MudChip>
-            </MudMenuItem>
-            <MudMenuItem OnClick="@(() => OnActiveStatusChanged.InvokeAsync(false))">
-                <MudChip T="string" Size="Size.Small" Color="Color.Default" Icon="@Icons.Material.Filled.Cancel">Inactive</MudChip>
-            </MudMenuItem>
-        </MudMenu>
 
         <!-- Sort Menu -->
         <MudMenu Size="Size.Small" Label="@($"Sort: {GetSortLabel()}")" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -151,10 +161,11 @@
     [Parameter] public EventCallback OnShowCommunityWorkerDialog { get; set; }
     [Parameter] public EventCallback OnShowRegionDialog { get; set; }
     [Parameter] public EventCallback<bool?> OnActiveStatusChanged { get; set; }
+    [Parameter] public EventCallback<PriStatusFilter> OnStatusFilterChanged { get; set; }
     [Parameter] public EventCallback<string> OnSortBy { get; set; }
     [Parameter] public EventCallback OnClearSearch { get; set; }
 
-    private string GetQuickFilterLabel() => Query.JustMyPris ? "My Active PRIs" : "All";
+    private string GetQuickFilterLabel() => Query.JustMyPris ? "My PRIs" : "All";
 
     private string GetPriTypeLabel() =>
         PriTypeFilter switch
@@ -167,9 +178,9 @@
     private string GetActiveStatusLabel() =>
         Query.ActiveStatus switch
         {
-            true => "Status: Active",
-            false => "Status: Inactive",
-            _ => "Status: All"
+            true => "Participant Status: Active",
+            false => "Participant Status: Inactive",
+            _ => "Participant Status: All"
         };
 
     private string GetSortLabel() =>
