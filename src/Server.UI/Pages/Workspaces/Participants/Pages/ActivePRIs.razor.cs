@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Commands;
+using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.PRIs.Commands;
 using Cfo.Cats.Application.Features.PRIs.DTOs;
 using Cfo.Cats.Application.Features.PRIs.Queries;
@@ -27,13 +28,12 @@ public partial class ActivePRIs
     [Inject]
     public IParticipantDialogService ParticipantDialogService { get; set; } = null!;
     
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+    private UserProfile? UserProfile => CurrentUser;
 
     [SupplyParameterFromQuery(Name = "ListView")]
     public string? ListView { get; set; }
 
     private const int DefaultPageSize = 15;
-    private bool _loading;
     private bool _downloading;
     private int _totalItems;
     private int _totalPages;
@@ -52,6 +52,12 @@ public partial class ActivePRIs
         SortDirection = "Descending"
     };
     private PriTypeFilter _priTypeFilter = PriTypeFilter.All;
+    private readonly HashSet<Guid> _expanded = [];
+    private readonly SemaphoreSlim _refreshLock = new(1, 1);
+
+    [Inject]
+    private IServiceScopeFactory ScopeFactory { get; set; } = null!;
+    private readonly Dictionary<Guid, ObjectiveTaskDto[]> _tasks = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,48 +86,72 @@ public partial class ActivePRIs
             Query.ExpectedReleaseRegionId = sd.ExpectedReleaseRegionId;
             Query.ActiveStatus = sd.ActiveStatus;
             Query.JustMyPris = sd.JustMyPris;
+            Query.StatusFilter = sd.StatusFilter;
             Tabular = sd.Tabular;
             _priTypeFilter = sd.PriTypeFilter;
         }
 
         await OnRefresh();
-        await base.OnInitializedAsync();
     }
     
+    protected override IQuery<Result<PaginatedData<PRIPaginationDto>>> CreateQuery()
+    {
+        Query.CurrentUser = UserProfile;
+        return Query;
+    }
+
+    protected override void OnDataLoaded(PaginatedData<PRIPaginationDto> data)
+    {
+        base.OnDataLoaded(data);
+        _data = data.Items.ToArray();
+        _totalPages = data.TotalPages;
+        _totalItems = data.TotalItems;
+    }
+
+    protected override void OnError(string errorMessage)
+    {
+        base.OnError(errorMessage);
+        _data = [];
+        _totalPages = 0;
+        _totalItems = 0;
+        if (!string.IsNullOrEmpty(errorMessage))
+        {
+            Snackbar.Add(errorMessage, Severity.Error);
+        }
+    }
+
     private async Task OnRefresh()
     {
-        _loading = true;
+        // The list is loaded through the component's shared mediator (one DbContext),
+        // so serialize refreshes to avoid overlapping operations on that context.
+        await _refreshLock.WaitAsync();
         try
         {
-            Query.CurrentUser = UserProfile;
-            var result = await GetNewMediator().Send(Query);
+            // Cached task lists may be stale after a refresh/complete/abandon; collapse and reload on demand
+            _tasks.Clear();
+            _expanded.Clear();
 
-            if (result is { Succeeded: true, Data: not null })
-            {
-                _data = result.Data.Items.ToArray();
-                _totalPages = result.Data.TotalPages;
-                _totalItems = result.Data.TotalItems;
-            }
-            else
-            {
-                _data = [];
-                _totalPages = 0;
-                _totalItems = 0;
-                if (!string.IsNullOrEmpty(result.ErrorMessage))
-                {
-                    Snackbar.Add(result.ErrorMessage, Severity.Error);
-                }
-            }
-            
+            await LoadDataAsync();
+
             // Save session state
             await SessionStorage.SetAsync(ActivePRIsSessionData.FromQuery(Query, Tabular, _priTypeFilter));
         }
         finally
         {
-            _loading = false;
+            _refreshLock.Release();
         }
     }
-    
+
+    /// <summary>
+    /// Sends a request using a fresh service scope (and so a fresh DbContext), so that it can never
+    /// overlap with another operation on the component's shared mediator.
+    /// </summary>
+    private async Task<T> SendInNewScope<T>(Func<IMediator, Task<T>> send)
+    {
+        using var scope = ScopeFactory.CreateScope();
+        return await send(scope.ServiceProvider.GetRequiredService<IMediator>());
+    }
+
     private async Task TabularChanged(bool? tabular)
     {
         Tabular = tabular ?? true;
@@ -136,7 +166,7 @@ public partial class ActivePRIs
         {
             _downloading = true;
 
-            var result = await GetNewMediator().Send(new ExportActivePRIs.Command
+            var result = await SendInNewScope(m => m.Send(new ExportActivePRIs.Command
             {
                 Request = new ExportActivePRIs.ActivePRIsExportRequest
                 {
@@ -149,10 +179,11 @@ public partial class ActivePRIs
                     CommunitySupportWorker = Query.CommunitySupportWorker,
                     ExpectedReleaseRegionId = Query.ExpectedReleaseRegionId,
                     ActiveStatus = Query.ActiveStatus,
+                    StatusFilter = Query.StatusFilter,
                     OrderBy = Query.OrderBy,
                     SortDirection = Query.SortDirection
                 }
-            });
+            }));
 
             if (result.Succeeded)
             {
@@ -175,7 +206,7 @@ public partial class ActivePRIs
 
     private async Task OnSearch(string? text)
     {
-        if (_loading)
+        if (Loading)
         {
             return;
         }
@@ -196,7 +227,9 @@ public partial class ActivePRIs
         await OnRefresh();
     }
 
-    private void ViewParticipant(PRIPaginationDto pri) => Navigation.NavigateTo($"/pages/workspace/participants/{pri.ParticipantId}?from=activepri");
+    private static string ParticipantUrl(string participantId) => $"/pages/workspace/participants/{participantId}?from=activepri";
+
+    private void ViewParticipant(PRIPaginationDto pri) => Navigation.NavigateTo(ParticipantUrl(pri.ParticipantId));
 
     private async Task CreatePriCode()
     {
@@ -252,7 +285,16 @@ public partial class ActivePRIs
             CompletedBy = CurrentUser.UserId
         };
 
-        var result = await GetNewMediator().Send(completePriCommand);
+        Result result;
+        try
+        {
+            result = await SendInNewScope(m => m.Send(completePriCommand));
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("An error has occurred while completing the PRI.", Severity.Error);
+            return;
+        }
 
         if (result.Succeeded)
         {
@@ -333,6 +375,55 @@ public partial class ActivePRIs
         await OnRefresh();
     }
 
+    private async Task OnStatusFilterChanged(PriStatusFilter filter)
+    {
+        Query.StatusFilter = filter;
+        Query.PageNumber = 1;
+        await OnRefresh();
+    }
+
+    private async Task ToggleTasks(PRIPaginationDto pri)
+    {
+        if (!_expanded.Add(pri.Id))
+        {
+            _expanded.Remove(pri.Id);
+            return;
+        }
+
+        if (_tasks.ContainsKey(pri.Id))
+        {
+            return;
+        }
+
+        Result<ObjectiveTaskDto[]> result;
+        try
+        {
+            var query = new GetPriTasks.Query { PriId = pri.Id, CurrentUser = UserProfile! };
+            result = await SendInNewScope(m => m.Send(query));
+        }
+        catch (Exception)
+        {
+            _expanded.Remove(pri.Id);
+            Snackbar.Add("An error has occurred while loading the tasks for this PRI.", Severity.Error);
+            return;
+        }
+        if (result is { Succeeded: true, Data: not null })
+        {
+            _tasks[pri.Id] = result.Data;
+        }
+        else
+        {
+            // Don't cache the failure; collapse the row so the user can retry.
+            _expanded.Remove(pri.Id);
+            Snackbar.Add(string.IsNullOrEmpty(result.ErrorMessage) ? "Unable to load tasks for this PRI." : result.ErrorMessage, Severity.Error);
+        }
+    }
+
+    private static Color PriStatusColor(PriStatus status) =>
+        status == PriStatus.Completed ? Color.Success
+        : status == PriStatus.Abandoned ? Color.Warning
+        : Color.Info;
+
     private async Task OnQuickFilterChanged(bool justMyPris)
     {
         Query.JustMyPris = justMyPris;
@@ -361,6 +452,7 @@ public partial class ActivePRIs
         Query.CommunitySupportWorker = null;
         Query.ExpectedReleaseRegionId = null;
         Query.ActiveStatus = null;
+        Query.StatusFilter = PriStatusFilter.Active;
         Query.JustMyPris = false;
         Query.PageNumber = 1;
         Query.OrderBy = "Id";

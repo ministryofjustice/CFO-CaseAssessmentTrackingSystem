@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.PRIs.DTOs;
 public class PRIPaginationDto
 {
     [Description("PRI Id")]
-    public required Guid Id { get; set; } = default!;
+    public required Guid Id { get; set; }
 
     [Description("Participant Id")]
     public required string ParticipantId { get; set; }
@@ -27,7 +27,7 @@ public class PRIPaginationDto
     public DateOnly? ExpectedReleaseDate { get; set; }
 
     [Description("Community Support Worker")]
-    public string? AssignedTo { get; private set; }
+    public string? AssignedTo { get; private init; }
 
     [Description("Custody Support Worker")]
     public string? CreatedBy { get; set; }
@@ -38,6 +38,8 @@ public class PRIPaginationDto
     public string? ExpectedReleaseRegionName { get; set; }
 
     public required bool ParticipantIsActive { get; set; }
+
+    public PriStatus Status { get; set; } = PriStatus.Created;
 
     private class Mapping : Profile
     {

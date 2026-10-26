@@ -23,7 +23,8 @@ public record ActivePRIsSessionData
             CommunitySupportWorker = query.CommunitySupportWorker,
             ExpectedReleaseRegionId = query.ExpectedReleaseRegionId,
             ActiveStatus = query.ActiveStatus,
-            JustMyPris = query.JustMyPris
+            JustMyPris = query.JustMyPris,
+            StatusFilter = query.StatusFilter
         };
 
     public required string? Keyword { get; init; }
@@ -39,6 +40,7 @@ public record ActivePRIsSessionData
     public int? ExpectedReleaseRegionId { get; init; }
     public bool? ActiveStatus { get; init; }
     public bool JustMyPris { get; init; }
+    public PriStatusFilter StatusFilter { get; init; } = PriStatusFilter.Active;
 }
 
 public enum PriTypeFilter

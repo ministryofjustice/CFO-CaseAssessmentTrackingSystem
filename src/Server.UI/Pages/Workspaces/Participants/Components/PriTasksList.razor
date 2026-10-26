@@ -1,0 +1,54 @@
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+
+@if (Tasks is null)
+{
+    <MudProgressLinear Indeterminate="true" Size="Size.Small"/>
+}
+else if (Tasks.Length == 0)
+{
+    <MudText Typo="Typo.body2" Class="mud-text-secondary pa-2">No tasks found for this PRI.</MudText>
+}
+else
+{
+    <MudSimpleTable Dense="true" Style="overflow-x: auto;">
+        <thead>
+        <tr>
+            <th>Task</th>
+            <th>Due</th>
+            <th>Status</th>
+            <th>Completed</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var task in Tasks)
+        {
+            <tr>
+                <td>@task.DisplayName</td>
+                <td>@task.Due.ToString("MMM, yyyy")</td>
+                <td>
+                    @if (task.IsCompleted)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="@(task.CompletedStatus == CompletionStatus.Done ? Color.Success : Color.Default)">
+                            @(task.CompletedStatus?.Name ?? "Completed")
+                        </MudChip>
+                    }
+                    else if (task.IsOverdue)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Error">Overdue</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Info">Open</MudChip>
+                    }
+                </td>
+                <td>@(task.Completed?.ToString("dd/MM/yyyy") ?? "-")</td>
+            </tr>
+        }
+        </tbody>
+    </MudSimpleTable>
+}
+
+@code {
+    /// <summary>Null while loading.</summary>
+    [Parameter] public ObjectiveTaskDto[]? Tasks { get; set; }
+}

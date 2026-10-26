@@ -1,11 +1,25 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Entities.PRIs;
-using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Application.Features.PRIs.Queries.Extensions;
 
 public static class PRIFilterExtensions
 {
+    public static IQueryable<PRI> ApplyStatusFilter(
+        this IQueryable<PRI> query,
+        PriStatusFilter statusFilter)
+    {
+        var activeStatuses = PriStatus.ActiveList.ToList();
+
+        return statusFilter switch
+        {
+            PriStatusFilter.Completed => query.Where(x => x.Status == PriStatus.Completed),
+            PriStatusFilter.Abandoned => query.Where(x => x.Status == PriStatus.Abandoned),
+            PriStatusFilter.All => query,
+            _ => query.Where(x => activeStatuses.Contains(x.Status))
+        };
+    }
+
     public static IQueryable<PRI> ApplyTenantFilter(
         this IQueryable<PRI> query,
         UserProfile currentUser)
@@ -68,7 +82,7 @@ public static class PRIFilterExtensions
         }
 
         return query.Where(p => 
-            p.ParticipantId!.Contains(keyword)
+            p.ParticipantId.Contains(keyword)
             || p.Participant!.FirstName.Contains(keyword)
             || p.Participant!.LastName.Contains(keyword)
             || p.ExpectedReleaseRegion.Name.Contains(keyword));
@@ -124,10 +138,9 @@ public static class PRIFilterExtensions
             // Active participants - use EnrolmentStatus.ActiveList which EF Core can translate
             return query.Where(p => EnrolmentStatus.ActiveList.Contains(p.Participant!.EnrolmentStatus));
         }
-        else
-        {
-            // Inactive participants - NOT in ActiveList
-            return query.Where(p => !EnrolmentStatus.ActiveList.Contains(p.Participant!.EnrolmentStatus));
-        }
+
+        // Inactive participants - NOT in ActiveList
+        return query.Where(p => !EnrolmentStatus.ActiveList.Contains(p.Participant!.EnrolmentStatus));
+
     }
 }
