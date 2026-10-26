@@ -193,7 +193,25 @@ consumers:
   image:
     repository: ghcr.io/ministryofjustice/hmpps-cfo-cats
     tag: ""
-  replicaCount: 2
+  # One Deployment per entry. Each runs the same image but only the consumer services
+  # selected by include/exclude (Overnight, Tasks, Payment, Documents, Telemetry).
+  # An empty include means "all"; exclude is applied last. Every service must be covered by
+  # exactly one deployment, otherwise its queue is not consumed (or is consumed twice).
+  deployments:
+    general:
+      name: general-consumer
+      replicas: 2
+      exclude: [Payment]
+    payment:
+      name: payment-consumer
+      # Payment must never process concurrently: single replica, and Recreate so the old pod
+      # has fully terminated before the new one starts. The grace period must exceed the
+      # host shutdown timeout so an in-flight message can finish.
+      replicas: 1
+      strategy: Recreate
+      shutdownTimeoutSeconds: 120
+      terminationGracePeriodSeconds: 150
+      include: [Payment]
   resources:
     requests:
       cpu: 100m
