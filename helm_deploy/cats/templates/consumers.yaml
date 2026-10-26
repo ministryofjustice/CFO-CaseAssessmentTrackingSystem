@@ -1,34 +1,42 @@
+{{- range $key, $d := .Values.consumers.deployments }}
+{{- $name := $d.name | default (printf "cats-consumers-%s" $key) }}
+{{- $strategy := $d.strategy | default "RollingUpdate" }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cats-consumers
+  name: {{ $name }}
   labels:
-    app: cats-consumers
+    app: {{ $name }}
 spec:
-  replicas: {{ .Values.consumers.replicaCount | default 1 }}
+  replicas: {{ $d.replicas | default 1 }}
   revisionHistoryLimit: 2
   minReadySeconds: 10
-  # RollingUpdate is safe here: the Rebus consumers are competing consumers, so
-  # briefly running old and new pods together during a rollout is acceptable.
+  # Recreate terminates the old pods and waits for them to be gone before starting new ones.
+  # Use it (with replicas: 1) for consumers that must never run concurrently, e.g. payment.
+  # RollingUpdate is safe for competing consumers.
   strategy:
-    type: RollingUpdate
+    type: {{ $strategy }}
   selector:
     matchLabels:
-      app: cats-consumers
+      app: {{ $name }}
   template:
     metadata:
       labels:
-        app: cats-consumers
+        app: {{ $name }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccountName }}
+      serviceAccountName: {{ $.Values.serviceAccountName }}
+      {{- with $d.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
       containers:
-        - name: cats-consumers
+        - name: {{ $name }}
           # Combined image (Dockerfile) with a command override to run the Consumers.
-          image: "{{ .Values.consumers.image.repository }}:{{ .Values.consumers.image.tag | default .Chart.AppVersion }}"
+          image: "{{ $.Values.consumers.image.repository }}:{{ $.Values.consumers.image.tag | default $.Chart.AppVersion }}"
           command: ["dotnet", "/app/consumers/Cfo.Cats.Consumers.dll", "--contentRoot", "/app/consumers"]
           securityContext:
             allowPrivilegeEscalation: false
@@ -59,25 +67,37 @@ spec:
             periodSeconds: 20
             failureThreshold: 3
           resources:
-            {{- toYaml .Values.consumers.resources | nindent 12 }}
+            {{- toYaml ($d.resources | default $.Values.consumers.resources) | nindent 12 }}
           env:
-            {{- include "cats.databaseEnv" . | nindent 12 }}
-            {{- include "cats.namespaceSecretsEnv" .Values.consumers.namespace_secrets | nindent 12 }}
+            {{- include "cats.databaseEnv" $ | nindent 12 }}
+            {{- include "cats.namespaceSecretsEnv" $.Values.consumers.namespace_secrets | nindent 12 }}
             - name: Sentry__Release
-              value: {{ .Chart.AppVersion | quote }}
+              value: {{ $.Chart.AppVersion | quote }}
             - name: AppConfigurationSettings__Version
-              value: {{ .Chart.AppVersion | quote }}
-            {{- range $key, $val := .Values.consumers.env }}
-            - name: {{ $key }}
+              value: {{ $.Chart.AppVersion | quote }}
+            {{- range $envKey, $val := merge (dict) ($d.env | default dict) $.Values.consumers.env }}
+            - name: {{ $envKey }}
               value: {{ $val | quote }}
+            {{- end }}
+            {{- range $i, $c := $d.include }}
+            - name: Consumers__Include__{{ $i }}
+              value: {{ $c | quote }}
+            {{- end }}
+            {{- range $i, $c := $d.exclude }}
+            - name: Consumers__Exclude__{{ $i }}
+              value: {{ $c | quote }}
+            {{- end }}
+            {{- with $d.shutdownTimeoutSeconds }}
+            - name: shutdownTimeoutSeconds
+              value: {{ . | quote }}
             {{- end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cats-consumers
+  name: {{ $name }}
   labels:
-    app: cats-consumers
+    app: {{ $name }}
 spec:
   type: ClusterIP
   ports:
@@ -86,4 +106,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: cats-consumers
+    app: {{ $name }}
+{{- end }}
