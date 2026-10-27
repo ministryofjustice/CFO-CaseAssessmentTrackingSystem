@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Announcements.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -29,10 +28,12 @@ public static class GetAnnouncements
     {
         public async Task<Result<AnnouncementDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
-            AnnouncementAccess.EnsureAudience(currentUserService.IsInternalUser.GetValueOrDefault(), request.Audience);
+            var isInternal = currentUserService.IsInternalUser.GetValueOrDefault();
             var query = unitOfWork.DbContext.Announcements.AsNoTracking()
                 .Where(a => a.DeletedAt == null
-                    && a.Revisions.Any(r => r.Id == a.PublishedRevisionId && r.Audience == request.Audience));
+                    && a.Revisions.Any(r => r.Id == a.PublishedRevisionId
+                        && r.Audience == request.Audience
+                        && (r.Audience == AnnouncementAudience.AllStaff || isInternal)));
             var announcements = await query.ToArrayAsync(cancellationToken);
             return Result<AnnouncementDto[]>.Success(announcements
                 .OrderByDescending(a => a.PublishedRevision!.PublishedAt)

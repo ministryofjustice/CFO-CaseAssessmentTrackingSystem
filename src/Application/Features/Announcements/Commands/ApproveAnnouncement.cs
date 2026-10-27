@@ -32,9 +32,14 @@ public static class ApproveAnnouncement
         {
             var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to approve announcements.");
             var announcement = await repository.GetByIdAsync(request.Id, cancellationToken);
-            var user = AnnouncementAccess.GetUser(userService, userId);
-            var isInternalUser = currentUserService.IsInternalUser.GetValueOrDefault();
-            AnnouncementAccess.EnsureManagementAudience(isInternalUser, announcement);
+            var user = userService.DataSource.SingleOrDefault(x => x.Id == userId)
+                ?? throw new NotFoundException("User not found.");
+            if (!currentUserService.IsInternalUser.GetValueOrDefault()
+                && (announcement.PendingRevision?.Audience == AnnouncementAudience.InternalStaff
+                    || announcement.PublishedRevision?.Audience == AnnouncementAudience.InternalStaff))
+            {
+                throw new ForbiddenException("Only internal staff can access internal announcements.");
+            }
             if (user.IsInRole(RoleNames.SystemSupport)
                 && announcement.PendingRevision?.SubmittedBy == userId)
             {

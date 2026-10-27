@@ -102,7 +102,6 @@ public class AnnouncementCommandTests
     [Test]
     public async Task InternalUserCanCreateInternalAnnouncement()
     {
-        _user.UserName = "manager@justice.gov.uk";
         _currentUser.SetupGet(x => x.IsInternalUser).Returns(true);
         var command = Command();
         command.Audience = AnnouncementAudience.InternalStaff;
@@ -110,23 +109,47 @@ public class AnnouncementCommandTests
     }
 
     [Test]
-    public void NonInternalUserCannotChangeAnInternalAnnouncementToAllStaff()
+    public void InternalEmailDoesNotOverrideTheCurrentUserFlag()
+    {
+        _user.UserName = "manager@justice.gov.uk";
+        _currentUser.SetupGet(x => x.IsInternalUser).Returns(false);
+        var command = Command();
+        command.Audience = AnnouncementAudience.InternalStaff;
+
+        Should.Throw<ForbiddenException>(async () => await _handler.Handle(command, CancellationToken.None));
+
+        _repository.Verify(x => x.AddAsync(It.IsAny<Announcement>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void NonInternalUserCannotChangeAnInternalAnnouncementToAllStaff(bool published)
     {
         var announcement = Announcement.Create(
             "General", AnnouncementAudience.InternalStaff, "Internal", [], "creator");
+        if (published)
+        {
+            announcement.Approve(announcement.Version, "reviewer");
+        }
         _repository.Setup(x => x.GetByIdAsync(announcement.Id, It.IsAny<CancellationToken>())).ReturnsAsync(announcement);
         var command = Command();
         command.Id = announcement.Id;
         command.Version = announcement.Version;
         Should.Throw<ForbiddenException>(async () => await _handler.Handle(command, CancellationToken.None));
-        announcement.PendingRevision!.Description.ShouldBe("Internal");
+        (announcement.PendingRevision ?? announcement.PublishedRevision)!.Description.ShouldBe("Internal");
     }
 
-    [Test]
-    public void InternalApprovalAndDeletionRequireInternalAccess()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void InternalApprovalAndDeletionRequireInternalAccess(bool published)
     {
         var announcement = Announcement.Create(
             "General", AnnouncementAudience.InternalStaff, "Internal", [], "creator");
+        if (published)
+        {
+            announcement.Approve(announcement.Version, "reviewer");
+            announcement.Edit(announcement.Version, "General", AnnouncementAudience.AllStaff, "Public edit", [], "editor");
+        }
         _repository.Setup(x => x.GetByIdAsync(announcement.Id, It.IsAny<CancellationToken>())).ReturnsAsync(announcement);
         var approve = new ApproveAnnouncement.Handler(_repository.Object, _currentUser.Object, _users.Object);
         var delete = new DeleteAnnouncement.Handler(_repository.Object, _currentUser.Object);
@@ -134,7 +157,7 @@ public class AnnouncementCommandTests
             new ApproveAnnouncement.Command { Id = announcement.Id, Version = announcement.Version }, CancellationToken.None));
         Should.Throw<ForbiddenException>(async () => await delete.Handle(
             new DeleteAnnouncement.Command { Id = announcement.Id, Version = announcement.Version }, CancellationToken.None));
-        announcement.PublishedRevision.ShouldBeNull();
+        announcement.PendingRevision.ShouldNotBeNull();
         announcement.DeletedAt.ShouldBeNull();
     }
 

@@ -54,9 +54,13 @@ public static class SaveAnnouncement
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
             var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to manage announcements.");
-            var user = AnnouncementAccess.GetUser(userService, userId);
+            var user = userService.DataSource.SingleOrDefault(x => x.Id == userId)
+                ?? throw new NotFoundException("User not found.");
             var isInternalUser = currentUserService.IsInternalUser.GetValueOrDefault();
-            AnnouncementAccess.EnsureAudience(isInternalUser, request.Audience);
+            if (request.Audience == AnnouncementAudience.InternalStaff && !isInternalUser)
+            {
+                throw new ForbiddenException("Only internal staff can access internal announcements.");
+            }
             var typeName = await repository.GetTypeNameAsync(request.TypeName, cancellationToken);
             var canAutoApprove = request.PublishImmediately
                 && user.IsInRole(RoleNames.SystemSupport);
@@ -71,7 +75,12 @@ public static class SaveAnnouncement
             if (request.Id is { } id)
             {
                 announcement = await repository.GetByIdAsync(id, cancellationToken);
-                AnnouncementAccess.EnsureManagementAudience(isInternalUser, announcement);
+                if (!isInternalUser
+                    && (announcement.PendingRevision?.Audience == AnnouncementAudience.InternalStaff
+                        || announcement.PublishedRevision?.Audience == AnnouncementAudience.InternalStaff))
+                {
+                    throw new ForbiddenException("Only internal staff can access internal announcements.");
+                }
                 announcement.Edit(request.Version, typeName, request.Audience, request.Description, links, userId,
                     request.Title, request.PostedBy, submittedByName);
             }
