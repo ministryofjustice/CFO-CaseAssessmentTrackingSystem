@@ -84,7 +84,7 @@ public static class DependencyInjection
         // When Features:UseWorkerForConsumers is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
         if (!configuration.GetValue<bool>("Features:UseWorkerForConsumers"))
         {
-            services.AddMessageConsumers();
+            services.AddMessageConsumers(configuration);
         }
 
         services.AddCatsConsumer();
@@ -179,7 +179,7 @@ public static class DependencyInjection
         services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
 
         // Host the Rebus message consumers here.
-        services.AddMessageConsumers();
+        services.AddMessageConsumers(configuration);
 
         return services;
     }
@@ -187,10 +187,14 @@ public static class DependencyInjection
     /// <summary>
     /// Registers the Rebus message consumer handlers (all <see cref="IHandleMessages{TMessage}"/>
     /// implementations from the Application assembly) and the background services that host them.
-    /// This runs either in Server.UI or in the standalone Worker depending on Features:UseWorkerForJobs.
+    /// This runs either in Server.UI or in the standalone Consumers process depending on Features:UseWorkerForConsumers.
+    /// Which hosted services run is controlled by <c>Consumers:Include</c> / <c>Consumers:Exclude</c>.
     /// </summary>
-    private static IServiceCollection AddMessageConsumers(this IServiceCollection services)
+    private static IServiceCollection AddMessageConsumers(this IServiceCollection services, IConfiguration configuration)
     {
+        var selectionOptions = configuration.GetSection(ConsumerSelectionOptions.Key).Get<ConsumerSelectionOptions>() ?? new();
+        var enabled = ConsumerSelection.Resolve(selectionOptions);
+
         var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
             .GetTypes()
             .Where(t => t.IsAbstract == false && t.GetInterfaces()
@@ -201,11 +205,33 @@ public static class DependencyInjection
             services.AddScoped(handler);
         }
 
-        services.AddHostedService<OvernightBackgroundService>();
-        services.AddHostedService<TasksBackgroundService>();
-        services.AddHostedService<PaymentBackgroundService>();
-        services.AddHostedService<DocumentsBackgroundService>();
-        services.AddHostedService<TelemetryBackgroundService>();
+        if (enabled.Contains(ConsumerNames.Overnight))
+        {
+            services.AddHostedService<OvernightBackgroundService>();
+        }
+
+        if (enabled.Contains(ConsumerNames.Tasks))
+        {
+            services.AddHostedService<TasksBackgroundService>();
+        }
+
+        if (enabled.Contains(ConsumerNames.Payment))
+        {
+            services.AddHostedService<PaymentBackgroundService>();
+        }
+
+        if (enabled.Contains(ConsumerNames.Documents))
+        {
+            services.AddHostedService<DocumentsBackgroundService>();
+        }
+
+        if (enabled.Contains(ConsumerNames.Telemetry))
+        {
+            services.AddHostedService<TelemetryBackgroundService>();
+        }
+
+        services.AddHostedService(sp => new ConsumerSelectionLogger(
+            sp.GetRequiredService<ILogger<ConsumerSelectionLogger>>(), enabled));
 
         return services;
     }
