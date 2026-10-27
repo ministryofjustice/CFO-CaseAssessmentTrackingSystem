@@ -153,7 +153,7 @@ generic-service:
     Features__Redis__Enabled: "true"
     Features__Redis__SignalRBackplane: "true"
     Features__Redis__SessionStore: "true"
-    Features__DmsHardLinkApiEnabled: "true"
+    Features__UseDmsHardLinkApi: "true"
     Features__EnablePrometheusScrapingEndpoint: "true"
     Features__HmppsExternalApi__Enabled: "true"
     WorkerOptions__BaseUrl: "http://cats-worker:8080"
