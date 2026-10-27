@@ -104,7 +104,8 @@ public partial class AnnouncementList
             Version = announcement?.Version ?? Guid.Empty,
             TypeName = revision is null ? types.FirstOrDefault(x => x == "General") ?? types[0]
                 : currentTypeAvailable ? revision.TypeName : string.Empty,
-            Audience = revision?.Audience ?? AnnouncementAudience.AllStaff,
+            Audience = revision?.Audience
+                ?? (CanViewInternal ? AnnouncementAudience.InternalStaff : AnnouncementAudience.AllStaff),
             Title = revision?.Title ?? string.Empty,
             PostedBy = revision?.PostedBy ?? (string.IsNullOrWhiteSpace(CurrentUser.DisplayName) ? CurrentUser.UserName : CurrentUser.DisplayName),
             Description = revision?.Description ?? string.Empty,

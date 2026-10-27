@@ -1,15 +1,9 @@
 using System.Reflection;
-using AutoMapper;
-using Cfo.Cats.Application.Common.Exceptions;
-using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Announcements.Commands;
 using Cfo.Cats.Application.Features.Announcements.Queries;
-using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Announcements;
-using Moq;
 using NUnit.Framework;
 using Shouldly;
 
@@ -17,22 +11,6 @@ namespace Cfo.Cats.Application.UnitTests.Announcements;
 
 public class AnnouncementAccessTests
 {
-    [Test]
-    public void InternalReaderQueryRejectsExternalUsersBeforeAccessingData()
-    {
-        var currentUser = new Mock<ICurrentUserService>();
-        currentUser.SetupGet(x => x.UserId).Returns("provider");
-        var unitOfWork = new Mock<IUnitOfWork>(MockBehavior.Strict);
-        currentUser.SetupGet(x => x.IsInternalUser).Returns(false);
-        var handler = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object,
-            new Mock<IMapper>().Object);
-
-        Should.Throw<ForbiddenException>(async () => await handler.Handle(
-            new GetAnnouncements.Query { Audience = AnnouncementAudience.InternalStaff }, CancellationToken.None));
-
-        unitOfWork.VerifyGet(x => x.DbContext, Times.Never);
-    }
-
     [TestCase(typeof(SaveAnnouncement.Command))]
     [TestCase(typeof(ApproveAnnouncement.Command))]
     [TestCase(typeof(DeleteAnnouncement.Command))]
@@ -45,39 +23,20 @@ public class AnnouncementAccessTests
         => typeof(GetAnnouncements.Query).GetCustomAttribute<RequestAuthorizeAttribute>()!
             .Policy.ShouldBe(SecurityPolicies.AuthorizedUser);
 
-    [TestCase("staff@justice.gov.uk", true)]
-    [TestCase("STAFF@JUSTICE.GOV.UK", true)]
-    [TestCase("staff@provider.org", false)]
-    [TestCase("staff@justice.gov.uk.provider.org", false)]
-    [TestCase("", false)]
-    [TestCase(null, false)]
-    public void InternalClassificationUsesTheExistingClaimRule(string userName, bool expected)
-        => UserProfile.IsInternalEmail(userName).ShouldBe(expected);
-
-    [Test]
-    public void InternalClassificationDoesNotRequireAnInternalRoleOrAnUnlockedAccount()
+    [TestCase("staff@provider.org", true)]
+    [TestCase("staff@justice.gov.uk", false)]
+    public void ProfileAndDomainUserPreserveInternalFlagRegardlessOfEmail(string email, bool isInternalUser)
     {
-        var user = new ApplicationUserDto
+        var profile = new UserProfile
         {
-            Id = "internal",
-            UserName = "staff@justice.gov.uk",
-            AssignedRoles = [],
-            LockoutEnd = DateTimeOffset.MaxValue
+            UserId = "user",
+            UserName = email,
+            Email = email,
+            IsInternalUser = isInternalUser
         };
-        Should.NotThrow(() => Cfo.Cats.Application.Features.Announcements.AnnouncementAccess.EnsureAudience(
-            true, AnnouncementAudience.InternalStaff));
+
+        profile.IsInternalUser.ShouldBe(isInternalUser);
+        profile.AsDomainUser().IsInternalUser.ShouldBe(isInternalUser);
     }
 
-    [Test]
-    public void AnInternalRoleAloneDoesNotExposeInternalAnnouncements()
-    {
-        var user = new ApplicationUserDto
-        {
-            Id = "provider",
-            UserName = "staff@provider.org",
-            AssignedRoles = [RoleNames.SystemSupport, RoleNames.SMT]
-        };
-        Should.Throw<ForbiddenException>(() => Cfo.Cats.Application.Features.Announcements.AnnouncementAccess.EnsureAudience(
-            false, AnnouncementAudience.InternalStaff));
-    }
 }

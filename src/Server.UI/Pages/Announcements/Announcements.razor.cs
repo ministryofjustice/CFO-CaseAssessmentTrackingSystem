@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Application.Common.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -8,6 +9,7 @@ public partial class Announcements
 {
     [SupplyParameterFromQuery(Name = "internal")] public bool Internal { get; set; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
+    [CascadingParameter] private UserProfile CurrentUser { get; set; } = null!;
 
     private bool _loading = true;
     private bool _canViewInternal;
@@ -22,7 +24,7 @@ public partial class Announcements
     protected override async Task OnParametersSetAsync()
     {
         var state = await AuthState;
-        _canViewInternal = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+        _canViewInternal = CurrentUser.IsInternalUser;
         _canManage = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
         _canPublishImmediately = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
         _activeTab = Internal && _canViewInternal ? 1 : 0;

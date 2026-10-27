@@ -1,4 +1,6 @@
 using Cfo.Cats.Application.Features.Bios.IntegrationEvents;
+using Cfo.Cats.Application.Features.Announcements.IntegrationEvents;
+using Cfo.Cats.Application.Features.Announcements.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.ParticipantLabels.IntegrationEventHandlers;
@@ -40,7 +42,8 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordDisabledLabelStatusConsumer>(provider)
             .Handle<RecordHomelessLabelStatusConsumer>(provider)
             .Handle<RecordNeurodiverseLabelStatusConsumer>(provider)
-            .Handle<ParticipantCreatedIntegrationEventConsumer>(provider);
+            .Handle<ParticipantCreatedIntegrationEventConsumer>(provider)
+            .Handle<NotifyUsersOnAnnouncementPublishedConsumer>(provider);
 
         var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
@@ -62,6 +65,7 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<BioSubmittedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
         await _bus.Subscribe<ParticipantCreatedIntegrationEvent>();
+        await _bus.Subscribe<AnnouncementPublishedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

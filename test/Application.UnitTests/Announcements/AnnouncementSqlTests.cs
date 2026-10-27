@@ -294,8 +294,9 @@ public class AnnouncementSqlTests
         return announcement;
     }
 
-    [Test]
-    public async Task ReaderAndManagementQueriesEnforceAudienceAndPublicationState()
+    [TestCase(false)]
+    [TestCase(null)]
+    public async Task ReaderAndManagementQueriesEnforceAudienceAndPublicationState(bool? isInternalUser)
     {
         await using var context = Context();
         var shared = Published(AnnouncementAudience.AllStaff);
@@ -314,6 +315,7 @@ public class AnnouncementSqlTests
         unitOfWork.SetupGet(x => x.DbContext).Returns(context);
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.SetupGet(x => x.UserId).Returns("reader");
+        currentUser.SetupGet(x => x.IsInternalUser).Returns(isInternalUser);
         var mapper = new MapperConfiguration(c => c.AddMaps(typeof(AnnouncementDto).Assembly)).CreateMapper();
         var reader = new GetAnnouncements.Handler(unitOfWork.Object, currentUser.Object, mapper);
         var management = new GetAnnouncementsForManagement.Handler(unitOfWork.Object, currentUser.Object, mapper);
@@ -329,6 +331,10 @@ public class AnnouncementSqlTests
 
         var externalManagement = await management.Handle(new GetAnnouncementsForManagement.Query(), CancellationToken.None);
         externalManagement.Data!.Select(a => a.Id).ShouldBe(new[] { shared.Id, draft.Id }, ignoreOrder: true);
+        var externalInternalResult = await reader.Handle(new GetAnnouncements.Query
+            { Audience = AnnouncementAudience.InternalStaff }, CancellationToken.None);
+        externalInternalResult.Succeeded.ShouldBeTrue();
+        externalInternalResult.Data!.ShouldBeEmpty();
         currentUser.SetupGet(x => x.IsInternalUser).Returns(true);
         var internalResult = await reader.Handle(new GetAnnouncements.Query
             { Audience = AnnouncementAudience.InternalStaff }, CancellationToken.None);

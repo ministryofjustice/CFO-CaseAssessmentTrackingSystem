@@ -54,4 +54,17 @@ public class AnnouncementHostRegistrationTests
                 .ShouldNotContain(parameter => parameter.ParameterType == typeof(IIdentityService));
         }
     }
+
+    [Test]
+    public void AnnouncementHandlersDoNotStartNestedMediatorRequests()
+    {
+        var handlers = typeof(Cfo.Cats.Application.Features.Announcements.Commands.SaveAnnouncement.Handler).Assembly
+            .GetTypes().Where(type => type.Namespace?.StartsWith(
+                "Cfo.Cats.Application.Features.Announcements", StringComparison.Ordinal) == true);
+        foreach (var type in handlers)
+        {
+            type.GetConstructors().SelectMany(constructor => constructor.GetParameters())
+                .ShouldNotContain(parameter => parameter.ParameterType == typeof(Cortex.Mediator.IMediator));
+        }
+    }
 }

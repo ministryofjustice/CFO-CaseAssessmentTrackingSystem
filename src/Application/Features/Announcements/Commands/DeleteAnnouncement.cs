@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Announcements;
@@ -31,7 +30,12 @@ public static class DeleteAnnouncement
         {
             var userId = currentUserService.UserId ?? throw new UnauthorizedException("Sign in to delete announcements.");
             var announcement = await repository.GetByIdAsync(request.Id, cancellationToken);
-            AnnouncementAccess.EnsureManagementAudience(currentUserService.IsInternalUser.GetValueOrDefault(), announcement);
+            if (!currentUserService.IsInternalUser.GetValueOrDefault()
+                && (announcement.PendingRevision?.Audience == AnnouncementAudience.InternalStaff
+                    || announcement.PublishedRevision?.Audience == AnnouncementAudience.InternalStaff))
+            {
+                throw new ForbiddenException("Only internal staff can access internal announcements.");
+            }
             announcement.Delete(request.Version, userId);
             return Result.Success();
         }
