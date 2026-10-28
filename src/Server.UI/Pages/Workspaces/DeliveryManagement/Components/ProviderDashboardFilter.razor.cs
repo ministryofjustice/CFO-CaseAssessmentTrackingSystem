@@ -7,7 +7,7 @@ namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Components;
 
 /// <summary>
 /// Tenant + user drill-down selectors for the Provider workspace dashboards, following the same
-/// dialog-driven pattern as the Participants list. Rendered only for staff who may filter; the user
+/// dialogue-driven pattern as the Participants list. Rendered only for staff who may filter; the user
 /// picker is scoped to the selected tenant so drilling down narrows the choices.
 /// </summary>
 public partial class ProviderDashboardFilter
@@ -38,6 +38,12 @@ public partial class ProviderDashboardFilter
 
     [Parameter]
     public bool ShowUser { get; set; }= true;
+
+    /// <summary>
+    /// Hide the built-in clear button when the host page provides its own "clear all" button.
+    /// </summary>
+    [Parameter]
+    public bool ShowClear { get; set; } = true;
 
     private IDictionary<string, string> _users = new Dictionary<string, string>();
     private IDictionary<string, string> _tenants = new Dictionary<string, string>();

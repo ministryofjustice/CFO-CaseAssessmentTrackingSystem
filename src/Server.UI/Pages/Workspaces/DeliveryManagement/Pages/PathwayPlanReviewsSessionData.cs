@@ -10,17 +10,35 @@ public record PathwayPlanReviewsSessionData
     public bool ShowOverdueOnly { get; init; }
     public string? TenantId { get; init; }
     public string? UserId { get; init; }
+    public int ParticipantLocationId { get; init; }
+    public string? ParticipantLocationName { get; init; }
+    public int ReviewLocationId { get; init; }
+    public string? ReviewLocationName { get; init; }
+    public int? ReviewReason { get; init; }
+    public string? Keyword { get; init; }
 
     internal static PathwayPlanReviewsSessionData FromState(
         bool visualMode,
         bool showOverdueOnly,
         string? tenantId,
-        string? userId)
+        string? userId,
+        int participantLocationId,
+        string? participantLocationName,
+        int reviewLocationId,
+        string? reviewLocationName,
+        int? reviewReason,
+        string? keyword)
         => new()
         {
             VisualMode = visualMode,
             ShowOverdueOnly = showOverdueOnly,
             TenantId = tenantId,
-            UserId = userId
+            UserId = userId,
+            ParticipantLocationId = participantLocationId,
+            ParticipantLocationName = participantLocationName,
+            ReviewLocationId = reviewLocationId,
+            ReviewLocationName = reviewLocationName,
+            ReviewReason = reviewReason,
+            Keyword = keyword
         };
 }

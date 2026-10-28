@@ -1,7 +1,24 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 
-
 @inherits CatsComponent<GetPathwayPlans.PathwayPlanDto>
+
+<MudStack Row="true" Class="my-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+    @if (VisualMode is false && Data is not null)
+    {
+        <MudPagination Rectangular="true"
+                       Variant="Variant.Text"
+                       Selected="@(_currentTablePage + 1)"
+                       SelectedChanged="OnPageChanged"
+                       Count="@TotalPages"
+                       MiddleCount="2"
+                       BoundaryCount="1"
+                       Size="Size.Small" />
+
+        <MudText>@TotalItems records</MudText>
+    }
+
+    @ToolbarContent
+</MudStack>
 
 @if (Loading)
 {
@@ -17,26 +34,20 @@
 
 @if (Data is not null && Data.TabularData.Any())
 {
-    <MudGrid Spacing="2" Class="mb-3">
-        <!-- This is the left column -->
-        <MudItem xs="12" sm="6">
-            <MudChip T="string">Custody (@CustodyCount)</MudChip>
-            <MudChip T="string">Community (@CommunityCount)</MudChip>
-        </MudItem>
-        <!-- Toggle button -->
-        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-            <MudSwitch T="bool" Value="ShowOverdueOnly" ValueChanged="OnShowOverdueOnlyChanged" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
-        </MudItem>
-    </MudGrid>
+    <MudStack Row="true" Class="pb-2" Spacing="1">
+        <MudChip T="string" Color="Color.Info" Variant="Variant.Text">Custody (@CustodyCount)</MudChip>
+        <MudChip T="string" Color="Color.Info" Variant="Variant.Text">Community (@CommunityCount)</MudChip>
+    </MudStack>
+
     @if(VisualMode)
     {
         <div style="overflow: visible; margin-bottom: 120px;">
-            <ApexCharts.ApexChart @key="ShowOverdueOnly" TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
-                @if (!ShowOverdueOnly && Data.TotalReviewed > 0)
+            <ApexCharts.ApexChart @key="ChartKey" TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
+                @if (!ShowOverdueOnly && TotalReviewed > 0)
                 {
                     <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
-                                                Items="Data.ChartData"
-                                                Name="@($"Reviewed ({Data.TotalReviewed})")"
+                                                Items="ChartData"
+                                                Name="@($"Reviewed ({TotalReviewed})")"
                                                 SeriesType="ApexCharts.SeriesType.Bar"
                                                 XValue="@(e => e.LocationName)"
                                                 YValue="@(e => e.TotalCount - e.OverdueCount)"
@@ -47,7 +58,7 @@
 
                 <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
                                             Items="FilteredChartData"
-                                            Name="@($"Reviewed 3+ months ago ({Data.TotalOverdueCount})")"
+                                            Name="@($"Reviewed 3+ months ago ({TotalOverdueCount})")"
                                             SeriesType="ApexCharts.SeriesType.Bar"
                                             XValue="@(e => e.LocationName)"
                                             YValue="@(e => e.OverdueCount)"
@@ -59,8 +70,14 @@
     }
     else
     {
-        <MudTable Dense="true" Items="FilteredTabularData" Hover="true" Striped="true">
+        <MudTable Dense="true" Items="FilteredTabularData" Hover="true" Striped="true"
+                  RowsPerPage="PageSize" @bind-CurrentPage="_currentTablePage">
             <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantName!)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantCurrentLocation!)">
                         Participant Location
@@ -69,11 +86,6 @@
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ReviewLocation!)">
                         Review Location
-                    </MudTableSortLabel>
-                </MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantName!)">
-                        Participant
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -89,12 +101,6 @@
             </HeaderContent>
 
             <RowTemplate>
-                <MudTd DataLabel="Participant Location">
-                    <MudText Typo="Typo.body1">@context.ParticipantCurrentLocation</MudText>
-                </MudTd>
-                <MudTd DataLabel="Review Location">
-                    <MudText>@context.ReviewLocation</MudText>
-                </MudTd>
                 <MudTd DataLabel="Participant">
                     <MudStack Row AlignItems="AlignItems.Center">
                         <MudStack AlignItems="AlignItems.Start" Spacing="0">
@@ -109,6 +115,12 @@
                             </MudLink>
                         </MudStack>
                     </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Participant Location">
+                    <MudText Typo="Typo.body1">@context.ParticipantCurrentLocation</MudText>
+                </MudTd>
+                <MudTd DataLabel="Review Location">
+                    <MudText>@context.ReviewLocation</MudText>
                 </MudTd>
                 <MudTd DataLabel="Review Reason">
                     @if (context.ReviewReason != PathwayPlanReviewReason.Default)
@@ -136,7 +148,6 @@
                                                Size="Size.Small" 
                                                OnClick="@(() => ShowReviewNotes(context.ReviewNotes))" />
                             }
-
                         }
                         else
                         {
@@ -145,9 +156,9 @@
                     </MudStack>                
                 </MudTd>
             </RowTemplate>
-			<PagerContent>
-				<MudTablePager PageSizeOptions="[10, 20, 30]" />
-			</PagerContent>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">No pathway plans match the selected filters</MudText>
+            </NoRecordsContent>
         </MudTable>
     }
 }
@@ -155,4 +166,3 @@ else
 {
     <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }
-
