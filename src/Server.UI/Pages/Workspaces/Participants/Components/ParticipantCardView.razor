@@ -56,7 +56,7 @@
                         @if (Query.RecentAction == RecentParticipantFilter.LicenceEndPeriod 
                         && item.PostLicenceCaseClosureEnd.HasValue)
                         {
-                            @($" licence ends {item.PostLicenceCaseClosureEnd.Value.ToShortDateString()}")
+                            @($" case closes on {item.PostLicenceCaseClosureEnd.Value.ToShortDateString()}")
                         }
                     </MudText>
                 </MudStack>
