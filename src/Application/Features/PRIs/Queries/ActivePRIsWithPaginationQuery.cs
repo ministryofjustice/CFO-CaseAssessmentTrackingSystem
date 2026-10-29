@@ -57,6 +57,12 @@ public static class ActivePRIsWithPagination
         /// </summary>
         [Description("Active Status")]
         public bool? ActiveStatus { get; set; }
+
+        /// <summary>
+        /// Filter by PRI lifecycle status. Defaults to Active.
+        /// </summary>
+        [Description("PRI Status")]
+        public PriStatusFilter StatusFilter { get; set; } = PriStatusFilter.Active;
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, Result<PaginatedData<PRIPaginationDto>>>
@@ -65,9 +71,8 @@ public static class ActivePRIsWithPagination
         {
             var context = unitOfWork.DbContext;
             
-            // Start with base query - active PRIs only
             var query = context.PRIs
-                .Where(x => PriStatus.ActiveList.Contains(x.Status))
+                .ApplyStatusFilter(request.StatusFilter)
                 .ApplyTenantFilter(request.CurrentUser!)
                 .ApplyJustMyPrisFilter(request.JustMyPris, request.CurrentUser!.UserId)
                 .ApplyUserFilter(request.IncludeOutgoing, request.IncludeIncoming, request.CurrentUser!.UserId, 

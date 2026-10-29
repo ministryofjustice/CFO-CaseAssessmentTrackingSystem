@@ -8,7 +8,7 @@ public static class ParticipantLinks
     public static BreadcrumbLinkModel All = new(nameof(All), "Access all participants" , $"{Home.Href}/all");
     public static BreadcrumbLinkModel Participant(string id) => new(id, "Participant by id" , $"{Home.Href}/{id}");
 
-    public static BreadcrumbLinkModel AllPris = new ("Active PRI", "Displays a list of active PRIs" , $"{Home.Href}/pre-release-inventory");
+    public static BreadcrumbLinkModel AllPris = new ("PRI List", "Displays a list of PRIs" , $"{Home.Href}/pre-release-inventory");
 
     public static BreadcrumbLinkModel MovedParticipants = new ("Moved", "Participants you are losing access to as they have moved" , $"{Home.Href}/moved");
 
