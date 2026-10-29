@@ -32,7 +32,7 @@ public class SyncParticipantsJob(
             }
         }
 
-        if (await _semaphore.WaitAsync(TimeSpan.Zero) == false)
+        if (await _semaphore.WaitAsync(TimeSpan.Zero, cancellationToken) == false)
         {
             // Job is already running, skip this execution
             logger.LogInformation("Quartz Job - {Key}: is already running. Skipping this call", Key.Name);
@@ -45,14 +45,19 @@ public class SyncParticipantsJob(
                 .AsNoTracking()
                 .OrderBy(p => p.LastSyncDate)
                 .Select(p => p.Id)
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken);
 
             foreach (var participant in participants.Select(p => new SyncParticipantCommand(p)))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 // this is not ideal. We should be SENDING commands, not publishing them
                 // but that is a wider architectural problem.
                 await bus.Publish( participant );
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
