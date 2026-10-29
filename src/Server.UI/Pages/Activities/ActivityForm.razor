@@ -1,6 +1,4 @@
-@using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Locations
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
@@ -63,7 +61,7 @@
         </MudItem>
     }
 
-    @if (_hasParticipantBeenAtThisLocationOnThisDate == false && Model.CommencedOn is not null && Model?.Location is not null)
+    @if (_hasParticipantBeenAtThisLocationOnThisDate == false && Model.CommencedOn is not null && Model.Location is not null)
     {
         <MudItem xs="12">
             <MudAlert Severity="Severity.Warning">
@@ -73,10 +71,10 @@
     }
 
     <MudItem xs="12">
-        <MudDatePicker @bind-Date="Model!.CommencedOn" @bind-Date:after="OnDateChanged"
-                       For="() => Model!.CommencedOn"
+        <MudDatePicker @bind-Date="Model.CommencedOn" @bind-Date:after="OnDateChanged"
+                       For="() => Model.CommencedOn"
                        MaxDate="DateTime.UtcNow"
-                       MinDate="Model!.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
+                       MinDate="Model.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
                        Label="@Model.GetMemberDescription(x => x.CommencedOn)"
                        PickerVariant="PickerVariant.Dialog"
                        ImmediateText="true"
@@ -84,22 +82,22 @@
                        Disabled="Model.Definition is null"/>
     </MudItem>
 
-    @if (Model!.Definition is { Classification.RequiresFurtherInformation: true })
+    @if (Model.Definition is { Classification.RequiresFurtherInformation: true })
     {
         <MudItem xs="12">
             <MudAlert Class="mb-2" Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
 
             @if (Model.Definition.Classification == ClassificationType.Employment)
             {
-                <Employment Model="Model.EmploymentTemplate"/>
+                <Employment Model="Model.EmploymentTemplate" StartDateChanged="OnTemplateStartDateChanged"/>
             }
             else if (Model.Definition.Classification == ClassificationType.EducationAndTraining)
             {
-                <EducationTraining Model="Model.EducationTrainingTemplate" MinCourseCommencedDate="Model.CommencedOn"/>
+                <EducationTraining Model="Model.EducationTrainingTemplate" MinCourseCommencedDate="Model.CommencedOn" StartDateChanged="OnTemplateStartDateChanged"/>
             }
             else if (Model.Definition.Classification == ClassificationType.ISWActivity)
             {
-                <Isw Model="Model.ISWTemplate"/>
+                <Isw Model="Model.ISWTemplate" StartDateChanged="OnTemplateStartDateChanged"/>
             }
 
             <MudItem xs="12">
@@ -116,11 +114,11 @@
                                               OnClick="@context.OpenFilePickerAsync">
                                 @if (Model.ActivityId is null)
                                 {
-                                    @string.Format("{0} Template", _uploading ? ConstantString.Uploading : ConstantString.Upload)
+                                    @($"{(_uploading ? ConstantString.Uploading : ConstantString.Upload)} Template")
                                 }
                                 else
                                 {
-                                    @string.Format("{0} Template", _uploading ? "Replacing" : "Replace")
+                                    @($"{(_uploading ? "Replacing" : "Replace")} Template")
                                 }
                             </MudLoadingButton>
                         </CustomContent>
@@ -128,7 +126,7 @@
                             <br/>
                             @if (context is null)
                             {
-                                <MudText>@string.Format("{0}", Model.ActivityId is null ? "No Files" : "Document already uploaded")</MudText>
+                                <MudText>@($"{(Model.ActivityId is null ? "No Files" : "Document already uploaded")}")</MudText>
                             }
                             else
                             {

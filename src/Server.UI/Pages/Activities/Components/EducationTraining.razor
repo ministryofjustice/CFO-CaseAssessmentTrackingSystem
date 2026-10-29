@@ -1,9 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Activities.Components
 @inherits CatsComponentBase
-
-@inject IStringLocalizer<EducationTraining> L
 
 @if (Model is not null)
 {
@@ -40,6 +36,7 @@
             </MudItem>
             <MudItem xs="12">
                 <MudDatePicker @bind-Date="Model.CourseCommencedOn"
+                @bind-Date:after="() => StartDateChanged.InvokeAsync(Model.CourseCommencedOn)"
                 For="() => Model.CourseCommencedOn"
                 Label="@Model.GetMemberDescription(x => x.CourseCommencedOn)"
                 Editable="true"
@@ -68,7 +65,7 @@
 }
 @code {
     [Inject]
-    private IPicklistService PicklistService { get; set; } = default!;
+    private IPicklistService PicklistService { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public required EducationTrainingDto Model { get; set; }
@@ -78,4 +75,7 @@
 
     [Parameter]
     public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> StartDateChanged { get; set; }
 }
