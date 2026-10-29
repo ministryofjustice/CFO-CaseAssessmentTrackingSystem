@@ -95,7 +95,7 @@
             <MudTd>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
-                    <MudLink Typo="Typo.body1" Href="@ParticipantUrl(context.ParticipantId)">@context.ParticipantId</MudLink>
+                    <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
                 </div>
             </MudTd>
             <MudTd>
@@ -170,12 +170,11 @@ else
         <MudStack Class="mt-4" Spacing="2">
             @foreach (var item in _data)
             {
-                <MudPaper Outlined="true" Class="pa-3">
+                <MudPaper Outlined="true" Class="pa-4">
                     <MudStack Spacing="2">
                         <!-- Header: Name, ID and Status -->
                         <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                            <MudText Typo="Typo.subtitle1" Style="font-weight: 500">@item.ParticipantName</MudText>
-                            <MudText Typo="Typo.body2" Class="mud-text-secondary">(<MudLink Typo="Typo.body2" Href="@ParticipantUrl(item.ParticipantId)">@item.ParticipantId</MudLink>)</MudText>
+                            <MudText Typo="Typo.body1">@item.ParticipantId @item.ParticipantName</MudText>
                             <MudChip T="string" Size="Size.Small"
                                      Color="@PriStatusColor(item.Status)">
                                 PRI: @item.Status.Name
@@ -237,21 +236,22 @@ else
                         </MudGrid>
                     </MudStack>
 
-                    @if (_expanded.Contains(item.Id))
-                    {
-                        <MudDivider Class="mt-3 mb-2"/>
-                        <PriTasksList Tasks="@(_tasks.GetValueOrDefault(item.Id))"/>
-                    }
-                    <MudDivider Class="mt-3 mb-2"/>
+                    <MudExpansionPanels Elevation="0" Class="mt-2">
+                        <MudExpansionPanel Text="Tasks"
+                                           Expanded="@_expanded.Contains(item.Id)"
+                                           ExpandedChanged="@(_ => ToggleTasks(item))">
+                            @if (_expanded.Contains(item.Id))
+                            {
+                                <PriTasksList Tasks="@(_tasks.GetValueOrDefault(item.Id))"/>
+                            }
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+
+                    <MudDivider Class="mt-4 mb-2"/>
 
                     <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
-                        <MudButton Variant="Variant.Text" Color="Color.Default" Size="Size.Small"
-                                   EndIcon="@(_expanded.Contains(item.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
-                                   OnClick="@(() => ToggleTasks(item))">
-                            Tasks
-                        </MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Default" Size="Size.Small"
-                                   StartIcon="@Icons.Material.Filled.Visibility"
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small"
+                                   StartIcon="@Icons.Material.Filled.AssignmentInd"
                                    OnClick="@(() => ViewParticipant(item))">
                             @ConstantString.ViewParticipant
                         </MudButton>
