@@ -1,0 +1,24 @@
+@inherits OwningComponentBase<IMediator>
+
+@if (_service is null)
+{
+    <MudAlert Severity="Severity.Info" Class="mt-2">
+        The HMPPS External API integration is experimental and currently disabled. Enable it via the
+        "Features:HmppsExternalApi:Enabled" configuration flag.
+    </MudAlert>
+}
+else if (_identifiers.Length == 0)
+{
+    <MudAlert Severity="Severity.Info" Class="mt-2">No external identifiers are available for this case.</MudAlert>
+}
+else
+{
+    <MudTabs Outlined="true" Border="true" Class="mt-2" KeepPanelsAlive="true">
+        @foreach (var identifier in _identifiers)
+        {
+            <MudTabPanel Text="@identifier.Value">
+                <ArnsRiskDetail Service="_service" HmppsId="@identifier.Value" />
+            </MudTabPanel>
+        }
+    </MudTabs>
+}
