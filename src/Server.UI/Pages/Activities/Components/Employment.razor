@@ -1,11 +1,8 @@
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.KeyValues.DTOs
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Activities.Components
 
 @inherits CatsComponentBase
 
-@inject IStringLocalizer<Employment> L
 @if (Model is not null)
 {
     <MudForm Model="Model" Validation="Validator.ValidateValue(Model)" ReadOnly="ReadOnly">
@@ -54,6 +51,7 @@
             <MudItem xs="12">
                 <MudDatePicker Label="@Model.GetMemberDescription(x => x.EmploymentCommenced)"
                 @bind-Date="Model.EmploymentCommenced"
+                @bind-Date:after="() => StartDateChanged.InvokeAsync(Model.EmploymentCommenced)"
                 For="(() => Model.EmploymentCommenced)"
                 ImmediateText="true" Editable="false"  />
             </MudItem>
@@ -62,7 +60,7 @@
 }
 @code {
     [Inject]
-    private IPicklistService PicklistService { get; set; } = default!;
+    private IPicklistService PicklistService { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public required EmploymentDto Model { get; set; }
@@ -70,11 +68,8 @@
     [Parameter]
     public bool ReadOnly { get; set; }
 
-    private IEnumerable<KeyValueDto>? filteredJobTitles;
-    protected override void OnInitialized()
-    {
-        filteredJobTitles = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation).ToList<KeyValueDto>();
-    }
+    [Parameter]
+    public EventCallback<DateTime?> StartDateChanged { get; set; }
 
     private void OnJobTitleValueChange()
     {
@@ -85,15 +80,15 @@
     private Task<IEnumerable<string?>> SearchJobTitles(string? searchText, CancellationToken cancellationToken)
     {
         IEnumerable<string?> result;
-        IEnumerable<KeyValueDto> jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation).ToList<KeyValueDto>();
+        IEnumerable<KeyValueDto> jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation).ToList();
         if (string.IsNullOrEmpty(searchText))
         {
-            result = jobs.Select(x => x.Text)!;
+            result = jobs.Select(x => x.Text);
         }
         else
         {
             result = jobs.Where(x => x.Text!.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                          .Select(x => x.Text)!;
+                          .Select(x => x.Text);
         }
 
         return Task.FromResult(result);
