@@ -1,7 +1,6 @@
 ﻿@using Humanizer
 @inherits CatsComponentBase
 
-
 <MudCard Style="height: 100%">
     <MudCardHeader>
         <CardHeaderContent>
@@ -22,7 +21,7 @@
                         @ParticipantSummaryDto.LatestRisk.Created.ToShortDateString() 
                     </DataListItem>
                     <DataListItem Label="Reviewed By">
-                        @UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName
+                        @(UserService.GetDisplayName(ParticipantSummaryDto.LatestRisk!.CreatedBy) ?? "Unknown")
                     </DataListItem>
                 }
                 <DataListItem Label="Risk Due" HelperText="@(ParticipantSummaryDto.RiskDue.HasValue ? ParticipantSummaryDto.RiskDue.Value.Humanize() : "")">
@@ -31,8 +30,8 @@
                             @ParticipantSummaryDto.RiskDue.ToShortDateOrEmptyString()
                         </MudText>
                         <MudIcon Size="Size.Small" 
-                            Icon="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Icons.Material.Filled.Error : Icons.Material.Filled.Info)"
-                            Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)"></MudIcon>
+                                 Icon="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Icons.Material.Filled.Error : Icons.Material.Filled.Info)"
+                                 Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)"></MudIcon>
                     </MudStack>
                 </DataListItem>
                 <DataListItem Label="Reason" HelperText="">
@@ -58,30 +57,3 @@
         }        
     </MudCardActions>
 </MudCard>
-
-@* 
-
-
-
-
-        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText Typo="Typo.subtitle2">Next Review Due</MudText>
-            @if (ParticipantSummaryDto.RiskDue.HasValue)
-            {
-                <MudText> ()</MudText>
-            }
-        </MudStack>
-        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText Typo="Typo.subtitle2">Risk Due Reason</MudText>
-            <MudChip Size="Size.Small"
-                     T="string"
-                     Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
-                @ParticipantSummaryDto.RiskDueReason
-            </MudChip>
-        </MudStack>
-    </MudCardContent>
-
-    <MudCardActions>
-
-    </MudCardActions>
-</MudCard> *@

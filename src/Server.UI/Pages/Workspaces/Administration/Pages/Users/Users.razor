@@ -205,7 +205,7 @@
                                                 <tr>
                                                     <td>@(note.CallReference ?? "None")</td>
                                                     <td>@note.Message</td>
-                                                    <td>@(UserService.DataSource.SingleOrDefault(x => x.Id == note.CreatedBy)?.DisplayName ?? "Unknown")</td>
+                                                    <td>@(UserService.GetDisplayName(note.CreatedBy) ?? "Unknown")</td>
                                                     <td>@note.Created?.ToLocalTime()</td>
                                                 </tr>
                                             }
