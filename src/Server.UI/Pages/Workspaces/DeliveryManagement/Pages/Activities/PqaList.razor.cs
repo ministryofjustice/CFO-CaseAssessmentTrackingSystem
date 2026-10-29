@@ -66,7 +66,7 @@ public partial class PqaList
 
     protected override async Task OnInitializedAsync()
     {
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
@@ -92,7 +92,7 @@ public partial class PqaList
 
     private void OnRowClick(TableRowClickEventArgs<ActivityQueueEntryDto> args)
     {
-        if (args?.Item is not null)
+        if (args.Item is not null)
         {
             Navigation.NavigateTo($"/pages/workspace/deliverymanagement/activities/pqa/{args.Item.Id}");
         }
@@ -116,7 +116,7 @@ public partial class PqaList
         Query.TenantId = null;
         Query.ActivityTypeId = null;
         Query.OrderBy = "CommencedOn";
-        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.SortDirection = nameof(SortDirection.Ascending);
         Query.PageNumber = 1;
         Query.PageSize = 50;
         Query.Keyword = null;
@@ -236,14 +236,14 @@ public partial class PqaList
     {
         if (Query.OrderBy == key)
         {
-            Query.SortDirection = Query.SortDirection == SortDirection.Ascending.ToString()
-                ? SortDirection.Descending.ToString()
-                : SortDirection.Ascending.ToString();
+            Query.SortDirection = Query.SortDirection == nameof(SortDirection.Ascending)
+                ? nameof(SortDirection.Descending)
+                : nameof(SortDirection.Ascending);
         }
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Ascending.ToString();
+            Query.SortDirection = nameof(SortDirection.Ascending);
         }
 
         await OnRefresh();

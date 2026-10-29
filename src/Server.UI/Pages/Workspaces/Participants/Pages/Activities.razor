@@ -65,14 +65,10 @@
 
         <MudSpacer />
 
-        <!-- Activity Type -->
-        <MudMenu Size="Size.Small" Label="@(Query.TypeFilter is null ? "All Types" : ActivityType.FromValue(Query.TypeFilter.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem Label="All" OnClick="@(() => ActivityTypeChanged(null))" />
-            @foreach (var type in ActivityType.List)
-            {
-                <MudMenuItem Label="@type.Name" OnClick="@(() => ActivityTypeChanged(type))" />
-            }
-        </MudMenu>
+        <!-- Activity Type and Category -->
+        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@ShowActivityTypeCategoryDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            @GetActivityTypeFilterLabel()
+        </MudButton>
 
         <!-- Status -->
         <MudMenu Size="Size.Small" Label="@(Query.Status is null ? "All Statuses" : ActivityStatus.FromValue(Query.Status.Value).Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -136,7 +132,8 @@
             <HeaderContent>
                 <MudTh></MudTh>
                 <MudTh>Participant</MudTh>
-                <MudTh>Type</MudTh>
+                <MudTh>Activity Type</MudTh>
+                <MudTh>Activity Category</MudTh>
                 <MudTh>Submitted By</MudTh>
                 <MudTh>Status</MudTh>
                 <MudTh>Took Place At</MudTh>
@@ -150,7 +147,8 @@
                                     OnClick="@(() => ToggleExpanded(context.ActivityId))" />
                 </MudTd>
                 <MudTd DataLabel="Participant">@context.Participant @context.ParticipantId</MudTd>
-                <MudTd DataLabel="Type">@context.Definition.Type.Name</MudTd>
+                <MudTd DataLabel="Activity Type">@context.Definition.Type.Name</MudTd>
+                <MudTd DataLabel="Activity Category">@context.Definition.Category.Name</MudTd>
                 <MudTd DataLabel="Submitted By">@context.SubmittedBy</MudTd>
                 <MudTd DataLabel="Status">
                     <MudChip T="string" Color="StatusColour(context.Status)" Size="Size.Small">@context.Status.Name</MudChip>
@@ -187,7 +185,7 @@
                 @if (IsExpanded(context.ActivityId))
                 {
                     <MudTr>
-                        <td colspan="8" class="pa-0">
+                        <td colspan="9" class="pa-0">
                             <MudPaper Elevation="0" Class="pa-2">
                                 <ActivityExpandedDetails Activity="context"
                                                             IncludeInternalNotes="Query.IncludeInternalNotes"
@@ -213,13 +211,13 @@
                         <MudStack Row="true" AlignItems="AlignItems.Center">
                             <MudText Typo="Typo.h5">@item.ParticipantId @item.Participant</MudText>
                             <MudChip T="string" Size="Size.Small" Text="@item.Definition.Type.Name" Color="Color.Secondary" />
+                            <MudChip T="string" Size="Size.Small" Text="@item.Definition.Category.Name" Color="Color.Tertiary" />
                             <MudSpacer />
                             <MudChip T="string" Color="StatusColour(item.Status)" Size="Size.Small">@item.Status.Name</MudChip>
                         </MudStack>
                         <MudStack Row="true">
                             <MudText Typo="Typo.body1">
                                 Submitted by @item.SubmittedBy.
-                                Category: @item.Definition.Category.Name
                             </MudText>
                             <MudSpacer />
                             <MudText Typo="Typo.body1">

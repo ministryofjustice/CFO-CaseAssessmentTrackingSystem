@@ -1,4 +1,5 @@
 ﻿@using Humanizer
+
 <MudCard Style="Height: 100%;">
     <MudCardHeader>
         <CardHeaderContent>
@@ -31,7 +32,7 @@
                                 @if(ParticipantSummaryDto.PathwayPlan.LastReviewedBy is not null)
                                 {
                                     <MudText>
-                                        @UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName
+                                        @(UserService.GetDisplayName(ParticipantSummaryDto.PathwayPlan!.LastReviewedBy) ?? "Unknown")
                                     </MudText>
                                 }
                                 else

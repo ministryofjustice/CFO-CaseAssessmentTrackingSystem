@@ -28,9 +28,10 @@ public static class GetPathwayPlans
                     PathwayPlanId = pp.Id, 
                     ParticipantId = p.Id, 
                     ParticipantName = p.FirstName + " " + p.LastName,
-                    EnrolmentStatus = p.EnrolmentStatus,
+                    p.EnrolmentStatus,
                     OwnerId = u.Id,
-                    TenantId = u.TenantId,
+                    u.TenantId,
+                    ParticipantCurrentLocationId = pcl.Id,
                     ParticipantCurrentLocation = pcl.Name,
                     ParticipantCurrentLocationType = pcl.LocationType
                 };
@@ -58,9 +59,11 @@ public static class GetPathwayPlans
                 {
                     ParticipantId = data.ParticipantId,
                     ParticipantName = data.ParticipantName,
+                    ParticipantCurrentLocationId = data.ParticipantCurrentLocationId,
                     ParticipantCurrentLocation = data.ParticipantCurrentLocation,
                     ParticipantCurrentLocationType = data.ParticipantCurrentLocationType ?? LocationType.Unknown,
                     EnrolmentStatus = data.EnrolmentStatus,
+                    ReviewLocationId = reviewLocation != null ? reviewLocation.Id : null,
                     ReviewLocation = reviewLocation != null ? reviewLocation.Name : "Unknown",
                     ReviewedBy = reviewUser != null ? reviewUser.DisplayName : null,
                     ReviewDate = review != null ? review.ReviewDate : null,
@@ -74,7 +77,6 @@ public static class GetPathwayPlans
 
             return new PathwayPlanDto(results);
         }
-
     }
 
     public record PathwayPlanDto
@@ -97,7 +99,7 @@ public static class GetPathwayPlans
             Custody = ChartData.Where(d => d.LocationType?.IsCustody == true).Sum(d => d.TotalCount);
             Community = ChartData.Where(d => d.LocationType?.IsCommunity == true).Sum(d => d.TotalCount);
             TotalReviewed = tabularData.Count(d => d.IsOverdue == false);
-            TotalOverdueCount = tabularData.Count(d => d.IsOverdue == true);
+            TotalOverdueCount = tabularData.Count(d => d.IsOverdue);
         }
 
         public PathwayPlanReviewTabularData[] TabularData { get; }
@@ -110,8 +112,10 @@ public static class GetPathwayPlans
         public int TotalReviewed { get; }
         public int TotalOverdueCount { get; }
     }
+    
     public record PathwayPlanReviewTabularData
     {
+        public int ParticipantCurrentLocationId { get; set; }
         public string? ParticipantCurrentLocation { get; set; }
         public LocationType? ParticipantCurrentLocationType { get; set; }
         public string? ParticipantId { get; set; }
@@ -124,9 +128,9 @@ public static class GetPathwayPlans
         public string? ReviewedBy { get; set; }
         public string? ReviewNotes { get; set; }
         public PathwayPlanReviewReason? ReviewReason { get; set; }
+        public int? ReviewLocationId { get; set; }
         public string? ReviewLocation { get; set; }
-
     }
+    
    public record LocationDetail(string LocationName, LocationType? LocationType, int TotalCount, int OverdueCount = 0);
-
 }

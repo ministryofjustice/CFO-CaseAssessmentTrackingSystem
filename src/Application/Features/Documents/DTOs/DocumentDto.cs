@@ -29,7 +29,7 @@ public class DocumentDto
     [Description("Created By Name")] public string CreatedByName { get; set; } = string.Empty;
     [Description("Created Date")] public DateTime Created { get; set; }
 
-    [Description("Owner")] public ApplicationUserDto? Owner { get; set; }
+    [Description("Owner")] public ApplicationUserSummaryDto? Owner { get; set; }
 
     private class Mapping : Profile
     {

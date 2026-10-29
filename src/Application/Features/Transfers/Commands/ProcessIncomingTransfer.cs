@@ -14,7 +14,7 @@ public static class ProcessIncomingTransfer
         public required IncomingTransferDto IncomingTransfer { get; set; }
 
         [Description("Assignee")]
-        public ApplicationUserDto? Assignee { get; set; }
+        public ApplicationUserSummaryDto? Assignee { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : ICommandHandler<Command, Result>
@@ -44,11 +44,11 @@ public static class ProcessIncomingTransfer
 
     public class Validator : AbstractValidator<Command>
     {
-        private IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
 
             RuleFor(c => c.IncomingTransfer)
                 .NotNull();
@@ -66,7 +66,7 @@ public static class ProcessIncomingTransfer
         }
 
         private async Task<bool> NotBeCompleted(IncomingTransferDto transfer, CancellationToken cancellationToken) 
-            => await unitOfWork.DbContext.ParticipantIncomingTransferQueue
+            => await _unitOfWork.DbContext.ParticipantIncomingTransferQueue
                 .AnyAsync(t => t.Id == transfer.Id && t.Completed == false, cancellationToken);
     }
 }

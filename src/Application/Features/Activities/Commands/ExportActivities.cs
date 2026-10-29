@@ -46,6 +46,9 @@ public static class ExportActivities
             var typeName = request.Query.TypeFilter.HasValue
                 ? ActivityType.FromValue(request.Query.TypeFilter.Value).Name
                 : null;
+            var categoryName = request.Query.CategoryFilter.HasValue
+                ? ActivityCategory.FromValue(request.Query.CategoryFilter.Value).Name
+                : null;
 
             var description = ExportDocumentNaming.BuildDescription(
                 "Activities Export",
@@ -55,6 +58,7 @@ public static class ExportActivities
                 ("Location", request.Query.LocationName),
                 ("Status", statusName),
                 ("Type", typeName),
+                ("Category", categoryName),
                 ("Returned Within Days", request.Query.ReturnedWithinDays?.ToString()),
                 ("Approved Within Days", request.Query.ApprovedWithinDays?.ToString()));
 

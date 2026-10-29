@@ -27,7 +27,7 @@
                             @_latestAssessment.AssessmentDate!.Value.ToShortDateString()
                     </DataListItem>
                     <DataListItem Label="Created By">
-                        @(UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName)
+                        @(UserService.GetDisplayName(_latestAssessment.AssessmentCreator) ?? "Unknown")
                     </DataListItem>
                     @if(_latestAssessment.Completed.HasValue)
                     {
@@ -71,24 +71,23 @@
     <MudCardActions>
         @if (CanBeginAssessment())
         {
-            <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" OnClick="BeginAssessment">
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@BeginAssessment">
                 Add Assessment
             </MudButton>
         }
 
         @if (CanContinueAssessment())
         {
-            <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ContinueAssessment">
+            <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@ContinueAssessment">
                 Resume
             </MudButton>            
         }
 
         @if (CanReassess())
         {
-            <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" OnClick="BeginAssessment">
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@BeginAssessment">
                 Reassess
             </MudButton>
         }
     </MudCardActions>
 </MudCard>
-

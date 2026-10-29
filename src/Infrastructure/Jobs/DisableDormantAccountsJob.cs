@@ -41,7 +41,7 @@ public class DisableDormantAccountsJob(
                 .Where(user => user.Status == UserStatus.Active)
                 .Where(user => user.LastLogin < thirtyDaysAgo ||
                                (user.LastLogin == null && user.Created < thirtyDaysAgo))
-                .ToListAsync(context.CancellationToken);
+                .ToListAsync(cancellationToken);
 
             if (usersToDeactivate.Any())
             {
@@ -49,6 +49,7 @@ public class DisableDormantAccountsJob(
 
                 foreach (var user in usersToDeactivate)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     user.Status = UserStatus.Inactive;
 
                     var audit = IdentityAuditTrail.Create(
@@ -61,8 +62,8 @@ public class DisableDormantAccountsJob(
                     logger.LogInformation("Deactivated user {Id} account", user.Id);
                 }
 
-                await unitOfWork.DbContext.IdentityAuditTrails.AddRangeAsync(auditTrails, context.CancellationToken);
-                await unitOfWork.SaveChangesAsync(context.CancellationToken);
+                await unitOfWork.DbContext.IdentityAuditTrails.AddRangeAsync(auditTrails, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 logger.LogInformation("Deactivated/Disabled {deactivated} account(s)", usersToDeactivate.Count);
             }
@@ -70,6 +71,10 @@ public class DisableDormantAccountsJob(
             {
                 logger.LogInformation($"No Accounts Disabled");
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

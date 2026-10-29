@@ -28,6 +28,8 @@ public class AllActivitiesAdvancedFilter : PaginationFilter
 
     public int? TypeFilter { get; set; }
 
+    public int? CategoryFilter { get; set; }
+
     /// <summary>
     /// When set, restrict to activities that were returned to the provider within the
     /// last N days, regardless of whether they have since been actioned.

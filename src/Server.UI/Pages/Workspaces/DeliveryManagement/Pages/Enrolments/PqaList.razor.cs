@@ -6,7 +6,6 @@ using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
-using Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages.Enrolments;
 using Cfo.Cats.Server.UI.Services;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.DeliveryManagement.Pages.Enrolments;
@@ -28,17 +27,16 @@ public partial class PqaList
 
     private IDictionary<string, string> _tenants = null!;
 
-    private int _totalPages = 0;
-    private int _totalItems = 0;
+    private int _totalPages;
+    private int _totalItems;
 
-    private bool _loading = false;
+    private bool _loading;
     private bool _downloading;
     
     private EnrolmentQueueEntryDto[] _data = [];
     private readonly HashSet<Guid> _expanded = [];
 
     private PqaQueueWithPagination.Query Query { get; set; } = new();
-    private EnrolmentQueueEntryDto _currentDto = new();
 
     private bool IsExpanded(Guid id) => _expanded.Contains(id);
 
@@ -56,7 +54,7 @@ public partial class PqaList
     
     protected override async Task OnInitializedAsync()
     {
-        _users = UserService.DataSource
+        _users = UserService.Summaries
             .Where(d => d.TenantId!.StartsWith(UserProfile.TenantId!))
             .ToDictionary(a => a.Id, e => e.DisplayName);
 
@@ -81,7 +79,7 @@ public partial class PqaList
 
     private void OnRowClick(TableRowClickEventArgs<EnrolmentQueueEntryDto> args)
     {
-        if(args?.Item is not null)
+        if(args.Item is not null)
         {
             Navigation.NavigateTo($"/pages/workspace/deliverymanagement/enrolments/pqa/{args.Item.Id}");
         }
@@ -104,7 +102,7 @@ public partial class PqaList
         Query.SupportWorkerId = null;
         Query.TenantId = null;
         Query.OrderBy = "ParticipantId";
-        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.SortDirection = nameof(SortDirection.Ascending);
         Query.PageNumber = 1;
         Query.Keyword = null;
     }
@@ -177,7 +175,7 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectTenantDialog>
         {
-            { "CurrentUser", UserProfile! },
+            { "CurrentUser", UserProfile },
             { "ShowAllOption", !string.IsNullOrEmpty(Query.TenantId) }
         };
 
@@ -196,7 +194,7 @@ public partial class PqaList
     {
         var parameters = new DialogParameters<SelectUserDialog>
         {
-            { "CurrentUser", UserProfile! },
+            { "CurrentUser", UserProfile },
             { "ShowAllOption", !string.IsNullOrEmpty(Query.SupportWorkerId) }
         };
 
@@ -215,14 +213,14 @@ public partial class PqaList
     {
         if (Query.OrderBy == key)
         {
-            Query.SortDirection = Query.SortDirection == SortDirection.Ascending.ToString()
-                ? SortDirection.Descending.ToString()
-                : SortDirection.Ascending.ToString();
+            Query.SortDirection = Query.SortDirection == nameof(SortDirection.Ascending)
+                ? nameof(SortDirection.Descending)
+                : nameof(SortDirection.Ascending);
         }
         else
         {
             Query.OrderBy = key;
-            Query.SortDirection = SortDirection.Ascending.ToString();
+            Query.SortDirection = nameof(SortDirection.Ascending);
         }
 
         await OnRefresh();
