@@ -11,23 +11,23 @@ public class UnitOfWork(IDbContextFactory<ApplicationDbContext> dbContextFactory
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => await ((DbContext)DbContext).SaveChangesAsync(cancellationToken);
 
-    public async Task BeginTransactionAsync()
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_currentTransaction != null)
         {
             return;
         }
-        _currentTransaction = await DbContext.Database.BeginTransactionAsync();
+        _currentTransaction = await DbContext.Database.BeginTransactionAsync(cancellationToken);
     }
     
-    public async Task CommitTransactionAsync()
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            await ((DbContext)DbContext).SaveChangesAsync(CancellationToken.None);
+            await ((DbContext)DbContext).SaveChangesAsync(cancellationToken);
             if (_currentTransaction is not null)
             {
-                await _currentTransaction.CommitAsync();    
+                await _currentTransaction.CommitAsync(cancellationToken);
             }
         }
         catch

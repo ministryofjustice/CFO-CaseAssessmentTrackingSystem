@@ -22,6 +22,11 @@ public partial class CaseSentenceInformation
         ParticipantSupervisorDto Supervisor);
     protected override async Task OnInitializedAsync()
     {
+        if(IsDisposed)
+        {
+            return;
+        }
+
         try
         {
             var mediator = GetNewMediator();
@@ -29,12 +34,22 @@ public partial class CaseSentenceInformation
             var identifiers = await mediator.Send(new GetParticipantIdentifiers.Query()
             {
                 ParticipantId = ParticipantId
-            });
+            }, ComponentCancellationToken);
+
+            if(IsDisposed)
+            {
+                return;
+            }
 
             var supervisor = await mediator.Send(new GetParticipantSupervisor.Query()
             {
                 ParticipantId = ParticipantId
-            });
+            }, ComponentCancellationToken);
+
+            if(IsDisposed)
+            {
+                return;
+            }
 
             Model = new(
                 Identifiers: identifiers,
@@ -42,9 +57,9 @@ public partial class CaseSentenceInformation
             );
             Crn = identifiers.Data?.FirstOrDefault(i => i.Type == ExternalIdentifierType.Crn)?.Value;
         }
-        finally
+        catch(OperationCanceledException) when (ComponentCancellationToken.IsCancellationRequested)
         {
-            await base.OnInitializedAsync();
+            return;
         }
     }
 

@@ -4,13 +4,13 @@ public class GrantAccessViaOpenPriSpecification(IUnitOfWork unitOfWork, ICurrent
 {
     public override int Order => 1;
 
-    protected override async Task<AccessGrant> CheckAccessAsync(string identifier)
+    protected override async Task<AccessGrant> CheckAccessAsync(string identifier, CancellationToken cancellationToken)
     {
         var pri = await unitOfWork.DbContext.PRIs
                     .Where(p => p.ParticipantId == identifier)
                     .Where(p => p.CompletedOn == null)
                     .Select(p => p.AssignedTo)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(cancellationToken);
 
         return pri switch
         {
