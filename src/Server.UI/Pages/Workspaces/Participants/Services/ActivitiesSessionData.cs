@@ -17,6 +17,7 @@ public record ActivitiesSessionData
             LocationName = query.LocationName,
             Status = query.Status,
             TypeFilter = query.TypeFilter,
+            CategoryFilter = query.CategoryFilter,
             ReturnedWithinDays = query.ReturnedWithinDays,
             ApprovedWithinDays = query.ApprovedWithinDays,
             Keyword = query.Keyword,
@@ -32,6 +33,7 @@ public record ActivitiesSessionData
     public string? LocationName { get; init; }
     public int? Status { get; init; }
     public int? TypeFilter { get; init; }
+    public int? CategoryFilter { get; init; }
     public int? ReturnedWithinDays { get; init; }
     public int? ApprovedWithinDays { get; init; }
     public string? Keyword { get; init; }

@@ -1,0 +1,26 @@
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="3">
+            <MudSelect T="int?" Label="Activity Type" Value="SelectedType" ValueChanged="OnTypeChanged">
+                <MudSelectItem T="int?" Value="@((int?)null)">All</MudSelectItem>
+                @foreach (var type in ActivityType.List)
+                {
+                    <MudSelectItem T="int?" Value="type.Value">@type.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudSelect T="int?" Label="Activity Category" Value="SelectedCategory"
+                       ValueChanged="OnCategoryChanged" Disabled="CategoryDisabled">
+                <MudSelectItem T="int?" Value="@((int?)null)">All</MudSelectItem>
+                @foreach (var category in Categories)
+                {
+                    <MudSelectItem T="int?" Value="category.Value">@category.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="Submit">@ConstantString.Ok</MudButton>
+    </DialogActions>
+</MudDialog>
