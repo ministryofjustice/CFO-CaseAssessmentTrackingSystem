@@ -36,7 +36,7 @@
                     <DataListItem Label="Date Of Birth" HelperText="@($"Age {@Data.DateOfBirth.CalculateAge()}")">
                         @Data.DateOfBirth.ToShortDateString()
                     </DataListItem>
-                    <DataListItem Label="Enrolled at">
+                    <DataListItem Label="Enrolled at" HelperText="@Data.EnrolmentJustification">
                         @Data.EnrolmentLocation
                     </DataListItem>
                     <DataListItem Label="Nationality">
