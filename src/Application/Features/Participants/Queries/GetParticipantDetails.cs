@@ -24,6 +24,7 @@ public static class GetParticipantDetails
                 {
                     DateOfBirth = p.DateOfBirth,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
+                    EnrolmentJustification = p.AssessmentJustification,
                     Nationality = p.Nationality,
                     DateOfFirstConsent = p.DateOfFirstConsent,
                     LastSync = p.LastSyncDate ?? p.Created!.Value

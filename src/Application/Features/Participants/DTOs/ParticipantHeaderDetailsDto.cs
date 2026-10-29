@@ -16,6 +16,8 @@ public record ParticipantHeaderDetailsDto
     /// The location the participant enrolled at.
     /// </summary>
     public required string EnrolmentLocation { get; init; }
+
+    public string? EnrolmentJustification { get; init; }
     
     /// <summary>
     /// The nationality of the participant.
