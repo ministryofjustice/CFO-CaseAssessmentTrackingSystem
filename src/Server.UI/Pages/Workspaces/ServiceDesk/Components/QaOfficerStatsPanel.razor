@@ -1,0 +1,199 @@
+@inherits CatsComponent<QaOfficerStatsDto>
+
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Cfo.Cats.Application.Features.QualityAssurance.Queries
+@using Cfo.Cats.Application.Features.QualityAssurance.Specifications
+
+<MudStack Spacing="3">
+    <MudStack Row="true" Class="my-4" AlignItems="AlignItems.Center" Spacing="2">
+        <MudSwitch Label="Visual Mode" Color="Color.Info" Value="@VisualMode" ValueChanged="@OnVisualModeChanged" T="bool" />
+        <div style="max-width: 640px;">
+            <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" DateRange="@_dateRange" DateRangeChanged="@OnDateRangeChanged" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Margin="Margin.Dense">
+                <PickerActions>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+                </PickerActions>
+            </MudDateRangePicker>
+        </div>
+        @if (VisualMode is false)
+        {
+            <MudTextField T="string" Value="@_crn" Placeholder="Search CRN" Margin="Margin.Dense" ValueChanged="@OnCrnChanged"
+                          Clearable="true" ShrinkLabel="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                          AdornmentColor="Color.Secondary" />
+        }
+        <MudSpacer />
+        <MudMenu Size="Size.Small" Variant="Variant.Text" Label="@SelectedQueueLabel" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem OnClick="@(() => OnQueueChanged(null))">All Queues</MudMenuItem>
+            @foreach (var queue in Enum.GetValues<QaStatsQueue>())
+            {
+                <MudMenuItem OnClick="@(() => OnQueueChanged(queue))">@QueueLabel(queue)</MudMenuItem>
+            }
+        </MudMenu>
+        <MudMenu Size="Size.Small" Variant="Variant.Text" Label="@SelectedUserLabel" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" MaxHeight="400">
+            <MudMenuItem OnClick="@(() => OnQaUserChanged(string.Empty))">All QA Users</MudMenuItem>
+            @foreach (var user in _users)
+            {
+                <MudMenuItem OnClick="@(() => OnQaUserChanged(user.UserId))">@user.DisplayName</MudMenuItem>
+            }
+        </MudMenu>
+        @if (VisualMode is false)
+        {
+            <MudMenu Size="Size.Small" Variant="Variant.Text" Label="@SelectedIsAcceptedLabel" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => OnIsAcceptedChanged(string.Empty))">Accepted: All</MudMenuItem>
+                <MudMenuItem OnClick="@(() => OnIsAcceptedChanged("yes"))">Accepted: Yes</MudMenuItem>
+                <MudMenuItem OnClick="@(() => OnIsAcceptedChanged("no"))">Accepted: No</MudMenuItem>
+            </MudMenu>
+            <MudSwitch Label="Notes only" Color="Color.Info" Value="@_notesOnly" ValueChanged="@OnNotesOnlyChanged" T="bool" />
+        }
+        <MudTooltip Text="Clear Filters">
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@ClearFilters" />
+        </MudTooltip>
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                   StartIcon="@Icons.Material.Filled.Refresh" OnClick="@RefreshAsync">
+            @ConstantString.Refresh
+        </MudButton>
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          OnClick="@OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
+
+    @if (Loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+    }
+    else if (Data is not null && VisualMode && _hasChartData is false)
+    {
+        <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
+    }
+    else if (Data is not null && VisualMode)
+    {
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="8">
+                <MudStack Spacing="2">
+                    <ApexCharts.ApexChart @key="@($"daily-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} by day")"
+                               Options="@BarOptions("Day")" Height="@("300")" Width="@("100%")">
+                        @foreach (var queue in _chartQueues)
+                        {
+                            <ApexCharts.ApexPointSeries TItem="ChartPoint" Items="@_dailyPoints.Where(p => p.Queue == queue)"
+                                             SeriesType="ApexCharts.SeriesType.Bar" Name="@queue" Color="@QueueColour(queue)"
+                                             XValue="@(e => e.Label)" YValue="@(e => e.Count)" ShowDataLabels="true" />
+                        }
+                    </ApexCharts.ApexChart>
+                    <ApexCharts.ApexChart @key="@($"user-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} by team member")"
+                               Options="@BarOptions("QA user")" Height="@("300")" Width="@("100%")">
+                        @foreach (var queue in _chartQueues)
+                        {
+                            <ApexCharts.ApexPointSeries TItem="ChartPoint" Items="@_userPoints.Where(p => p.Queue == queue)"
+                                             SeriesType="ApexCharts.SeriesType.Bar" Name="@queue" Color="@QueueColour(queue)"
+                                             XValue="@(e => e.Label)" YValue="@(e => e.Count)" ShowDataLabels="true" />
+                        }
+                    </ApexCharts.ApexChart>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudStack Spacing="2">
+                    <ApexCharts.ApexChart @key="@($"pie-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} by queue")"
+                               Options="@PieOptions" Height="@("280")" Width="@("100%")">
+                        <ApexCharts.ApexPointSeries TItem="ChartPoint" Items="@_pieData" SeriesType="ApexCharts.SeriesType.Pie" Name="Queue"
+                                         XValue="@(e => e.Label)" YValue="@(e => e.Count)"
+                                         PointColor="@(e => QueueColour(e.Queue))" ShowDataLabels="true" />
+                    </ApexCharts.ApexChart>
+                    <MudTable T="UserSummary" Items="@_summaries" Dense="true" Hover="true" Striped="true"
+                              FixedHeader="true" Height="300px" Breakpoint="Breakpoint.None">
+                        <HeaderContent>
+                            <MudTh>QA User</MudTh>
+                            <MudTh>QA1</MudTh>
+                            <MudTh>QA2</MudTh>
+                            <MudTh>Esc</MudTh>
+                            <MudTh>Total</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.User</MudTd>
+                            <MudTd>@context.Qa1</MudTd>
+                            <MudTd>@context.Qa2</MudTd>
+                            <MudTd>@context.Escalation</MudTd>
+                            <MudTd>@context.Total</MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>@ConstantString.NoRecords</MudText>
+                        </NoRecordsContent>
+                    </MudTable>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    }
+    else if (Data is not null)
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+            <MudPagination Rectangular="true"
+                           Variant="Variant.Text"
+                           Selected="@_pageNumber"
+                           Count="@_totalPages"
+                           MiddleCount="2"
+                           BoundaryCount="1"
+                           SelectedChanged="@OnPageChanged"
+                           Size="Size.Small" />
+            <MudText>@_totalItems records</MudText>
+        </MudStack>
+
+        <MudTable T="QaOfficerStatDto" Items="@_pageRows" Dense="true" Hover="true" Striped="true" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>
+                    <MudLink Color="Color.Inherit" OnClick="@(() => SortByAsync("Crn"))">
+                        CRN
+                        <MudIcon Icon="@SortIcon("Crn")" Size="Size.Small" />
+                    </MudLink>
+                </MudTh>
+                <MudTh>
+                    <MudLink Color="Color.Inherit" OnClick="@(() => SortByAsync("Queue"))">
+                        Queue
+                        <MudIcon Icon="@SortIcon("Queue")" Size="Size.Small" />
+                    </MudLink>
+                </MudTh>
+                <MudTh>
+                    <MudLink Color="Color.Inherit" OnClick="@(() => SortByAsync("LastModified"))">
+                        DateTime
+                        <MudIcon Icon="@SortIcon("LastModified")" Size="Size.Small" />
+                    </MudLink>
+                </MudTh>
+                <MudTh>
+                    <MudLink Color="Color.Inherit" OnClick="@(() => SortByAsync("QaUser"))">
+                        QA User
+                        <MudIcon Icon="@SortIcon("QaUser")" Size="Size.Small" />
+                    </MudLink>
+                </MudTh>
+                <MudTh>
+                    <MudLink Color="Color.Inherit" OnClick="@(() => SortByAsync("IsAccepted"))">
+                        Is Accepted
+                        <MudIcon Icon="@SortIcon("IsAccepted")" Size="Size.Small" />
+                    </MudLink>
+                </MudTh>
+                <MudTh>Escalated</MudTh>
+                <MudTh>Note</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="CRN">@context.Crn</MudTd>
+                <MudTd DataLabel="Queue">@context.Queue</MudTd>
+                <MudTd DataLabel="DateTime">@context.LastModified?.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                <MudTd DataLabel="QA User">@context.QaUser</MudTd>
+                <MudTd DataLabel="Is Accepted">@context.IsAcceptedText</MudTd>
+                <MudTd DataLabel="Escalated">@context.EscalatedText</MudTd>
+                <MudTd DataLabel="Note">@context.Note</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>@ConstantString.NoRecords</MudText>
+            </NoRecordsContent>
+        </MudTable>
+    }
+</MudStack>
