@@ -1,0 +1,60 @@
+@using Cfo.Cats.Application.Features.Payments.DTOs
+
+@inherits CatsComponent<ParticipantPaymentsDto>
+
+<MudPaper Elevation="0" Class="mt-2">
+
+    @if (Loading)
+    {
+        <MudLoading Text="Loading" />
+    }
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@ErrorMessage</MudAlert>
+    }
+
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+        <MudText Typo="Typo.body2">Payments recorded against the contracts you have access to.</MudText>
+        <MudSwitch T="bool" Value="_includeNonPayable" ValueChanged="OnIncludeNonPayableChanged" Color="Color.Info" Label="Include non-payables" />
+    </MudStack>
+
+    @if (Loading is false && ErrorMessage is null)
+    {
+        @if (Payments.Length == 0)
+        {
+            <MudText Class="mt-2">No payments found for your contracts.</MudText>
+        }
+        else
+        {
+            <MudDataGrid T="ParticipantPaymentDto" Items="@Payments" Dense="true" Striped="true" Hover="true" Class="mt-2">
+                <Columns>
+                    <PropertyColumn Property="x => x.PaymentType" Title="Payment" />
+                    <PropertyColumn Property="x => x.Description" Title="Description" />
+                    <PropertyColumn Property="x => x.Date" Title="Date" Format="dd/MM/yyyy" />
+                    <PropertyColumn Property="x => x.PaymentPeriod" Title="Payment Period" Format="MMM yyyy" />
+                    <PropertyColumn Property="x => x.Contract" Title="Contract" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <PropertyColumn Property="x => x.SupportWorkerName" Title="Support Worker" />
+                    <TemplateColumn Title="Status" Sortable="false">
+                        <CellTemplate>
+                            @if (context.Item.EligibleForPayment)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success">Payable</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">Non-payable</MudChip>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x.IneligibilityReason" Title="Reason" />
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="ParticipantPaymentDto" />
+                </PagerContent>
+            </MudDataGrid>
+        }
+    }
+
+</MudPaper>
