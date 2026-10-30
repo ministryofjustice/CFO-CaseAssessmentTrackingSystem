@@ -32,6 +32,15 @@ public static class ValidationConstants
     public const string Keyword = @"^[a-zA-Z0-9_ \-\(\)@.,'’]*$";
     public const string KeywordMessage = "{0} must contain only alphanumeric, underscores, hyphen, brackets, spaces and common punctuation.";
 
+    /// <summary>
+    /// As <see cref="Keyword"/>, but also allows semicolons and forward slashes, which occur in picklist text
+    /// (e.g. "Water supply; sewerage, waste management...", "Incorrect / Missing Paperwork").
+    /// </summary>
+    public const string PicklistText = @"^[a-zA-Z0-9_ \-\(\)@.,'’;/]*$";
+    public const string PicklistTextMessage = "{0} must contain only alphanumeric, underscores, hyphen, brackets, spaces, semicolons, forward slashes and common punctuation.";
+
+    public const int PicklistTextLength = 200;
+
     public const string NameCompliantWithDMS = @"^[\p{L}\s\-'’]+$";
     public const string NameCompliantWithDMSMessage = "{0} must contain only alphanumeric, spaces, ', ’ or -";
       

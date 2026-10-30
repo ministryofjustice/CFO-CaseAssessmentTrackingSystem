@@ -34,10 +34,10 @@ public class AddEditKeyValueCommandValidator : AbstractValidator<AddEditKeyValue
 
         RuleFor(c => c.Text!)
             .MinimumLength(2)
-            .MaximumLength(100)
-            .WithMessage("Text must be between 2 and 100 characters long")
-            .Matches(ValidationConstants.Keyword)
-            .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Text"));
+            .MaximumLength(ValidationConstants.PicklistTextLength)
+            .WithMessage($"Text must be between 2 and {ValidationConstants.PicklistTextLength} characters long")
+            .Matches(ValidationConstants.PicklistText)
+            .WithMessage(string.Format(ValidationConstants.PicklistTextMessage, "Text"));
 
         RuleFor(c => c.Description!)
             .MinimumLength(0)

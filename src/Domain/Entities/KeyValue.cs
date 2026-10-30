@@ -42,7 +42,10 @@ public enum Picklist
     OffenceCode = 6,
     
     [Description("QA Feedback Reason")]
-    QaFeedbackReason = 7
+    QaFeedbackReason = 7,
+
+    [Description("Sector")]
+    Sector = 8
 }
 
 public sealed class KeyValueCreatedDomainEvent(KeyValue entity) : CreatedDomainEvent<KeyValue>(entity)

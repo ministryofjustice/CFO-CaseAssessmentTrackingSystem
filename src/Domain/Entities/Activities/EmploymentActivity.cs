@@ -14,6 +14,7 @@ public class EmploymentActivity : ActivityWithTemplate
         ActivityContext context,
         string employmentType,
         string employerName,
+        string? sector,
         string jobTitle,
         string jobTitleCode,
         double? salary,
@@ -22,6 +23,7 @@ public class EmploymentActivity : ActivityWithTemplate
     {
         EmploymentType = employmentType;
         EmployerName = employerName;
+        Sector = sector;
         JobTitle = jobTitle;
         JobTitleCode = jobTitleCode;
         Salary = salary;
@@ -31,6 +33,7 @@ public class EmploymentActivity : ActivityWithTemplate
 
     public string EmploymentType { get; private set; }
     public string EmployerName { get; private set; }
+    public string? Sector { get; private set; }
     public string JobTitle { get; private set; }
     public string JobTitleCode { get; private set; } // SOC Code
     public double? Salary { get; private set; }
@@ -43,13 +46,14 @@ public class EmploymentActivity : ActivityWithTemplate
         ActivityContext context,
         string employmentType,
         string employerName,
+        string? sector,
         string jobTitle,
         string jobTitleCode,
         double? salary,
         string? salaryFrequency,
         DateTime employmentCommenced)
     {
-        EmploymentActivity activity = new(context, employmentType, employerName, jobTitle, jobTitleCode, salary, salaryFrequency, employmentCommenced);
+        EmploymentActivity activity = new(context, employmentType, employerName, sector, jobTitle, jobTitleCode, salary, salaryFrequency, employmentCommenced);
         activity.AddDomainEvent(new EmploymentActivityCreatedDomainEvent(activity));
         return activity;
     }

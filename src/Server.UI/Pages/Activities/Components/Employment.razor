@@ -1,11 +1,8 @@
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.KeyValues.DTOs
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Activities.Components
 
 @inherits CatsComponentBase
 
-@inject IStringLocalizer<Employment> L
 @if (Model is not null)
 {
     <MudForm Model="Model" Validation="Validator.ValidateValue(Model)" ReadOnly="ReadOnly">
@@ -25,6 +22,21 @@
             <MudItem xs="12">
                 <MudTextField Label="@Model.GetMemberDescription(x => x.EmployerName)" For="() => Model.EmployerName" @bind-Value="Model.EmployerName" />
             </MudItem>    
+            <MudItem xs="12">
+                <MudSelect @bind-Value="Model.Sector"
+                           For="() => Model.Sector"
+                           Required="true"
+                           RequiredError="You must choose a Sector"
+                           HelperText="Choose the sector the employer operates in"
+                           Label="@Model.GetMemberDescription(x => x.Sector)">
+                    @foreach (var sector in PicklistService.DataSource
+                .Where(c => c.Name == Picklist.Sector)
+                .OrderBy(c => c.Value))
+                    {
+                        <MudSelectItem Value="@sector.Text">@sector.Text</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
             <MudItem xs="12">
                 <MudAutocomplete
                     Label="@Model.GetMemberDescription(x => x.JobTitle)" 

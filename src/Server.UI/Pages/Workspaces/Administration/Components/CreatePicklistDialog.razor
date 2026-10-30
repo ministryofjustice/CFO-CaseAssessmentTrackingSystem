@@ -26,16 +26,20 @@
                                   For="@(() => Model.Description)">
                     </MudTextField>
                 </MudItem>
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" md="4">
                     <MudTextField Label="@L[Model.GetMemberDescription(x => x.Value)]" @bind-Value="Model.Value"
                                   For="@(() => Model.Value)"
+                                  Lines="3" Sizing="InputSizing.Auto" MaxLines="6"
+                                  Counter="100" MaxLength="100"
                                   Required="true"
                                   RequiredError="@L["Value is required!"]">
                     </MudTextField>
                 </MudItem>
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" md="8">
                     <MudTextField Label="@L[Model.GetMemberDescription(x => x.Text)]" @bind-Value="Model.Text"
                                   For="@(() => Model.Text)"
+                                  Lines="3" Sizing="InputSizing.Auto" MaxLines="6"
+                                  Counter="200" MaxLength="200"
                                   Required="true"
                                   RequiredError="@L["Text is required!"]">
                     </MudTextField>
