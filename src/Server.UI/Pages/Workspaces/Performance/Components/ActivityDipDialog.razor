@@ -97,7 +97,8 @@
                                             else if (Model is ParticipantDipSampleEmploymentActivityDto emp)
                                             {
                                                 <MudTextField Label="Employment Type" Value="@emp.EmploymentType" />
-                                                <MudTextField Label="Employer Name" Value="@emp.EmploymentType" />
+                                                <MudTextField Label="Employer Name" Value="@emp.EmployerName" />
+                                                <MudTextField Label="Sector" Value="@emp.Sector" />
                                                 <MudTextField Label="Job Title" Value="@emp.JobTitle" />
                                                 <MudTextField Label="Job Title Code" Value="@emp.JobTitleCode" />
                                                 <MudTextField Label="Salary" Value="@emp.Salary" />
@@ -122,6 +123,6 @@
         </MudTabs>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="Ok">Ok</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@Ok">Ok</MudButton>
     </DialogActions>
 </MudDialog>

@@ -2,6 +2,7 @@ CREATE TABLE [Activities].[EmploymentActivity] (
     [Id]                  UNIQUEIDENTIFIER NOT NULL,
     [EmploymentType]      NVARCHAR (100)   NOT NULL,
     [EmployerName]        NVARCHAR (64)    NOT NULL,
+    [Sector]              NVARCHAR (200)   NULL,
     [JobTitle]            NVARCHAR (MAX)   NOT NULL,
     [JobTitleCode]        NVARCHAR (MAX)   NOT NULL,
     [Salary]              FLOAT (53)       NULL,

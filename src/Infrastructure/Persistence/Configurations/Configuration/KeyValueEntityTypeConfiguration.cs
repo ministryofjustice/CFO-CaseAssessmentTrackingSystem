@@ -12,7 +12,7 @@ public class KeyValueEntityTypeConfiguration : IEntityTypeConfiguration<KeyValue
         builder.Property(t => t.Name).HasConversion<string>();
         builder.Property(t => t.Name).HasMaxLength(50);
         builder.Property(t => t.Value).HasMaxLength(DatabaseConstants.FieldLengths.KeyValue).IsRequired();
-        builder.Property(t => t.Text).HasMaxLength(100).IsRequired();
+        builder.Property(t => t.Text).HasMaxLength(DatabaseConstants.FieldLengths.KeyValueText).IsRequired();
         builder.Property(t => t.Description).HasMaxLength(100).IsRequired(false);
         builder.Ignore(e => e.DomainEvents);
             
@@ -21,6 +21,5 @@ public class KeyValueEntityTypeConfiguration : IEntityTypeConfiguration<KeyValue
         
         builder.Property(x => x.LastModifiedBy)
             .HasMaxLength(36);
-            
     }
 }
