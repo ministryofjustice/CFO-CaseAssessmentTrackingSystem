@@ -180,6 +180,7 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                                      EmployerName = ea.EmployerName,
                                      EmploymentCommenced = ea.EmploymentCommenced,
                                      EmploymentType = ea.EmploymentType,
+                                     Sector = ea.Sector,
                                      JobTitle = ea.JobTitle,
                                      JobTitleCode = ea.JobTitleCode,
                                      Salary = ea.Salary,

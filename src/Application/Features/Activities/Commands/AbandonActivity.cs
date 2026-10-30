@@ -70,7 +70,7 @@ public static class AbandonActivity
                 {
                     RuleFor(c => c.ActivityId)
                         .Must(BeInPendingStatus)
-                        .WithMessage("Activity mut be pending");
+                        .WithMessage("Activity must be pending");
                 });
             });
         }

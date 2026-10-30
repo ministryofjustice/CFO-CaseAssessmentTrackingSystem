@@ -12,6 +12,9 @@ public class EmploymentDto
     [Description("Company Name")]
     public string? EmployerName { get; set; }
 
+    [Description("Sector")]
+    public string? Sector { get; set; }
+
     [Description("Job title")]
     public string? JobTitle { get; set; }
 
@@ -42,6 +45,13 @@ public class EmploymentDto
                 .NotNull()
                 .WithMessage("You must enter Company Name")
                 .MaximumLength(64);
+
+            // Sector is required for new claims only. Activities created before Sector existed have a null
+            // Sector (the column is nullable), so this validator must never be run against historic records;
+            // they are only displayed read-only (e.g. PreviousActivitiesPanel).
+            RuleFor(c => c.Sector)
+                .NotEmpty()
+                .WithMessage("You must choose a Sector");
 
             When(c => c.JobTitle is not null, () =>
             {

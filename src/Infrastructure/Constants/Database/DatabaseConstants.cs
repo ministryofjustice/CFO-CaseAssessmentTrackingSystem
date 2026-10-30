@@ -136,6 +136,11 @@ internal static class DatabaseConstants
         public const int KeyValue = 100;
 
         /// <summary>
+        /// The maximum length of the text of a key value (picklist item), and of any column that stores it
+        /// </summary>
+        public const int KeyValueText = 200;
+
+        /// <summary>
         /// The maximum length for an external identifier (e.g. CRN, Nomis Number).
         /// </summary>
         public const int ExternalIdentifier = 16;

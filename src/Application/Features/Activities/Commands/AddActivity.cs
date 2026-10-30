@@ -145,6 +145,7 @@ public static class AddActivity
                 _ when classification == ClassificationType.Employment => EmploymentActivity.Create(cxt,
                     request.EmploymentTemplate!.EmploymentType!,
                     request.EmploymentTemplate!.EmployerName!,
+                    request.EmploymentTemplate!.Sector,
                     request.EmploymentTemplate!.JobTitle!,
                     request.EmploymentTemplate!.JobTitleCode!,
                     request.EmploymentTemplate!.Salary,
@@ -255,7 +256,7 @@ public static class AddActivity
                 {
                     RuleFor(c => c.ActivityId)
                         .Must(BeInPendingStatus)
-                        .WithMessage("Activity mut be pending"); ;
+                        .WithMessage("Activity must be pending");
 
                     RuleFor(c => c.Definition)
                         .Must((command, definition) => NotBeDifferentFromTheOriginal(command.ActivityId!.Value, definition!))

@@ -22,6 +22,9 @@ public class EmploymentActivityEntityTypeConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.SalaryFrequency)
             .HasMaxLength(DatabaseConstants.FieldLengths.KeyValue);
 
+        builder.Property(e => e.Sector)
+            .HasMaxLength(DatabaseConstants.FieldLengths.KeyValueText);
+
         builder.Property(e => e.EmployerName)
             .HasMaxLength(64);
     }
