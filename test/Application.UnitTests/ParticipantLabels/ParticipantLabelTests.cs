@@ -100,6 +100,41 @@ public class ParticipantLabelTests
     }
 
     [Test]
+    public void Close_AfterTransgenderLabelBecomesUserScoped_ShouldPreserveHistoryAndAllowReaddition()
+    {
+        var participantId = new ParticipantId("PART00001");
+        var label = Label.Create("Transgender", "Participant label", LabelScope.System,
+            AppColour.Secondary, AppVariant.Outlined, AppIcon.Transgender, ["CONTRACT-001"], _labelCounter);
+        label.Id = new LabelId(new Guid("c4962b22-8897-4771-b80f-334eb98b6920"));
+        var participantLabel = ParticipantLabel.Create(participantId, label, _counter, "system");
+        var originalId = participantLabel.Id;
+        var originalStart = participantLabel.Lifetime.StartDate;
+        participantLabel.ClearDomainEvents();
+
+        label.Edit(label.Name, label.Description, LabelScope.User, label.Colour,
+            label.Variant, label.AppIcon, ["CONTRACT-001"], _labelCounter);
+
+        label.Scope.AllowUserCreation.ShouldBeTrue();
+        participantLabel.Id.ShouldBe(originalId);
+        participantLabel.CreatedBy.ShouldBe("system");
+        participantLabel.Lifetime.StartDate.ShouldBe(originalStart);
+        participantLabel.Lifetime.EndDate.ShouldBe(DateTime.MaxValue);
+        participantLabel.DomainEvents.ShouldBeEmpty();
+
+        participantLabel.Close(closedBy: "user");
+
+        participantLabel.Lifetime.StartDate.ShouldBe(originalStart);
+        participantLabel.Lifetime.EndDate.ShouldNotBe(DateTime.MaxValue);
+        participantLabel.CreatedBy.ShouldBe("system");
+        participantLabel.LastModifiedBy.ShouldBe("user");
+        participantLabel.DomainEvents.ShouldContain(domainEvent => domainEvent is ParticipantLabelClosedDomainEvent);
+        var reapplied = ParticipantLabel.Create(participantId, label, _counter, "user");
+        reapplied.Id.ShouldNotBe(originalId);
+        reapplied.Label.Id.ShouldBe(label.Id);
+        reapplied.CreatedBy.ShouldBe("user");
+    }
+
+    [Test]
     public void Close_OnSystemScopedLabelWithForce_ShouldSucceed()
     {
         var participantId = new ParticipantId("PART00001");
