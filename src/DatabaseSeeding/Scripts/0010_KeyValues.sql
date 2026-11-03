@@ -513,10 +513,30 @@ FROM (VALUES (N'ReferralSource', N'CFO Evolution Provider', N'CFO Evolution Prov
              (N'QaFeedbackReason', N'Information incomplete', N'Information incomplete', N'A QA Feedback reason'),
              (N'QaFeedbackReason', N'Information conflicts with CATS', N'Information conflicts with CATS', N'A QA Feedback reason'),
              (N'QaFeedbackReason', N'Other', N'Other', N'A QA Feedback reason'),
-             (N'QaFeedbackReason', N'Positive Recognition', N'Positive Recognition', N'A QA Feedback reason')
-        
-             
-             
+             (N'QaFeedbackReason', N'Positive Recognition', N'Positive Recognition', N'A QA Feedback reason'),
+
+             -- Sector
+             (N'Sector', N'01', N'Agriculture, forestry and fishing', N'A Sector option'),
+             (N'Sector', N'02', N'Mining and quarrying', N'A Sector option'),
+             (N'Sector', N'03', N'Manufacturing', N'A Sector option'),
+             (N'Sector', N'04', N'Electricity, gas, steam and air conditioning supply', N'A Sector option'),
+             (N'Sector', N'05', N'Water supply; sewerage, waste management and remediation activities', N'A Sector option'),
+             (N'Sector', N'06', N'Construction', N'A Sector option'),
+             (N'Sector', N'07', N'Transportation and storage', N'A Sector option'),
+             (N'Sector', N'08', N'Accommodation and food service activities', N'A Sector option'),
+             (N'Sector', N'09', N'Publishing, broadcasting, and content production and distribution activities', N'A Sector option'),
+             (N'Sector', N'10', N'Telecommunication, computer programming, consulting, computing infrastructure and other information service activities', N'A Sector option'),
+             (N'Sector', N'11', N'Financial and insurance activities', N'A Sector option'),
+             (N'Sector', N'12', N'Real estate activities', N'A Sector option'),
+             (N'Sector', N'13', N'Professional, scientific and technical activities', N'A Sector option'),
+             (N'Sector', N'14', N'Administrative and support service activities', N'A Sector option'),
+             (N'Sector', N'15', N'Public administration and defence; compulsory social security', N'A Sector option'),
+             (N'Sector', N'16', N'Education', N'A Sector option'),
+             (N'Sector', N'17', N'Human health and social work activities', N'A Sector option'),
+             (N'Sector', N'18', N'Arts, sports and recreation', N'A Sector option'),
+             (N'Sector', N'19', N'Other service activities', N'A Sector option'),
+             (N'Sector', N'20', N'Activities of households as employers and undifferentiated goods - and service-producing activities of households for own use', N'A Sector option')
+                 
              ) v(Name, Value, Text, Description)
 WHERE NOT EXISTS (SELECT 1
                   FROM Configuration.KeyValue kv

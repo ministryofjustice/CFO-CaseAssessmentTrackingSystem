@@ -4,6 +4,7 @@ public class ParticipantDipSampleEmploymentActivityDto : ParticipantDipSampleAct
 {
     public required string EmploymentType { get; init; }
     public required string EmployerName { get; init; }
+    public string? Sector { get; init; }
     public required string JobTitle { get; init; }
     public required string JobTitleCode { get; init; } 
     public double? Salary { get; init; }
