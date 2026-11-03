@@ -71,6 +71,9 @@ jobs:
   deploy_dev:
     name: Deploy to the development environment
     needs: [build_app, helm_lint]
+    concurrency:
+      group: deploy-dev
+      cancel-in-progress: false
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
@@ -87,6 +90,9 @@ jobs:
   deploy_train:
     name: Deploy to the train environment
     needs: [build_app, deploy_dev]
+    concurrency:
+      group: deploy-train
+      cancel-in-progress: false
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
@@ -103,6 +109,9 @@ jobs:
   deploy_preprod:
     name: Deploy to the pre-production environment
     needs: [build_app, deploy_dev]
+    concurrency:
+      group: deploy-preprod
+      cancel-in-progress: false
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
@@ -119,6 +128,9 @@ jobs:
   deploy_prod:
     name: Deploy to the production environment
     needs: [build_app, deploy_preprod]
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: false
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
