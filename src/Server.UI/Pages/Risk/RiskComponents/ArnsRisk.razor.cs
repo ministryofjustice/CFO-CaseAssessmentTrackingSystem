@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Pages.Risk.RiskComponents;
 
