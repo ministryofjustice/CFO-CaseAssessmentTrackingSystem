@@ -7,7 +7,7 @@ public sealed class GrantAccessViaLocationTree(IUnitOfWork unitOfWork, ILocation
 {
     public override int Order => 11;
 
-    protected override async Task<AccessGrant> CheckAccessAsync(string identifier)
+    protected override async Task<AccessGrant> CheckAccessAsync(string identifier, CancellationToken cancellationToken)
     {
         var cutoff = DateTime.Today.AddMonths(-3);
         
@@ -17,10 +17,11 @@ public sealed class GrantAccessViaLocationTree(IUnitOfWork unitOfWork, ILocation
                         .Select(h => h.LocationId!)
                         .Distinct();
 
-        var isInLocation = locationService.GetVisibleLocations(currentUserService.TenantId!)
+        var visibleLocationIds = locationService.GetVisibleLocations(currentUserService.TenantId!)
             .Select(e => e.Id)
-            .Intersect(locations)
-            .Any();
+            .ToArray();
+
+        var isInLocation = await locations.AnyAsync(id => visibleLocationIds.Contains(id), cancellationToken);
 
         return isInLocation ? AccessGrant.Granted: AccessGrant.NotGranted;
     }

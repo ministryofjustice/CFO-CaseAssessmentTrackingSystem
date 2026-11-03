@@ -6,7 +6,7 @@ public abstract class SessionValidatingBehaviour<TRequest, TResponse>(
     ISessionService sessionService,
     ICurrentUserService currentUserService)
 {
-    protected async Task<TResponse> HandleCore(Func<Task<TResponse>> next)
+    protected async Task<TResponse> HandleCore(Func<Task<TResponse>> next, CancellationToken cancellationToken)
     {
         var span = SentrySdk.GetSpan()?
             .StartChild("session validation", "Validating session");
@@ -19,12 +19,12 @@ public abstract class SessionValidatingBehaviour<TRequest, TResponse>(
                 throw new UnauthorizedAccessException("Session is not valid");
             }
 
-            if (await sessionService.IsSessionValidAsync(userId) == false)
+            if (await sessionService.IsSessionValidAsync(userId, cancellationToken) == false)
             {
                 throw new UnauthorizedAccessException("Session is not valid");
             }
 
-            await sessionService.UpdateActivityAsync(userId);
+            await sessionService.UpdateActivityAsync(userId, cancellationToken);
             return await next();
         }
         finally
@@ -32,32 +32,4 @@ public abstract class SessionValidatingBehaviour<TRequest, TResponse>(
             span?.Finish();
         }
     }
-}
-
-public sealed class CommandSessionValidatingBehaviour<TCommand, TResponse>(
-    ISessionService sessionService,
-    ICurrentUserService currentUserService)
-    : SessionValidatingBehaviour<TCommand, TResponse>(sessionService, currentUserService),
-        ICommandPipelineBehavior<TCommand, TResponse>
-    where TCommand : ICommand<TResponse>
-{
-    public Task<TResponse> Handle(
-        TCommand command,
-        CommandHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
-        => HandleCore(() => next());
-}
-
-public sealed class QuerySessionValidatingBehaviour<TQuery, TResponse>(
-    ISessionService sessionService,
-    ICurrentUserService currentUserService)
-    : SessionValidatingBehaviour<TQuery, TResponse>(sessionService, currentUserService),
-        IQueryPipelineBehavior<TQuery, TResponse>
-    where TQuery : IQuery<TResponse>
-{
-    public Task<TResponse> Handle(
-        TQuery query,
-        QueryHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
-        => HandleCore(() => next());
 }

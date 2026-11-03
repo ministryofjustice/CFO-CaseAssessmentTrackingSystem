@@ -39,6 +39,10 @@ public sealed class AccessAuditingBehaviour<TQuery, TResponse>(
                 unitOfWork.DbContext.AccessAuditTrails.Add(auditEntry);
             }
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             span?.SetExtra("AuditError", ex.Message);

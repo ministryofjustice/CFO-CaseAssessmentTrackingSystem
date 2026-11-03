@@ -14,8 +14,11 @@ public abstract class AccessValidationSpecification
     /// </returns>
     public async Task<AccessGrant> IsSatisfiedBy(
         string identifier,
-        AccessGrant previousGrant)
+        AccessGrant previousGrant,
+        CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if(previousGrant == AccessGrant.Denied)
         {
             return AccessGrant.Denied;
@@ -26,7 +29,7 @@ public abstract class AccessValidationSpecification
             return AccessGrant.Granted;
         }
 
-        return await CheckAccessAsync(identifier);
+        return await CheckAccessAsync(identifier, cancellationToken);
     }
 
     /// <summary>
@@ -36,7 +39,7 @@ public abstract class AccessValidationSpecification
     /// </summary>
     protected virtual bool CanDenyAccess => false;
 
-    protected abstract Task<AccessGrant> CheckAccessAsync(string identifier);
+    protected abstract Task<AccessGrant> CheckAccessAsync(string identifier, CancellationToken cancellationToken);
 
     /// <summary>
     /// Order weighting. The higher the number the later the call (keep cheap specifications lower to run them first)

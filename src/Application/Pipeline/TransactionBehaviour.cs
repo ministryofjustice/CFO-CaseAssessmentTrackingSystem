@@ -11,12 +11,12 @@ public abstract class TransactionBehaviour<TRequest, TResponse>(
 
         try
         {
-            await unitOfWork.BeginTransactionAsync();
+            await unitOfWork.BeginTransactionAsync(cancellationToken);
             var response = await next();
 
             await eventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, cancellationToken);
 
-            await unitOfWork.CommitTransactionAsync();
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
             return response;
         }
         catch

@@ -6,11 +6,18 @@ public abstract class UnhandledExceptionBehaviour<TRequest, TResponse>(
     ILogger<TRequest> logger,
     ICurrentUserService currentUserService)
 {
-    protected async Task<TResponse> HandleCore(TRequest request, Func<Task<TResponse>> next)
+    protected async Task<TResponse> HandleCore(
+        TRequest request,
+        Func<Task<TResponse>> next,
+        CancellationToken cancellationToken)
     {
         try
         {
             return await next();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (ValidationException ex)
         {
@@ -116,7 +123,7 @@ public sealed class CommandUnhandledExceptionBehaviour<TCommand, TResponse>(
         TCommand command,
         CommandHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
-        => HandleCore(command, () => next());
+        => HandleCore(command, () => next(), cancellationToken);
 }
 
 public sealed class QueryUnhandledExceptionBehaviour<TQuery, TResponse>(
@@ -130,5 +137,5 @@ public sealed class QueryUnhandledExceptionBehaviour<TQuery, TResponse>(
         TQuery query,
         QueryHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
-        => HandleCore(query, () => next());
+        => HandleCore(query, () => next(), cancellationToken);
 }

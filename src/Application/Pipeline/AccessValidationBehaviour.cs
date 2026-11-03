@@ -16,7 +16,7 @@ public sealed class AccessValidationBehaviour<TQuery, TResponse>
         {
             var participantId = auditableRequest.Identifier();
             
-            var grant = await CanAccessParticipantRecord(participantId);
+            var grant = await CanAccessParticipantRecord(participantId, cancellationToken);
 
             if(grant is not AccessGrant.Granted)
             {
@@ -29,13 +29,13 @@ public sealed class AccessValidationBehaviour<TQuery, TResponse>
         return await next();
     }
 
-    private async Task<AccessGrant> CanAccessParticipantRecord(string participantId)
+    private async Task<AccessGrant> CanAccessParticipantRecord(string participantId, CancellationToken cancellationToken)
     {
         AccessGrant grant = AccessGrant.NotGranted;
 
         foreach(var strategy in validationStrategies.OrderBy(s => s.Order))
         {
-            grant = await strategy.IsSatisfiedBy(participantId, grant);
+            grant = await strategy.IsSatisfiedBy(participantId, grant, cancellationToken);
             if(logger.IsEnabled(LogLevel.Debug))
             {
                 logger.LogDebug("{particpantId} {strategy} - {grant}", participantId, strategy.GetType().Name, grant);    
