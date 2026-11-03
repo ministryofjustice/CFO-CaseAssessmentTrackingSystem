@@ -25,9 +25,11 @@ public partial class ArnsRisk
             return;
         }
 
-        _identifiers = await Service.Send(new GetExternalIdentifiers.Query
+        var identifiers = await Service.Send(new GetExternalIdentifiers.Query
         {
             ParticipantId = ParticipantId
         });
+
+        _identifiers = identifiers.Where(x => x.Type == ExternalIdentifierType.Crn.Name).ToArray();
     }
 }
