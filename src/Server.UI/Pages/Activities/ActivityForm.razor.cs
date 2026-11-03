@@ -30,7 +30,7 @@ public partial class ActivityForm
         ? []
         : ActivityDefinition.GetActivitiesForLocation(Model.Location.LocationType);
 
-    private async Task OnLocationChanged(LocationDto? location)
+    private void OnLocationChanged(LocationDto? location)
     {
         Model.Location = location;
         LocationChanged();
@@ -46,14 +46,7 @@ public partial class ActivityForm
 
     private async Task OnActivityChanged()
     {
-        _hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(
-            new ExistsByCategory.Query()
-            {
-                Category = Model.Definition.Category,
-                ParticipantId = Model.ParticipantId,
-                CommencedOn = Model.CommencedOn
-            });
-
+        await CheckActivityAlreadyAddedOnDate();
         ClearTemplates();
     }
 
@@ -61,18 +54,31 @@ public partial class ActivityForm
     {
         if (Model.CommencedOn.HasValue)
         {
-            _hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator()
-                .Send(new ExistsByCategory.Query()
-                {
-                    Category = Model.Definition.Category,
-                    ParticipantId = Model.ParticipantId,
-                    CommencedOn = Model.CommencedOn
-                });
-
+            await CheckActivityAlreadyAddedOnDate();
             await CheckParticipantBeenAtThisLocationOnDate();
         }
 
-        ClearTemplates();
+        SyncTemplateStartDates();
+    }
+
+    private async Task CheckActivityAlreadyAddedOnDate()
+    {
+        var definition = Model.Definition;
+        var commencedOn = Model.CommencedOn;
+
+        var exists = definition is not null && await GetNewMediator().Send(
+            new ExistsByCategory.Query()
+            {
+                Category = definition.Category,
+                ParticipantId = Model.ParticipantId,
+                CommencedOn = commencedOn
+            });
+
+        // discard stale results if the inputs changed while the query was running
+        if (Equals(definition, Model.Definition) && commencedOn == Model.CommencedOn)
+        {
+            _hasSelectedActivityAlreadyBeenAddedOnThisDate = exists;
+        }
     }
 
     private async Task CheckParticipantBeenAtThisLocationOnDate() => _hasParticipantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(
@@ -88,6 +94,42 @@ public partial class ActivityForm
         Model.ISWTemplate = new() { ParticipantId = Model.ParticipantId };
         Model.EducationTrainingTemplate = new() { ParticipantId = Model.ParticipantId };
         Model.EmploymentTemplate = new() { ParticipantId = Model.ParticipantId };
+        SyncTemplateStartDates();
+    }
+
+    private void SyncTemplateStartDates()
+    {
+        var classification = Model.Definition?.Classification;
+
+        if (classification == ClassificationType.ISWActivity)
+        {
+            Model.ISWTemplate.WraparoundSupportStartedOn = Model.CommencedOn;
+        }
+        else if (classification == ClassificationType.EducationAndTraining)
+        {
+            Model.EducationTrainingTemplate.CourseCommencedOn = Model.CommencedOn;
+        }
+        else if (classification == ClassificationType.Employment)
+        {
+            Model.EmploymentTemplate.EmploymentCommenced = Model.CommencedOn;
+        }
+    }
+
+    private async Task OnTemplateStartDateChanged(DateTime? date)
+    {
+        if (date is null || date == Model.CommencedOn)
+        {
+            return;
+        }
+
+        Model.CommencedOn = date;
+
+        await CheckActivityAlreadyAddedOnDate();
+
+        if (Model.Location is not null)
+        {
+            await CheckParticipantBeenAtThisLocationOnDate();
+        }
     }
 
     private void ClearSelectedActivity()
@@ -108,7 +150,7 @@ public partial class ActivityForm
 
     private bool IsAvailableAtSelectedLocation(ActivityType type) => _activities.Any(activity => activity.Type == type);
 
-    private Task<IEnumerable<ActivityDefinition>> SearchActivities(string searchText,
+    private Task<IEnumerable<ActivityDefinition>> SearchActivities(string? searchText,
         CancellationToken cancellationToken)
     {
         IEnumerable<ActivityDefinition> result;
