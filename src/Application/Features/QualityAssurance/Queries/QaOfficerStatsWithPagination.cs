@@ -171,7 +171,7 @@ public static class QaOfficerStatsWithPagination
         QaStatsQueue.Escalation =>
             from q in context.EnrolmentEscalationQueue
             where q.IsCompleted
-            join u in context.Users on q.CreatedBy equals u.Id into creators
+            join u in context.Users on q.LastModifiedBy equals u.Id into creators
             from creator in creators.DefaultIfEmpty()
             from n in q.Notes.DefaultIfEmpty()
             select new QaOfficerStatDto
@@ -180,7 +180,7 @@ public static class QaOfficerStatsWithPagination
                 Crn = q.ParticipantId,
                 Queue = "Esc",
                 LastModified = q.LastModified,
-                QaUserId = q.CreatedBy,
+                QaUserId = q.LastModifiedBy,
                 QaUser = creator != null ? creator.DisplayName : null,
                 IsAccepted = q.IsAccepted,
                 Escalated = null,
@@ -230,7 +230,7 @@ public static class QaOfficerStatsWithPagination
         QaStatsQueue.Escalation =>
             from q in context.ActivityEscalationQueue
             where q.IsCompleted
-            join u in context.Users on q.CreatedBy equals u.Id into creators
+            join u in context.Users on q.LastModifiedBy equals u.Id into creators
             from creator in creators.DefaultIfEmpty()
             from n in q.Notes.DefaultIfEmpty()
             select new QaOfficerStatDto
@@ -239,7 +239,7 @@ public static class QaOfficerStatsWithPagination
                 Crn = q.ParticipantId,
                 Queue = "Esc",
                 LastModified = q.LastModified,
-                QaUserId = q.CreatedBy,
+                QaUserId = q.LastModifiedBy,
                 QaUser = creator != null ? creator.DisplayName : null,
                 IsAccepted = q.IsAccepted,
                 Escalated = null,

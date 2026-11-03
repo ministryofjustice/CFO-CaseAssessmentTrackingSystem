@@ -56,7 +56,7 @@ public class DocumentExportQaOfficerStatsIntegrationEventConsumer(
                 {
                     { "CRN", item => item.Crn },
                     { "Queue", item => item.Queue },
-                    { "DateTime", item => item.LastModified?.ToString("dd/MM/yyyy HH:mm") },
+                    { "Date Time", item => item.LastModified?.ToString("dd/MM/yyyy HH:mm") },
                     { "QA User", item => item.QaUser },
                     { "IsAccepted", item => item.IsAcceptedText },
                     { "Escalated", item => item.EscalatedText },

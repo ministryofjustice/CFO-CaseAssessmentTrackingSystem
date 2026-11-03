@@ -81,7 +81,7 @@
         <MudGrid Spacing="2">
             <MudItem xs="12" md="8">
                 <MudStack Spacing="2">
-                    <ApexCharts.ApexChart @key="@($"daily-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} by day")"
+                    <ApexCharts.ApexChart @key="@($"daily-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} By Day")"
                                Options="@BarOptions("Day")" Height="@("300")" Width="@("100%")">
                         @foreach (var queue in _chartQueues)
                         {
@@ -90,7 +90,7 @@
                                              XValue="@(e => e.Label)" YValue="@(e => e.Count)" ShowDataLabels="true" />
                         }
                     </ApexCharts.ApexChart>
-                    <ApexCharts.ApexChart @key="@($"user-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} by team member")"
+                    <ApexCharts.ApexChart @key="@($"user-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} By Team Member")"
                                Options="@BarOptions("QA user")" Height="@("300")" Width="@("100%")">
                         @foreach (var queue in _chartQueues)
                         {
@@ -103,7 +103,7 @@
             </MudItem>
             <MudItem xs="12" md="4">
                 <MudStack Spacing="2">
-                    <ApexCharts.ApexChart @key="@($"pie-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} by queue")"
+                    <ApexCharts.ApexChart @key="@($"pie-{_chartKey}")" TItem="ChartPoint" Title="@($"{ProcessLabel} By Queue")"
                                Options="@PieOptions" Height="@("280")" Width="@("100%")">
                         <ApexCharts.ApexPointSeries TItem="ChartPoint" Items="@_pieData" SeriesType="ApexCharts.SeriesType.Pie" Name="Queue"
                                          XValue="@(e => e.Label)" YValue="@(e => e.Count)"
@@ -163,7 +163,7 @@
                 </MudTh>
                 <MudTh>
                     <MudLink Color="Color.Inherit" OnClick="@(() => SortByAsync("LastModified"))">
-                        DateTime
+                        Date Time
                         <MudIcon Icon="@SortIcon("LastModified")" Size="Size.Small" />
                     </MudLink>
                 </MudTh>
@@ -185,7 +185,7 @@
             <RowTemplate>
                 <MudTd DataLabel="CRN">@context.Crn</MudTd>
                 <MudTd DataLabel="Queue">@context.Queue</MudTd>
-                <MudTd DataLabel="DateTime">@context.LastModified?.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                <MudTd DataLabel="Date Time">@context.LastModified?.ToString("dd/MM/yyyy HH:mm")</MudTd>
                 <MudTd DataLabel="QA User">@context.QaUser</MudTd>
                 <MudTd DataLabel="Is Accepted">@context.IsAcceptedText</MudTd>
                 <MudTd DataLabel="Escalated">@context.EscalatedText</MudTd>
