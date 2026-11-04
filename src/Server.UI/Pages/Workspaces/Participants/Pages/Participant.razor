@@ -179,6 +179,12 @@
                             <CaseTimeline />
                         </MudTabPanel>
 
+                        <AuthorizeView Policy="@SecurityPolicies.UserHasAdditionalRoles">
+                            <MudTabPanel Text="Payments">
+                                <ParticipantPayments ParticipantId="@Id" />
+                            </MudTabPanel>
+                        </AuthorizeView>
+
                         <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
                             <MudTabPanel Text="Audit">
                                 <ParticipantAudit Id="@Id" />
