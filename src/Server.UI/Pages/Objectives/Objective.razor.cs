@@ -1,6 +1,9 @@
 using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Activities;
 using Cfo.Cats.Server.UI.Pages.Objectives.Tasks;
@@ -32,6 +35,9 @@ public partial class Objective
 
     [Parameter]
     public EventCallback OnChange { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     private async Task Complete()
     {
@@ -120,18 +126,23 @@ public partial class Objective
 
     private async Task Edit()
     {
+        var authState = await AuthState;
+        var canOverrideInitiativeRestrictions = (await AuthService.AuthorizeAsync(authState.User, SecurityPolicies.ManageInitiatives)).Succeeded;
+
         var command = new EditObjective.Command()
         {
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
             Description = Model.Description,
             InitiativeId = Model.LinkedInitiative?.Id,
-            InitiativeStartDate = Model.LinkedInitiative?.InitiativeStartDate?.ToDateTime(TimeOnly.MinValue)
+            InitiativeStartDate = Model.LinkedInitiative?.InitiativeStartDate?.ToDateTime(TimeOnly.MinValue),
+            CanOverrideInitiativeRestrictions = canOverrideInitiativeRestrictions
         };
 
         var parameters = new DialogParameters<EditObjectiveDialog>()
         {
-            { x => x.Model, command }
+            { x => x.Model, command },
+            { x => x.HasLinkedInitiative, Model.LinkedInitiative is not null }
         };
 
         var options = SetDialogOptions();
@@ -140,19 +151,11 @@ public partial class Objective
 
         var state = await dialog.Result;
 
+        // The dialog sends the command itself and only closes on success.
         if (state!.Canceled is false)
         {
-            var result = await GetNewMediator().Send(command);
-
-            if (result.Succeeded)
-            {                    
-                Snackbar.Add(ConstantString.ObjectiveSuccessfullyEdited, Severity.Info);
-                await OnChange.InvokeAsync();
-            }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
+            Snackbar.Add(ConstantString.ObjectiveSuccessfullyEdited, Severity.Info);
+            await OnChange.InvokeAsync();
         }
     }
 
