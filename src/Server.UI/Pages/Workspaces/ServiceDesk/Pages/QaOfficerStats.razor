@@ -1,0 +1,18 @@
+@page "/pages/workspace/servicedesk/qa-officer-stats"
+@attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
+
+@using Cfo.Cats.Application.Features.QualityAssurance.Specifications
+@using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Components
+
+<ServiceDeskPageHeader />
+
+<MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
+    <MudTabs Elevation="1" Border="false" ApplyEffectsToContainer="true" TabPanelsClass="pa-6">
+        <MudTabPanel Text="Enrolments">
+            <QaOfficerStatsPanel Process="QaStatsProcess.Enrolments" @bind-DateRange="_dateRange" @bind-VisualMode="_visualMode" />
+        </MudTabPanel>
+        <MudTabPanel Text="Activities">
+            <QaOfficerStatsPanel Process="QaStatsProcess.Activities" @bind-DateRange="_dateRange" @bind-VisualMode="_visualMode" />
+        </MudTabPanel>
+    </MudTabs>
+</MudContainer>

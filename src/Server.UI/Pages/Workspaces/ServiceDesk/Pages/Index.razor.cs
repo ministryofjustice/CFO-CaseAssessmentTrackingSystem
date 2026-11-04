@@ -26,6 +26,7 @@ public partial class Index
     private bool _showActivitiesFeedback;
     private bool _showEnrolmentsQueue;
     private bool _showEnrolmentsFeedback;
+    private bool _showQaOfficerStats;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +46,8 @@ public partial class Index
         _showActivitiesFeedback = isQa1User;
         _showEnrolmentsQueue = canViewQueueLinks;
         _showEnrolmentsFeedback = isQa1User;
+        _showQaOfficerStats = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.ServiceDeskManagement))
+            .Succeeded;
         
         List<BreadcrumbLinkModel> links = [];
 
@@ -66,6 +69,11 @@ public partial class Index
         if(_showEnrolmentsFeedback)
         {
             links.Add(ServiceDeskLinks.EnrolmentsFeedback);
+        }
+
+        if (_showQaOfficerStats)
+        {
+            links.Add(ServiceDeskLinks.QaOfficerStats);
         }
         
         if (_showSyncInfo)
