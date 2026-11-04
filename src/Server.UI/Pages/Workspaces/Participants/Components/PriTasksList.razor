@@ -4,35 +4,30 @@
 {
     <MudProgressLinear Indeterminate="true" Size="Size.Small"/>
 }
-else if (Tasks.Length == 0)
-{
-    <MudText Typo="Typo.body2" Class="mud-text-secondary pa-2">No tasks found for this PRI.</MudText>
-}
 else
 {
-    <MudSimpleTable Dense="true" Style="overflow-x: auto; font-weight: 400;">
-        <thead>
-        <tr>
-            <th>Task</th>
-            <th>Due</th>
-            <th>Status</th>
-            <th>Completed</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var task in Tasks)
-        {
-            <tr>
-                <td>@task.DisplayName</td>
-                <td>@task.Due.ToString("MMM, yyyy")</td>
-                <td>
-                    @if (task.IsCompleted)
+    <MudTable Dense="true" 
+              Items="Tasks"
+              Hover="true"
+              Striped="true" 
+              T="ObjectiveTaskDto">
+        <HeaderContent>
+            <MudTh>Task</MudTh>
+            <MudTh>Due</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Completed</MudTh>    
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Task">@context.DisplayName</MudTd>
+            <MudTd DataLabel="Due">@context.Due.ToString("MMM, yyyy")</MudTd>
+            <MudTd DataLabel="Status">
+                    @if (context.IsCompleted)
                     {
-                        <MudChip T="string" Size="Size.Small" Color="@(task.CompletedStatus == CompletionStatus.Done ? Color.Success : Color.Default)">
-                            @(task.CompletedStatus?.Name ?? "Completed")
+                        <MudChip T="string" Size="Size.Small" Color="@(context.CompletedStatus == CompletionStatus.Done ? Color.Success : Color.Default)">
+                            @(context.CompletedStatus?.Name ?? "Completed")
                         </MudChip>
                     }
-                    else if (task.IsOverdue)
+                    else if (context.IsOverdue)
                     {
                         <MudChip T="string" Size="Size.Small" Color="Color.Error">Overdue</MudChip>
                     }
@@ -40,12 +35,15 @@ else
                     {
                         <MudChip T="string" Size="Size.Small" Color="Color.Info">Open</MudChip>
                     }
-                </td>
-                <td>@(task.Completed?.ToString("dd/MM/yyyy") ?? "-")</td>
-            </tr>
-        }
-        </tbody>
-    </MudSimpleTable>
+            </MudTd>
+            <MudTd>
+                @(context.Completed?.ToString("dd/MM/yyyy") ?? "-")
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            @ConstantString.NoRecords
+        </NoRecordsContent>
+    </MudTable>
 }
 
 @code {

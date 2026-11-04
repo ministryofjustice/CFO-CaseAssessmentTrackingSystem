@@ -196,24 +196,24 @@ else
                         <MudGrid Spacing="2">
                             <MudItem xs="4">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">Custody Support Worker</MudText>
-                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
+                                <MudText Typo="Typo.body1">@UserService.GetDisplayName(@item.CreatedBy!)</MudText>
                             </MudItem>
 
                             <MudItem xs="4">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">Community Support Worker
                                 </MudText>
-                                <MudText Typo="Typo.body2">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
+                                <MudText Typo="Typo.body1">@UserService.GetDisplayName(@item.AssignedTo!)</MudText>
                             </MudItem>
 
                             <MudItem xs="4">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">Expected Release Region
                                 </MudText>
-                                <MudText Typo="Typo.body2">@item.ExpectedReleaseRegion!.Name</MudText>
+                                <MudText Typo="Typo.body1">@item.ExpectedReleaseRegion!.Name</MudText>
                             </MudItem>
 
                             <MudItem xs="4">
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">Expected Release Date</MudText>
-                                <MudText Typo="Typo.body2">@item.ExpectedReleaseDate</MudText>
+                                <MudText Typo="Typo.body1">@item.ExpectedReleaseDate</MudText>
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">
                                     @(item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ExpectedReleaseDate.Humanize())
                                 </MudText>
@@ -223,14 +223,14 @@ else
                                 <MudText Typo="Typo.caption" Class="mud-text-secondary">Actual Release Date</MudText>
                                 @if (item.ActualReleaseDate is not null)
                                 {
-                                    <MudText Typo="Typo.body2">@item.ActualReleaseDate</MudText>
+                                    <MudText Typo="Typo.body1">@item.ActualReleaseDate</MudText>
                                     <MudText Typo="Typo.caption" Class="mud-text-secondary">
                                         @(item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : item.ActualReleaseDate.Humanize())
                                     </MudText>
                                 }
                                 else
                                 {
-                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">Not set</MudText>
+                                    <MudText Typo="Typo.body1" Class="mud-text-secondary">Not set</MudText>
                                 }
                             </MudItem>
                         </MudGrid>
