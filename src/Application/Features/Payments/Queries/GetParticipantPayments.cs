@@ -58,7 +58,8 @@ public static class GetParticipantPayments
                     LocationType = p.LocationType,
                     SupportWorkerName = u.DisplayName ?? "",
                     EligibleForPayment = p.EligibleForPayment,
-                    IneligibilityReason = p.IneligibilityReason
+                    IneligibilityReason = p.IneligibilityReason,
+                    PaymentPeriod = p.Approved,
                 }).AsNoTracking().ToListAsync(cancellationToken));
 
             items.AddRange(await (
@@ -79,7 +80,7 @@ public static class GetParticipantPayments
                     Contract = c.Description,
                     Location = l.Name,
                     LocationType = p.LocationType,
-                    SupportWorkerName = u.DisplayName ?? "",
+                    SupportWorkerName = u.DisplayName ?? string.Empty,
                     EligibleForPayment = p.EligibleForPayment,
                     IneligibilityReason = p.IneligibilityReason
                 }).AsNoTracking().ToListAsync(cancellationToken));
@@ -102,7 +103,7 @@ public static class GetParticipantPayments
                     Contract = c.Description,
                     Location = l.Name,
                     LocationType = p.LocationType,
-                    SupportWorkerName = u.DisplayName ?? "",
+                    SupportWorkerName = u.DisplayName ?? string.Empty,
                     EligibleForPayment = p.EligibleForPayment,
                     IneligibilityReason = p.IneligibilityReason
                 }).AsNoTracking().ToListAsync(cancellationToken));
@@ -111,6 +112,9 @@ public static class GetParticipantPayments
                 from p in db.ActivityPayments
                 join c in db.Contracts on p.ContractId equals c.Id
                 join l in db.Locations on p.LocationId equals l.Id
+                join a in db.Activities on p.ActivityId equals a.Id
+                join u in db.Users on a.OwnerId equals u.Id into userJoin
+                from u in userJoin.DefaultIfEmpty()
                 where p.ParticipantId == participantId
                       && contractIds.Contains(p.ContractId)
                       && (includeNonPayable || p.EligibleForPayment)
@@ -124,13 +128,17 @@ public static class GetParticipantPayments
                     Location = l.Name,
                     LocationType = p.LocationType,
                     EligibleForPayment = p.EligibleForPayment,
-                    IneligibilityReason = p.IneligibilityReason
+                    IneligibilityReason = p.IneligibilityReason,
+                    SupportWorkerName = u.DisplayName ?? string.Empty
                 }).AsNoTracking().ToListAsync(cancellationToken));
 
             items.AddRange(await (
                 from p in db.EducationPayments
                 join c in db.Contracts on p.ContractId equals c.Id
                 join l in db.Locations on p.LocationId equals l.Id
+                join a in db.Activities on p.ActivityId equals a.Id
+                join u in db.Users on a.OwnerId equals u.Id into userJoin
+                from u in userJoin.DefaultIfEmpty()
                 where p.ParticipantId == participantId
                       && contractIds.Contains(p.ContractId)
                       && (includeNonPayable || p.EligibleForPayment)
@@ -144,13 +152,17 @@ public static class GetParticipantPayments
                     Location = l.Name,
                     LocationType = p.LocationType,
                     EligibleForPayment = p.EligibleForPayment,
-                    IneligibilityReason = p.IneligibilityReason
+                    IneligibilityReason = p.IneligibilityReason,
+                    SupportWorkerName = u.DisplayName ?? string.Empty
                 }).AsNoTracking().ToListAsync(cancellationToken));
 
             items.AddRange(await (
                 from p in db.EmploymentPayments
                 join c in db.Contracts on p.ContractId equals c.Id
                 join l in db.Locations on p.LocationId equals l.Id
+                join a in db.Activities on p.ActivityId equals a.Id
+                join u in db.Users on a.OwnerId equals u.Id into userJoin
+                from u in userJoin.DefaultIfEmpty()
                 where p.ParticipantId == participantId
                       && contractIds.Contains(p.ContractId)
                       && (includeNonPayable || p.EligibleForPayment)
@@ -163,7 +175,8 @@ public static class GetParticipantPayments
                     Location = l.Name,
                     LocationType = p.LocationType,
                     EligibleForPayment = p.EligibleForPayment,
-                    IneligibilityReason = p.IneligibilityReason
+                    IneligibilityReason = p.IneligibilityReason,
+                    SupportWorkerName = u.DisplayName ?? string.Empty
                 }).AsNoTracking().ToListAsync(cancellationToken));
 
             items.AddRange(await (
