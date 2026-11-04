@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cfo.Cats.Domain.Entities.Notifications;
 using Dapper;
 
 namespace Cfo.Cats.Server.UI.Services;
@@ -28,6 +29,7 @@ public class NotificationService(ISqlConnectionFactory connectionFactory) : INot
                     """
                         SELECT Count(1) FROM [Identity].[Notification]
                         WHERE [OwnerId] = @UserId AND [ReadDate] IS NULL
+                          AND [NotificationDate] >= @Cutoff
                     """;
 
         using var connection = connectionFactory.CreateOpenConnection();
@@ -36,7 +38,8 @@ public class NotificationService(ISqlConnectionFactory connectionFactory) : INot
             sql,
             new
             {
-                UserId = userId
+                UserId = userId,
+                Cutoff = NotificationConstants.ExpiryCutoff
             });
     }
 
