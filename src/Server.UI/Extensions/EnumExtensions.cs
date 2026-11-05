@@ -69,8 +69,9 @@ public static class EnumExtensions
         AppIcon.WingInductionPhase => Icons.Material.Filled.AssignmentInd,
 
         //Participant labels - Bio
-        AppIcon.GangMember => Icons.Material.Filled.GroupWork,
         AppIcon.Transgender => Icons.Material.Filled.Transgender,
+        //Auto assigned labels - Bio        
+        AppIcon.GangMember => Icons.Material.Filled.GroupWork,
         AppIcon.CareLeaver => Icons.Material.Filled.HomeWork,
 
         //Auto assigned labels - Assessment

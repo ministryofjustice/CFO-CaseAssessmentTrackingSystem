@@ -111,10 +111,13 @@ public class ParticipantLabelTests
         var originalStart = participantLabel.Lifetime.StartDate;
         participantLabel.ClearDomainEvents();
 
-        label.Edit(label.Name, label.Description, LabelScope.User, label.Colour,
-            label.Variant, label.AppIcon, ["CONTRACT-001"], _labelCounter);
+        label.Edit(label.Name, label.Description, LabelScope.User, AppColour.Success,
+            AppVariant.Filled, label.AppIcon, ["CONTRACT-001"], _labelCounter);
 
         label.Scope.AllowUserCreation.ShouldBeTrue();
+        participantLabel.Label.Colour.ShouldBe(AppColour.Success);
+        participantLabel.Label.Variant.ShouldBe(AppVariant.Filled);
+        participantLabel.Label.AppIcon.ShouldBe(AppIcon.Transgender);
         participantLabel.Id.ShouldBe(originalId);
         participantLabel.CreatedBy.ShouldBe("system");
         participantLabel.Lifetime.StartDate.ShouldBe(originalStart);
@@ -131,6 +134,8 @@ public class ParticipantLabelTests
         var reapplied = ParticipantLabel.Create(participantId, label, _counter, "user");
         reapplied.Id.ShouldNotBe(originalId);
         reapplied.Label.Id.ShouldBe(label.Id);
+        reapplied.Label.Colour.ShouldBe(AppColour.Success);
+        reapplied.Label.Variant.ShouldBe(AppVariant.Filled);
         reapplied.CreatedBy.ShouldBe("user");
     }
 
