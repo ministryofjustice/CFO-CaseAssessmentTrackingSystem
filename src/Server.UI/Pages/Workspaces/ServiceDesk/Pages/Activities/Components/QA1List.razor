@@ -98,18 +98,6 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.CommencedOn" Title="@L["Commenced on"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body1">
-                        @context.Item.CommencedOn.Date.ToString("d")
-                    </MudText>
-                    <MudText Typo="Typo.body1">
-                        @context.Item.CommencedOn.Date.Humanize()
-                    </MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
         <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
