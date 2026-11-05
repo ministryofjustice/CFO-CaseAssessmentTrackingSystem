@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.PRIs.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer;
@@ -51,6 +52,7 @@ public static class ExportActivePRIs
                 ("Custody Support Worker", custodySupportWorkerName),
                 ("Community Support Worker", communitySupportWorkerName),
                 ("Expected Release Region", expectedReleaseRegionName),
+                ("PRI Status", request.Request.StatusFilter.ToString()),
                 ("Active Status", request.Request.ActiveStatus.HasValue ? (request.Request.ActiveStatus.Value ? "Yes" : "No") : null));
 
             var document = GeneratedDocument
@@ -104,6 +106,7 @@ public static class ExportActivePRIs
         public string? CommunitySupportWorker { get; init; }
         public int? ExpectedReleaseRegionId { get; init; }
         public bool? ActiveStatus { get; init; }
+        public PriStatusFilter StatusFilter { get; init; } = PriStatusFilter.Active;
         public string? OrderBy { get; init; }
         public string? SortDirection { get; init; }
     }

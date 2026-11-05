@@ -1,0 +1,52 @@
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+
+@if (Tasks is null)
+{
+    <MudProgressLinear Indeterminate="true" Size="Size.Small"/>
+}
+else
+{
+    <MudTable Dense="true" 
+              Items="Tasks"
+              Hover="true"
+              Striped="true" 
+              T="ObjectiveTaskDto">
+        <HeaderContent>
+            <MudTh>Task</MudTh>
+            <MudTh>Due</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Completed</MudTh>    
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Task">@context.DisplayName</MudTd>
+            <MudTd DataLabel="Due">@context.Due.ToString("MMM, yyyy")</MudTd>
+            <MudTd DataLabel="Status">
+                    @if (context.IsCompleted)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="@(context.CompletedStatus == CompletionStatus.Done ? Color.Success : Color.Default)">
+                            @(context.CompletedStatus?.Name ?? "Completed")
+                        </MudChip>
+                    }
+                    else if (context.IsOverdue)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Error">Overdue</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Info">Open</MudChip>
+                    }
+            </MudTd>
+            <MudTd>
+                @(context.Completed?.ToString("dd/MM/yyyy") ?? "-")
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            @ConstantString.NoRecords
+        </NoRecordsContent>
+    </MudTable>
+}
+
+@code {
+    /// <summary>Null while loading.</summary>
+    [Parameter] public ObjectiveTaskDto[]? Tasks { get; set; }
+}
