@@ -32,6 +32,8 @@ public class ActivityQueueEntryDto
     public NoteDto[] Notes { get; init; } = [];
 
     public string? Qa1CompletedBy { get; set; }
+
+    public DateTime? SubmittedToQa1 { get; set; }
     
     private class Mapping : Profile
     {
@@ -64,7 +66,8 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
             
             CreateMap<ActivityQa1QueueEntry, ActivityQueueEntryDto>()
                 .ForMember(target => target.ActivityId,
@@ -91,7 +94,8 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
             
             CreateMap<ActivityQa2QueueEntry, ActivityQueueEntryDto>()
                 .ForMember(target => target.ActivityId,
@@ -118,7 +122,8 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
 
             CreateMap<ActivityEscalationQueueEntry, ActivityQueueEntryDto>()
                 .ForMember(target => target.ActivityId,
@@ -145,7 +150,8 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
         }
     }
 }
