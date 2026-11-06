@@ -24,6 +24,8 @@ public class EnrolmentQueueEntryDto
 
     public string? Qa1CompletedBy { get; set; }
 
+    public DateTime? SubmittedToQa1 { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -48,7 +50,8 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.IsAccepted, options => options.MapFrom(source=> source.IsAccepted))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
             
             CreateMap<EnrolmentQa1QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
@@ -71,7 +74,8 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                  .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
             
             CreateMap<EnrolmentQa2QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
@@ -94,7 +98,8 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
 
             CreateMap<EnrolmentEscalationQueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
@@ -117,7 +122,8 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
-                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore())
+                .ForMember(d => d.SubmittedToQa1, o => o.Ignore());
         }
     }
 }
