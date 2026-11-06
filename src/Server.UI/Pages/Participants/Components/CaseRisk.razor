@@ -7,9 +7,12 @@
     }
 </style>
 <MudTabs Outlined="true" Border="true" Class="mt-2" >
-    <MudTabPanel Text="ARNS">
-        <ArnsRisk ParticipantId="@ParticipantId" />
-    </MudTabPanel>
+    @if (_showArns)
+    {
+        <MudTabPanel Text="ARNS">
+            <ArnsRisk ParticipantId="@ParticipantId" />
+        </MudTabPanel>
+    }
     <MudTabPanel Text="Latest">
         <ViewRisk ParticipantId="@ParticipantId" />
     </MudTabPanel>

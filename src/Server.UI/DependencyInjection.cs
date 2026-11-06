@@ -15,6 +15,7 @@ using Cfo.Cats.Server.UI.Middlewares;
 using Cfo.Cats.Server.UI.Hubs;
 using ApexCharts;
 using StackExchange.Redis;
+using Cfo.Cats.Application.Common.Configuration;
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Infrastructure.Services.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -95,14 +96,14 @@ public static class DependencyInjection
                 options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
             });
 
-        if (config.GetValue<bool>("Features:PresenceHub:Enabled"))
+        if (config.IsFeatureEnabled(FeatureSections.PresenceHub))
         {
             services.AddScoped<IHubConnectionFactory, HubConnectionFactory>();
             services.AddScoped<PresenceHubClient>();
         }
 
         // Configure Redis, SignalR backplane, and session store
-        var redisEnabled = config.GetValue<bool>("Features:Redis:Enabled");
+        var redisEnabled = config.IsFeatureEnabled(FeatureSections.Redis);
         var useRedisSignalRBackplane = redisEnabled && config.GetValue<bool>("Features:Redis:SignalRBackplane");
         var useRedisSessionStore = redisEnabled && config.GetValue<bool>("Features:Redis:SessionStore");
 
@@ -239,7 +240,7 @@ public static class DependencyInjection
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
         
-        if (app.Configuration.GetValue<bool>("Features:PresenceHub:Enabled"))
+        if (app.Configuration.IsFeatureEnabled(FeatureSections.PresenceHub))
         {
             app.MapHub<PresenceHub>(PresenceHub.HubUrl);
         }
