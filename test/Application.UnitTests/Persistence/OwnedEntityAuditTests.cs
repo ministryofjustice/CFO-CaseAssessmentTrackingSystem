@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Persistence;
@@ -21,7 +22,8 @@ public class OwnedEntityAuditTests
         user.Setup(u => u.UserId).Returns("user1");
         user.Setup(u => u.TenantId).Returns("1.");
         var dateTime = new Mock<IDateTime>();
-        dateTime.Setup(d => d.Now).Returns(DateTime.UtcNow);
+        var clock = DateTime.UtcNow;
+        dateTime.Setup(d => d.Now).Returns(() => clock = clock.AddSeconds(1));
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -67,9 +69,10 @@ public class OwnedEntityAuditTests
         await _db.SaveChangesAsync();
 
         var audit = await _db.AuditTrails.SingleAsync(a => a.TableName == nameof(Participant));
-        audit.AffectedColumns.ShouldContain("PersonalDetail.PreferredNames");
-        audit.OldValues!["PersonalDetail.PreferredNames"].ShouldBe("old");
-        audit.NewValues!["PersonalDetail.PreferredNames"].ShouldBe("new");
+        audit.AffectedColumns.ShouldNotBeNull().ShouldContain("PersonalDetail.PreferredNames");
+
+        audit.OldValues.ShouldNotBeNull()["PersonalDetail.PreferredNames"].ShouldBe("old");
+        audit.NewValues.ShouldNotBeNull()["PersonalDetail.PreferredNames"].ShouldBe("new");
     }
 
     [Test]
@@ -84,6 +87,38 @@ public class OwnedEntityAuditTests
     }
 
     [Test]
+    public async Task AddingExternalIdentifier_IsAuditedAgainstOwner()
+    {
+        var participant = await LoadParticipant();
+        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create("A1234BC", ExternalIdentifierType.NomisNumber));
+        await _db.SaveChangesAsync();
+
+        var audit = await _db.AuditTrails.SingleAsync(a => a.TableName == nameof(Participant));
+        audit.NewValues!.Keys.ShouldContain(k => k.StartsWith("ExternalIdentifiers[") && k.EndsWith("].Value"));
+        audit.NewValues.Values.ShouldContain("A1234BC");
+    }
+
+    [Test]
+    public async Task ReplacingExternalIdentifier_RecordsOldAndNewValues()
+    {
+        var participant = await LoadParticipant();
+        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create("A1234BC", ExternalIdentifierType.NomisNumber));
+        await _db.SaveChangesAsync();
+        _db.AuditTrails.RemoveRange(_db.AuditTrails);
+        await _db.SaveChangesAsync();
+        _db.ChangeTracker.Clear();
+
+        participant = await _db.Participants.IgnoreAutoIncludes().IgnoreQueryFilters()
+            .Include(p => p.ExternalIdentifiers).SingleAsync();
+        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create("Z9999ZZ", ExternalIdentifierType.NomisNumber));
+        await _db.SaveChangesAsync();
+
+        var audit = await _db.AuditTrails.SingleAsync(a => a.TableName == nameof(Participant));
+        audit.OldValues!.Values.ShouldContain("A1234BC");
+        audit.NewValues!.Values.ShouldContain("Z9999ZZ");
+    }
+
+    [Test]
     public async Task EndingConsentLifetime_IsAudited()
     {
         var participant = await LoadParticipant();
@@ -93,9 +128,9 @@ public class OwnedEntityAuditTests
         var audits = await _db.AuditTrails.Where(a => a.TableName == nameof(Consent)).ToListAsync();
 
         var ended = audits.Single(a => a.AuditType == AuditType.Update);
-        ended.AffectedColumns.ShouldContain("Lifetime.EndDate");
+        ended.AffectedColumns.ShouldNotBeNull().ShouldContain("Lifetime.EndDate");
 
         var created = audits.Single(a => a.AuditType == AuditType.Create);
-        created.NewValues!.ShouldContainKey("Lifetime.StartDate");
+        created.NewValues.ShouldNotBeNull().ShouldContainKey("Lifetime.StartDate");
     }
 }
