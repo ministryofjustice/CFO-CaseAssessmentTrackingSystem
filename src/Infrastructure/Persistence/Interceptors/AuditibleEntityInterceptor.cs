@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Contracts;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Interceptors;
@@ -46,10 +47,12 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
         context.ChangeTracker.DetectChanges();
 
-        foreach (var owned in GetFoldedOwnedEntries(context))
+        var entries = context.ChangeTracker.Entries().ToList();
+
+        foreach (var owned in GetFoldedOwnedEntries(entries))
         {
             // a removed or replaced owned value object is not always visible from its owner
-            var owner = FindOwnerEntry(context, owned);
+            var owner = ResolveAuditedOwner(entries, owned)?.Owner;
             if (owner is { State: EntityState.Unchanged, Entity: IAuditable auditableOwner })
             {
                 auditableOwner.LastModifiedBy = userId;
@@ -137,46 +140,97 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             auditEntries.Add((entry.Entity, auditEntry));
         }
 
-        // Owned value objects (e.g. Lifetime) and non-auditable owned entities (e.g. PersonalDetail)
-        // are not IAuditable, so fold their changes into the audit row of their owner.
-        foreach (var owned in GetFoldedOwnedEntries(context))
-        {
-            var owner = FindOwnerEntry(context, owned);
-            var navigation = owned.Metadata.FindOwnership()?.PrincipalToDependent?.Name;
-            var ownerAudit = auditEntries.FirstOrDefault(a => ReferenceEquals(a.Entity, owner?.Entity)).Audit;
+        // Owned entities (single or collection items, possibly nested) that are not IAuditable
+        // (e.g. Lifetime, Supervisor, ExternalIdentifier) are folded into the audit row of their
+        // nearest auditable owner, with a path such as "Lifetime.EndDate" or "Scores[Wellbeing].Score".
+        var entries = context.ChangeTracker.Entries().ToList();
 
-            if (ownerAudit is not null && navigation is not null)
+        foreach (var owned in GetFoldedOwnedEntries(entries))
+        {
+            var resolved = ResolveAuditedOwner(entries, owned);
+            if (resolved is null)
             {
-                AppendProperties(ownerAudit, owned, navigation, isFolded: true);
+                continue;
+            }
+
+            var ownerAudit = auditEntries.FirstOrDefault(a => ReferenceEquals(a.Entity, resolved.Owner.Entity)).Audit;
+            if (ownerAudit is not null)
+            {
+                AppendProperties(ownerAudit, owned, resolved.Path, isFolded: true);
             }
         }
 
         return temporaryAuditEntries;
     }
 
-    private static List<EntityEntry> GetFoldedOwnedEntries(DbContext context) =>
-        context.ChangeTracker.Entries()
+    private sealed record ResolvedOwner(EntityEntry Owner, string Path);
+
+    private static List<EntityEntry> GetFoldedOwnedEntries(IEnumerable<EntityEntry> entries) =>
+        entries
             .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted
                 && e.Entity is not IAuditable
                 && e.Metadata.IsOwned()
-                && e.Metadata.FindOwnership() is { IsUnique: true, PrincipalToDependent: not null })
+                && e.Metadata.FindOwnership() is { PrincipalToDependent: not null })
             .ToList();
 
-    private static EntityEntry? FindOwnerEntry(DbContext context, EntityEntry owned)
+    // Walks up the ownership chain to the nearest IAuditable owner, building the path on the way.
+    private static ResolvedOwner? ResolveAuditedOwner(IReadOnlyList<EntityEntry> entries, EntityEntry owned)
     {
-        var ownership = owned.Metadata.FindOwnership();
-        if (ownership is null)
+        var path = string.Empty;
+        var current = owned;
+
+        while (current.Entity is not IAuditable)
         {
-            return null;
+            var ownership = current.Metadata.FindOwnership();
+            if (ownership?.PrincipalToDependent is null)
+            {
+                return null;
+            }
+
+            var segment = ownership.IsUnique
+                ? ownership.PrincipalToDependent.Name
+                : $"{ownership.PrincipalToDependent.Name}[{DescribeKey(current)}]";
+            path = path.Length == 0 ? segment : $"{segment}.{path}";
+
+            var owner = FindOwnerEntry(entries, current, ownership);
+            if (owner is null)
+            {
+                return null;
+            }
+
+            current = owner;
         }
 
+        return path.Length == 0 ? null : new ResolvedOwner(current, path);
+    }
+
+    private static string DescribeKey(EntityEntry entry)
+    {
+        var foreignKeys = entry.Metadata.FindOwnership()!.Properties;
+        var keyProperties = entry.Metadata.FindPrimaryKey()!.Properties
+            .Where(p => !foreignKeys.Contains(p));
+
+        return string.Join(",", keyProperties.Select(p =>
+        {
+            var property = entry.Property(p.Name);
+            if (property.IsTemporary)
+            {
+                return "new";
+            }
+
+            return (entry.State == EntityState.Deleted ? property.OriginalValue : property.CurrentValue)?.ToString();
+        }));
+    }
+
+    private static EntityEntry? FindOwnerEntry(IReadOnlyList<EntityEntry> entries, EntityEntry owned, IReadOnlyForeignKey ownership)
+    {
         var keyValues = ownership.Properties
             .Select(p => owned.State == EntityState.Deleted
                 ? owned.Property(p.Name).OriginalValue
                 : owned.Property(p.Name).CurrentValue)
             .ToList();
 
-        return context.ChangeTracker.Entries().FirstOrDefault(e =>
+        return entries.FirstOrDefault(e =>
             ownership.PrincipalEntityType.IsAssignableFrom(e.Metadata)
             && ownership.PrincipalKey.Properties
                 .Select(p => e.Property(p.Name).CurrentValue)
@@ -192,7 +246,9 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 continue;
             }
 
-            if (isFolded && (property.Metadata.IsPrimaryKey() || property.Metadata.IsForeignKey()))
+            // key columns that carry data (e.g. ExternalIdentifier.Value) are kept; only the link back
+            // to the owner and database-generated values are noise
+            if (isFolded && (property.Metadata.IsForeignKey() || property.IsTemporary))
             {
                 continue;
             }
