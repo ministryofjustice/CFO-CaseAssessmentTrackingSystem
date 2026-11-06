@@ -1,6 +1,4 @@
-﻿
-@using System.Globalization
-@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
 @inherits ParticipantComponent<ParticipantHeaderDetailsDto>
@@ -33,14 +31,14 @@
 
             <DataList>
                 <ChildContent>
-                    <DataListItem Label="Date Of Birth" HelperText="@($"Age {@Data.DateOfBirth.CalculateAge()}")">
-                        @Data.DateOfBirth.ToShortDateString()
+                    <DataListItem Label="Date Of Birth" HelperText="@(Data.DateOfBirth is { } dob ? $"Age {dob.CalculateAge()}" : null)">
+                        @(Data.DateOfBirth?.ToShortDateString() ?? "Hidden until consent is approved")
                     </DataListItem>
                     <DataListItem Label="Enrolled at" HelperText="@Data.EnrolmentJustification">
                         @Data.EnrolmentLocation
                     </DataListItem>
                     <DataListItem Label="Nationality">
-                        @(Data.Nationality ?? "Not Set")
+                        @(Data.IsConsentGranted ? Data.Nationality ?? "Not Set" : "Hidden until consent is approved")
                     </DataListItem>
                     <DataListItem Label="Consent Date" HelperText="@Data.GetConsentDateHelperText()">
                         @Data.DateOfFirstConsent
@@ -55,6 +53,4 @@
 
         </MudCardActions>
     </MudCard>
-
-    
 }

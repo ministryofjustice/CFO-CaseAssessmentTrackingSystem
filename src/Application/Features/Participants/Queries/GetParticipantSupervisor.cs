@@ -26,6 +26,11 @@ public class GetParticipantSupervisor
                 return Result<ParticipantSupervisorDto?>.Failure("Participant not found");
             }
 
+            if (participant.ConsentStatus != ConsentStatus.GrantedStatus)
+            {
+                return Result<ParticipantSupervisorDto?>.Failure("Supervisor details are not available until consent has been approved");
+            }
+
             return mapper.Map<ParticipantSupervisorDto?>(participant.Supervisor);
         }
     }
