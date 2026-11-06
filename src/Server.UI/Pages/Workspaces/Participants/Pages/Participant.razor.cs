@@ -73,6 +73,8 @@ public partial class Participant
         }
     }
 
+    private bool IsConsentGranted => Data!.ConsentStatus == ConsentStatus.GrantedStatus;
+
     private bool ShowRightToWorkWarning() => Data!.IsRightToWorkRequired
                                   && Data!.ConsentStatus == ConsentStatus.GrantedStatus
                                   && Data.HasActiveRightToWork == false;

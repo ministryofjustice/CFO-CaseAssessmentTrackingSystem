@@ -8,9 +8,14 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 public record ParticipantHeaderDetailsDto
 {
     /// <summary>
-    /// The participants date of birth
+    /// The participants date of birth. Null until consent has been granted.
     /// </summary>
-    public required DateOnly DateOfBirth { get; init; }
+    public required DateOnly? DateOfBirth { get; init; }
+
+    /// <summary>
+    /// Whether consent has been approved. PII is withheld until it has.
+    /// </summary>
+    public bool IsConsentGranted { get; init; }
     
     /// <summary>
     /// The location the participant enrolled at.
@@ -20,7 +25,7 @@ public record ParticipantHeaderDetailsDto
     public string? EnrolmentJustification { get; init; }
     
     /// <summary>
-    /// The nationality of the participant.
+    /// The nationality of the participant. Null until consent has been granted.
     /// </summary>
     public required string? Nationality { get; init; }
     
@@ -37,6 +42,7 @@ public record ParticipantHeaderDetailsDto
     public string GetConsentDateHelperText() => DateOfFirstConsent switch
     {
         null => "Consent has not been confirmed",
-        _ => $"Consent granted {DateOfFirstConsent.Humanize()}, participant was {DateOfBirth.CalculateAge(DateOfFirstConsent.Value)} years old"
+        _ when DateOfBirth is null => $"Consent granted {DateOfFirstConsent.Humanize()}",
+        _ => $"Consent granted {DateOfFirstConsent.Humanize()}, participant was {DateOfBirth.Value.CalculateAge(DateOfFirstConsent.Value)} years old"
     };
 }

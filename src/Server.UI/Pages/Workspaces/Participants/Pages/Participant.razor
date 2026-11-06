@@ -119,13 +119,27 @@
                         </MudTabPanel>
 
                         <MudTabPanel Text="About">
-                            <CaseAbout ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
+                            @if (IsConsentGranted)
+                            {
+                                <CaseAbout ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
+                            }
+                            else
+                            {
+                                <MudAlert Severity="Severity.Info" Class="ma-3">Personal details are hidden until consent has been approved.</MudAlert>
+                            }
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
                             <Inductions ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
-                            <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
+                            @if (IsConsentGranted)
+                            {
+                                <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
+                            }
+                            else
+                            {
+                                <MudAlert Severity="Severity.Info" Class="ma-3">Sentence information is hidden until consent has been approved.</MudAlert>
+                            }
                             <ExternalData ParticipantId="@Id" ConsentStatus="@Data.ConsentStatus" />
                         </MudTabPanel>
                         <MudTabPanel Text="Risk">
