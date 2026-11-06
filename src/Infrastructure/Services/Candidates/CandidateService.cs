@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Globalization;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Cfo.Cats.Domain.Entities.Administration;
@@ -18,9 +19,9 @@ public class CandidateService(
         {
             var queryParams = new[]
             {
-                $"identifier={searchQuery.ExternalIdentifier}",
-                $"lastName={searchQuery.LastName}",
-                $"dateOfBirth={searchQuery.DateOfBirth!.Value:yyyy-MM-dd}"
+                $"identifier={Uri.EscapeDataString(searchQuery.ExternalIdentifier)}",
+                $"lastName={Uri.EscapeDataString(searchQuery.LastName)}",
+                $"dateOfBirth={searchQuery.DateOfBirth!.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"
             };
             
             var result = await client.GetFromJsonAsync<SearchResult[]>($"/search?{string.Join('&', queryParams)}");

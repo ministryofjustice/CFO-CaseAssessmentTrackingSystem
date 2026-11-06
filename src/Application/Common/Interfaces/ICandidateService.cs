@@ -6,6 +6,7 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 public interface ICandidateService
 {
     Task<Result<SearchResult[]>> SearchAsync(CandidateSearchQuery searchQuery);
+
     Task<Result<CandidateDto>> GetByUpciAsync(string upci);
 
     Task<Result<bool>> SetStickyLocation(string upci, string location);
