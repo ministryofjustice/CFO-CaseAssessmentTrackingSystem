@@ -1,6 +1,7 @@
 using System.Security.Cryptography.X509Certificates;
 using Amazon.Runtime;
 using Amazon.S3;
+using Cfo.Cats.Application.Common.Configuration;
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Interfaces.Initiatives;
@@ -82,7 +83,7 @@ public static class DependencyInjection
 
         // Run the Rebus message consumers in CATS only when a separate consumer Worker process is not handling them.
         // When Features:UseWorkerForConsumers is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
-        if (!configuration.GetValue<bool>("Features:UseWorkerForConsumers"))
+        if (!configuration.IsFeatureEnabled(FeatureSections.UseWorkerForConsumers))
         {
             services.AddMessageConsumers(configuration);
         }
@@ -96,7 +97,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationHandler<IdentityAuditNotification>, IdentityCacheClearanceHandler>();
 
         // Run Quartz in CATS only when a separate Worker process is not handling jobs
-        if (!configuration.GetValue<bool>("Features:UseWorkerForJobs"))
+        if (!configuration.IsFeatureEnabled(FeatureSections.UseWorkerForJobs))
         {
             services.AddQuartzJobsAndTriggers(configuration);
             // In-process implementation: talks directly to the local Quartz scheduler
@@ -505,7 +506,7 @@ public static class DependencyInjection
         services.Configure<HmppsExternalApiOptions>(configuration.GetSection(HmppsExternalApiOptions.HmppsExternalApi));
 
         // Experimental integration - only registered when explicitly enabled via feature flag.
-        if (configuration.GetValue<bool>("Features:HmppsExternalApi:Enabled"))
+        if (configuration.IsFeatureEnabled(FeatureSections.HmppsExternalApi))
         {
             services.AddHttpClient<IHmppsExternalApiService, HmppsExternalApiService>((provider, client) =>
                 {
@@ -813,7 +814,7 @@ public static class DependencyInjection
                 }
             );
 
-        if(configuration.GetValue<bool>("Features:Redis:Enabled") && configuration.GetValue<bool>("Features:Redis:SignalRBackplane"))
+        if(configuration.IsFeatureEnabled(FeatureSections.Redis) && configuration.GetValue<bool>("Features:Redis:SignalRBackplane"))
         {
             cache.WithSerializer(new FusionCacheSystemTextJsonSerializer(CacheJsonSerializerOptions.Options))
                  .WithDistributedCache(new RedisCache(new RedisCacheOptions { Configuration = configuration.GetConnectionString("redis") }))

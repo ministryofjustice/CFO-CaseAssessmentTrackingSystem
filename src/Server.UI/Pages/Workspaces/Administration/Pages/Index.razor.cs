@@ -1,5 +1,6 @@
 using Cfo.Cats.Server.UI.Models.Breadcrumb;
 using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Services;
+using Cfo.Cats.Application.Common.Configuration;
 using Cfo.Cats.Application.SecurityConstants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -52,7 +53,7 @@ public partial class Index
             links.Add(AdministrationLinks.Outbox);
             links.Add(AdministrationLinks.PickList);
 
-            if (Config.GetValue<bool>("Features:IntegrationEventPublishing:Enabled"))
+            if (Config.IsFeatureEnabled(FeatureSections.IntegrationEventPublishing))
             {
                 links.Add(AdministrationLinks.IntegrationEvents);
             }
@@ -71,7 +72,7 @@ public partial class Index
             links.Add(AdministrationLinks.Jobs);
             links.Add(AdministrationLinks.CacheManagement);
 
-            if (Config.GetValue<bool>("Features:HmppsExternalApi:Enabled"))
+            if (Config.IsFeatureEnabled(FeatureSections.HmppsExternalApi))
             {
                 links.Add(AdministrationLinks.HmppsRisk);
                 links.Add(AdministrationLinks.HmppsPerson);

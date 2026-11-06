@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Configuration;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Microsoft.Extensions.Configuration;
 using Rebus.Handlers;
@@ -17,14 +18,12 @@ public class ParticipantCreatedIntegrationEventConsumer(
 {
     public async Task Handle(ParticipantCreatedIntegrationEvent message)
     {
-        if (!configuration.GetValue<bool>("Features:UseDmsHardLinkApi"))
-        {
-            return;
-        }
-
         try
         {
-            await candidateService.SetHardLink(message.ParticipantId, message.PrimaryRecordKeyAtCreation, message.OccurredOn);
+            if(configuration.IsFeatureEnabled(FeatureSections.UseDmsHardLinkApi))
+            {
+                await candidateService.SetHardLink(message.ParticipantId, message.PrimaryRecordKeyAtCreation, message.OccurredOn);                
+            }
         }
         catch (Exception ex)
         {

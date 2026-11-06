@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cfo.Cats.Application.Common.Configuration;
 using Cfo.Cats.Application.Outbox;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages;
@@ -15,7 +16,7 @@ public partial class IntegrationEvents
 
     protected override void OnInitialized()
     {
-        _enabled = Config.GetValue<bool>("Features:IntegrationEventPublishing:Enabled");
+        _enabled = Config.IsFeatureEnabled(FeatureSections.IntegrationEventPublishing);
 
         if (_enabled == false)
         {
