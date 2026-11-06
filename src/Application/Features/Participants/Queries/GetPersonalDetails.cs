@@ -14,9 +14,11 @@ public static class GetPersonalDetails
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, ParticipantPersonalDetailDto?>
     {
+        private static readonly IReadOnlyList<ConsentStatus> Granted = [ConsentStatus.GrantedStatus];
+
         public async Task<ParticipantPersonalDetailDto?> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.Participants
-                .Where(p => p.Id == request.ParticipantId)
+                .Where(p => p.Id == request.ParticipantId && Granted.Contains(p.ConsentStatus!))
                 .Select(p => p.PersonalDetail)
                 .ProjectTo<ParticipantPersonalDetailDto>(mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);

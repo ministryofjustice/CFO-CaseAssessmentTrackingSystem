@@ -14,11 +14,14 @@ public static class GetContactDetails
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IQueryHandler<Query, IEnumerable<ParticipantContactDetailDto>>
     {
+        private static readonly IReadOnlyList<ConsentStatus> Granted = [ConsentStatus.GrantedStatus];
+
         public async Task<IEnumerable<ParticipantContactDetailDto>> Handle(Query request, CancellationToken cancellationToken) =>
             await unitOfWork.DbContext.ParticipantContactDetails
-                .Where(pcd => pcd.ParticipantId == request.ParticipantId)
+                .Where(pcd => pcd.ParticipantId == request.ParticipantId
+                              && unitOfWork.DbContext.Participants.Any(p => p.Id == pcd.ParticipantId
+                                  && Granted.Contains(p.ConsentStatus!)))
                 .ProjectTo<ParticipantContactDetailDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
     }
-
 }

@@ -18,14 +18,16 @@ public static class GetParticipantDetails
 
         public async Task<Result<ParticipantHeaderDetailsDto>> Handle(Query request, CancellationToken cancellationToken)
         {
+            IReadOnlyList<ConsentStatus> granted = [ConsentStatus.GrantedStatus];
             var query = from p in unitOfWork.DbContext.Participants.AsNoTracking()
                 where p.Id == request.ParticipantId
                 select new ParticipantHeaderDetailsDto
                 {
-                    DateOfBirth = p.DateOfBirth,
+                    DateOfBirth = granted.Contains(p.ConsentStatus!) ? p.DateOfBirth : null,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
                     EnrolmentJustification = p.EnrolmentLocationJustification,
-                    Nationality = p.Nationality,
+                    Nationality = granted.Contains(p.ConsentStatus!) ? p.Nationality : null,
+                    IsConsentGranted = granted.Contains(p.ConsentStatus!),
                     DateOfFirstConsent = p.DateOfFirstConsent,
                     LastSync = p.LastSyncDate ?? p.Created!.Value
                 };
