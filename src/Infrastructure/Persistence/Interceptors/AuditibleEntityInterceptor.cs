@@ -48,11 +48,12 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         context.ChangeTracker.DetectChanges();
 
         var entries = context.ChangeTracker.Entries().ToList();
+        var resolver = new OwnerResolver(entries);
 
         foreach (var owned in GetFoldedOwnedEntries(entries))
         {
             // a removed or replaced owned value object is not always visible from its owner
-            var owner = ResolveAuditedOwner(entries, owned)?.Owner;
+            var owner = resolver.Resolve(owned)?.Owner;
             if (owner is { State: EntityState.Unchanged, Entity: IAuditable auditableOwner })
             {
                 auditableOwner.LastModifiedBy = userId;
@@ -144,10 +145,11 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         // (e.g. Lifetime, Supervisor, ExternalIdentifier) are folded into the audit row of their
         // nearest auditable owner, with a path such as "Lifetime.EndDate" or "Scores[Wellbeing].Score".
         var entries = context.ChangeTracker.Entries().ToList();
+        var resolver = new OwnerResolver(entries);
 
         foreach (var owned in GetFoldedOwnedEntries(entries))
         {
-            var resolved = ResolveAuditedOwner(entries, owned);
+            var resolved = resolver.Resolve(owned);
             if (resolved is null)
             {
                 continue;
@@ -173,68 +175,121 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 && e.Metadata.FindOwnership() is { PrincipalToDependent: not null })
             .ToList();
 
-    // Walks up the ownership chain to the nearest IAuditable owner, building the path on the way.
-    private static ResolvedOwner? ResolveAuditedOwner(IReadOnlyList<EntityEntry> entries, EntityEntry owned)
+    // Resolves owned entries to their nearest IAuditable owner. Built once per save so that owner
+    // lookups are indexed by key rather than scanning every tracked entry for each owned entry.
+    private sealed class OwnerResolver(IReadOnlyList<EntityEntry> entries)
     {
-        var path = string.Empty;
-        var current = owned;
+        private readonly Dictionary<IReadOnlyKey, Dictionary<string, EntityEntry>> _indexes = new();
+        private readonly Dictionary<EntityEntry, ResolvedOwner?> _resolved = new();
+        private readonly Dictionary<EntityEntry, string> _keyNames = new();
+        private readonly Dictionary<(EntityEntry Owner, string Navigation), int> _newItemCounts = new();
 
-        while (current.Entity is not IAuditable)
+        public ResolvedOwner? Resolve(EntityEntry owned)
         {
-            var ownership = current.Metadata.FindOwnership();
-            if (ownership?.PrincipalToDependent is null)
+            if (!_resolved.TryGetValue(owned, out var resolved))
             {
-                return null;
+                resolved = _resolved[owned] = ResolveCore(owned);
             }
 
-            var segment = ownership.IsUnique
-                ? ownership.PrincipalToDependent.Name
-                : $"{ownership.PrincipalToDependent.Name}[{DescribeKey(current)}]";
-            path = path.Length == 0 ? segment : $"{segment}.{path}";
-
-            var owner = FindOwnerEntry(entries, current, ownership);
-            if (owner is null)
-            {
-                return null;
-            }
-
-            current = owner;
+            return resolved;
         }
 
-        return path.Length == 0 ? null : new ResolvedOwner(current, path);
-    }
-
-    private static string DescribeKey(EntityEntry entry)
-    {
-        var foreignKeys = entry.Metadata.FindOwnership()!.Properties;
-        var keyProperties = entry.Metadata.FindPrimaryKey()!.Properties
-            .Where(p => !foreignKeys.Contains(p));
-
-        return string.Join(",", keyProperties.Select(p =>
+        // Walks up the ownership chain to the nearest IAuditable owner, building the path on the way.
+        private ResolvedOwner? ResolveCore(EntityEntry owned)
         {
-            var property = entry.Property(p.Name);
-            if (property.IsTemporary)
+            var path = string.Empty;
+            var current = owned;
+
+            while (current.Entity is not IAuditable)
             {
-                return "new";
+                var ownership = current.Metadata.FindOwnership();
+                if (ownership?.PrincipalToDependent is null)
+                {
+                    return null;
+                }
+
+                var owner = FindOwnerEntry(current, ownership);
+                if (owner is null)
+                {
+                    return null;
+                }
+
+                var navigation = ownership.PrincipalToDependent.Name;
+                var segment = ownership.IsUnique
+                    ? navigation
+                    : $"{navigation}[{DescribeKey(current, owner, navigation)}]";
+                path = path.Length == 0 ? segment : $"{segment}.{path}";
+
+                current = owner;
             }
 
-            return (entry.State == EntityState.Deleted ? property.OriginalValue : property.CurrentValue)?.ToString();
-        }));
+            return path.Length == 0 ? null : new ResolvedOwner(current, path);
+        }
+
+        // Items with a database generated key have no value yet, so number them within their owner
+        // to stop two new items in one save from sharing a path.
+        private string DescribeKey(EntityEntry entry, EntityEntry owner, string navigation)
+        {
+            if (_keyNames.TryGetValue(entry, out var name))
+            {
+                return name;
+            }
+
+            var foreignKeys = entry.Metadata.FindOwnership()!.Properties;
+            var keyProperties = entry.Metadata.FindPrimaryKey()!.Properties
+                .Where(p => !foreignKeys.Contains(p))
+                .Select(p => entry.Property(p.Name))
+                .ToList();
+
+            if (keyProperties.Any(p => p.IsTemporary))
+            {
+                var counter = _newItemCounts.GetValueOrDefault((owner, navigation)) + 1;
+                _newItemCounts[(owner, navigation)] = counter;
+                name = $"new#{counter}";
+            }
+            else
+            {
+                name = string.Join(",", keyProperties.Select(p =>
+                    (entry.State == EntityState.Deleted ? p.OriginalValue : p.CurrentValue)?.ToString()));
+            }
+
+            return _keyNames[entry] = name;
+        }
+
+        private EntityEntry? FindOwnerEntry(EntityEntry owned, IReadOnlyForeignKey ownership)
+        {
+            if (!_indexes.TryGetValue(ownership.PrincipalKey, out var index))
+            {
+                index = new Dictionary<string, EntityEntry>();
+                foreach (var entry in entries.Where(e => ownership.PrincipalEntityType.IsAssignableFrom(e.Metadata)))
+                {
+                    index.TryAdd(
+                        Join(ownership.PrincipalKey.Properties.Select(p => entry.Property(p.Name).CurrentValue)),
+                        entry);
+                }
+
+                _indexes[ownership.PrincipalKey] = index;
+            }
+
+            var key = Join(ownership.Properties.Select(p => owned.State == EntityState.Deleted
+                ? owned.Property(p.Name).OriginalValue
+                : owned.Property(p.Name).CurrentValue));
+
+            return index.GetValueOrDefault(key);
+        }
+
+        private static string Join(IEnumerable<object?> values) =>
+            string.Join('\u001f', values.Select(v => v?.ToString()));
     }
 
-    private static EntityEntry? FindOwnerEntry(IReadOnlyList<EntityEntry> entries, EntityEntry owned, IReadOnlyForeignKey ownership)
+    // A Create or Delete row leaves AffectedColumns empty for the owner's own properties, so folded
+    // properties follow suit; duplicates arise when an item is replaced (one Deleted, one Added).
+    private static void AddAffectedColumn(AuditTrail auditEntry, string propertyName)
     {
-        var keyValues = ownership.Properties
-            .Select(p => owned.State == EntityState.Deleted
-                ? owned.Property(p.Name).OriginalValue
-                : owned.Property(p.Name).CurrentValue)
-            .ToList();
-
-        return entries.FirstOrDefault(e =>
-            ownership.PrincipalEntityType.IsAssignableFrom(e.Metadata)
-            && ownership.PrincipalKey.Properties
-                .Select(p => e.Property(p.Name).CurrentValue)
-                .SequenceEqual(keyValues));
+        if (auditEntry.AuditType == AuditType.Update && !auditEntry.AffectedColumns!.Contains(propertyName))
+        {
+            auditEntry.AffectedColumns.Add(propertyName);
+        }
     }
 
     private static void AppendProperties(AuditTrail auditEntry, EntityEntry entry, string? prefix, bool isFolded)
@@ -273,7 +328,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                     {
                         if (isFolded)
                         {
-                            auditEntry.AffectedColumns!.Add(propertyName);
+                            AddAffectedColumn(auditEntry, propertyName);
                         }
 
                         auditEntry.NewValues![propertyName] = property.CurrentValue;
@@ -286,7 +341,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                     {
                         if (isFolded)
                         {
-                            auditEntry.AffectedColumns!.Add(propertyName);
+                            AddAffectedColumn(auditEntry, propertyName);
                         }
 
                         auditEntry.OldValues![propertyName] = property.OriginalValue;
@@ -306,7 +361,15 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                                 && property.OriginalValue.Equals(property.CurrentValue) == false
                             )
                         ):
-                    auditEntry.AffectedColumns!.Add(propertyName);
+                    if (isFolded)
+                    {
+                        AddAffectedColumn(auditEntry, propertyName);
+                    }
+                    else
+                    {
+                        auditEntry.AffectedColumns!.Add(propertyName);
+                    }
+
                     auditEntry.OldValues![propertyName] = property.OriginalValue;
                     if (property.CurrentValue is not null)
                     {
