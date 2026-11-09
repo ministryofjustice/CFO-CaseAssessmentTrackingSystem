@@ -5,9 +5,8 @@
     "args": [
       "watch",
       "--project",
-      "src/Aspire/Cats.AppHost/Cats.AppHost.csproj"
-    ],
-    "cwd": "$ZED_WORKTREE_ROOT"
+      "$ZED_WORKTREE_ROOT/src/Aspire/Cats.AppHost/Cats.AppHost.csproj"
+    ]
   },
   {
     "label": "Cake Clean",
