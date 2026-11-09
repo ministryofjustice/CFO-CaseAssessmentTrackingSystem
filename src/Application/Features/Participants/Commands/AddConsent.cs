@@ -91,12 +91,10 @@ public static class AddConsent
                 .WithMessage("Cannot backdate beyond 3 months");
 
             RuleFor(v => v.Document)
+                .Cascade(CascadeMode.Stop)
                 .NotNull()
                 .WithMessage("You must upload a Consent document")
-                .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes))
-                .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes} megabytes")
-                .MustAsync(BePdfFile)
-                .WithMessage("File is not a PDF");
+                .MustBeValidPdf(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes);
 
             RuleFor(v => v.DocumentVersion)
                 .NotEmpty()
@@ -124,36 +122,5 @@ public static class AddConsent
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
 
-        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
-            => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
-
-        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
-        {
-            if (file is null)
-            {
-                return false;
-            }
-
-            // Check file extension
-            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            // Check MIME type
-            if (file.ContentType != "application/pdf")
-            {
-                return false;
-            }
-
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes).Bytes);
-
-            // Check file signature (magic numbers)
-            await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
-            var buffer = new byte[4];
-            await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
-            var header = System.Text.Encoding.ASCII.GetString(buffer);
-            return header == "%PDF";
-        }
     }
 }

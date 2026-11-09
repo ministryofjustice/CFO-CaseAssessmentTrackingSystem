@@ -102,12 +102,15 @@
 
             <MudItem xs="12">
                 <div class="mt-4">
-                    <MudFileUpload @bind-Files="Model.Document"
+                    <MudFileUpload T="IBrowserFile" @ref="_upload"
+                                   @bind-Files="Model.Document"
+                                   OnFilesChanged="OnFileSelected"
                                    For="() => Model.Document"
                                    MaximumFileCount="1"
                                    Accept=".pdf">
                         <CustomContent>
                             <MudLoadingButton Loading="_uploading"
+                                              FullWidth="true"
                                               Variant="Variant.Filled"
                                               Color="Color.Primary"
                                               StartIcon="@Icons.Material.Filled.Upload"

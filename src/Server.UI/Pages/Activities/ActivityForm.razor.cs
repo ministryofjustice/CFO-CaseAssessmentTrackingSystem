@@ -3,6 +3,9 @@ using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Components.Documents;
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor.Extensions;
 
 namespace Cfo.Cats.Server.UI.Pages.Activities;
@@ -12,6 +15,12 @@ public partial class ActivityForm
     private IEnumerable<ActivityDefinition> _activities = [];
     private MudAutocomplete<ActivityDefinition?> _activityDropdown = new();
     private readonly bool _uploading = false;
+    private MudFileUpload<IBrowserFile>? _upload;
+
+    private Task OnFileSelected(InputFileChangeEventArgs e) =>
+        UploadPreviewDialog.ReviewAsync(DialogService, e.File,
+            Documents.ActivityTemplate.MaximumSizeInMegabytes,
+            () => Model.Document = null, _upload);
     private IReadOnlyCollection<ActivityType> _filteredTypes = [];
     private bool _hasSelectedActivityAlreadyBeenAddedOnThisDate;
     private bool Disabled => Model.Location is null;

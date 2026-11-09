@@ -43,13 +43,23 @@
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.Title" Title="@L[_currentDto.GetMemberDescription(x => x.Title)]" />
-            <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]" />
-            <PropertyColumn Property="x => x.Version" Title="@L[_currentDto.GetMemberDescription(x => x.Version)]" />
-            <PropertyColumn Property="x => x.CreatedBy" Title="@L[_currentDto.GetMemberDescription(x => x.CreatedBy)]">
+            <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]">
                 <CellTemplate>
                     <div>
-                        <MudText Typo="Typo.body1">@context.Item.CreatedByName</MudText>
-                        <MudText Typo="Typo.body1">@context.Item.Created.Humanize()</MudText>
+                    <MudText Typo="Typo.body1">@context.Item.Description</MudText>
+                    @if (!string.IsNullOrWhiteSpace(context.Item.Version))
+                    {
+                        <MudText Typo="Typo.body1" Class="mud-text-secondary">Version: @context.Item.Version</MudText>
+                    }
+                    </div>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.CreatedByName" Title="@L[_currentDto.GetMemberDescription(x => x.CreatedBy)]" />
+            <PropertyColumn Property="x => x.Created" Title="@L[_currentDto.GetMemberDescription(x => x.Created)]" InitialDirection="SortDirection.Descending">
+                <CellTemplate>
+                    <div>
+                        <MudText Typo="Typo.body1">@context.Item.Created.ToString("dd/MM/yyyy HH:mm")</MudText>
+                        <MudText Typo="Typo.body1" Class="mud-text-secondary">@context.Item.Created.Humanize()</MudText>
                     </div>
                 </CellTemplate>
             </PropertyColumn>

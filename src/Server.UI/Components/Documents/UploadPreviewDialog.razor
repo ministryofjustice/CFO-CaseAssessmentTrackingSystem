@@ -1,0 +1,144 @@
+@using Cfo.Cats.Application.Common.Validators
+@using Humanizer
+@using Microsoft.AspNetCore.Components.Forms
+
+<MudDialog Style="height: 100%">
+    <TitleContent>
+        <MudText Typo="Typo.subtitle1">
+            <MudIcon Icon="@Icons.Material.Filled.DocumentScanner" Class="mr-3" />
+            Check this is the correct document: @File.Name
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_loading)
+        {
+            <MudLoading Text="Preparing preview" />
+        }
+        else if (_fileBase64 is not null)
+        {
+            <object data="data:application/pdf;base64,@_fileBase64" type="application/pdf" class="full-size-object">
+                <p>PDF cannot be displayed.</p>
+            </object>
+        }
+        else
+        {
+            <MudText Typo="Typo.caption">
+                File cannot be displayed. Please reselect the file.
+            </MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Refresh"
+                   Variant="Variant.Outlined"
+                   Color="Color.Secondary"
+                   OnClick="() => MudDialog.Cancel()">
+            Reselect
+        </MudButton>
+        <MudButton StartIcon="@Icons.Material.Filled.Check"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="_fileBase64 is null"
+                   OnClick="() => MudDialog.Close(DialogResult.Ok(true))">
+            Confirm
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string? _fileBase64;
+    private bool _loading = true;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required IBrowserFile File { get; set; }
+
+    [Parameter]
+    public long MaxSizeInBytes { get; set; } = 1024 * 1024;
+
+    // Previews the file after selection; invalid files skip the preview and show the form error instead
+    public static async Task ReviewAsync(
+        IDialogService dialogService,
+        IBrowserFile file,
+        double maxSizeInMegabytes,
+        Action clearSelection,
+        MudFileUpload<IBrowserFile>? upload)
+    {
+        long maxSizeInBytes = Convert.ToInt64(ByteSize.FromMegabytes(maxSizeInMegabytes).Bytes);
+
+        var isAcceptable = PdfFileValidation.NotExceedMaximumFileSize(file, maxSizeInMegabytes)
+                           && await IsValidPdfAsync(file, maxSizeInMegabytes);
+
+        if (!isAcceptable)
+        {
+            // Leave the file selected so the form validation reports the specific problem.
+            if (upload is not null)
+            {
+                await upload.ValidateAsync();
+            }
+            return;
+        }
+
+        var parameters = new DialogParameters<UploadPreviewDialog>
+        {
+            { x => x.File, file },
+            { x => x.MaxSizeInBytes, maxSizeInBytes }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.ExtraLarge,
+            FullWidth = true,
+            CloseOnEscapeKey = false,
+            BackdropClick = false
+        };
+
+        var dialog = await dialogService.ShowAsync<UploadPreviewDialog>("Preview", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false })
+        {
+            return;
+        }
+
+        clearSelection();
+
+        if (upload is not null)
+        {
+            await upload.ClearAsync();
+            await upload.OpenFilePickerAsync();
+        }
+    }
+
+    private static async Task<bool> IsValidPdfAsync(IBrowserFile file, double maxSizeInMegabytes)
+    {
+        try
+        {
+            return await PdfFileValidation.BePdfFile(file, maxSizeInMegabytes)
+                   && await PdfFileValidation.HaveCompleteTrailer(file, maxSizeInMegabytes);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await using var stream = File.OpenReadStream(MaxSizeInBytes);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            _fileBase64 = Convert.ToBase64String(memoryStream.ToArray());
+        }
+        catch
+        {
+            _fileBase64 = null;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}
