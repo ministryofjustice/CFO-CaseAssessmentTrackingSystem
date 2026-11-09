@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
 @inherits ParticipantComponent<ParticipantHeaderDetailsDto>
@@ -24,7 +24,6 @@
                     Participant Details
                 </MudText>
             </CardHeaderContent>
-            
         </MudCardHeader>
      
         <MudCardContent>
@@ -34,8 +33,21 @@
                     <DataListItem Label="Date Of Birth" HelperText="@(Data.DateOfBirth is { } dob ? $"Age {dob.CalculateAge()}" : null)">
                         @(Data.DateOfBirth?.ToShortDateString() ?? "Hidden until consent is approved")
                     </DataListItem>
-                    <DataListItem Label="Enrolled at" HelperText="@Data.EnrolmentJustification">
-                        @Data.EnrolmentLocation
+                    <DataListItem Label="Enrolled at">
+                        <LabelActions>
+                            @if (!string.IsNullOrWhiteSpace(Data.EnrolmentJustification))
+                            {
+                                <MudTooltip Text="View enrolment location justification">
+                                    <MudIconButton OnClick="@(() => _showEnrolmentJustification = true)"
+                                                   Icon="@Icons.Material.Outlined.OpenInNew"
+                                                   Size="Size.Small"
+                                                   aria-label="View enrolment location justification" />
+                                </MudTooltip>
+                            }
+                        </LabelActions>
+                        <ChildContent>
+                            @Data.EnrolmentLocation
+                        </ChildContent>
                     </DataListItem>
                     <DataListItem Label="Nationality">
                         @(Data.IsConsentGranted ? Data.Nationality ?? "Not Set" : "Hidden until consent is approved")
@@ -53,4 +65,17 @@
 
         </MudCardActions>
     </MudCard>
+
+    @if (!string.IsNullOrWhiteSpace(Data.EnrolmentJustification))
+    {
+        <MudDialog @bind-Visible="_showEnrolmentJustification"
+                   Options="@(new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true })">
+            <TitleContent>
+                <MudText Typo="Typo.h6">Enrolment Justification</MudText>
+            </TitleContent>
+            <DialogContent>
+                <MudText Style="white-space: pre-wrap; overflow-wrap: anywhere;">@Data.EnrolmentJustification</MudText>
+            </DialogContent>
+        </MudDialog>
+    }
 }

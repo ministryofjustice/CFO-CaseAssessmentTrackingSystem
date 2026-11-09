@@ -8,6 +8,8 @@ namespace Cfo.Cats.Server.UI.Components.Participants;
 /// </summary>
 public partial class ParticipantDetailsCardComponent
 {
+    private bool _showEnrolmentJustification;
+
     protected override IQuery<Result<ParticipantHeaderDetailsDto>> CreateQuery()
         => new GetParticipantDetails.Query()
         {
