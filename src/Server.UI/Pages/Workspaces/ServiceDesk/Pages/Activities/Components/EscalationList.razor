@@ -97,19 +97,19 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.CommencedOn" Title="@L["Commenced on"]">
+        <PropertyColumn Property="x => x.SubmittedToQa1" Title="@L["Submitted to CFO (QA1)"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body1">
-                        @context.Item.CommencedOn.Date.ToString("d")
+                        @context.Item.SubmittedToQa1?.ToString("d")
                     </MudText>
                     <MudText Typo="Typo.body1">
-                        @context.Item.CommencedOn.Date.Humanize()
+                        @context.Item.SubmittedToQa1?.Humanize()
                     </MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
+        <PropertyColumn Property="x => x.Created" Title="@L["Submitted to Queue"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body1">

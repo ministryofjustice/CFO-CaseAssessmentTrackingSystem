@@ -59,18 +59,20 @@ public static class ActivityQaEscalationWithPagination
                     Qa1CompletedBy = g
                         .OrderByDescending(x => x.LastModified)
                         .Select(x => x.Owner!.DisplayName)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+                    SubmittedToQa1 = g.Max(x => x.Created)
                 })
                 .ToDictionaryAsync(
                     x => x.ActivityId,
-                    x => x.Qa1CompletedBy,
+                    x => x,
                     cancellationToken);
 
             foreach (var item in data.Items)
             {
-                if (qa1Owners.TryGetValue(item.ActivityId, out var completedBy))
+                if (qa1Owners.TryGetValue(item.ActivityId, out var qa1))
                 {
-                    item.Qa1CompletedBy = completedBy;
+                    item.Qa1CompletedBy = qa1.Qa1CompletedBy;
+                    item.SubmittedToQa1 = qa1.SubmittedToQa1;
                 }
             }
             
@@ -84,6 +86,7 @@ public static class ActivityQaEscalationWithPagination
                 "ParticipantId" => (x => x.Participant!.FirstName + ' ' + x.Participant.LastName),
                 "TenantId" => (x => x.TenantId),
                 "Created" => (x => x.Created!),
+                "SubmittedToQa1" => (x => unitOfWork.DbContext.ActivityQa1Queue.Where(q => q.ActivityId == x.ActivityId).Max(q => (DateTime?)q.Created)),
                 "SupportWorker" => (x => x.Participant!.Owner!.DisplayName!),
                 "AssignedTo" => (x => x.OwnerId == null ? null : x.Owner!.DisplayName),
                 _ => (x => x.Created!)
