@@ -328,10 +328,8 @@ public static class AddActivity
                 When(c => c.Document is not null, () =>
                 {
                     RuleFor(v => v.Document)
-                            .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes))
-                            .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes} megabytes")
-                            .MustAsync(BePdfFile)
-                            .WithMessage("File is not a PDF");
+                            .Cascade(CascadeMode.Stop)
+                            .MustBeValidPdf(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes);
                 });
             });
         }
@@ -351,38 +349,6 @@ public static class AddActivity
         private bool HaveAHubInduction(string participantId, LocationDto location) =>
             unitOfWork.DbContext.HubInductions.Any(induction => 
                 induction.ParticipantId == participantId && induction.LocationId == location.Id);
-
-        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
-        => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
-
-        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
-        {
-            if (file is null)
-            {
-                return false;
-            }
-
-            // Check file extension
-            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            // Check MIME type
-            if (file.ContentType != "application/pdf")
-            {
-                return false;
-            }
-
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes).Bytes);
-
-            // Check file signature (magic numbers)
-            await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
-            byte[] buffer = new byte[4];
-            await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
-            string header = System.Text.Encoding.ASCII.GetString(buffer);
-            return header == "%PDF";
-        }
 
         private bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;
 

@@ -35,9 +35,21 @@
                         MinDate="DateTime.Today.AddMonths(-3)"
                         PickerVariant="PickerVariant.Dialog"
                         Editable="true" />
+        <MudSelect @bind-Value="Model.DocumentVersion" 
+                        Class="mt-4"
+                        Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
+                        For="() => Model.DocumentVersion"
+                        AnchorOrigin="Origin.BottomLeft">
+                @foreach (var version in Documents.Consent.Versions)
+                {
+                    <MudSelectItem Value="@version">Version @version</MudSelectItem>
+                }
+            </MudSelect>
 
         <div class="mb-4 mt-8">
-            <MudFileUpload @bind-Files="Model.Document" 
+            <MudFileUpload T="IBrowserFile" @ref="_upload"
+                            @bind-Files="Model.Document"
+                            OnFilesChanged="OnFileSelected"
                             For="() => Model.Document"
                             MaximumFileCount="1" 
                             Accept=".pdf">
@@ -45,6 +57,7 @@
                          @if(!consentUploaded)
                     { 
                     <MudLoadingButton   Loading="_uploading"
+                                        FullWidth="true"
                                         Variant="Variant.Filled"
                                         Color="Color.Primary"
                                         StartIcon="@Icons.Material.Filled.Upload"
@@ -76,28 +89,25 @@
                     <br />
                 </SelectedTemplate>
             </MudFileUpload>               
-      
-            <MudSelect @bind-Value="Model.DocumentVersion" 
-                        Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
-                        For="() => Model.DocumentVersion"
-                        AnchorOrigin="Origin.BottomLeft">
-                @foreach (var version in Documents.Consent.Versions)
-                {
-                    <MudSelectItem Value="@version">Version @version</MudSelectItem>
-                }
-            </MudSelect>
         </div>
 
         <MudCheckBox @bind-Value="Model.Certify"
                         Label="@Model.GetMemberDescription(x => x.Certify)"
                         For="() => Model.Certify"
                         Disabled="Model.Document is null" />
+
     </MudForm>
     }  
 }
 
 @code {
     private bool _uploading = false;
+    private MudFileUpload<IBrowserFile>? _upload;
+
+    private Task OnFileSelected(InputFileChangeEventArgs e) =>
+        UploadPreviewDialog.ReviewAsync(DialogService, e.File,
+            Documents.Consent.MaximumSizeInMegabytes,
+            () => Model.Document = null, _upload);
 
     [Parameter, EditorRequired]
     public required AddConsent.Command Model { get; set; }

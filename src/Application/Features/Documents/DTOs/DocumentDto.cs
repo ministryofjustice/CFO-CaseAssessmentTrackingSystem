@@ -27,7 +27,7 @@ public class DocumentDto
     [Description("Content")] public string? Content { get; set; }
     [Description("Created By")] public string CreatedBy { get; set; } = string.Empty;
     [Description("Created By Name")] public string CreatedByName { get; set; } = string.Empty;
-    [Description("Created Date")] public DateTime Created { get; set; }
+    [Description("Upload Date")] public DateTime Created { get; set; }
 
     [Description("Owner")] public ApplicationUserSummaryDto? Owner { get; set; }
 
