@@ -1,0 +1,20 @@
+<MudDialog>
+    <DialogContent>
+        <MudText Style="white-space: pre-wrap; overflow-wrap: anywhere;">@Justification</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Close"
+                   Variant="Variant.Filled"
+                   Color="Color.Secondary"
+                   OnClick="@(() => MudDialog.Close())">
+            Close
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public string Justification { get; set; } = string.Empty;
+}

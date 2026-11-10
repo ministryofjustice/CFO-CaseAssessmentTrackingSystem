@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
 @inherits ParticipantComponent<ParticipantHeaderDetailsDto>
@@ -38,7 +38,7 @@
                             @if (!string.IsNullOrWhiteSpace(Data.EnrolmentJustification))
                             {
                                 <MudTooltip Text="View enrolment location justification">
-                                    <MudIconButton OnClick="@(() => _showEnrolmentJustification = true)"
+                                    <MudIconButton OnClick="@ExpandEnrolmentJustification"
                                                    Icon="@Icons.Material.Outlined.OpenInNew"
                                                    Size="Size.Small"
                                                    aria-label="View enrolment location justification" />
@@ -66,16 +66,4 @@
         </MudCardActions>
     </MudCard>
 
-    @if (!string.IsNullOrWhiteSpace(Data.EnrolmentJustification))
-    {
-        <MudDialog @bind-Visible="_showEnrolmentJustification"
-                   Options="@(new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true })">
-            <TitleContent>
-                <MudText Typo="Typo.h6">Enrolment Justification</MudText>
-            </TitleContent>
-            <DialogContent>
-                <MudText Style="white-space: pre-wrap; overflow-wrap: anywhere;">@Data.EnrolmentJustification</MudText>
-            </DialogContent>
-        </MudDialog>
-    }
 }

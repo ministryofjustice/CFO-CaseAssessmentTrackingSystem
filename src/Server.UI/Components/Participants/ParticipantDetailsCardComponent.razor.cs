@@ -8,12 +8,29 @@ namespace Cfo.Cats.Server.UI.Components.Participants;
 /// </summary>
 public partial class ParticipantDetailsCardComponent
 {
-    private bool _showEnrolmentJustification;
-
     protected override IQuery<Result<ParticipantHeaderDetailsDto>> CreateQuery()
         => new GetParticipantDetails.Query()
         {
             CurrentUser = CurrentUser,
             ParticipantId = ParticipantId
         };
+
+    private async Task ExpandEnrolmentJustification()
+    {
+        if (string.IsNullOrWhiteSpace(Data?.EnrolmentJustification))
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<EnrolmentJustificationDialog>
+        {
+            { dialog => dialog.Justification, Data.EnrolmentJustification }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<EnrolmentJustificationDialog>(
+            "Enrolment Justification", parameters, options);
+
+        await dialog.Result;
+    }
 }
