@@ -1,0 +1,40 @@
+@inherits OwningComponentBase<IMediator>
+
+@if (_service is null)
+{
+    <MudAlert Severity="Severity.Info" Class="mt-2">
+        The HMPPS External API integration is currently disabled. Enable it via the
+        "Features:HmppsExternalApi:Enabled" configuration flag.
+    </MudAlert>
+}
+else if (_loading)
+{
+    <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
+}
+else if (_records.Length == 0)
+{
+    <MudAlert Severity="Severity.Info" Class="mt-2">No NOMIS or Delius records are linked to this participant.</MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Warning" Class="mt-2" Dense="true">
+        This information is retrieved live from HMPPS prison and probation systems. Each tab shows only the data held against that record.
+        Validate with the supervising officer / offender manager before relying on it.
+    </MudAlert>
+
+    <MudTabs Outlined="true" Border="true" Class="mt-2" KeepPanelsAlive="true">
+        @foreach (var record in _records)
+        {
+            <MudTabPanel Text="@($"{record.Type.Name} {record.Value}")">
+                @if (record.Type == ExternalIdentifierType.NomisNumber)
+                {
+                    <PrisonRecord Service="_service" NomisNumber="@record.Value" />
+                }
+                else
+                {
+                    <ProbationRecord Service="_service" Crn="@record.Value" />
+                }
+            </MudTabPanel>
+        }
+    </MudTabs>
+}

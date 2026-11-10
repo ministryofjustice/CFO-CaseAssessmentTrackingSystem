@@ -1,0 +1,53 @@
+@typeparam T
+
+<MudCard Class="mt-4" Outlined="true">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudAvatar Color="Color.Tertiary">
+                <MudIcon Icon="@Icon" />
+            </MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.subtitle1">@Title</MudText>
+            @if (Subtitle is not null)
+            {
+                <MudText Typo="Typo.caption">@Subtitle</MudText>
+            }
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (Result is null)
+        {
+            <MudProgressCircular Indeterminate="true" Size="Size.Small" />
+        }
+        else if (Result is NotFoundResult<T>)
+        {
+            <MudText Typo="Typo.body2">@NotFoundText</MudText>
+        }
+        else if (!Result.Succeeded || Result.Data is null)
+        {
+            <MudAlert Severity="Severity.Error" Dense="true">@(string.IsNullOrWhiteSpace(Result.ErrorMessage) ? "Unable to retrieve this information." : Result.ErrorMessage)</MudAlert>
+        }
+        else
+        {
+            @ChildContent(Result.Data)
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = default!;
+
+    [Parameter] public string? Subtitle { get; set; }
+
+    [Parameter] public string Icon { get; set; } = Icons.Material.Filled.Info;
+
+    /// <summary>
+    /// The result of the call that populates this section; <c>null</c> while loading.
+    /// </summary>
+    [Parameter, EditorRequired] public Result<T>? Result { get; set; }
+
+    [Parameter] public string NotFoundText { get; set; } = "No information found.";
+
+    [Parameter, EditorRequired] public RenderFragment<T> ChildContent { get; set; } = default!;
+}

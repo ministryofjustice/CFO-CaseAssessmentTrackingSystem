@@ -1,0 +1,65 @@
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+
+@if (Sentences.Count == 0)
+{
+    <MudText Typo="Typo.body2">No sentences recorded.</MudText>
+}
+else
+{
+    var showFine = Sentences.Any(s => s.FineAmount is > 0);
+
+    <MudSimpleTable Dense="true" Hover="true" Striped="true">
+        <thead>
+            <tr>
+                <th>Sentenced</th>
+                <th>Sentence</th>
+                <th>Length</th>
+                <th>Status</th>
+                @if (showFine)
+                {
+                    <th>Fine</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sentence in Sentences.OrderByDescending(s => s.IsActive == true).ThenByDescending(s => s.DateOfSentencing))
+            {
+                <tr>
+                    <td>@HmppsDisplay.Format(sentence.DateOfSentencing)</td>
+                    <td>@sentence.Description</td>
+                    <td>@HmppsDisplay.FormatLength(sentence.Length)</td>
+                    <td>
+                        <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap">
+                            @switch (sentence.IsActive)
+                            {
+                                case true:
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Success">Active</MudChip>
+                                    break;
+                                case false:
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Default">Inactive</MudChip>
+                                    break;
+                            }
+                            @if (ShowCustodial && sentence.IsCustodial is not null)
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@(sentence.IsCustodial == true ? "Custodial" : "Community")</MudChip>
+                            }
+                        </MudStack>
+                    </td>
+                    @if (showFine)
+                    {
+                        <td>@sentence.FineAmount?.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-GB"))</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </MudSimpleTable>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyCollection<SentenceDto> Sentences { get; set; } = [];
+
+    /// <summary>
+    /// Prison sentences are always reported as custodial, so the indicator is only meaningful for probation records.
+    /// </summary>
+    [Parameter] public bool ShowCustodial { get; set; }
+}

@@ -1,0 +1,29 @@
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.HmppsRecords
+
+<MudTabs Outlined="true" Border="true" Class="mt-2">
+    <MudTabPanel Text="Sentence Information">
+        @if (IsConsentGranted)
+        {
+            <CaseSentenceInformation ParticipantId="@ParticipantId" ParticipantIsActive="@ParticipantIsActive" />
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Class="ma-3">Sentence information is hidden until consent has been approved.</MudAlert>
+        }
+        <ExternalData ParticipantId="@ParticipantId" ConsentStatus="@ConsentStatus" />
+    </MudTabPanel>
+    @if (_showHmppsRecords)
+    {
+        <MudTabPanel Text="HMPPS Records">
+            @if (IsConsentGranted)
+            {
+                <HmppsRecords ParticipantId="@ParticipantId" />
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info" Class="ma-3">HMPPS records are hidden until consent has been approved.</MudAlert>
+            }
+        </MudTabPanel>
+    }
+</MudTabs>
