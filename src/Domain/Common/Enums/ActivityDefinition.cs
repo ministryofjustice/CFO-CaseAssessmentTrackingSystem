@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
+using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
@@ -337,6 +338,13 @@ public class ActivityDefinition(
     public static readonly ActivityDefinition CRSWellbeingHub = new("CRS Wellbeing Hub", 298, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWellbeing, ExpectedClaims.One, CheckType.QA);
     public static readonly ActivityDefinition CRSDependencyAndRecoveryWiderCommunity = new("CRS Dependency And Recovery Wider Community", 299, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSDependencyAndRecovery, ExpectedClaims.One, CheckType.QA);
     public static readonly ActivityDefinition CRSDependencyAndRecoveryHub = new("CRS Dependency And Recovery Hub", 300, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSDependencyAndRecovery, ExpectedClaims.One, CheckType.QA);
+
+    public static readonly ActivityDefinition LivingSuccessfullyWithElectronicMonitoringWiderCommunity = new("Living Successfully with Electronic Monitoring Wider Community", 301, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.LivingSuccessfullyWithElectronicMonitoring, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition LivingSuccessfullyWithElectronicMonitoringHub = new("Living Successfully with Electronic Monitoring Hub", 302, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.LivingSuccessfullyWithElectronicMonitoring, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition IntegratedOffenderManagementWiderCommunity = new("Integrated Offender Management Wider Community", 303, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.IntegratedOffenderManagement, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition IntegratedOffenderManagementHub = new("Integrated Offender Management Hub", 304, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.IntegratedOffenderManagement, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition PCOSOUnderstandingLicenceConditionsWiderCommunity = new("PCOSO – Understanding Licence conditions Wider Community", 305, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.PCOSOUnderstandingLicenceConditions, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition PCOSOUnderstandingLicenceConditionsHub = new("PCOSO – Understanding Licence conditions Hub", 306, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.PCOSOUnderstandingLicenceConditions, ExpectedClaims.One, CheckType.QA);
 }
 
 public class DeliveryLocationType(string name, int value) : SmartEnum<DeliveryLocationType>(name, value)
@@ -506,4 +514,7 @@ public class ActivityCategory(string name, int value) : SmartEnum<ActivityCatego
     public static readonly ActivityCategory CRSWellbeing = new("CRS Wellbeing", 105);
     public static readonly ActivityCategory CRSDependencyAndRecovery = new ("CRS Dependency and Recovery", 106);
     public static readonly ActivityCategory EmploymentInCustody = new("Employment in Custody", 107);
+    public static readonly ActivityCategory LivingSuccessfullyWithElectronicMonitoring = new("Living Successfully with Electronic Monitoring", 108);
+    public static readonly ActivityCategory IntegratedOffenderManagement = new("Integrated Offender Management", 109);
+    public static readonly ActivityCategory PCOSOUnderstandingLicenceConditions = new("PCOSO – Understanding Licence conditions", 110);
 }
