@@ -1,11 +1,13 @@
 ﻿using System.Text.Json;
+using Cfo.Cats.Application.Features.Identity.MessageBus;
 using Cfo.Cats.Application.Outbox;
 using Quartz;
 using Rebus.Bus;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
-public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IBus bus)
+public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IBus bus,
+    TimeProvider? timeProvider = null)
     : IJob
 {
     private const int BatchSize = 10;
@@ -41,9 +43,11 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
 
         try
         {
+            var clock = timeProvider ?? TimeProvider.System;
             var outboxMessages = await unitOfWork.DbContext.OutboxMessages
                 .Where(x => x.ProcessedOnUtc == null)
-                .OrderBy(x => x.OccurredOnUtc)
+                .OrderBy(x => x.Error != null)
+                .ThenBy(x => x.OccurredOnUtc)
                 .Take(BatchSize)
                 .ToListAsync(cancellationToken);
 
@@ -65,7 +69,8 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                     }
 
                     await bus.Publish(deserializedMessage);
-                    outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
+                    outboxMessage.ProcessedOnUtc = clock.GetUtcNow().UtcDateTime;
+                    outboxMessage.Error = null;
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -74,7 +79,10 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Exeception publishing outbox messages");
-                    outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
+                    if (outboxMessage.Type != typeof(NotifyInactiveUserCommand).FullName)
+                    {
+                        outboxMessage.ProcessedOnUtc = clock.GetUtcNow().UtcDateTime;
+                    }
                     outboxMessage.Error = ex.ToString();
                 }
             }
