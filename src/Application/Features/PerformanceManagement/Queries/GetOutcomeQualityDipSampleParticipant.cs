@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Providers;
 using Cfo.Cats.Application.SecurityConstants;
-using System.Runtime.Intrinsics.Arm;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
@@ -22,6 +21,7 @@ public static class GetOutcomeQualityDipSampleParticipant
         {
             var db = unitOfWork.DbContext;
 
+            IReadOnlyList<ConsentStatus> granted = [ConsentStatus.GrantedStatus];
             var participantQuery = 
                 from p in db.Participants
                 join dsp in db.OutcomeQualityDipSampleParticipants on p.Id equals dsp.ParticipantId
@@ -33,10 +33,10 @@ public static class GetOutcomeQualityDipSampleParticipant
                     ParticipantId = p.Id,
                     FirstName = p.FirstName,
                     LastName = p.LastName,
-                    DateOfBirth = p.DateOfBirth,
-                    Nationality = p.Nationality,
+                    DateOfBirth = granted.Contains(p.ConsentStatus!) ? p.DateOfBirth : null,
+                    Nationality = granted.Contains(p.ConsentStatus!) ? p.Nationality : null,
                     SupportWorker = p.Owner!.DisplayName,
-                    CurrentLocation = p.CurrentLocation!.Name,
+                    CurrentLocation = p.CurrentLocation.Name,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
                     EnrolmentJustification = p.AssessmentJustification,
                     ConsentDate = p.DateOfFirstConsent!.Value,
@@ -114,10 +114,6 @@ public static class GetOutcomeQualityDipSampleParticipant
             });
 
             //TODO: Add validation that the id belongs to that sample.
-
         }
-
-       
-       
     }
 }

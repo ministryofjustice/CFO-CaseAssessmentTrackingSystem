@@ -30,6 +30,7 @@ public partial class DipSampleParticipantDetails
     private OutcomeQualityDipSamplePathwayPlanComponent? _pathwayPlanObjectives;
     private PathwayPlanReviewHistory? _pathwayPlanReviewHistory;
 
+    private const string HiddenText = "Hidden until consent is approved";
     private const int PathwayPlanDetailsTabIndex = 1;
     private const int PathwayPlanReviewTabIndex = 2;
 
@@ -65,15 +66,13 @@ public partial class DipSampleParticipantDetails
 
     private SubmitCsoResponse.Command SubmitCsoCommand
     {
-        get
-        {
-            return _csoCommand ??= new()
+        get =>
+            _csoCommand ??= new()
             {
                 CurrentUser = UserProfile,
                 ParticipantId = ParticipantId,
                 DipSampleId = SampleId
             };
-        }
         set => _csoCommand = value;
     }
 
@@ -81,19 +80,14 @@ public partial class DipSampleParticipantDetails
 
     private SubmitCpmResponse.Command SubmitCpmCommand
     {
-        get
-        {
-            return _cpmCommand ??= new()
+        get =>
+            _cpmCommand ??= new()
             {
                 CurrentUser = UserProfile,
                 ParticipantId = ParticipantId,
                 DipSampleId = SampleId
             };
-        }
-        set
-        {
-            _cpmCommand = value;
-        }
+        set => _cpmCommand = value;
     }
 
     private SubmitFinalResponse.Command? _finalCommand;
@@ -105,10 +99,7 @@ public partial class DipSampleParticipantDetails
             ParticipantId = ParticipantId,
             DipSampleId = SampleId
         };
-        set
-        {
-            _finalCommand = value;
-        }
+        set => _finalCommand = value;
     }
 
     private bool _isLoading = true;
