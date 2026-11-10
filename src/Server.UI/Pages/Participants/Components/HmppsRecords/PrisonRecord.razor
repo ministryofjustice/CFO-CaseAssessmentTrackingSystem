@@ -1,0 +1,58 @@
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+
+<MudGrid Spacing="2">
+    <MudItem xs="12" md="8">
+        <HmppsSection T="SentenceKeyDatesDto" Title="Key dates" Subtitle="Latest prison sentence (NOMIS)" Icon="@Icons.Material.Filled.Event"
+                      Result="_keyDates" NotFoundText="No sentence key dates recorded.">
+            @{
+                var dates = KeyDates(context);
+            }
+            @if (dates.Count == 0)
+            {
+                <MudText Typo="Typo.body2">No sentence key dates recorded.</MudText>
+            }
+            else
+            {
+                <MudGrid Spacing="1">
+                    @foreach (var (label, date) in dates)
+                    {
+                        <MudItem xs="6" sm="4">
+                            <MudPaper Outlined="true" Class="pa-2">
+                                <MudText Typo="Typo.caption">@label</MudText>
+                                <MudText Typo="Typo.body1" Color="@(date < Today ? Color.Default : Color.Primary)">@HmppsDisplay.Format(date)</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </HmppsSection>
+    </MudItem>
+    <MudItem xs="12" md="4">
+        <HmppsSection T="PersonResponsibleOfficerDto" Title="Prison offender manager" Icon="@Icons.Material.Filled.Person"
+                      Result="_officer" NotFoundText="No prison offender manager allocated.">
+            @if (context.PrisonOffenderManager is { } pom
+                 && HmppsDisplay.JoinNames(pom.Forename, pom.Surname) is { Length: > 0 } name)
+            {
+                <MudText Typo="Typo.body1">@name</MudText>
+                @if (!string.IsNullOrWhiteSpace(pom.Prison?.Code))
+                {
+                    <MudText Typo="Typo.body2">Prison: @pom.Prison.Code</MudText>
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">No prison offender manager allocated.</MudText>
+            }
+        </HmppsSection>
+    </MudItem>
+</MudGrid>
+
+<HmppsSection T="OffenceDto[]" Title="Offences" Subtitle="Convicted offences held in NOMIS" Icon="@Icons.Material.Filled.Gavel"
+              Result="_offences" NotFoundText="No offences found for this record.">
+    <OffencesTable Offences="context" />
+</HmppsSection>
+
+<HmppsSection T="SentenceDto[]" Title="Sentences" Subtitle="Sentences held in NOMIS" Icon="@Icons.Material.Filled.Balance"
+              Result="_sentences" NotFoundText="No sentences found for this record.">
+    <SentencesTable Sentences="context" />
+</HmppsSection>

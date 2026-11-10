@@ -132,15 +132,7 @@
                             <Inductions ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
-                            @if (IsConsentGranted)
-                            {
-                                <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" />
-                            }
-                            else
-                            {
-                                <MudAlert Severity="Severity.Info" Class="ma-3">Sentence information is hidden until consent has been approved.</MudAlert>
-                            }
-                            <ExternalData ParticipantId="@Id" ConsentStatus="@Data.ConsentStatus" />
+                            <CaseSentence ParticipantId="@Id" ParticipantIsActive="@Data.IsActive" ConsentStatus="@Data.ConsentStatus" />
                         </MudTabPanel>
                         <MudTabPanel Text="Risk">
                             <CaseRisk ParticipantId="@Id" />

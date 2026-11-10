@@ -31,4 +31,36 @@ public interface IHmppsExternalApiService
     /// </summary>
     /// <param name="hmppsId">HMPPS identifier for the person (e.g. CRN).</param>
     Task<Result<TierDetailsDto>> GetTierDetailsAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns all convicted offences for a person, across every page. Includes both prison and probation
+    /// records regardless of the identifier supplied; filter on <see cref="OffenceDto.SystemSource"/>.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number or CRN).</param>
+    Task<Result<OffenceDto[]>> GetOffencesAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns all sentences for a person, across every page. Includes both prison and probation
+    /// records regardless of the identifier supplied; filter on <see cref="SentenceDto.SystemSource"/>.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number or CRN).</param>
+    Task<Result<SentenceDto[]>> GetSentencesAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns the key dates (release, licence expiry etc.) for a person's latest prison sentence. NOMIS data only.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number).</param>
+    Task<Result<SentenceKeyDatesDto>> GetLatestSentenceKeyDatesAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns licences and their conditions for a person. Condition wording is redacted for Limited Access Offenders.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. CRN).</param>
+    Task<Result<PersonLicencesDto>> GetLicenceConditionsAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns the prison and community offender managers responsible for a person.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number or CRN).</param>
+    Task<Result<PersonResponsibleOfficerDto>> GetPersonResponsibleOfficerAsync(string hmppsId, CancellationToken cancellationToken);
 }

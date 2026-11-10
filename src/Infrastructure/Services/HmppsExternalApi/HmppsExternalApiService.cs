@@ -125,11 +125,118 @@ public class HmppsExternalApiService(HttpClient client, ILogger<HmppsExternalApi
         }
     }
 
+    public Task<Result<OffenceDto[]>> GetOffencesAsync(string hmppsId, CancellationToken cancellationToken)
+        => GetAllPagesAsync<OffenceDto>(hmppsId, "offences", cancellationToken);
+
+    public Task<Result<SentenceDto[]>> GetSentencesAsync(string hmppsId, CancellationToken cancellationToken)
+        => GetAllPagesAsync<SentenceDto>(hmppsId, "sentences", cancellationToken);
+
+    public Task<Result<SentenceKeyDatesDto>> GetLatestSentenceKeyDatesAsync(string hmppsId, CancellationToken cancellationToken)
+        => GetDataAsync<SentenceKeyDatesDto>(hmppsId, "sentences/latest-key-dates-and-adjustments", cancellationToken);
+
+    public Task<Result<PersonLicencesDto>> GetLicenceConditionsAsync(string hmppsId, CancellationToken cancellationToken)
+        => GetDataAsync<PersonLicencesDto>(hmppsId, "licences/conditions", cancellationToken);
+
+    public Task<Result<PersonResponsibleOfficerDto>> GetPersonResponsibleOfficerAsync(string hmppsId, CancellationToken cancellationToken)
+        => GetDataAsync<PersonResponsibleOfficerDto>(hmppsId, "person-responsible-officer", cancellationToken);
+
+    private async Task<Result<T>> GetDataAsync<T>(string hmppsId, string resource, CancellationToken cancellationToken)
+        where T : class
+    {
+        try
+        {
+            var response = await client.GetFromJsonAsync<DataResponse<T>>(
+                $"v1/persons/{Uri.EscapeDataString(hmppsId)}/{resource}", cancellationToken);
+
+            if (response?.Data is null)
+            {
+                return Result<T>.Failure("HMPPS External API returned no data.");
+            }
+
+            return Result<T>.Success(response.Data);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Result<T>.NotFound();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "HMPPS External API is unavailable when calling {Resource} for HMPPS ID: {HmppsId}", resource, hmppsId);
+            return Result<T>.Failure("HMPPS External API is currently unavailable.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error calling HMPPS External API {Resource} endpoint for HMPPS ID: {HmppsId}", resource, hmppsId);
+            return Result<T>.Failure("An unexpected error occurred while contacting the HMPPS External API.");
+        }
+    }
+
+    private const int PageSize = 100;
+
+    // Guards against an upstream pagination bug causing an unbounded loop.
+    private const int MaxPages = 50;
+
+    private async Task<Result<T[]>> GetAllPagesAsync<T>(string hmppsId, string resource, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var items = new List<T>();
+
+            for (var page = 1; page <= MaxPages; page++)
+            {
+                var response = await client.GetFromJsonAsync<PaginatedResponse<T>>(
+                    $"v1/persons/{Uri.EscapeDataString(hmppsId)}/{resource}?page={page}&perPage={PageSize}", cancellationToken);
+
+                if (response?.Data is null)
+                {
+                    return Result<T[]>.Failure("HMPPS External API returned no data.");
+                }
+
+                items.AddRange(response.Data);
+
+                if (response.Pagination?.IsLastPage != false || response.Data.Count == 0)
+                {
+                    break;
+                }
+            }
+
+            return Result<T[]>.Success(items.ToArray());
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Result<T[]>.NotFound();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "HMPPS External API is unavailable when calling {Resource} for HMPPS ID: {HmppsId}", resource, hmppsId);
+            return Result<T[]>.Failure("HMPPS External API is currently unavailable.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error calling HMPPS External API {Resource} endpoint for HMPPS ID: {HmppsId}", resource, hmppsId);
+            return Result<T[]>.Failure("An unexpected error occurred while contacting the HMPPS External API.");
+        }
+    }
+
     /// <summary>
     /// Envelope used by the HMPPS External API to wrap response payloads, e.g. <c>{ "data": { ... } }</c>.
     /// </summary>
     private class DataResponse<T>
     {
         public T? Data { get; init; }
+    }
+
+    /// <summary>
+    /// Envelope used by the HMPPS External API for paged list endpoints, e.g. <c>{ "data": [ ... ], "pagination": { ... } }</c>.
+    /// </summary>
+    private class PaginatedResponse<T>
+    {
+        public List<T>? Data { get; init; }
+        public PaginationDto? Pagination { get; init; }
+    }
+
+    private class PaginationDto
+    {
+        public bool? IsLastPage { get; init; }
     }
 }

@@ -1,0 +1,117 @@
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+
+<MudGrid Spacing="2">
+    <MudItem xs="12" md="4">
+        <HmppsSection T="PersonResponsibleOfficerDto" Title="Community offender manager" Icon="@Icons.Material.Filled.Person"
+                      Result="_officer" NotFoundText="No community offender manager allocated.">
+            @if (context.CommunityOffenderManager is { } com)
+            {
+                <MudText Typo="Typo.body1">@HmppsDisplay.JoinNames(com.Name?.Forename, com.Name?.Surname)</MudText>
+                @if (!string.IsNullOrWhiteSpace(com.Email))
+                {
+                    <MudLink Typo="Typo.body2" Href="@($"mailto:{com.Email}")" Class="d-block">@com.Email</MudLink>
+                }
+                @if (!string.IsNullOrWhiteSpace(com.TelephoneNumber))
+                {
+                    <MudText Typo="Typo.body2">@com.TelephoneNumber</MudText>
+                }
+                @if (com.Team is { } team)
+                {
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.caption">Team</MudText>
+                    <MudText Typo="Typo.body2">@team.Description</MudText>
+                    @if (!string.IsNullOrWhiteSpace(team.Provider?.Description))
+                    {
+                        <MudText Typo="Typo.body2">@team.Provider.Description</MudText>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(team.Email))
+                    {
+                        <MudLink Typo="Typo.body2" Href="@($"mailto:{team.Email}")" Class="d-block">@team.Email</MudLink>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(team.TelephoneNumber))
+                    {
+                        <MudText Typo="Typo.body2">@team.TelephoneNumber</MudText>
+                    }
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">No community offender manager allocated.</MudText>
+            }
+        </HmppsSection>
+    </MudItem>
+    <MudItem xs="12" md="8">
+        <HmppsSection T="PersonLicencesDto" Title="Licence conditions" Subtitle="Create and Vary a Licence" Icon="@Icons.Material.Filled.Rule"
+                      Result="_licences" NotFoundText="No licences found for this record.">
+            @{
+                var licences = OrderLicences(context.Licences);
+            }
+            @if (licences.Count == 0)
+            {
+                <MudText Typo="Typo.body2">No licences found for this record.</MudText>
+            }
+            else
+            {
+                <MudExpansionPanels MultiExpansion="true" Outlined="false">
+                    @foreach (var licence in licences)
+                    {
+                        <MudExpansionPanel Expanded="@HmppsDisplay.IsCurrentLicence(licence.Status)">
+                            <TitleContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+                                    <MudText Typo="Typo.body1">@HmppsDisplay.LicenceTypeName(licence.TypeCode)</MudText>
+                                    <MudChip T="string" Size="Size.Small" Color="@HmppsDisplay.LicenceStatusColor(licence.Status)">@HmppsDisplay.Humanise(licence.Status)</MudChip>
+                                    @if (HmppsDisplay.FormatLicenceDate(licence.ApprovedDate) is { } approved)
+                                    {
+                                        <MudText Typo="Typo.caption">Approved @approved</MudText>
+                                    }
+                                    <MudText Typo="Typo.caption">@(licence.Conditions?.Count ?? 0) condition(s)</MudText>
+                                </MudStack>
+                            </TitleContent>
+                            <ChildContent>
+                                @if (licence.Conditions is not { Count: > 0 })
+                                {
+                                    <MudText Typo="Typo.body2">No conditions recorded.</MudText>
+                                }
+                                else
+                                {
+                                    @if (licence.Conditions.Any(c => c.IsRedacted))
+                                    {
+                                        <MudAlert Severity="Severity.Info" Dense="true" Class="mb-2">
+                                            Some condition wording is restricted (Limited Access Offender). Contact the community offender manager for details.
+                                        </MudAlert>
+                                    }
+                                    @foreach (var group in licence.Conditions.GroupBy(c => HmppsDisplay.Humanise(c.Type)).OrderBy(g => g.Key))
+                                    {
+                                        <MudText Typo="Typo.subtitle2" Class="mt-2">@(string.IsNullOrEmpty(group.Key) ? "Conditions" : group.Key)</MudText>
+                                        <MudList T="string" Dense="true" ReadOnly="true">
+                                            @foreach (var condition in group)
+                                            {
+                                                <MudListItem T="string">
+                                                    @if (!string.IsNullOrWhiteSpace(condition.Category))
+                                                    {
+                                                        <MudText Typo="Typo.body2"><strong>@condition.Category</strong></MudText>
+                                                    }
+                                                    <MudText Typo="Typo.body2">@(condition.IsRedacted ? "Restricted" : condition.Condition)</MudText>
+                                                </MudListItem>
+                                            }
+                                        </MudList>
+                                    }
+                                }
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            }
+        </HmppsSection>
+    </MudItem>
+</MudGrid>
+
+<HmppsSection T="OffenceDto[]" Title="Offences" Subtitle="Main and additional offences held in Delius" Icon="@Icons.Material.Filled.Gavel"
+              Result="_offences" NotFoundText="No offences found for this record.">
+    <OffencesTable Offences="context" />
+</HmppsSection>
+
+<HmppsSection T="SentenceDto[]" Title="Sentences" Subtitle="Sentences held in Delius" Icon="@Icons.Material.Filled.Balance"
+              Result="_sentences" NotFoundText="No sentences found for this record.">
+    <SentencesTable Sentences="context" ShowCustodial="true" />
+</HmppsSection>
