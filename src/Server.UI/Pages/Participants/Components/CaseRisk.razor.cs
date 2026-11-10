@@ -12,7 +12,11 @@ public partial class CaseRisk
     public UserProfile CurrentUser { get; set; } = default!;
 
     private bool _showArns;
+    private bool _showTier;
 
     protected override void OnInitialized()
-        => _showArns = Config.GetFeature(FeatureSections.ArnsRisk).IsEnabledForTenant(CurrentUser?.TenantId);
+    {
+        _showArns = Config.GetFeature(FeatureSections.ArnsRisk).IsEnabledForTenant(CurrentUser?.TenantId);
+        _showTier = Config.GetFeature(FeatureSections.TierRisk).IsEnabledForTenant(CurrentUser?.TenantId);
+    }
 }
