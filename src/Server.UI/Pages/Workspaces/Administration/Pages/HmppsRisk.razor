@@ -2,6 +2,7 @@
 
 @using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Components
+@using Humanizer
 
 @attribute [Authorize(SecurityPolicies.SystemSupportFunctions)]
 
@@ -36,14 +37,14 @@
             <MudCardContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
                     <MudText Typo="Typo.h2">Risk of Serious Harm</MudText>
-                    <MudChip T="string">@(_risks.Summary?.OverallRiskLevel ?? "Unknown")</MudChip>
+                    <MudChip T="string" Color="@RiskLevelColor(_risks.Summary?.OverallRiskLevel ?? "Unknown")">@(_risks.Summary?.OverallRiskLevel ?? "Unknown")</MudChip>
                 </MudStack>
-                <MudText Typo="Typo.body2">Assessed on: @(_risks.AssessedOn?.ToString("dd/MM/yyyy") ?? "Unknown")</MudText>
-                <MudText Typo="Typo.body2">Who is at risk: @(_risks.Summary?.WhoIsAtRisk ?? "Not recorded")</MudText>
-                <MudText Typo="Typo.body2">Nature of risk: @(_risks.Summary?.NatureOfRisk ?? "Not recorded")</MudText>
-                <MudText Typo="Typo.body2">Risk imminence: @(_risks.Summary?.RiskImminence ?? "Not recorded")</MudText>
-                <MudText Typo="Typo.body2">Risk increase factors: @(_risks.Summary?.RiskIncreaseFactors ?? "Not recorded")</MudText>
-                <MudText Typo="Typo.body2">Risk mitigation factors: @(_risks.Summary?.RiskMitigationFactors ?? "Not recorded")</MudText>
+                <MudTextField Label="Assessed on" Value="@(_risks.AssessedOn?.ToString("dd/MM/yyyy"))" Placeholder="Unknown" ReadOnly Class="mt-4" />
+                <MudTextField Label="Who is at risk" Value="@(_risks.Summary?.WhoIsAtRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+                <MudTextField Label="Nature of risk" Value="@(_risks.Summary?.NatureOfRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+                <MudTextField Label="Risk imminence" Value="@(_risks.Summary?.RiskImminence)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+                <MudTextField Label="Risk increase factors" Value="@(_risks.Summary?.RiskIncreaseFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+                <MudTextField Label="Risk mitigation factors" Value="@(_risks.Summary?.RiskMitigationFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
 
                 <MudText Typo="Typo.h3" Class="mt-4">Risk to self</MudText>
                 <MudGrid Class="mt-1">
@@ -92,7 +93,7 @@
                             @foreach (var category in RiskCategories)
                             {
                                 <tr>
-                                    <td>@category</td>
+                                    <td>@category.Humanize(LetterCasing.Title)</td>
                                     <td>
                                         @{
                                             var communityLevel = GetRiskLevel(_risks.Summary?.RiskInCommunity, category);
