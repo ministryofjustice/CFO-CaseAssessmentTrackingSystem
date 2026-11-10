@@ -14,4 +14,23 @@ public partial class ParticipantDetailsCardComponent
             CurrentUser = CurrentUser,
             ParticipantId = ParticipantId
         };
+
+    private async Task ExpandEnrolmentJustification()
+    {
+        if (string.IsNullOrWhiteSpace(Data?.EnrolmentJustification))
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<EnrolmentJustificationDialog>
+        {
+            { dialog => dialog.Justification, Data.EnrolmentJustification }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<EnrolmentJustificationDialog>(
+            "Enrolment Justification", parameters, options);
+
+        await dialog.Result;
+    }
 }

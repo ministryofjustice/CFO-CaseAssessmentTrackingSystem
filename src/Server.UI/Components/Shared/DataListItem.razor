@@ -1,7 +1,8 @@
 
 <MudStack Spacing="1" Row="false" StretchItems="StretchItems.Start">
-    <MudText Typo="Typo.body2" Style="font-size: 0.8rem;">
+    <MudText Typo="Typo.body2" Style="font-size: 0.8rem; display: flex; align-items: center; flex-wrap: nowrap;">
         @Label
+        @LabelActions
     </MudText>
     @ChildContent
 
@@ -16,6 +17,9 @@
     
     [Parameter, EditorRequired]
     public string Label { get; set; }
+
+    [Parameter]
+    public RenderFragment? LabelActions { get; set; }
 
     [Parameter, EditorRequired]
     public RenderFragment ChildContent { get; set;}
