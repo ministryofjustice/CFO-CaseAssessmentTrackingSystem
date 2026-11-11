@@ -132,6 +132,8 @@ else
                     Class="mt-4" Dense="true">
             <HeaderContent>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="FullName">Participant</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="EnrolmentDate">Enrolment Date</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="ContractEntryDate">Contract Entry Date</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="SupportWorkerDisplayName">Current Support Worker</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="CurrentLocationName">Location</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel T="ParticipantEngagementDto" SortLabel="Category">Category</MudTableSortLabel></MudTh>
@@ -147,6 +149,8 @@ else
                         </MudLink>
                     </MudStack>
                 </MudTd>
+                <MudTd DataLabel="Enrolment Date">@context.EnrolmentDate?.ToString("d")</MudTd>
+                <MudTd DataLabel="Contract Entry Date">@context.ContractEntryDate?.ToString("d")</MudTd>
                 <MudTd DataLabel="Current Support Worker">@context.SupportWorkerDisplayName</MudTd>
                 <MudTd DataLabel="Location">@context.CurrentLocationName</MudTd>
                 <MudTd DataLabel="Category">
