@@ -1,51 +1,40 @@
 @using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
 
-@if (Offences.Count == 0)
-{
-    <MudText Typo="Typo.body2">No convicted offences recorded.</MudText>
-}
-else
-{
-    <MudSimpleTable Dense="true" Hover="true" Striped="true">
-        <thead>
-            <tr>
-                <th>Offence</th>
-                <th>Code</th>
-                <th>Offence date</th>
-                <th>Court</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var offence in Offences.OrderByDescending(o => o.StartDate))
+<MudTable T="OffenceDto" Items="@Offences" Dense="true" Hover="true" Striped="true" Elevation="0" Breakpoint="Breakpoint.Sm">
+    <HeaderContent>
+        <MudTh><MudTableSortLabel T="OffenceDto" SortBy="o => o.Description ?? string.Empty">Offence</MudTableSortLabel></MudTh>
+        <MudTh>Code</MudTh>
+        <MudTh><MudTableSortLabel T="OffenceDto" SortBy="o => o.StartDate ?? DateOnly.MinValue" InitialDirection="SortDirection.Descending">Offence date</MudTableSortLabel></MudTh>
+        <MudTh>Court</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Offence">@context.Description</MudTd>
+        <MudTd DataLabel="Code">
+            @(context.CjsCode ?? context.HoCode)
+            @if (!string.IsNullOrWhiteSpace(context.StatuteCode))
             {
-                <tr>
-                    <td>@offence.Description</td>
-                    <td>
-                        @(offence.CjsCode ?? offence.HoCode)
-                        @if (!string.IsNullOrWhiteSpace(offence.StatuteCode))
-                        {
-                            <MudText Typo="Typo.caption" Class="d-block">Statute @offence.StatuteCode</MudText>
-                        }
-                    </td>
-                    <td>
-                        @HmppsDisplay.Format(offence.StartDate)
-                        @if (offence.EndDate is not null && offence.EndDate != offence.StartDate)
-                        {
-                            @($" to {HmppsDisplay.Format(offence.EndDate)}")
-                        }
-                    </td>
-                    <td>
-                        @if (!string.IsNullOrWhiteSpace(offence.CourtName))
-                        {
-                            <MudText Typo="Typo.body2">@offence.CourtName</MudText>
-                        }
-                        <MudText Typo="Typo.caption">@string.Join(", ", (offence.CourtDates ?? []).Where(d => d is not null).OrderBy(d => d).Select(HmppsDisplay.Format))</MudText>
-                    </td>
-                </tr>
+                <MudText Typo="Typo.caption" Class="d-block">Statute @context.StatuteCode</MudText>
             }
-        </tbody>
-    </MudSimpleTable>
-}
+        </MudTd>
+        <MudTd DataLabel="Offence date">
+            @HmppsDisplay.Format(context.StartDate)
+            @if (context.EndDate is not null && context.EndDate != context.StartDate)
+            {
+                @($" to {HmppsDisplay.Format(context.EndDate)}")
+            }
+        </MudTd>
+        <MudTd DataLabel="Court">
+            @if (!string.IsNullOrWhiteSpace(context.CourtName))
+            {
+                <MudText Typo="Typo.body2">@context.CourtName</MudText>
+            }
+            <MudText Typo="Typo.caption">@string.Join(", ", (context.CourtDates ?? []).Where(d => d is not null).OrderBy(d => d).Select(HmppsDisplay.Format))</MudText>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2">No convicted offences recorded.</MudText>
+    </NoRecordsContent>
+</MudTable>
 
 @code {
     [Parameter, EditorRequired] public IReadOnlyCollection<OffenceDto> Offences { get; set; } = [];

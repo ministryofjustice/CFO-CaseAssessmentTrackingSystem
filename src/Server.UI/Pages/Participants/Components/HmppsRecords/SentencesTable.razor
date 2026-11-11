@@ -1,59 +1,47 @@
+@using System.Globalization
 @using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
 
-@if (Sentences.Count == 0)
-{
-    <MudText Typo="Typo.body2">No sentences recorded.</MudText>
-}
-else
-{
-    var showFine = Sentences.Any(s => s.FineAmount is > 0);
-
-    <MudSimpleTable Dense="true" Hover="true" Striped="true">
-        <thead>
-            <tr>
-                <th>Sentenced</th>
-                <th>Sentence</th>
-                <th>Length</th>
-                <th>Status</th>
-                @if (showFine)
+<MudTable T="SentenceDto" Items="@OrderedSentences" Dense="true" Hover="true" Striped="true" Elevation="0" Breakpoint="Breakpoint.Sm">
+    <HeaderContent>
+        <MudTh><MudTableSortLabel T="SentenceDto" SortBy="s => s.DateOfSentencing ?? DateOnly.MinValue">Sentenced</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="SentenceDto" SortBy="s => s.Description ?? string.Empty">Sentence</MudTableSortLabel></MudTh>
+        <MudTh>Length</MudTh>
+        <MudTh><MudTableSortLabel T="SentenceDto" SortBy="s => s.IsActive == true">Status</MudTableSortLabel></MudTh>
+        @if (ShowFine)
+        {
+            <MudTh>Fine</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Sentenced">@HmppsDisplay.Format(context.DateOfSentencing)</MudTd>
+        <MudTd DataLabel="Sentence">@context.Description</MudTd>
+        <MudTd DataLabel="Length">@HmppsDisplay.FormatLength(context.Length)</MudTd>
+        <MudTd DataLabel="Status">
+            <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap">
+                @switch (context.IsActive)
                 {
-                    <th>Fine</th>
+                    case true:
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success">Active</MudChip>
+                        break;
+                    case false:
+                        <MudChip T="string" Size="Size.Small" Color="Color.Default">Inactive</MudChip>
+                        break;
                 }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var sentence in Sentences.OrderByDescending(s => s.IsActive == true).ThenByDescending(s => s.DateOfSentencing))
-            {
-                <tr>
-                    <td>@HmppsDisplay.Format(sentence.DateOfSentencing)</td>
-                    <td>@sentence.Description</td>
-                    <td>@HmppsDisplay.FormatLength(sentence.Length)</td>
-                    <td>
-                        <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap">
-                            @switch (sentence.IsActive)
-                            {
-                                case true:
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Success">Active</MudChip>
-                                    break;
-                                case false:
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Default">Inactive</MudChip>
-                                    break;
-                            }
-                            @if (ShowCustodial && sentence.IsCustodial is not null)
-                            {
-                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@(sentence.IsCustodial == true ? "Custodial" : "Community")</MudChip>
-                            }
-                        </MudStack>
-                    </td>
-                    @if (showFine)
-                    {
-                        <td>@sentence.FineAmount?.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-GB"))</td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </MudSimpleTable>
-}
+                @if (ShowCustodial && context.IsCustodial is not null)
+                {
+                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@(context.IsCustodial == true ? "Custodial" : "Community")</MudChip>
+                }
+            </MudStack>
+        </MudTd>
+        @if (ShowFine)
+        {
+            <MudTd DataLabel="Fine">@context.FineAmount?.ToString("C", CultureInfo.GetCultureInfo("en-GB"))</MudTd>
+        }
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2">No sentences recorded.</MudText>
+    </NoRecordsContent>
+</MudTable>
 
 @code {
     [Parameter, EditorRequired] public IReadOnlyCollection<SentenceDto> Sentences { get; set; } = [];
@@ -62,4 +50,10 @@ else
     /// Prison sentences are always reported as custodial, so the indicator is only meaningful for probation records.
     /// </summary>
     [Parameter] public bool ShowCustodial { get; set; }
+
+    private bool ShowFine => Sentences.Any(s => s.FineAmount is > 0);
+
+    // Active sentences first, most recent first, until the user picks a column to sort by.
+    private IEnumerable<SentenceDto> OrderedSentences =>
+        Sentences.OrderByDescending(s => s.IsActive == true).ThenByDescending(s => s.DateOfSentencing);
 }
