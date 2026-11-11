@@ -6,7 +6,7 @@
     <!-- Treat code style violations as errors -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>CS8785</WarningsNotAsErrors>
+    <WarningsNotAsErrors>CS8785;BL0012;BL0016</WarningsNotAsErrors>
 
     <!-- Common parameters -->
     <TargetFramework>net11.0</TargetFramework>
