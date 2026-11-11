@@ -13,7 +13,7 @@ else if (_loading)
 }
 else if (_records.Length == 0)
 {
-    <MudAlert Severity="Severity.Info" Class="mt-2">No NOMIS or Delius records are linked to this participant.</MudAlert>
+    <MudAlert Severity="Severity.Info" Class="mt-2">No prison or probation records are linked to this participant.</MudAlert>
 }
 else
 {
@@ -25,8 +25,17 @@ else
     <MudTabs Outlined="true" Border="true" Class="mt-2" KeepPanelsAlive="true">
         @foreach (var record in _records)
         {
-            <MudTabPanel Text="@($"{record.Type.Name} {record.Value}")">
-                @if (record.Type == ExternalIdentifierType.NomisNumber)
+            var isPrison = record.Type == ExternalIdentifierType.NomisNumber;
+            <MudTabPanel>
+                <TabContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+                                 Color="@(isPrison ? Color.Primary : Color.Secondary)">@(isPrison ? "Prison" : "Probation")</MudChip>
+                        <MudText Typo="Typo.body2">@record.Value</MudText>
+                    </MudStack>
+                </TabContent>
+                <ChildContent>
+                @if (isPrison)
                 {
                     <PrisonRecord Service="_service" NomisNumber="@record.Value" />
                 }
@@ -34,6 +43,7 @@ else
                 {
                     <ProbationRecord Service="_service" Crn="@record.Value" />
                 }
+                </ChildContent>
             </MudTabPanel>
         }
     </MudTabs>

@@ -41,7 +41,7 @@
         </HmppsSection>
     </MudItem>
     <MudItem xs="12" md="8">
-        <HmppsSection T="PersonLicencesDto" Title="Licence conditions" Subtitle="Create and Vary a Licence" Icon="@Icons.Material.Filled.Rule"
+        <HmppsSection T="PersonLicencesDto" Title="Licence conditions" Subtitle="Current and previous licences" Icon="@Icons.Material.Filled.Rule"
                       Result="_licences" NotFoundText="No licences found for this record.">
             @{
                 var licences = OrderLicences(context.Licences);
@@ -106,12 +106,12 @@
     </MudItem>
 </MudGrid>
 
-<HmppsSection T="OffenceDto[]" Title="Offences" Subtitle="Main and additional offences held in Delius" Icon="@Icons.Material.Filled.Gavel"
+<HmppsSection T="OffenceDto[]" Title="Offences" Subtitle="Main and additional offences recorded in probation" Icon="@Icons.Material.Filled.Gavel"
               Result="_offences" NotFoundText="No offences found for this record.">
     <OffencesTable Offences="context" />
 </HmppsSection>
 
-<HmppsSection T="SentenceDto[]" Title="Sentences" Subtitle="Sentences held in Delius" Icon="@Icons.Material.Filled.Balance"
+<HmppsSection T="SentenceDto[]" Title="Sentences" Subtitle="Sentences recorded in probation" Icon="@Icons.Material.Filled.Balance"
               Result="_sentences" NotFoundText="No sentences found for this record.">
     <SentencesTable Sentences="context" ShowCustodial="true" />
 </HmppsSection>
