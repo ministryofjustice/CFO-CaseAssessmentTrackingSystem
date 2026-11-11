@@ -125,6 +125,36 @@ public class HmppsExternalApiService(HttpClient client, ILogger<HmppsExternalApi
         }
     }
 
+    public async Task<Result<ResponsibleOfficerDto>> GetResponsibleOfficerAsync(string hmppsId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await client.GetFromJsonAsync<DataResponse<ResponsibleOfficerDto>>(
+                $"v1/persons/{Uri.EscapeDataString(hmppsId)}/person-responsible-officer", cancellationToken);
+
+            if (response?.Data is null)
+            {
+                return Result<ResponsibleOfficerDto>.Failure("HMPPS External API returned no data.");
+            }
+
+            return Result<ResponsibleOfficerDto>.Success(response.Data);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Result<ResponsibleOfficerDto>.NotFound();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "HMPPS External API is unavailable when calling person responsible officer for HMPPS ID: {HmppsId}", hmppsId);
+            return Result<ResponsibleOfficerDto>.Failure("HMPPS External API is currently unavailable.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error calling HMPPS External API person responsible officer endpoint for HMPPS ID: {HmppsId}", hmppsId);
+            return Result<ResponsibleOfficerDto>.Failure("An unexpected error occurred while contacting the HMPPS External API.");
+        }
+    }
+
     /// <summary>
     /// Envelope used by the HMPPS External API to wrap response payloads, e.g. <c>{ "data": { ... } }</c>.
     /// </summary>
