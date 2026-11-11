@@ -28,7 +28,6 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
         <PackageReference Include="Quartz" />
         <PackageReference Include="Quartz.AspNetCore" />
         <PackageReference Include="Quartz.Extensions.Hosting" />
