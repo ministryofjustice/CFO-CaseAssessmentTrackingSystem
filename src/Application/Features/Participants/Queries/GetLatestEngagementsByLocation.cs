@@ -64,7 +64,16 @@ public static class GetLatestEngagementsByLocation
                     SupportWorkerDisplayName = owner.DisplayName,
                     CurrentLocationName = currentLocation.Name,
                     EngagedOn = (DateOnly?)engagement.EngagedOn,
-                    engagement.EngagedAtLocationType
+                    engagement.EngagedAtLocationType,
+                    EnrolmentDate = participant.DateOfFirstConsent,
+                    ContractEntryDate = db.ParticipantIncomingTransferQueue
+                        .Where(transfer => transfer.ParticipantId == participant.Id
+                            && currentLocation.Contract != null
+                            && transfer.ToContract != null
+                            && transfer.ToContract.Id == currentLocation.Contract.Id
+                            && (transfer.FromContract == null || transfer.FromContract.Id != transfer.ToContract.Id))
+                        .Select(transfer => (DateTime?)transfer.MoveOccured)
+                        .Max()
                 };
 #pragma warning restore CS8602, CS8604
 
@@ -100,7 +109,9 @@ public static class GetLatestEngagementsByLocation
                     e.SupportWorkerDisplayName,
                     e.CurrentLocationName,
                     e.EngagedOn,
-                    e.EngagedAtLocationType))
+                    e.EngagedAtLocationType,
+                    e.EnrolmentDate,
+                    e.ContractEntryDate))
                 .ToListAsync(cancellationToken);
 
             var details = new PaginatedData<ParticipantEngagementDto>(items, count, request.PageNumber, request.PageSize);

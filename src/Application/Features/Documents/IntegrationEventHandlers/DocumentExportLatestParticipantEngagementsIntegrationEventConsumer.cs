@@ -50,6 +50,8 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
                 {
                     { "Participant Id", item => item.ParticipantId },
                     { "Participant Name", item => item.FullName },
+                    { "Enrolment Date", item => item.EnrolmentDate },
+                    { "Contract Entry Date", item => item.ContractEntryDate is { } date ? DateOnly.FromDateTime(date) : null },
                     { "Category", item => item.Category },
                     { "Description", item => item.Description },
                     { "Engaged at (Location)", item => item.EngagedAtLocationName },
