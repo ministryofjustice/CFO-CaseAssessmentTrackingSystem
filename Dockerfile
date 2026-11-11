@@ -8,7 +8,7 @@
 # Each app is published into its own directory so their appsettings.json files do not
 # collide. The Worker, Consumers, Seeder and Migrator run this same image with a command override
 # (see helm_deploy/cats: worker.containerCommand and the migrator/seeder hook Jobs).
-FROM mcr.microsoft.com/dotnet/sdk:10.0.401@sha256:e70cdb7f80b0348f5cb85f19a8f670fca061f033d57eed12fa003d58b0e06317 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0.100@sha256:65f3c7c6a25a239ab3e6719f2896147e7b68242ff2d8818dd70498bde6ef8bea AS build
 WORKDIR /src
 
 # Copy solution-level config required to restore and build
@@ -57,7 +57,7 @@ ADD https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem /usr
 RUN update-ca-certificates
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.12-noble-chiseled-extra@sha256:00e0ad6a7ef8c0c1391b87f05c7ac757a15740455688f2bfcd146a3f4b987efd AS final
+FROM mcr.microsoft.com/dotnet/aspnet:11.0.0-resolute-chiseled-extra@sha256:cea9d5494f358fe43082300c24d1cd9f651066b6b7de1e5735bca8d3ade68649 AS final
 WORKDIR /app
 
 COPY --from=build /app/ui ./ui
