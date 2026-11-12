@@ -7,6 +7,7 @@
 @using Cfo.Cats.Server.UI.Services.Navigation
 
 @inject IAsyncMenuService MenuService
+@inject IWorkspaceLinkProvider LinkProvider
 
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
@@ -58,18 +59,22 @@
                             <MudText Typo="Typo.body1">
                                 <MudHighlighter HighlightedText="@_searchedKeyword" Text="@(page.DisplayText)" />
                             </MudText>
-                            <MudText Typo="Typo.caption">Page</MudText>
+                            <MudText Typo="Typo.caption">
+                                @(string.IsNullOrWhiteSpace(page.Section) ? "Page" : $"Page - {page.Section}")@(string.IsNullOrWhiteSpace(page.Description) ? "" : $" - {page.Description}")
+                            </MudText>
                         </MudListItem>
                         break;
                     case ParticipantResult participant:
+                        var p = participant.Participant;
                         <MudListItem T="string"
-                                     Icon="@(participant.Participant.IsUnassigned ? Icons.Material.Filled.PersonSearch : Icons.Material.Filled.Person)"
-                                     Href="@($"/pages/workspace/participants/{participant.Participant.Id}")">
+                                     Icon="@(!p.HasAccess ? Icons.Material.Filled.Lock : p.IsUnassigned ? Icons.Material.Filled.PersonSearch : Icons.Material.Filled.Person)"
+                                     Href="@(p.HasAccess ? $"/pages/workspace/participants/{p.Id}" : null)"
+                                     Disabled="@(!p.HasAccess)">
                             <MudText Typo="Typo.body1">
-                                <MudHighlighter HighlightedText="@_searchedKeyword" Text="@participant.Participant.FullName" />
+                                <MudHighlighter HighlightedText="@_searchedKeyword" Text="@p.FullName" />
                             </MudText>
                             <MudText Typo="Typo.caption">
-                                @participant.Participant.Id@(string.IsNullOrWhiteSpace(participant.Participant.CurrentLocation) ? "" : $" - {participant.Participant.CurrentLocation}")@(participant.Participant.IsUnassigned ? " \u2014 Unassigned" : "")
+                                @p.Id@(string.IsNullOrWhiteSpace(p.CurrentLocation) ? "" : $" - {p.CurrentLocation}")@(p.EnrolmentStatus is null ? "" : $" - {p.EnrolmentStatus.Name}")@(p.IsUnassigned ? " \u2014 Unassigned" : "")@(p.HasAccess ? "" : " \u2014 On the programme, you don't have access to this record")
                             </MudText>
                         </MudListItem>
                         break;

@@ -29,22 +29,14 @@ public sealed class AccessValidationBehaviour<TQuery, TResponse>
         return await next();
     }
 
-    private async Task<AccessGrant> CanAccessParticipantRecord(string participantId, CancellationToken cancellationToken)
-    {
-        AccessGrant grant = AccessGrant.NotGranted;
-
-        foreach(var strategy in validationStrategies.OrderBy(s => s.Order))
-        {
-            grant = await strategy.IsSatisfiedBy(participantId, grant, cancellationToken);
-            if(logger.IsEnabled(LogLevel.Debug))
+    private Task<AccessGrant> CanAccessParticipantRecord(string participantId, CancellationToken cancellationToken)
+        => ParticipantAccessEvaluator.EvaluateAsync(validationStrategies, participantId, cancellationToken,
+            (strategy, grant) =>
             {
-                logger.LogDebug("{particpantId} {strategy} - {grant}", participantId, strategy.GetType().Name, grant);    
-            }
-            
-            
-        }
-        
-        return grant;
-    }
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    logger.LogDebug("{particpantId} {strategy} - {grant}", participantId, strategy.GetType().Name, grant);
+                }
+            });
 
 }

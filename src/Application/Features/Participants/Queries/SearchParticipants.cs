@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Application.Pipeline.ValidationSpecifications;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
@@ -12,15 +13,10 @@ public static class SearchParticipants
     {
         /// <summary>
         /// The text to search for. Matches against first name, last name,
-        /// participant id and external identifiers.
+        /// participant id and external identifiers. Searches every participant on the
+        /// programme, regardless of whether the user can open the record.
         /// </summary>
         public string Keyword { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The currently logged in user. Used to scope results to the
-        /// user's tenant.
-        /// </summary>
-        public UserProfile? CurrentUser { get; set; }
 
         /// <summary>
         /// The maximum number of results to return.
@@ -28,7 +24,7 @@ public static class SearchParticipants
         public int MaxResults { get; set; } = 10;
     }
 
-    public class Handler(IUnitOfWork unitOfWork)
+    public class Handler(IUnitOfWork unitOfWork, IEnumerable<AccessValidationSpecification> accessSpecifications)
         : IQueryHandler<Query, Result<List<ParticipantSearchResultDto>>>
     {
         public async Task<Result<List<ParticipantSearchResultDto>>> Handle(
@@ -42,18 +38,7 @@ public static class SearchParticipants
                 return Result<List<ParticipantSearchResultDto>>.Success([]);
             }
 
-            var context = unitOfWork.DbContext;
-            var tenantId = request.CurrentUser!.TenantId!;
-            var isInternal = request.CurrentUser.HasInternalRole();
-
-            var query = isInternal
-                ? from p in context.Participants
-                  where p.Owner!.TenantId!.StartsWith(tenantId)
-                        || p.OwnerId == null
-                  select p
-                : from p in context.Participants
-                  where p.Owner!.TenantId!.StartsWith(tenantId)
-                  select p;
+            var query = unitOfWork.DbContext.Participants.AsQueryable();
 
             if (keyword.Split(" ") is { Length: 2 } segments)
             {
@@ -78,9 +63,17 @@ public static class SearchParticipants
                     FirstName = p.FirstName,
                     LastName = p.LastName,
                     CurrentLocation = p.CurrentLocation.Name,
+                    EnrolmentStatus = p.EnrolmentStatus,
                     IsUnassigned = p.OwnerId == null
                 })
                 .ToListAsync(cancellationToken);
+
+            foreach (var result in results)
+            {
+                var grant = await ParticipantAccessEvaluator.EvaluateAsync(
+                    accessSpecifications, result.Id, cancellationToken);
+                result.HasAccess = grant is AccessGrant.Granted;
+            }
 
             return Result<List<ParticipantSearchResultDto>>.Success(results);
         }
@@ -93,9 +86,6 @@ public static class SearchParticipants
             RuleFor(r => r.Keyword)
                 .Matches(ValidationConstants.Keyword)
                 .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
-
-            RuleFor(r => r.CurrentUser)
-                .NotNull();
         }
     }
 }
