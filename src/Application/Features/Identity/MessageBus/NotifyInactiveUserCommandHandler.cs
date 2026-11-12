@@ -1,5 +1,5 @@
 using Cfo.Cats.Domain.Entities.Participants;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Identity.MessageBus;
 
@@ -7,9 +7,9 @@ public class NotifyInactiveUserCommandHandler(
     IUnitOfWork unitOfWork,
     ICommunicationsService communicationsService,
     ILogger<NotifyInactiveUserCommandHandler> logger)
-    : IHandleMessages<NotifyInactiveUserCommand>
+    : IIntegrationEventHandler<NotifyInactiveUserCommand>
 {
-    public async Task Handle(NotifyInactiveUserCommand context)
+    public async Task Handle(NotifyInactiveUserCommand context, CancellationToken cancellationToken)
     {
         logger.LogDebug($"Notifying inactive user with email: {context.Email}");
 

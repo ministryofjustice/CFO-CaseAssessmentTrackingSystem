@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEvents;
-using Rebus.Bus;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
@@ -10,7 +10,7 @@ namespace Cfo.Cats.Infrastructure.Services;
 /// deliberately bypassing the transactional outbox because the odd lost telemetry
 /// message is acceptable and we never want to replay it.
 /// </summary>
-public class UsageTracker(IBus bus)
+public class UsageTracker(IIntegrationEventPublisher publisher)
     : IUsageTracker
 {
     public async Task TrackAsync(string area, string activity, UserProfile userProfile, string? context = null, CancellationToken cancellationToken = default)
@@ -24,6 +24,6 @@ public class UsageTracker(IBus bus)
             Context: context,
             OccurredOn: DateTime.UtcNow);
 
-        await bus.Publish(message);
+        await publisher.PublishAsync(message, cancellationToken);
     }
 }

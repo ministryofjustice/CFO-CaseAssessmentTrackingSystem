@@ -1,7 +1,7 @@
 using Cfo.Cats.Application.Common.Configuration;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Microsoft.Extensions.Configuration;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Participants.IntegrationEventHandlers;
 
@@ -14,9 +14,9 @@ namespace Cfo.Cats.Application.Features.Participants.IntegrationEventHandlers;
 public class ParticipantCreatedIntegrationEventConsumer(
     ICandidateService candidateService,
     IConfiguration configuration,
-    ILogger<ParticipantCreatedIntegrationEventConsumer> logger) : IHandleMessages<ParticipantCreatedIntegrationEvent>
+    ILogger<ParticipantCreatedIntegrationEventConsumer> logger) : IIntegrationEventHandler<ParticipantCreatedIntegrationEvent>
 {
-    public async Task Handle(ParticipantCreatedIntegrationEvent message)
+    public async Task Handle(ParticipantCreatedIntegrationEvent message, CancellationToken cancellationToken)
     {
         try
         {

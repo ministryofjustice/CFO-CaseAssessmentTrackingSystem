@@ -6,14 +6,14 @@ using Cfo.Cats.Application.Features.Bios.IntegrationEvents;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
 using Cfo.Cats.Domain.Participants;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ParticipantLabels.IntegrationEventHandlers;
 
 public class RecordCareLeaverLabelStatusConsumer(IUnitOfWork unitOfWork, IParticipantLabelsCounter counter, IParticipantLabelRepository participantLabelRepository, ILogger<RecordCareLeaverLabelStatusConsumer> logger)
-    : IHandleMessages<BioSubmittedIntegrationEvent>
+    : IIntegrationEventHandler<BioSubmittedIntegrationEvent>
 {
-    public async Task Handle(BioSubmittedIntegrationEvent context)
+    public async Task Handle(BioSubmittedIntegrationEvent context, CancellationToken cancellationToken)
     {
         try
         {

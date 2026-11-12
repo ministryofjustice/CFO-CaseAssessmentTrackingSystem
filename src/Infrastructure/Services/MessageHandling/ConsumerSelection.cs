@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
 
 /// <summary>
-/// Selects which Rebus consumer services run in this process.
+/// Selects which consumer services run in this process.
 /// An empty <see cref="Include"/> means all services; <see cref="Exclude"/> is applied last.
 /// </summary>
 public class ConsumerSelectionOptions

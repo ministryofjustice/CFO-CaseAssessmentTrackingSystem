@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -12,9 +12,9 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
         IDomainEventDispatcher domainEventDispatcher,
         ILogger<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer> logger
     )
-      : IHandleMessages<ExportDocumentIntegrationEvent>
+      : IIntegrationEventHandler<ExportDocumentIntegrationEvent>
 {
-    public async Task Handle(ExportDocumentIntegrationEvent message)
+    public async Task Handle(ExportDocumentIntegrationEvent message, CancellationToken cancellationToken)
     {
         if (message.Key != DocumentTemplate.OutcomeQualityDipSample.Name)
         {

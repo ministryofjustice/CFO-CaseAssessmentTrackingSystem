@@ -32,9 +32,6 @@
         <PackageReference Include="Quartz" />
         <PackageReference Include="Quartz.AspNetCore" />
         <PackageReference Include="Quartz.Extensions.Hosting" />
-        <PackageReference Include="Rebus.RabbitMq" />
-        <PackageReference Include="Rebus.Microsoft.Extensions.Logging" />
-        <PackageReference Include="Rebus.ServiceProvider" />
         <PackageReference Include="Sentry.AspNetCore" />
         <PackageReference Include="Sentry.EntityFramework" />
         <PackageReference Include="ZiggyCreatures.FusionCache" />
@@ -44,6 +41,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Infrastructure.Messaging.RabbitMq\Infrastructure.Messaging.RabbitMq.csproj" />
     </ItemGroup>
 
 </Project>

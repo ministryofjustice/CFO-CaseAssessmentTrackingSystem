@@ -1,13 +1,13 @@
 ﻿using Cfo.Cats.Application.Features.Participants.MessageBus;
 using Quartz;
-using Rebus.Bus;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
 public class SyncParticipantsJob(
     ILogger<SyncParticipantsJob> logger,
     IUnitOfWork unitOfWork,
-    IBus bus) : IJob
+    IIntegrationEventPublisher publisher) : IJob
 {
 
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
@@ -52,7 +52,7 @@ public class SyncParticipantsJob(
                 cancellationToken.ThrowIfCancellationRequested();
                 // this is not ideal. We should be SENDING commands, not publishing them
                 // but that is a wider architectural problem.
-                await bus.Publish( participant );
+                await publisher.PublishAsync(participant, cancellationToken);
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
