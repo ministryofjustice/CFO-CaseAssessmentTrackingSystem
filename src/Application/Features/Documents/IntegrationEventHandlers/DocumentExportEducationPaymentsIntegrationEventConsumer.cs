@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
 using Newtonsoft.Json;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -14,9 +14,9 @@ public class DocumentExportEducationPaymentsIntegrationEventConsumer(
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
     ITargetsProvider targetsProvider,
-    ILogger<DocumentExportEducationPaymentsIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportEducationPaymentsIntegrationEventConsumer> logger) : IIntegrationEventHandler<ExportDocumentIntegrationEvent>
 {
-    public async Task Handle(ExportDocumentIntegrationEvent context)
+    public async Task Handle(ExportDocumentIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.Key != DocumentTemplate.EducationPayments.Name)
         {

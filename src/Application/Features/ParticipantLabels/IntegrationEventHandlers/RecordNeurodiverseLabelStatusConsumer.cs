@@ -4,14 +4,14 @@ using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
 using Cfo.Cats.Domain.Participants;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ParticipantLabels.IntegrationEventHandlers;
 
 public class RecordNeurodiverseLabelStatusConsumer(IUnitOfWork unitOfWork, IParticipantLabelsCounter counter, IParticipantLabelRepository participantLabelRepository, ILogger<RecordNeurodiverseLabelStatusConsumer> logger)
-    : IHandleMessages<AssessmentScoredIntegrationEvent>
+    : IIntegrationEventHandler<AssessmentScoredIntegrationEvent>
 {
-    public async Task Handle(AssessmentScoredIntegrationEvent context)
+    public async Task Handle(AssessmentScoredIntegrationEvent context, CancellationToken cancellationToken)
     {
         try
         {

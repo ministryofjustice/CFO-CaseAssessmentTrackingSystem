@@ -1,14 +1,14 @@
 using Cfo.Cats.Application.Features.Announcements.IntegrationEvents;
 using Cfo.Cats.Domain.Announcements;
 using Cfo.Cats.Domain.Entities.Notifications;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Announcements.IntegrationEventHandlers;
 
 public class NotifyUsersOnAnnouncementPublishedConsumer(IUnitOfWork unitOfWork)
-    : IHandleMessages<AnnouncementPublishedIntegrationEvent>
+    : IIntegrationEventHandler<AnnouncementPublishedIntegrationEvent>
 {
-    public async Task Handle(AnnouncementPublishedIntegrationEvent message)
+    public async Task Handle(AnnouncementPublishedIntegrationEvent message, CancellationToken cancellationToken)
     {
         var recipients = unitOfWork.DbContext.Users.AsNoTracking()
             .Where(user => user.Status == UserStatus.Active);

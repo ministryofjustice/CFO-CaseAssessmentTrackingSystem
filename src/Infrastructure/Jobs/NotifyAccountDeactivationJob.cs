@@ -1,14 +1,14 @@
 ﻿using Cfo.Cats.Application.Features.Identity.MessageBus;
 using Cfo.Cats.Domain.Common.Enums;
 using Quartz;
-using Rebus.Bus;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
 public class NotifyAccountDeactivationJob(
     ILogger<NotifyAccountDeactivationJob> logger,
     IUnitOfWork unitOfWork,
-    IBus bus) : IJob
+    IIntegrationEventPublisher publisher) : IJob
 {
     public static readonly JobKey Key = new JobKey(name: nameof(NotifyAccountDeactivationJob));
     public static readonly string Description = "A job to notify accounts that are due to deactivate.";
@@ -47,7 +47,7 @@ public class NotifyAccountDeactivationJob(
             foreach(var user in users)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await bus.Publish(new NotifyInactiveUserCommand(user.Email!));
+                await publisher.PublishAsync(new NotifyInactiveUserCommand(user.Email!), cancellationToken);
             }
 
         }

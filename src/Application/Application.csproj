@@ -20,7 +20,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
         <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
         <PackageReference Include="Newtonsoft.Json" />
-        <PackageReference Include="Rebus" />
         <PackageReference Include="Scrutor" />
         <PackageReference Include="Sentry" />
         <PackageReference Include="System.Linq.Dynamic.Core" />

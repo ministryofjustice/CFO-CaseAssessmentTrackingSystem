@@ -2,7 +2,7 @@ using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Identity;
 using Newtonsoft.Json;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -11,9 +11,9 @@ public class DocumentExportUsersIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ILogger<DocumentExportUsersIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportUsersIntegrationEventConsumer> logger) : IIntegrationEventHandler<ExportDocumentIntegrationEvent>
 {
-    public async Task Handle(ExportDocumentIntegrationEvent context)
+    public async Task Handle(ExportDocumentIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.Key != DocumentTemplate.Users.Name)
         {

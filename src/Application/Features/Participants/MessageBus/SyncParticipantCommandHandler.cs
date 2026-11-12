@@ -1,5 +1,5 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Participants.MessageBus;
 
@@ -8,9 +8,9 @@ public class SyncParticipantCommandHandler(
     ICandidateService candidateService,
     IDomainEventDispatcher domainEventDispatcher,
     ILogger<SyncParticipantCommandHandler> logger)
-    : IHandleMessages<SyncParticipantCommand>
+    : IIntegrationEventHandler<SyncParticipantCommand>
 {
-    public async Task Handle(SyncParticipantCommand context)
+    public async Task Handle(SyncParticipantCommand context, CancellationToken cancellationToken)
     {
         var participant = await unitOfWork.DbContext
             .Participants

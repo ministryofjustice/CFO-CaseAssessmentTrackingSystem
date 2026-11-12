@@ -1,12 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.QualityAssurance.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<EnrolmentApprovedAtQaIntegrationEvent>
+public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IIntegrationEventHandler<EnrolmentApprovedAtQaIntegrationEvent>
 {
-    public async Task Handle(EnrolmentApprovedAtQaIntegrationEvent context)
+    public async Task Handle(EnrolmentApprovedAtQaIntegrationEvent context, CancellationToken cancellationToken)
     {
         // get participant information
         var participantInfo = await unitOfWork.DbContext

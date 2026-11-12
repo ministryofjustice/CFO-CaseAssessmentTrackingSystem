@@ -1,11 +1,11 @@
 ﻿using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEventHandlers;
 
-public class RecordCpmScores(IUnitOfWork unitOfWork) : IHandleMessages<OutcomeQualityDipSampleVerifyingIntegrationEvent>
+public class RecordCpmScores(IUnitOfWork unitOfWork) : IIntegrationEventHandler<OutcomeQualityDipSampleVerifyingIntegrationEvent>
 {
-    public async Task Handle(OutcomeQualityDipSampleVerifyingIntegrationEvent message)
+    public async Task Handle(OutcomeQualityDipSampleVerifyingIntegrationEvent message, CancellationToken cancellationToken)
     {
         var db = unitOfWork.DbContext;
 

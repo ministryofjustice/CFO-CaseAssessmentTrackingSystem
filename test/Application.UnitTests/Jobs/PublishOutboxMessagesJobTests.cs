@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
 using Quartz;
-using Rebus.Bus;
+using Cfo.Cats.Application.Messaging;
 using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Jobs;
@@ -38,41 +39,33 @@ public class PublishOutboxMessagesJobTests
             .Setup(work => work.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .Returns<CancellationToken>(token => dbContext.SaveChangesAsync(token));
 
-        var bus = new Mock<IBus>();
-        bus.Setup(messageBus => messageBus.Publish(
-                It.IsAny<object>(), It.IsAny<IDictionary<string, string>>()))
-            .Callback<object, IDictionary<string, string>>((_, _) => cancellation.Cancel())
+        var publisher = new Mock<IIntegrationEventPublisher>();
+        publisher.Setup(p => p.PublishAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<CancellationToken>()))
+            .Callback<IIntegrationEvent, CancellationToken>((_, _) => cancellation.Cancel())
             .Returns(Task.CompletedTask);
 
         var job = new PublishOutboxMessagesJob(
             unitOfWork.Object,
             NullLogger<PublishOutboxMessagesJob>.Instance,
-            bus.Object);
+            publisher.Object);
 
         await job.Execute(Mock.Of<IJobExecutionContext>(), cancellation.Token);
 
         messages[0].ProcessedOnUtc.ShouldNotBeNull();
         messages[1].ProcessedOnUtc.ShouldBeNull();
         unitOfWork.Verify(work => work.SaveChangesAsync(CancellationToken.None), Times.Once);
-        bus.Verify(messageBus => messageBus.Publish(
-            It.IsAny<object>(), It.IsAny<IDictionary<string, string>>()), Times.Once);
+        publisher.Verify(p => p.PublishAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private static OutboxMessage CreateMessage(DateTime occurredOnUtc)
     {
-        var payload = new OutboxMessage
-        {
-            Id = Guid.NewGuid(),
-            Type = typeof(OutboxMessage).FullName!,
-            Content = "{}",
-            OccurredOnUtc = occurredOnUtc
-        };
+        var integrationEvent = new ParticipantCreatedIntegrationEvent("P1", null, occurredOnUtc);
 
         return new OutboxMessage
         {
             Id = Guid.NewGuid(),
-            Type = typeof(OutboxMessage).FullName!,
-            Content = JsonSerializer.Serialize(payload),
+            Type = typeof(ParticipantCreatedIntegrationEvent).FullName!,
+            Content = JsonSerializer.Serialize(integrationEvent),
             OccurredOnUtc = occurredOnUtc
         };
     }

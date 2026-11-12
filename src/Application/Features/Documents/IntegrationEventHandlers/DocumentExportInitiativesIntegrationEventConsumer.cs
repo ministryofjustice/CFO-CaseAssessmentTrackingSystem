@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.Initiatives.DTOs;
 using Cfo.Cats.Application.Features.Initiatives.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
 using Newtonsoft.Json;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -13,9 +13,9 @@ public class DocumentExportInitiativesIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ILogger<DocumentExportInitiativesIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportInitiativesIntegrationEventConsumer> logger) : IIntegrationEventHandler<ExportDocumentIntegrationEvent>
 {
-    public async Task Handle(ExportDocumentIntegrationEvent context)
+    public async Task Handle(ExportDocumentIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.Key != DocumentTemplate.Initiatives.Name)
         {

@@ -83,7 +83,7 @@ public class AnnouncementNotificationTests
         var message = new AnnouncementPublishedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid(),
             "Service update", audience, DateTime.UtcNow);
 
-        await new NotifyUsersOnAnnouncementPublishedConsumer(unitOfWork.Object).Handle(message);
+        await new NotifyUsersOnAnnouncementPublishedConsumer(unitOfWork.Object).Handle(message, CancellationToken.None);
 
         saved.Count.ShouldBe(count);
         saved.ShouldContain(n => n.OwnerId == "internal");
