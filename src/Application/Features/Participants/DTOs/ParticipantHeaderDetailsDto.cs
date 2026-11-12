@@ -23,6 +23,8 @@ public record ParticipantHeaderDetailsDto
     public required string EnrolmentLocation { get; init; }
 
     public string? EnrolmentJustification { get; init; }
+
+    public string? AssessmentJustification { get; init; }
     
     /// <summary>
     /// The nationality of the participant. Null until consent has been granted.
