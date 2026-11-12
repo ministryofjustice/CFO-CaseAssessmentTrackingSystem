@@ -109,7 +109,7 @@ public partial class SupportAndReferralDashboardComponent
             Xaxis = new XAxis
             {
                 Title = new AxisTitle { Text = xAxisTitle },
-                Labels = new XAxisLabels { Rotate = -45 }
+                Labels = new XAxisLabels { Rotate = -45, Trim = false, MaxHeight = 200 }
             },
             Yaxis =
             [

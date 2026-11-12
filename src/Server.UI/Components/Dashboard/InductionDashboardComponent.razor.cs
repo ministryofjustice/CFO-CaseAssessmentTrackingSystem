@@ -100,6 +100,8 @@ public partial class InductionDashboardComponent
             { 
                 Rotate = -45, 
                 RotateAlways = true,
+                Trim = false,
+                MaxHeight = 200,
                 OffsetY = 0
             }
         },
