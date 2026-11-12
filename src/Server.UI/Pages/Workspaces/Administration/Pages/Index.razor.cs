@@ -1,85 +1,20 @@
 using Cfo.Cats.Server.UI.Models.Breadcrumb;
-using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Services;
-using Cfo.Cats.Application.Common.Configuration;
-using Cfo.Cats.Application.SecurityConstants;
-using Microsoft.AspNetCore.Authorization;
+using Cfo.Cats.Server.UI.Services.Navigation;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Pages;
 
-[Authorize(Policy = SecurityPolicies.Internal)]
 public partial class Index
 {
+    [Inject] private IWorkspaceLinkProvider LinkProvider { get; set; } = null!;
+
     [CascadingParameter] public Task<AuthenticationState> AuthState { get; set; } = null!;
 
     private BreadcrumbLinkModel[] Links { get; set; } = [];
 
-    private bool _showJobManagement;
-    private bool _showSystemFunctions;
-    private bool _showServiceDeskManagement;
-    private bool _showSeniorInternal;
-
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-
-        var canAccessSystemSupport =
-            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
-        var canAccessSystemFunctions =
-            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
-        var canAccessServiceDeskManagement =
-            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.ServiceDeskManagement)).Succeeded;
-        var canAccessSeniorInternal =
-            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
-        
-        _showJobManagement = canAccessSystemSupport;
-        _showSystemFunctions = canAccessSystemFunctions;
-        _showServiceDeskManagement = canAccessServiceDeskManagement;
-        _showSeniorInternal = canAccessSeniorInternal;
-        
-        List<BreadcrumbLinkModel> links = [];
-
-        if (_showSeniorInternal)
-        {
-            links.Add(AdministrationLinks.Labels);
-            links.Add(AdministrationLinks.HelpLinks);
-            links.Add(AdministrationLinks.ContractTargets);
-        }
-        
-        if(_showServiceDeskManagement)
-        {
-            links.Add(AdministrationLinks.AuditTrails);
-            links.Add(AdministrationLinks.UsageTelemetry);
-            links.Add(AdministrationLinks.Outbox);
-            links.Add(AdministrationLinks.PickList);
-
-            if (Config.IsFeatureEnabled(FeatureSections.IntegrationEventPublishing))
-            {
-                links.Add(AdministrationLinks.IntegrationEvents);
-            }
-        }
-        
-        if (_showSystemFunctions)
-        {
-            links.Add(AdministrationLinks.Tenants);
-            links.Add(AdministrationLinks.Users);
-            links.Add(AdministrationLinks.UserAudit);
-            links.Add(AdministrationLinks.LoginMonitoring);
-        }
-        
-        if (_showJobManagement)
-        {
-            links.Add(AdministrationLinks.Jobs);
-            links.Add(AdministrationLinks.CacheManagement);
-
-            if (Config.IsFeatureEnabled(FeatureSections.HmppsExternalApi))
-            {
-                links.Add(AdministrationLinks.HmppsRisk);
-                links.Add(AdministrationLinks.HmppsPerson);
-                links.Add(AdministrationLinks.HmppsTier);
-            }
-        }
-        
-        Links = links.ToArray();
+        Links = (await LinkProvider.GetLinksAsync(Workspace.Administration, state.User)).ToArray();
     }
 }

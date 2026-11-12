@@ -149,7 +149,8 @@ public static class DependencyInjection
             .AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>()
             .AddScoped<DialogServiceHelper>()
             .AddBlazorDownloadFile()
-            .AddScoped<IAsyncMenuService, AsyncMenuService>();
+            .AddScoped<IAsyncMenuService, AsyncMenuService>()
+            .AddScoped<IWorkspaceLinkProvider, WorkspaceLinkProvider>();
 
         services.AddApexCharts(e =>
         {
