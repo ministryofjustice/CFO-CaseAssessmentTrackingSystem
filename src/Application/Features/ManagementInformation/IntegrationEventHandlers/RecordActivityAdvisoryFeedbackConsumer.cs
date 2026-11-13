@@ -1,13 +1,13 @@
 using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordActivityAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILogger<RecordActivityAdvisoryFeedbackConsumer> logger) 
-    : IHandleMessages<ActivityTransitionedIntegrationEvent>
+    : IIntegrationEventHandler<ActivityTransitionedIntegrationEvent>
 {
-    public async Task Handle(ActivityTransitionedIntegrationEvent context)
+    public async Task Handle(ActivityTransitionedIntegrationEvent context, CancellationToken cancellationToken)
     {
         logger.LogInformation("RecordActivityAdvisoryFeedbackConsumer received event for ActivityId: {ActivityId}, From: {From}, To: {To}", 
             context.ActivityId, context.From, context.To);

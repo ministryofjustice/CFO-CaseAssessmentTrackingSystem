@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
 using Newtonsoft.Json;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -12,9 +12,9 @@ public class DocumentExportCaseWorkloadIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ILogger<DocumentExportCaseWorkloadIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportCaseWorkloadIntegrationEventConsumer> logger) : IIntegrationEventHandler<ExportDocumentIntegrationEvent>
 {
-    public async Task Handle(ExportDocumentIntegrationEvent context)
+    public async Task Handle(ExportDocumentIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.Key != DocumentTemplate.CaseWorkload.Name)
         {

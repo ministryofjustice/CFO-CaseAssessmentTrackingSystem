@@ -26,7 +26,7 @@ It is built using [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) (for
 * Blazor Server & [MudBlazor](https://mudblazor.com/) (UI framework & components)
 * Entity Framework Core & Microsoft SQL Server, with [SQL Project](https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/sql-database-projects) for schema management
 * [Quartz](https://www.quartz-scheduler.net/) (background jobs)
-* [Rebus](https://github.com/rebus-org/Rebus) with RabbitMQ (messaging/outbox)
+* RabbitMQ via `RabbitMQ.Client` behind provider-agnostic messaging abstractions (`Application/Messaging`, `Infrastructure.Messaging.RabbitMq`) with a transactional outbox
 * [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/) (local orchestration)
 
 ### External dependencies

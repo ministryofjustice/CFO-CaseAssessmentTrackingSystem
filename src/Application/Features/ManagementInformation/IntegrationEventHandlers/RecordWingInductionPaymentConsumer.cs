@@ -1,15 +1,15 @@
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 using System.Net;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<WingInductionCreatedIntegrationEvent>
+public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IIntegrationEventHandler<WingInductionCreatedIntegrationEvent>
 {
 
-    public async Task Handle(WingInductionCreatedIntegrationEvent context)
+    public async Task Handle(WingInductionCreatedIntegrationEvent context, CancellationToken cancellationToken)
     {
         var inductionData = await unitOfWork.DbContext.WingInductions
             .Include(a => a.Location)

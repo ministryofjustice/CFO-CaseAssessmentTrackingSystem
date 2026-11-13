@@ -1,6 +1,8 @@
+using Cfo.Cats.Application.Messaging;
+
 namespace Cfo.Cats.Application.Outbox;
 
-public abstract record IntegrationEvent(DateTime OccurredOn)
+public abstract record IntegrationEvent(DateTime OccurredOn) : IIntegrationEvent
 {
     public Guid MessageId { get; set; } = Guid.CreateVersion7();
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

@@ -1,13 +1,13 @@
 ﻿using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordUsageConsumer(IUnitOfWork unitOfWork)
-    : IHandleMessages<UsageTrackedIntegrationEvent>
+    : IIntegrationEventHandler<UsageTrackedIntegrationEvent>
 {
-    public async Task Handle(UsageTrackedIntegrationEvent message)
+    public async Task Handle(UsageTrackedIntegrationEvent message, CancellationToken cancellationToken)
     {
         var usageEvent = UsageEvent.Create(
             area: message.Area,
