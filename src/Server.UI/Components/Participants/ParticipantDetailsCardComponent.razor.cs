@@ -15,21 +15,23 @@ public partial class ParticipantDetailsCardComponent
             ParticipantId = ParticipantId
         };
 
-    private async Task ExpandEnrolmentJustification()
+    private async Task ExpandParticipantJustifications()
     {
-        if (string.IsNullOrWhiteSpace(Data?.EnrolmentJustification))
+        if (string.IsNullOrWhiteSpace(Data?.EnrolmentJustification)
+            && string.IsNullOrWhiteSpace(Data?.AssessmentJustification))
         {
             return;
         }
 
         var parameters = new DialogParameters<EnrolmentJustificationDialog>
         {
-            { dialog => dialog.Justification, Data.EnrolmentJustification }
+            { dialog => dialog.EnrolmentJustification, Data.EnrolmentJustification },
+            { dialog => dialog.AssessmentJustification, Data.AssessmentJustification }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = await DialogService.ShowAsync<EnrolmentJustificationDialog>(
-            "Enrolment Justification", parameters, options);
+            "Participant Justifications", parameters, options);
 
         await dialog.Result;
     }

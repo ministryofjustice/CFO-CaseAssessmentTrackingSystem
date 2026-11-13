@@ -28,6 +28,7 @@ public static class GetParticipantDetails
                     DateOfBirth = granted.Contains(p.ConsentStatus!) ? p.DateOfBirth : null,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
                     EnrolmentJustification = p.EnrolmentLocationJustification,
+                    AssessmentJustification = p.AssessmentJustification,
                     Nationality = granted.Contains(p.ConsentStatus!) ? p.Nationality : null,
                     IsConsentGranted = granted.Contains(p.ConsentStatus!),
                     DateOfFirstConsent = p.DateOfFirstConsent,

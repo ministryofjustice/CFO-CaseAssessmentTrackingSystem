@@ -1,6 +1,21 @@
 <MudDialog>
     <DialogContent>
-        <MudText Style="white-space: pre-wrap; overflow-wrap: anywhere;">@Justification</MudText>
+        <MudForm ReadOnly>
+            @if (!string.IsNullOrWhiteSpace(EnrolmentJustification))
+            {
+                <MudTextField Label="Enrolment Location Justification"
+                              Value="@EnrolmentJustification"
+                              Lines="5"
+                              Class="mt-4" />
+            }
+            @if (!string.IsNullOrWhiteSpace(AssessmentJustification))
+            {
+                <MudTextField Label="Rag Justification"
+                              Value="@AssessmentJustification"
+                              Lines="5"
+                              Class="mt-4" />
+            }
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton StartIcon="@Icons.Material.Filled.Close"
@@ -15,6 +30,9 @@
 @code {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public string Justification { get; set; } = string.Empty;
+    [Parameter]
+    public string? EnrolmentJustification { get; set; }
+
+    [Parameter]
+    public string? AssessmentJustification { get; set; }
 }

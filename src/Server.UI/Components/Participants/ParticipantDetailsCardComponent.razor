@@ -35,13 +35,14 @@
                     </DataListItem>
                     <DataListItem Label="Enrolled at">
                         <LabelActions>
-                            @if (!string.IsNullOrWhiteSpace(Data.EnrolmentJustification))
+                            @if (!string.IsNullOrWhiteSpace(Data.EnrolmentJustification)
+                                 || !string.IsNullOrWhiteSpace(Data.AssessmentJustification))
                             {
-                                <MudTooltip Text="View enrolment location justification">
-                                    <MudIconButton OnClick="@ExpandEnrolmentJustification"
+                                <MudTooltip Text="View Justifications">
+                                    <MudIconButton OnClick="@ExpandParticipantJustifications"
                                                    Icon="@Icons.Material.Outlined.OpenInNew"
                                                    Size="Size.Small"
-                                                   aria-label="View enrolment location justification" />
+                                                   aria-label="View Justifications" />
                                 </MudTooltip>
                             }
                         </LabelActions>
