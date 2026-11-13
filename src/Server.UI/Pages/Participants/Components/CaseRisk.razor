@@ -13,6 +13,12 @@
             <ArnsRisk ParticipantId="@ParticipantId" />
         </MudTabPanel>
     }
+    @if (_showTier)
+    {
+        <MudTabPanel Text="TIER">
+            <TierRisk ParticipantId="@ParticipantId" />
+        </MudTabPanel>
+    }
     <MudTabPanel Text="Latest">
         <ViewRisk ParticipantId="@ParticipantId" />
     </MudTabPanel>
