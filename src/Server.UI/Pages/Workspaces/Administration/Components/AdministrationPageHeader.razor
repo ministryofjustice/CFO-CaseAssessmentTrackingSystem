@@ -1,4 +1,4 @@
-@using Cfo.Cats.Server.UI.Pages.Workspaces.Administration.Services
+@using Cfo.Cats.Server.UI.Services.Navigation
 
 <PageHeader Title="Administration" 
             Items="@_breadcrumbs" />
@@ -9,40 +9,10 @@
 
     protected override void OnParametersSet()
     {
-        _breadcrumbs = BuildBreadcrumbs();
-    }
-
-    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
-    {
-        var home = AdministrationLinks.Home.AsMudBreadcrumb();
-
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var homeUrl = AdministrationLinks.Home.Href;
-
-        var segment = uri.AbsolutePath.Length > homeUrl.Length
-            ? uri.AbsolutePath[homeUrl.Length..].Trim('/').ToLower()
-            : string.Empty;
-
-        return segment switch
-        {
-            "" => [home],
-            "jobs" => [home, AdministrationLinks.Jobs.AsMudBreadcrumb()],
-            "cachemanagement" => [home, AdministrationLinks.CacheManagement.AsMudBreadcrumb()],
-            "audittrails" => [home, AdministrationLinks.AuditTrails.AsMudBreadcrumb()],
-            "outbox" => [home, AdministrationLinks.Outbox.AsMudBreadcrumb()],
-            "integrationevents" => [home, AdministrationLinks.IntegrationEvents.AsMudBreadcrumb()],
-            "hmppsrisk" => [home, AdministrationLinks.HmppsRisk.AsMudBreadcrumb()],
-            "hmppsperson" => [home, AdministrationLinks.HmppsPerson.AsMudBreadcrumb()],
-            "hmppstier" => [home, AdministrationLinks.HmppsTier.AsMudBreadcrumb()],
-            "picklist" => [home, AdministrationLinks.PickList.AsMudBreadcrumb()],
-            "labels" => [home, AdministrationLinks.Labels.AsMudBreadcrumb()],
-            "helplinks" => [home, AdministrationLinks.HelpLinks.AsMudBreadcrumb()],
-            "contracttargets" => [home, AdministrationLinks.ContractTargets.AsMudBreadcrumb()],
-            "tenants" => [home, AdministrationLinks.Tenants.AsMudBreadcrumb()],
-            "users/users" => [home, AdministrationLinks.Users.AsMudBreadcrumb()],
-            "users/useraudit" => [home, AdministrationLinks.UserAudit.AsMudBreadcrumb()],
-            "users/loginmonitoring" => [home, AdministrationLinks.LoginMonitoring.AsMudBreadcrumb()],
-            _ => [home]
-        };
+        _breadcrumbs = WorkspaceRegistry.TrailFor(Workspace.Administration, uri.AbsolutePath)
+            .Items
+            .Select(link => link.AsMudBreadcrumb())
+            .ToList();
     }
 }

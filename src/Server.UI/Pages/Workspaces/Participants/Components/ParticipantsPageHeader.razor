@@ -3,6 +3,7 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
 @using Cfo.Cats.Server.UI.Models.Breadcrumb
+@using Cfo.Cats.Server.UI.Services.Navigation
 @using Microsoft.AspNetCore.WebUtilities
 
 <PageHeader Title="Participants" 
@@ -29,18 +30,20 @@
             : string.Empty;
 
         var normalizedSegment = segment.ToLowerInvariant();
-        return normalizedSegment switch
+        if (normalizedSegment == "incoming-transfers")
         {
-            "" => [home],
-            "all" => [home, ParticipantLinks.All.AsMudBreadcrumb()],
-            "activities" => [home, ParticipantLinks.AllActivities.AsMudBreadcrumb()],
-            "tasks-due" => [home, ParticipantLinks.TasksDue.AsMudBreadcrumb()],
-            "incoming-transfers" => BuildIncomingTransfersBreadcrumbs(home, uri),
-            "outgoing-transfers" => [home, ParticipantLinks.OutgoingTransfers.AsMudBreadcrumb()],
-            "pre-release-inventory" => [home, ParticipantLinks.AllPris.AsMudBreadcrumb()],
-            "moved" => [home, ParticipantLinks.MovedParticipants.AsMudBreadcrumb()],
-            _ => BuildParticipantBreadcrumbs(home, segment, uri)
-        };
+            return BuildIncomingTransfersBreadcrumbs(home, uri);
+        }
+
+        var trail = WorkspaceRegistry.TrailFor(Workspace.Participants, uri.AbsolutePath);
+        if (trail.Items.Count > 1 && trail.RemainingSegments.Length == 0)
+        {
+            return trail.Items.Select(link => link.AsMudBreadcrumb()).ToList();
+        }
+
+        return normalizedSegment == string.Empty
+            ? [home]
+            : BuildParticipantBreadcrumbs(home, segment, uri);
     }
 
     private static IReadOnlyList<BreadcrumbItem> BuildIncomingTransfersBreadcrumbs(BreadcrumbItem home, Uri uri)
@@ -141,7 +144,7 @@
             : "qa1";
 
         var stageTitle = stage == "escalation" ? "Escalation" : stage.ToUpperInvariant();
-        title = string.Format("{0} - {1}", title, stageTitle);
+        title = $"{title} - {stageTitle}";
 
         if (stage == "escalation"
             && parsedQuery.TryGetValue("id", out var escalationId)

@@ -1,4 +1,5 @@
 @using Cfo.Cats.Server.UI.Pages.Workspaces.Performance.Services
+@using Cfo.Cats.Server.UI.Services.Navigation
 
 <PageHeader Title="Performance Management"
             Items="@_breadcrumbs" />
@@ -13,12 +14,6 @@
 
     private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
 
-    private static class RouteSegments
-    {
-        public const string OutcomeQualityDipSampling = "outcome-quality-dip-sampling";
-        public const string Initiatives = "initiatives";
-    }
-    
     protected override void OnParametersSet()
     {
         _breadcrumbs = BuildBreadcrumbs();
@@ -26,51 +21,28 @@
 
     private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
     {
-        var home = PerformanceLinks.Home.AsMudBreadcrumb();
-
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var homeUrl = PerformanceLinks.Home.Href;
+        var trail = WorkspaceRegistry.TrailFor(Workspace.Performance, uri.AbsolutePath);
 
-        var relativePath = uri.AbsolutePath.Length > homeUrl.Length
-            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
-            : string.Empty;
+        List<BreadcrumbItem> crumbs = trail.Items.Select(link => link.AsMudBreadcrumb()).ToList();
 
-        var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        // The dynamic part of the path under the dip sampling page:
+        // {sampleId}/{participantId}
+        var isDipSampling = trail.Items[^1].Href == PerformanceLinks.OutcomeQualityDipSamples.Href;
+        var remaining = trail.RemainingSegments;
 
-        if (segments.Length == 0)
+        if (isDipSampling && remaining.Length >= 1 && Guid.TryParse(remaining[0], out var sampleId))
         {
-            return [home];
-        }
+            var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
+            var sampleTitle = string.IsNullOrWhiteSpace(SampleLabel) ? sample.Title : SampleLabel;
+            crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Href));
 
-        List<BreadcrumbItem> crumbs = [
-            home
-        ];
-
-        if (segments[0].Equals(RouteSegments.Initiatives, StringComparison.OrdinalIgnoreCase))
-        {
-            crumbs.Add(PerformanceLinks.Initiatives.AsMudBreadcrumb());
-            return crumbs;
-        }
-
-        if(segments[0].Equals(RouteSegments.OutcomeQualityDipSampling, StringComparison.OrdinalIgnoreCase))
-        {
-            crumbs.Add(PerformanceLinks.OutcomeQualityDipSamples.AsMudBreadcrumb());
-            
-            // /outcome-quality-dip-sampling/{sampleId}
-            if (segments.Length >= 2 && Guid.TryParse(segments[1], out var sampleId))
+            if (remaining.Length >= 2)
             {
-                var sample = PerformanceLinks.OutcomeQualityDipSample(sampleId);
-                var sampleTitle = string.IsNullOrWhiteSpace(SampleLabel) ? sample.Title : SampleLabel;
-                crumbs.Add(new BreadcrumbItem(sampleTitle, sample.Href));
-
-                // /outcome-quality-dip-sampling/{sampleId}/{participantId}
-                if (segments.Length >= 3)
-                {
-                    crumbs.Add(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, segments[2]).AsMudBreadcrumb());
-                }
+                crumbs.Add(PerformanceLinks.OutcomeQualityDipSampleParticipant(sampleId, remaining[1]).AsMudBreadcrumb());
             }
         }
-        
+
         return crumbs;
     }
 }

@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using Cfo.Cats.Server.UI.Models.Breadcrumb
 @using Cfo.Cats.Server.UI.Pages.Workspaces.ServiceDesk.Services
+@using Cfo.Cats.Server.UI.Services.Navigation
 
 <PageHeader Title="Service Desk"
             Items="@_breadcrumbs" />
@@ -25,18 +26,16 @@
             ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
             : uri.AbsolutePath.Trim('/');
 
-        return segment switch
+        var trail = WorkspaceRegistry.TrailFor(Workspace.ServiceDesk, uri.AbsolutePath);
+
+        if (segment.Length == 0)
         {
-            "" => [home],
-            "activities/queue" => [home, ServiceDeskLinks.ActivitiesQueue.AsMudBreadcrumb()],
-            "activities/feedback" => [home, ServiceDeskLinks.ActivitiesFeedback.AsMudBreadcrumb()],
-            "enrolments/queue" => [home, ServiceDeskLinks.EnrolmentsQueue.AsMudBreadcrumb()],
-            "enrolments/feedback" => [home, ServiceDeskLinks.EnrolmentsFeedback.AsMudBreadcrumb()],
-            "sync/syncinfo" => [home, ServiceDeskLinks.SyncInfo.AsMudBreadcrumb()],
-            "qa-officer-stats" => [home, ServiceDeskLinks.QaOfficerStats.AsMudBreadcrumb()],
-            "qapots" => [home, ServiceDeskLinks.QaPots.AsMudBreadcrumb()],
-            _ => BuildServiceDeskBreadcrumbs(home, segment, uri)
-        };
+            return [home];
+        }
+
+        return trail.Items.Count > 1 && trail.RemainingSegments.Length == 0
+            ? trail.Items.Select(link => link.AsMudBreadcrumb()).ToList()
+            : BuildServiceDeskBreadcrumbs(home, segment, uri);
     }
 
     private IReadOnlyList<BreadcrumbItem> BuildServiceDeskBreadcrumbs(BreadcrumbItem home, string segment, Uri uri)
