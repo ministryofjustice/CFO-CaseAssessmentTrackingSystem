@@ -111,7 +111,8 @@ public partial class InitiativeObjectivesDashboardComponent
             {
                 Rotate = -45,
                 RotateAlways = true,
-                Trim = true
+                Trim = false,
+                MaxHeight = 200
             },
         },
         Responsive =

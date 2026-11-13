@@ -144,6 +144,8 @@ public partial class EngagementsByLocation
             {
                 Rotate = -45,
                 RotateAlways = true,
+                Trim = false,
+                MaxHeight = 200,
                 OffsetY = 5
             }
         },

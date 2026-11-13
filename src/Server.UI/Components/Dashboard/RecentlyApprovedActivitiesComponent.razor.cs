@@ -92,6 +92,8 @@ public partial class RecentlyApprovedActivitiesComponent : CatsComponent<GetRece
             {
                 Rotate = -45,
                 RotateAlways = true,
+                Trim = false,
+                MaxHeight = 200,
                 OffsetY = 5
             }
         },
