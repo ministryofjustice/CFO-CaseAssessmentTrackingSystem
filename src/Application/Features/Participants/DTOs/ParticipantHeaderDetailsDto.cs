@@ -7,6 +7,10 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 /// </summary>
 public record ParticipantHeaderDetailsDto
 {
+    public required string FullName { get; init; }
+
+    public required EnrolmentStatus EnrolmentStatus { get; init; }
+
     /// <summary>
     /// The participants date of birth. Null until consent has been granted.
     /// </summary>

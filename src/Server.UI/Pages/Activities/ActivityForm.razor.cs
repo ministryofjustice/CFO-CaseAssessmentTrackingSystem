@@ -18,7 +18,7 @@ public partial class ActivityForm
     private MudFileUpload<IBrowserFile>? _upload;
 
     private Task OnFileSelected(InputFileChangeEventArgs e) =>
-        UploadPreviewDialog.ReviewAsync(DialogService, e.File,
+        UploadPreviewDialog.ReviewAsync(DialogService, e.File, Model.ParticipantId,
             Documents.ActivityTemplate.MaximumSizeInMegabytes,
             () => Model.Document = null, _upload);
     private IReadOnlyCollection<ActivityType> _filteredTypes = [];

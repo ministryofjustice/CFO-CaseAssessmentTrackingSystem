@@ -23,6 +23,8 @@ public static class GetParticipantDetails
                 where p.Id == request.ParticipantId
                 select new ParticipantHeaderDetailsDto
                 {
+                    FullName = p.FirstName + " " + p.LastName,
+                    EnrolmentStatus = p.EnrolmentStatus!,
                     DateOfBirth = granted.Contains(p.ConsentStatus!) ? p.DateOfBirth : null,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
                     EnrolmentJustification = p.EnrolmentLocationJustification,

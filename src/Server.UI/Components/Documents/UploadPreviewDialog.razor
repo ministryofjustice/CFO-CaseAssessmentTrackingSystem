@@ -10,6 +10,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
+        <UploadPreviewParticipantHeader ParticipantId="@ParticipantId" />
         @if (_loading)
         {
             <MudLoading Text="Preparing preview" />
@@ -53,6 +54,9 @@
     [Parameter, EditorRequired]
     public required IBrowserFile File { get; set; }
 
+    [Parameter, EditorRequired]
+    public required string ParticipantId { get; set; }
+
     [Parameter]
     public long MaxSizeInBytes { get; set; } = 1024 * 1024;
 
@@ -60,6 +64,7 @@
     public static async Task ReviewAsync(
         IDialogService dialogService,
         IBrowserFile file,
+        string participantId,
         double maxSizeInMegabytes,
         Action clearSelection,
         MudFileUpload<IBrowserFile>? upload)
@@ -82,6 +87,7 @@
         var parameters = new DialogParameters<UploadPreviewDialog>
         {
             { x => x.File, file },
+            { x => x.ParticipantId, participantId },
             { x => x.MaxSizeInBytes, maxSizeInBytes }
         };
 
