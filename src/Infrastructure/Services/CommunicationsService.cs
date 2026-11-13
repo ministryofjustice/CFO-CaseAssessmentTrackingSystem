@@ -68,6 +68,7 @@ public class CommunicationsService(IOptions<NotifyOptions> options, ILogger<Comm
         catch (Exception e)
         {
             logger.LogError("Failed to send Email. {e}", e);
+            throw;
         }
     }
 

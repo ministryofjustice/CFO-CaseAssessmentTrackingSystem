@@ -1,18 +1,20 @@
-﻿using Cfo.Cats.Application.Features.Identity.MessageBus;
+﻿using System.Security.Cryptography;
+using System.Text;
+using Cfo.Cats.Application.Features.Identity.MessageBus;
+using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Common.Enums;
 using Quartz;
-using Rebus.Bus;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
+[DisallowConcurrentExecution]
 public class NotifyAccountDeactivationJob(
     ILogger<NotifyAccountDeactivationJob> logger,
     IUnitOfWork unitOfWork,
-    IBus bus) : IJob
+    TimeProvider? timeProvider = null) : IJob
 {
     public static readonly JobKey Key = new JobKey(name: nameof(NotifyAccountDeactivationJob));
     public static readonly string Description = "A job to notify accounts that are due to deactivate.";
-    public static readonly DateTime sevenDaysFromDeactivationDate = DateTime.Today.AddDays(-23); // exactly 23 days ago, ignoring time
 
     public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
@@ -35,19 +37,48 @@ public class NotifyAccountDeactivationJob(
         {
             logger.LogInformation("Starting notifying accounts that will be deactivated soon");               
 
+            var clock = timeProvider ?? TimeProvider.System;
+            var activityBefore = clock.GetLocalNow().Date.AddDays(-22);
+
             var users = await unitOfWork.DbContext.Users
                 .IgnoreAutoIncludes()
+                .AsNoTracking()
                 .Where(user => user.Status == UserStatus.Active)
                 .Where(user =>
                        user.LastLogin.HasValue
-                     ? user.LastLogin.Value.Date == sevenDaysFromDeactivationDate
-                     : user.Created.HasValue && user.Created.Value.Date == sevenDaysFromDeactivationDate)
+                     ? user.LastLogin.Value < activityBefore
+                     : user.Created.HasValue && user.Created.Value < activityBefore)
+                .OrderBy(user => user.Id)
                 .ToListAsync(cancellationToken);
 
             foreach(var user in users)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await bus.Publish(new NotifyInactiveUserCommand(user.Email!));
+                var activityAt = (user.LastLogin ?? user.Created)!.Value;
+                var identity = FormattableString.Invariant($"{nameof(NotifyInactiveUserCommand)}:{user.Id}:{activityAt.Ticks}");
+                var messageId = new Guid(SHA256.HashData(Encoding.UTF8.GetBytes(identity)).AsSpan(0, 16));
+                if (await unitOfWork.DbContext.OutboxMessages.AnyAsync(message => message.Id == messageId, cancellationToken))
+                {
+                    continue;
+                }
+
+                var command = new NotifyInactiveUserCommand(user.Email!)
+                {
+                    MessageId = messageId
+                };
+                await unitOfWork.DbContext.InsertOutboxMessage(
+                    command,
+                    outboxMessageId: messageId,
+                    occurredOnUtc: clock.GetUtcNow().UtcDateTime);
+                try
+                {
+                    await unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+                catch
+                {
+                    unitOfWork.DbContext.ChangeTracker.Clear();
+                    throw;
+                }
             }
 
         }

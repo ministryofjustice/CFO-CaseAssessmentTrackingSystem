@@ -90,6 +90,25 @@ ConnectionStrings__CatsDb="<connection-string>" \
 - Avoid manual DB changes (they can be overwritten)
 - Use PRs for all schema updates
 
+### Account Deactivation Warnings
+
+Ensure both the warning job and the outbox publisher are enabled in the deployment.
+
+Warnings are queued once per user and last-login timestamp (or creation timestamp
+for users who have never logged in). Active accounts inactive for at least 23
+calendar days remain eligible until queued, including accounts overdue for deactivation.
+Each warning uses a deterministic outbox ID based on the user and activity timestamp.
+Retain these outbox rows to preserve deduplication; deleting them allows warnings
+to be queued again. Failed warning publishes remain pending for the next publisher
+run, with fresh messages prioritized over failures. Email failures use the existing
+Rebus retry policy and error queue. Replay exhausted messages through the existing
+error-queue process rather than deleting outbox records.
+
+Delivery is at least once: an uncertain send outcome can produce a duplicate email.
+There is no historical delivery backfill, so the first run can warn an eligible
+account that received a warning before tracking was introduced. This does not
+change the 30-day deactivation threshold or grant a new seven-day grace period.
+
 ---
 
 ## 🌱 Database Seeding Project
