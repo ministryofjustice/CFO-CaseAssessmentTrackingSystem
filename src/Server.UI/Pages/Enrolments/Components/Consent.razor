@@ -105,7 +105,7 @@
     private MudFileUpload<IBrowserFile>? _upload;
 
     private Task OnFileSelected(InputFileChangeEventArgs e) =>
-        UploadPreviewDialog.ReviewAsync(DialogService, e.File,
+        UploadPreviewDialog.ReviewAsync(DialogService, e.File, Model.ParticipantId,
             Documents.Consent.MaximumSizeInMegabytes,
             () => Model.Document = null, _upload);
 
