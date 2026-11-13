@@ -8,8 +8,9 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.NET.Test.Sdk" />
-            <PackageReference Include="Moq" />
-            <PackageReference Include="Moq.Dapper" />
+      <PackageReference Include="Moq" />
+      <PackageReference Include="Moq.Dapper" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
       <PackageReference Include="Newtonsoft.Json" />
       <PackageReference Include="NUnit" />
       <PackageReference Include="NUnit3TestAdapter" />

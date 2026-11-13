@@ -38,6 +38,11 @@ public partial class Index
             links.Add(ParticipantLinks.OutgoingTransfers);
         }
 
+        if ((await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.ParticipantAdvancedSearch)).Succeeded)
+        {
+            links.Add(ParticipantLinks.AdvancedSearch);
+        }
+
         Links = links.ToArray();        
     }
 }
