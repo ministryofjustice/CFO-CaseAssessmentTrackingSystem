@@ -45,14 +45,14 @@ public class InductionPayment
 
     public required DateTime PaymentPeriod { get; set; }
 
-    public static InductionPayment CreatePayableInductionPayment(HubInduction induction, DateTime enrolmentApprovalDate)
+    public static InductionPayment CreatePayableInductionPayment(HubInduction induction)
     {
         var dates = new[]
         {
             induction.InductionDate,
-            enrolmentApprovalDate.Date,
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
+
         return new InductionPayment()
         {
             Id = Guid.CreateVersion7(),
@@ -72,12 +72,11 @@ public class InductionPayment
             CreatedOn = DateTime.UtcNow
         };
     }
-    public static InductionPayment CreatePayableInductionPayment(WingInduction induction, DateTime enrolmentApprovalDate)
+    public static InductionPayment CreatePayableInductionPayment(WingInduction induction)
     {
         var dates = new[]
         {
             induction.InductionDate,
-            enrolmentApprovalDate.Date,
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
         return new InductionPayment()
