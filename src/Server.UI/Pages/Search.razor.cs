@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
@@ -26,6 +25,11 @@ public partial class Search
     private string _search = string.Empty;
     private string _searchedKeyword = string.Empty;
     private bool _loading;
+    private int _requestId;
+    private string? _participantError;
+    private bool _truncated;
+    private readonly SemaphoreSlim _searchLock = new(1, 1);
+    private const int ParticipantLimit = 25;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,38 +66,66 @@ public partial class Search
 
     private async Task SearchAsync(string keyword)
     {
+        var requestId = ++_requestId;
+
+        // The mediator scope shares one DbContext, so only one participant lookup may run at a time
+        await _searchLock.WaitAsync();
         try
         {
+            if (requestId != _requestId)
+            {
+                return;
+            }
+
             _searchedKeyword = keyword;
             _loading = true;
+            _participantError = null;
+            _truncated = false;
 
             if (string.IsNullOrWhiteSpace(keyword))
             {
                 _results = [];
+                return;
+            }
+
+            var result = await Service.Send(new SearchParticipants.Query
+            {
+                Keyword = keyword,
+                MaxResults = ParticipantLimit + 1
+            });
+
+            if (requestId != _requestId)
+            {
+                return;
+            }
+
+            IEnumerable<ParticipantResult> participants = [];
+            if (result is { Succeeded: true, Data: not null })
+            {
+                _truncated = result.Data.Count > ParticipantLimit;
+                participants = result.Data.Take(ParticipantLimit).Select(participant => new ParticipantResult(participant));
             }
             else
             {
-                var result = await Service.Send(new SearchParticipants.Query
-                {
-                    Keyword = keyword
-                });
-
-                var participants = result is { Succeeded: true, Data: not null }
-                    ? result.Data.Select(participant => new ParticipantResult(participant))
-                    : [];
-
-                _results = _pages
-                    .Where(page => page.DisplayText.Contains(keyword, StringComparison.InvariantCultureIgnoreCase)
-                                   || page.Description.Contains(keyword, StringComparison.InvariantCultureIgnoreCase))
-                    .Cast<SearchResult>()
-                    .Concat(participants)
-                    .OrderBy(searchResult => searchResult.DisplayText)
-                    .ToList();
+                _participantError = "Participant search failed, so participants are not shown. Please try again.";
             }
+
+            _results = _pages
+                .Where(page => page.DisplayText.Contains(keyword, StringComparison.InvariantCultureIgnoreCase)
+                               || page.Description.Contains(keyword, StringComparison.InvariantCultureIgnoreCase))
+                .Cast<SearchResult>()
+                .Concat(participants)
+                .OrderBy(searchResult => searchResult.DisplayText)
+                .ToList();
         }
         finally
         {
-            _loading = false;
+            if (requestId == _requestId)
+            {
+                _loading = false;
+            }
+
+            _searchLock.Release();
         }
     }
 

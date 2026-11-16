@@ -40,16 +40,17 @@ public static class SearchParticipants
 
             var query = unitOfWork.DbContext.Participants.AsQueryable();
 
-            if (keyword.Split(" ") is { Length: 2 } segments)
+            var tokens = keyword.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            // Every word must match the first name, last name, id or an external identifier,
+            // so compound names and extra whitespace behave the same as single words
+            foreach (var token in tokens)
             {
-                query = query.Where(p => p.FirstName.Contains(segments[0]) && p.LastName.Contains(segments[1]));
-            }
-            else
-            {
-                query = query.Where(p => p.FirstName.Contains(keyword)
-                    || p.LastName!.Contains(keyword)
-                    || p.Id.Contains(keyword)
-                    || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(keyword)));
+                var t = token;
+                query = query.Where(p => p.FirstName.Contains(t)
+                    || p.LastName!.Contains(t)
+                    || p.Id.Contains(t)
+                    || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(t)));
             }
 
             var results = await query
@@ -81,11 +82,9 @@ public static class SearchParticipants
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(r => r.Keyword)
                 .Matches(ValidationConstants.Keyword)
                 .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
-        }
     }
 }
