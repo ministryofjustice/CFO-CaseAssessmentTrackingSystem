@@ -82,9 +82,13 @@ public static class SearchParticipants
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator() =>
+        public Validator()
+        {
             RuleFor(r => r.Keyword)
                 .Matches(ValidationConstants.Keyword)
                 .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
+
+            RuleFor(r => r.MaxResults).InclusiveBetween(1, 100);
+        }
     }
 }
