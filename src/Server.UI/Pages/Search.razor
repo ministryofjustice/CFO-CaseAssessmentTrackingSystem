@@ -33,15 +33,24 @@
                   Placeholder="Search for pages or participants by name or identifier..."
                   Class="mb-6" />
 
+    @if (_participantError is not null && !_loading)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_participantError</MudAlert>
+    }
+    @if (_truncated && !_loading)
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">More than 25 participants match. Only the first 25 are shown, so refine your search to find a specific person.</MudAlert>
+    }
+
     @if (_loading)
     {
         <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
     }
-    else if (_results.Count == 0 && !string.IsNullOrWhiteSpace(_searchedKeyword))
+    else if (_results.Count == 0 && _participantError is null && !string.IsNullOrWhiteSpace(_searchedKeyword))
     {
         <MudAlert Severity="Severity.Warning">No results match "@_searchedKeyword".</MudAlert>
     }
-    else if (_results.Count == 0)
+    else if (_results.Count == 0 && _participantError is null)
     {
         <MudAlert Severity="Severity.Info">Enter a search term..</MudAlert>
     }
