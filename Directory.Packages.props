@@ -21,7 +21,7 @@
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
-    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="9.3.0" />
+    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="9.3.1" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="13.6.1" />
     <PackageVersion Include="Dapper" Version="2.1.89" />
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
@@ -41,7 +41,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.1" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.15" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.15" />
@@ -72,9 +72,9 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.20.1" />
-    <PackageVersion Include="Quartz" Version="4.7.2" />
-    <PackageVersion Include="Quartz.AspNetCore" Version="4.7.2" />
-    <PackageVersion Include="Quartz.Extensions.Hosting" Version="4.7.2" />
+    <PackageVersion Include="Quartz" Version="4.7.3" />
+    <PackageVersion Include="Quartz.AspNetCore" Version="4.7.3" />
+    <PackageVersion Include="Quartz.Extensions.Hosting" Version="4.7.3" />
     <PackageVersion Include="Rebus" Version="8.9.5" />
     <PackageVersion Include="Rebus.Microsoft.Extensions.Logging" Version="5.2.0" />
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.2" />
