@@ -109,9 +109,9 @@ public static class WorkspaceRegistry
         Open(Workspace.DeliveryManagement, DeliveryManagementLinks.QaEnrolmentResults),
 
         // Service desk
-        When(Workspace.ServiceDesk, ServiceDeskLinks.ActivitiesQueue, CanViewQueues),
+        ByPolicy(Workspace.ServiceDesk, ServiceDeskLinks.ActivitiesQueue, SecurityPolicies.ServiceDeskManagement),
         ByPolicy(Workspace.ServiceDesk, ServiceDeskLinks.ActivitiesFeedback, SecurityPolicies.Qa1),
-        When(Workspace.ServiceDesk, ServiceDeskLinks.EnrolmentsQueue, CanViewQueues),
+        ByPolicy(Workspace.ServiceDesk, ServiceDeskLinks.EnrolmentsQueue, SecurityPolicies.ServiceDeskManagement),
         ByPolicy(Workspace.ServiceDesk, ServiceDeskLinks.EnrolmentsFeedback, SecurityPolicies.Qa1),
         ByPolicy(Workspace.ServiceDesk, ServiceDeskLinks.QaOfficerStats, SecurityPolicies.ServiceDeskManagement),
         ByPolicy(Workspace.ServiceDesk, ServiceDeskLinks.SyncInfo, SecurityPolicies.ServiceDeskSyncInformation),
@@ -147,10 +147,6 @@ public static class WorkspaceRegistry
         Open(Workspace.MyArea, MyAreaLinks.MyDocuments),
         Open(Workspace.MyArea, MyAreaLinks.Notifications),
     ];
-
-    private static async Task<bool> CanViewQueues(WorkspaceLinkEvaluator e)
-        => e.InAnyRole(RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport)
-           && await e.Policy(SecurityPolicies.Qa1);
 
     private static async Task<bool> HmppsApi(WorkspaceLinkEvaluator e)
         => e.Feature(FeatureSections.HmppsExternalApi) && await e.Policy(SecurityPolicies.SystemSupportFunctions);
