@@ -34,7 +34,7 @@ else if (_risks is not null)
                 <MudText Typo="Typo.h2">Summary</MudText>
             </MudStack>
             <MudText Class="mt-1">A <b>tier</b> reflects the level of risk and complexity involved in managing a probation case. It informs case allocation and supervision package decisions, as well as planning and resourcing at a strategic management level.</MudText>
-            <MudText Class="mt-1">This participant has a tier of <MudLink>@(_risks.TierScore ?? "Unknown")</MudLink>, based on risk of serious harm.</MudText>
+            <MudText Class="mt-1">This participant has a tier of <strong>@(TierScore ?? "Unknown")</strong>, based on risk of serious harm.</MudText>
 
             <MudText Class="mt-1" Typo="Typo.caption">Last calculated @_risks.CalculationDate?.Humanize().</MudText>
 
