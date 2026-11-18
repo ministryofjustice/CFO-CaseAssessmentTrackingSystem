@@ -103,4 +103,59 @@ public class ParticipantAccessEvaluatorTests
 
         seen.ShouldBe([AccessGrant.NotGranted, AccessGrant.Granted]);
     }
+
+    [Test]
+    public async Task EvaluateMany_should_short_circuit_granted_unless_can_deny_and_preserve_denied()
+    {
+        var callsBySpec = new Dictionary<int, List<string>> { [1] = [], [2] = [], [3] = [] };
+
+        AccessValidationSpecification[] specs =
+        [
+            new PerIdSpecification(1, new Dictionary<string, AccessGrant>
+            {
+                ["P1"] = AccessGrant.Granted,
+                ["P2"] = AccessGrant.NotGranted,
+                ["P3"] = AccessGrant.Granted
+            }, calls: callsBySpec[1]),
+            new PerIdSpecification(2, new Dictionary<string, AccessGrant>
+            {
+                ["P1"] = AccessGrant.NotGranted,
+                ["P2"] = AccessGrant.Granted,
+                ["P3"] = AccessGrant.NotGranted
+            }, calls: callsBySpec[2]),
+            new PerIdSpecification(3, new Dictionary<string, AccessGrant>
+            {
+                ["P1"] = AccessGrant.Granted,
+                ["P2"] = AccessGrant.Granted,
+                ["P3"] = AccessGrant.Denied
+            }, canDeny: true, calls: callsBySpec[3])
+        ];
+
+        var grants = await ParticipantAccessEvaluator.EvaluateManyAsync(specs, ["P1", "P2", "P3"], CancellationToken.None);
+
+        grants["P1"].ShouldBe(AccessGrant.Granted);
+        grants["P2"].ShouldBe(AccessGrant.Granted);
+        grants["P3"].ShouldBe(AccessGrant.Denied);
+        // Spec 2 cannot deny, so already-granted P1 and P3 should be skipped
+        callsBySpec[2].ShouldBe(["P2"]);
+        // Spec 3 can deny, so all non-denied ids should be checked
+        callsBySpec[3].ShouldBe(["P1", "P2", "P3"], ignoreOrder: true);
+    }
+
+    private sealed class PerIdSpecification(
+        int order,
+        IReadOnlyDictionary<string, AccessGrant> results,
+        bool canDeny = false,
+        List<string> calls = null) : AccessValidationSpecification
+    {
+        protected override bool CanDenyAccess => canDeny;
+
+        public override int Order => order;
+
+        protected override Task<AccessGrant> CheckAccessAsync(string identifier, CancellationToken cancellationToken)
+        {
+            calls?.Add(identifier);
+            return Task.FromResult(results[identifier]);
+        }
+    }
 }

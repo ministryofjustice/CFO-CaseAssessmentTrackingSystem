@@ -1,4 +1,5 @@
 using System.Reflection;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Services.Navigation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -13,9 +14,13 @@ public class WorkspaceRegistryTests
 
     private sealed record Page(Type Type, string Route);
 
-    private static readonly List<Page> WorkspacePages = UiAssembly.GetTypes()
-        .Where(t => t.Namespace?.Contains(".Pages.Workspaces.") == true)
+    private static readonly List<Page> AllRoutablePages = UiAssembly.GetTypes()
+        .Where(t => typeof(IComponent).IsAssignableFrom(t))
         .SelectMany(t => t.GetCustomAttributes<RouteAttribute>().Select(r => new Page(t, Normalise(r.Template))))
+        .ToList();
+
+    private static readonly List<Page> WorkspacePages = AllRoutablePages
+        .Where(p => p.Type.Namespace?.Contains(".Pages.Workspaces.") == true)
         .ToList();
 
     private static string Normalise(string route) => "/" + route.Trim('/').ToLowerInvariant();
@@ -24,7 +29,7 @@ public class WorkspaceRegistryTests
     public void Registered_links_should_point_at_a_routable_page()
     {
         var missing = WorkspaceRegistry.Entries
-            .Where(e => WorkspacePages.All(p => p.Route != Normalise(e.Link.Href)))
+            .Where(e => AllRoutablePages.All(p => p.Route != Normalise(e.Link.Href)))
             .Select(e => $"{e.Workspace}: {e.Link.Title} ({e.Link.Href})")
             .ToList();
 
@@ -36,11 +41,27 @@ public class WorkspaceRegistryTests
     {
         var mismatches = new List<string>();
 
-        foreach (var entry in WorkspaceRegistry.Entries.Where(e => e.Policy is not null || e.Roles is not null))
+        foreach (var entry in WorkspaceRegistry.Entries)
         {
-            foreach (var page in WorkspacePages.Where(p => p.Route == Normalise(entry.Link.Href)))
+            foreach (var page in AllRoutablePages.Where(p => p.Route == Normalise(entry.Link.Href)))
             {
                 var authorize = page.Type.GetCustomAttributes<AuthorizeAttribute>().ToList();
+
+                if (entry.Policy is null && entry.Roles is null)
+                {
+                    var isOpenToAllAuthorizedUsers = authorize.Count > 0
+                        && authorize.All(a => a.Roles is null && (a.Policy is null or SecurityPolicies.AuthorizedUser));
+
+                    if (!isOpenToAllAuthorizedUsers)
+                    {
+                        var actual = authorize.Count == 0
+                            ? "no [Authorize]"
+                            : string.Join(", ", authorize.Select(a => a.Policy ?? (a.Roles is not null ? $"Roles={a.Roles}" : "[Authorize]")));
+                        mismatches.Add($"{page.Type.Name} ({page.Route}) is Open in registry but has {actual}");
+                    }
+
+                    continue;
+                }
 
                 var policyMatches = entry.Policy is null || authorize.Any(a => a.Policy == entry.Policy);
                 var rolesMatch = entry.Roles is null || authorize.Any(a => a.Roles == entry.Roles);

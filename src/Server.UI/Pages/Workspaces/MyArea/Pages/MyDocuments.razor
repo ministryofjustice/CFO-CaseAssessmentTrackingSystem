@@ -1,4 +1,5 @@
 ﻿@page "/pages/workspace/my-area/my-documents"
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 @using Cfo.Cats.Domain.Entities.Documents
 @using Cfo.Cats.Application.Features.Documents.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
@@ -34,7 +35,7 @@
             <MudSpacer />
             <MudTextField @bind-Value="searchString" Placeholder="Search" Immediate="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
             <MudTooltip Text="Clear search parameters">
-                <MudIconButton Size="MudBlazor.Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => searchString = string.Empty)" />
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => searchString = string.Empty)" />
             </MudTooltip>
         </ToolBarContent>
         <HeaderContent>

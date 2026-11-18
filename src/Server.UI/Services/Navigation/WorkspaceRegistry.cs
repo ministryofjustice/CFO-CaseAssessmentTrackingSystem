@@ -63,8 +63,8 @@ public static class WorkspaceRegistry
     private static WorkspaceEntry ByRoles(Workspace w, BreadcrumbLinkModel link, params string[] roles)
         => new(w, link, e => Task.FromResult(e.InAnyRole(roles)), Roles: string.Join(", ", roles));
 
-    private static WorkspaceEntry When(Workspace w, BreadcrumbLinkModel link, Func<WorkspaceLinkEvaluator, Task<bool>> predicate)
-        => new(w, link, predicate);
+    private static WorkspaceEntry When(Workspace w, BreadcrumbLinkModel link, Func<WorkspaceLinkEvaluator, Task<bool>> predicate, string? policy = null)
+        => new(w, link, predicate, Policy: policy);
 
     public static BreadcrumbLinkModel HomeOf(Workspace workspace) => workspace switch
     {
@@ -130,22 +130,24 @@ public static class WorkspaceRegistry
         ByPolicy(Workspace.Administration, AdministrationLinks.Outbox, SecurityPolicies.ServiceDeskManagement),
         ByPolicy(Workspace.Administration, AdministrationLinks.PickList, SecurityPolicies.ServiceDeskManagement),
         When(Workspace.Administration, AdministrationLinks.IntegrationEvents,
-            async e => e.Feature(FeatureSections.IntegrationEventPublishing) && await e.Policy(SecurityPolicies.ServiceDeskManagement)),
+            async e => e.Feature(FeatureSections.IntegrationEventPublishing) && await e.Policy(SecurityPolicies.ServiceDeskManagement),
+            policy: SecurityPolicies.ServiceDeskManagement),
         ByPolicy(Workspace.Administration, AdministrationLinks.Tenants, SecurityPolicies.SystemFunctionsRead),
         ByPolicy(Workspace.Administration, AdministrationLinks.Users, SecurityPolicies.SystemFunctionsRead),
         ByPolicy(Workspace.Administration, AdministrationLinks.UserAudit, SecurityPolicies.SystemFunctionsRead),
         ByPolicy(Workspace.Administration, AdministrationLinks.LoginMonitoring, SecurityPolicies.SystemFunctionsRead),
         ByPolicy(Workspace.Administration, AdministrationLinks.Jobs, SecurityPolicies.SystemSupportFunctions),
         ByPolicy(Workspace.Administration, AdministrationLinks.CacheManagement, SecurityPolicies.SystemSupportFunctions),
-        When(Workspace.Administration, AdministrationLinks.HmppsRisk, HmppsApi),
-        When(Workspace.Administration, AdministrationLinks.HmppsPerson, HmppsApi),
-        When(Workspace.Administration, AdministrationLinks.HmppsTier, HmppsApi),
+        When(Workspace.Administration, AdministrationLinks.HmppsRisk, HmppsApi, policy: SecurityPolicies.SystemSupportFunctions),
+        When(Workspace.Administration, AdministrationLinks.HmppsPerson, HmppsApi, policy: SecurityPolicies.SystemSupportFunctions),
+        When(Workspace.Administration, AdministrationLinks.HmppsTier, HmppsApi, policy: SecurityPolicies.SystemSupportFunctions),
 
         // My area
         Open(Workspace.MyArea, MyAreaLinks.EditProfile),
         Open(Workspace.MyArea, MyAreaLinks.PasswordReset, parent: MyAreaLinks.EditProfile),
         Open(Workspace.MyArea, MyAreaLinks.MyDocuments),
         Open(Workspace.MyArea, MyAreaLinks.Notifications),
+        Open(Workspace.MyArea, MyAreaLinks.Announcements),
     ];
 
     private static async Task<bool> HmppsApi(WorkspaceLinkEvaluator e)

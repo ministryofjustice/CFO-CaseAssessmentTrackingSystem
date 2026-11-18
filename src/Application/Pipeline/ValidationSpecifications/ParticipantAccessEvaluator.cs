@@ -22,4 +22,26 @@ public static class ParticipantAccessEvaluator
 
         return grant;
     }
+
+    public static async Task<IReadOnlyDictionary<string, AccessGrant>> EvaluateManyAsync(
+        IEnumerable<AccessValidationSpecification> specifications,
+        IReadOnlyCollection<string> participantIds,
+        CancellationToken cancellationToken)
+    {
+        var grants = participantIds
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(id => id, _ => AccessGrant.NotGranted, StringComparer.OrdinalIgnoreCase);
+
+        if (grants.Count == 0)
+        {
+            return grants;
+        }
+
+        foreach (var specification in specifications.OrderBy(s => s.Order))
+        {
+            await specification.EvaluateManyAsync(grants, cancellationToken);
+        }
+
+        return grants;
+    }
 }
