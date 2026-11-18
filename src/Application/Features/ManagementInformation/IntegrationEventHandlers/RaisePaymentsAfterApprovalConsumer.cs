@@ -3,14 +3,13 @@ using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
-using Rebus.Bus;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus) : IHandleMessages<ParticipantTransitionedIntegrationEvent>
+public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IIntegrationEventPublisher publisher) : IIntegrationEventHandler<ParticipantTransitionedIntegrationEvent>
 {
-    public async Task Handle(ParticipantTransitionedIntegrationEvent context)
+    public async Task Handle(ParticipantTransitionedIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.To != EnrolmentStatus.ApprovedStatus.Name)
         {
@@ -19,7 +18,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus
 
         if (await IsFirstApproval(context.ParticipantId))
         {
-            List<object> events = [];
+            List<IIntegrationEvent> events = [];
 
             var wings = await unitOfWork.DbContext.WingInductions
                 .Where(e => e.ParticipantId == context.ParticipantId)
@@ -64,7 +63,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus
 
             foreach (var message in events)
             {
-                await bus.Publish(message);
+                await publisher.PublishAsync(message, cancellationToken);
             }
         }
     }

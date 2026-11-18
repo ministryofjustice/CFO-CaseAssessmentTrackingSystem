@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 using Cfo.Cats.Application.Outbox;
 using Quartz;
-using Rebus.Bus;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
-public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IBus bus)
+public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IIntegrationEventPublisher publisher)
     : IJob
 {
     private const int BatchSize = 10;
@@ -57,14 +57,14 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                 try
                 {
                     var messageType = typeof(OutboxMessage).Assembly.GetType(outboxMessage.Type)!;
-                    var deserializedMessage = JsonSerializer.Deserialize(outboxMessage.Content, messageType);
+                    var deserializedMessage = JsonSerializer.Deserialize(outboxMessage.Content, messageType) as IIntegrationEvent;
 
                     if (deserializedMessage is null)
                     {
-                        throw new ApplicationException("Unable to deserialize message content");
+                        throw new ApplicationException("Unable to deserialize message content as an integration event");
                     }
 
-                    await bus.Publish(deserializedMessage);
+                    await publisher.PublishAsync(deserializedMessage, cancellationToken);
                     outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

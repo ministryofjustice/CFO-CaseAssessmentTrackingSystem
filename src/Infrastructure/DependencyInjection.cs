@@ -36,6 +36,7 @@ using Cfo.Cats.Infrastructure.Services.Delius;
 using Cfo.Cats.Infrastructure.Services.HmppsExternalApi;
 using Cfo.Cats.Infrastructure.Services.Jobs;
 using Cfo.Cats.Infrastructure.Services.Locations;
+using Cfo.Cats.Infrastructure.Messaging.RabbitMq;
 using Cfo.Cats.Infrastructure.Services.MessageHandling;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.OffLoc;
@@ -52,11 +53,6 @@ using StackExchange.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
-using Rebus;
-using Rebus.Activation;
-using Rebus.Bus;
-using Rebus.Config;
-using Rebus.Handlers;
 using ZiggyCreatures.Caching.Fusion;
 using Cfo.Cats.Application.Features.Identity.MessageBus;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
@@ -81,14 +77,14 @@ public static class DependencyInjection
         services.AddAuthenticationService(configuration)
             .AddFusionCacheService(configuration);
 
-        // Run the Rebus message consumers in CATS only when a separate consumer Worker process is not handling them.
+        // Run the message consumers in CATS only when a separate consumer Worker process is not handling them.
         // When Features:UseWorkerForConsumers is set, the Cats.Consumers worker hosts these consumers instead (see AddConsumerInfrastructure).
         if (!configuration.IsFeatureEnabled(FeatureSections.UseWorkerForConsumers))
         {
             services.AddMessageConsumers(configuration);
         }
 
-        services.AddCatsConsumer();
+        services.AddCatsConsumer(configuration.GetSection("RabbitSettings").Get<RabbitSettings>() ?? new RabbitSettings());
 
         services.AddSingleton<ISessionService, SessionService>();
 
@@ -121,7 +117,7 @@ public static class DependencyInjection
     /// <summary>
     /// Registers infrastructure services required by the standalone jobs Worker process.
     /// Use this instead of <see cref="AddInfrastructure"/> when hosting Quartz jobs in a separate Worker.
-    /// Does not register Rebus consumer background services or web-specific services.
+    /// Does not register message consumer background services or web-specific services.
     /// </summary>
     public static IServiceCollection AddWorkerInfrastructure(
         this IServiceCollection services,
@@ -153,7 +149,7 @@ public static class DependencyInjection
 
     /// <summary>
     /// Registers infrastructure services required by the standalone Cats.Consumers process.
-    /// Use this instead of <see cref="AddInfrastructure"/> when hosting the Rebus message consumers in a separate Worker.
+    /// Use this instead of <see cref="AddInfrastructure"/> when hosting the message consumers in a separate Worker.
     /// Does not register Quartz jobs, the job management API, or web-specific services.
     /// </summary>
     public static IServiceCollection AddConsumerInfrastructure(
@@ -175,19 +171,14 @@ public static class DependencyInjection
         // In a consumer context it returns null for all user properties, which is acceptable for background processing.
         services.AddHttpContextAccessor();
 
-        // Register a minimal set of Identity services required by the message consumers.
-        services.AddScoped<IHandleMessages, SyncParticipantCommandHandler>();
-        services.AddScoped<IHandleMessages, NotifyInactiveUserCommandHandler>();
-
-        // Host the Rebus message consumers here.
+        // Host the message consumers here.
         services.AddMessageConsumers(configuration);
 
         return services;
     }
 
     /// <summary>
-    /// Registers the Rebus message consumer handlers (all <see cref="IHandleMessages{TMessage}"/>
-    /// implementations from the Application assembly) and the background services that host them.
+    /// Registers the message consumers (handlers and the hosted services that run them).
     /// This runs either in Server.UI or in the standalone Consumers process depending on Features:UseWorkerForConsumers.
     /// Which hosted services run is controlled by <c>Consumers:Include</c> / <c>Consumers:Exclude</c>.
     /// </summary>
@@ -196,55 +187,37 @@ public static class DependencyInjection
         var selectionOptions = configuration.GetSection(ConsumerSelectionOptions.Key).Get<ConsumerSelectionOptions>() ?? new();
         var enabled = ConsumerSelection.Resolve(selectionOptions);
 
-        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
-            .GetTypes()
-            .Where(t => t.IsAbstract == false && t.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
-
-        foreach (var handler in handlerTypes)
-        {
-            services.AddScoped(handler);
-        }
+        var rabbitSettings = configuration.GetSection("RabbitSettings").Get<RabbitSettings>() ?? new RabbitSettings();
+        var overnightSettings = configuration.GetSection("OvernightServiceSettings").Get<OvernightServiceSettings>() ?? new OvernightServiceSettings();
 
         if (enabled.Contains(ConsumerNames.Overnight))
         {
-            services.AddHostedService<OvernightBackgroundService>();
+            services.AddOvernightConsumer(rabbitSettings, overnightSettings);
         }
 
         if (enabled.Contains(ConsumerNames.Tasks))
         {
-            services.AddHostedService<TasksBackgroundService>();
+            services.AddTasksConsumer(rabbitSettings);
         }
 
         if (enabled.Contains(ConsumerNames.Payment))
         {
-            services.AddHostedService<PaymentBackgroundService>();
+            services.AddPaymentConsumer(rabbitSettings);
         }
 
         if (enabled.Contains(ConsumerNames.Documents))
         {
-            services.AddHostedService<DocumentsBackgroundService>();
+            services.AddDocumentsConsumer(rabbitSettings);
         }
 
         if (enabled.Contains(ConsumerNames.Telemetry))
         {
-            services.AddHostedService<TelemetryBackgroundService>();
+            services.AddTelemetryConsumer(rabbitSettings);
         }
 
         services.AddHostedService(sp => new ConsumerSelectionLogger(
             sp.GetRequiredService<ILogger<ConsumerSelectionLogger>>(), enabled));
 
-        return services;
-    }
-
-    /// <summary>
-    /// This is a special consumer that should always run in CATS.
-    /// It allows the UI to react to integration events (and each copy of CATS will react).
-    /// </summary>
-    public static IServiceCollection AddCatsConsumer(this IServiceCollection services)
-    {
-        services.AddScoped<ContractTargetsChangedConsumer>();
-        services.AddHostedService<CatsBackgroundService>();
         return services;
     }
 
@@ -294,22 +267,7 @@ public static class DependencyInjection
         });
             
 
-        services.AddSingleton<IBus>(sp =>
-        {
-            var rabbitSettings = sp.GetRequiredService<IOptions<RabbitSettings>>().Value;
-            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-
-            return Configure.With(new BuiltinHandlerActivator())
-                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
-                .Transport(t => t.UseRabbitMqAsOneWayClient(configuration.GetConnectionString("rabbit"))
-                    .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
-                .Start();
-        });
-
-        // Create and start the singleton IBus during host startup (off any request path) so
-        // the first publish from a Blazor circuit reuses an already-started bus and never
-        // triggers Rebus's blocking connect on the render synchronisation context.
-        services.AddHostedService<BusWarmupService>();
+        services.AddRabbitMqMessaging(configuration, typeof(SyncParticipantCommandHandler).Assembly);
 
         return services;
     }

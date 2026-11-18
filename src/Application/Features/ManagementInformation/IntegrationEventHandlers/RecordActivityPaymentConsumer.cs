@@ -1,12 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<ActivityApprovedIntegrationEvent>
+public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IIntegrationEventHandler<ActivityApprovedIntegrationEvent>
 {
-    public async Task Handle(ActivityApprovedIntegrationEvent context)
+    public async Task Handle(ActivityApprovedIntegrationEvent context, CancellationToken cancellationToken)
     {
         var activity = await unitOfWork.DbContext.Activities
             .Include(a => a.TookPlaceAtContract)

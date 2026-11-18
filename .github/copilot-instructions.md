@@ -6,7 +6,7 @@ The solution follows **Clean Architecture** with four main layers:
 
 - **`Domain`** — Entities, value objects, business rules, domain events, enums. No dependencies on other layers.
 - **`Application`** — CQRS (Cortex.Mediator), validators (FluentValidation), DTOs, AutoMapper profiles, and integration event contracts. Depends only on Domain.
-- **`Infrastructure`** — EF Core (SQL Server), Quartz background jobs, Rebus message bus (outbox), Amazon S3, identity, and external service integrations. Implements Application interfaces.
+- **`Infrastructure`** — EF Core (SQL Server), Quartz background jobs, RabbitMQ messaging (outbox, behind `IIntegrationEventPublisher`), Amazon S3, identity, and external service integrations. Implements Application interfaces.
 - **`Server.UI`** — Blazor Server UI using MudBlazor. Pages use a code-behind pattern (`.razor` + `.razor.cs`).
 
 Supporting projects:
@@ -54,7 +54,7 @@ Business rules live alongside the entity or feature they protect (e.g., `Domain/
 ### Domain Events & Integration Events
 
 - Domain events: raised on entities via `AddDomainEvent(...)`, handled in Application via Cortex.Mediator `INotificationHandler<>`.
-- Integration events: written to the outbox via `context.InsertOutboxMessage(message)` and published to the Rebus message bus by `PublishOutboxMessagesJob`. Handlers live in `Application/Features/{Feature}/IntegrationEvents/` and `IntegrationEventHandlers/`.
+- Integration events: written to the outbox via `context.InsertOutboxMessage(message)` and published through `IIntegrationEventPublisher` by `PublishOutboxMessagesJob`. Handlers implement `IIntegrationEventHandler<T>` and live in `Application/Features/{Feature}/IntegrationEvents/` and `IntegrationEventHandlers/`.
 
 ### Multi-Tenancy & Auditing
 

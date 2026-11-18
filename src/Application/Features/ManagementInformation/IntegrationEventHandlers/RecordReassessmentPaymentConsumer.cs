@@ -1,12 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<AssessmentScoredIntegrationEvent>
+public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IIntegrationEventHandler<AssessmentScoredIntegrationEvent>
 {
-    public async Task Handle(AssessmentScoredIntegrationEvent context)
+    public async Task Handle(AssessmentScoredIntegrationEvent context, CancellationToken cancellationToken)
     {
         if(await unitOfWork.DbContext.ParticipantAssessments.CountAsync(a => a.ParticipantId == context.ParticipantId) is 1)
         {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Quartz;
-using Rebus.Bus;
+using Cfo.Cats.Application.Messaging;
 using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Jobs;
@@ -43,11 +43,11 @@ public class JobCancellationTests
                 NullLogger<MonitorSuspiciousLoginActivityJob>.Instance, unitOfWork.Object,
                 Mock.Of<ICommunicationsService>(), Options.Create(new SuspiciousLoginMonitoringOptions())),
             nameof(NotifyAccountDeactivationJob) => new NotifyAccountDeactivationJob(
-                NullLogger<NotifyAccountDeactivationJob>.Instance, unitOfWork.Object, Mock.Of<IBus>()),
+                NullLogger<NotifyAccountDeactivationJob>.Instance, unitOfWork.Object, Mock.Of<IIntegrationEventPublisher>()),
             nameof(PublishOutboxMessagesJob) => new PublishOutboxMessagesJob(
-                unitOfWork.Object, NullLogger<PublishOutboxMessagesJob>.Instance, Mock.Of<IBus>()),
+                unitOfWork.Object, NullLogger<PublishOutboxMessagesJob>.Instance, Mock.Of<IIntegrationEventPublisher>()),
             nameof(SyncParticipantsJob) => new SyncParticipantsJob(
-                NullLogger<SyncParticipantsJob>.Instance, unitOfWork.Object, Mock.Of<IBus>()),
+                NullLogger<SyncParticipantsJob>.Instance, unitOfWork.Object, Mock.Of<IIntegrationEventPublisher>()),
             _ => throw new ArgumentOutOfRangeException(nameof(jobType))
         };
 

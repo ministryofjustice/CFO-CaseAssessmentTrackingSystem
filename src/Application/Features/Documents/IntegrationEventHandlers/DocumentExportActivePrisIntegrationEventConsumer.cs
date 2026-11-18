@@ -5,7 +5,7 @@ using Cfo.Cats.Application.Features.PRIs.DTOs;
 using Cfo.Cats.Application.Features.PRIs.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
 using Newtonsoft.Json;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -15,9 +15,9 @@ public class DocumentExportActivePrisIntegrationEventConsumer(
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
     IMapper mapper,
-    ILogger<DocumentExportActivePrisIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportActivePrisIntegrationEventConsumer> logger) : IIntegrationEventHandler<ExportDocumentIntegrationEvent>
 {
-    public async Task Handle(ExportDocumentIntegrationEvent context)
+    public async Task Handle(ExportDocumentIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.Key != DocumentTemplate.ActivePRIs.Name)
         {

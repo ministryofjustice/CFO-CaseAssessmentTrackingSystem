@@ -1,12 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IHandleMessages<PRIAssignedIntegrationEvent>
+public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IIntegrationEventHandler<PRIAssignedIntegrationEvent>
 {
-    public async Task Handle(PRIAssignedIntegrationEvent context)
+    public async Task Handle(PRIAssignedIntegrationEvent context, CancellationToken cancellationToken)
     {
         var data = await GetData(context);
 

@@ -2,14 +2,14 @@ using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<HubInductionCreatedIntegrationEvent>
+public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IIntegrationEventHandler<HubInductionCreatedIntegrationEvent>
 {
 
-    public async Task Handle(HubInductionCreatedIntegrationEvent context)
+    public async Task Handle(HubInductionCreatedIntegrationEvent context, CancellationToken cancellationToken)
     {
         var inductionData = await unitOfWork.DbContext.HubInductions
             .Include(a => a.Location)

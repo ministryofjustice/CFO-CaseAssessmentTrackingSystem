@@ -1,7 +1,7 @@
 # Single "combined" image containing the .NET apps that share a codebase:
 #   * Server.UI        (Blazor Server) — the container's default entrypoint
 #   * Worker           (Quartz jobs + job-management API)
-#   * Consumers        (Rebus message consumers)
+#   * Consumers        (message consumers)
 #   * DatabaseSeeding  (one-off seeding console app)
 #   * migrate-database (one-off schema deploy — a .NET file-based app that deploys the DACPAC via DacFx)
 #
@@ -20,6 +20,7 @@ COPY src/Aspire/Cats.ServiceDefaults/Cats.ServiceDefaults.csproj src/Aspire/Cats
 COPY src/Application/Application.csproj src/Application/
 COPY src/Domain/Domain.csproj src/Domain/
 COPY src/Infrastructure/Infrastructure.csproj src/Infrastructure/
+COPY src/Infrastructure.Messaging.RabbitMq/Infrastructure.Messaging.RabbitMq.csproj src/Infrastructure.Messaging.RabbitMq/
 COPY src/Server.UI/Server.UI.csproj src/Server.UI/
 COPY src/Worker/Worker.csproj src/Worker/
 COPY src/Cats.Consumers/Cats.Consumers.csproj src/Cats.Consumers/

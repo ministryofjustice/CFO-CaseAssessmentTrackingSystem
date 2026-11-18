@@ -1,11 +1,11 @@
 ﻿using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
-using Rebus.Handlers;
+using Cfo.Cats.Application.Messaging;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class CloseOffLastArchivedCaseEntry(IUnitOfWork unitOfWork) : IHandleMessages<ParticipantTransitionedIntegrationEvent>
+public class CloseOffLastArchivedCaseEntry(IUnitOfWork unitOfWork) : IIntegrationEventHandler<ParticipantTransitionedIntegrationEvent>
 {
-    public async Task Handle(ParticipantTransitionedIntegrationEvent context)
+    public async Task Handle(ParticipantTransitionedIntegrationEvent context, CancellationToken cancellationToken)
     {
         if (context.From != EnrolmentStatus.ArchivedStatus.Name)
         {
