@@ -16,10 +16,6 @@ public partial class Announcements
     private bool _canManage;
     private bool _canPublishImmediately;
     private int _activeTab;
-    private readonly IReadOnlyList<BreadcrumbItem> _breadcrumbs =
-    [
-        new("Announcements", href: null, disabled: true)
-    ];
 
     protected override async Task OnParametersSetAsync()
     {

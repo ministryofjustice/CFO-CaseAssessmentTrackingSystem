@@ -23,12 +23,13 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
 
     <MudTextField T="string"
-                  Value="@Keyword"
-                  ValueChanged="@SearchChanged"
+                  Value="@_search"
+                  ValueChanged="@SearchChangedAsync"
                   Immediate="true"
                   Adornment="Adornment.Start"
                   AdornmentIcon="@Icons.Material.Filled.Search"
                   Clearable="true"
+                  OnClearButtonClick="@ClearSearchAsync"
                   OnKeyDown="@OnKeyDown"
                   Placeholder="Search for pages or participants by name or identifier..."
                   Class="mb-6" />
@@ -52,7 +53,7 @@
     }
     else if (_results.Count == 0 && _participantError is null)
     {
-        <MudAlert Severity="Severity.Info">Enter a search term..</MudAlert>
+        <MudAlert Severity="Severity.Info">Enter a search term.</MudAlert>
     }
     else
     {
@@ -64,7 +65,8 @@
                     case PageResult page:
                         <MudListItem T="string"
                                      Icon="@Icons.Material.Filled.Description"
-                                     Href="@(page.Href)">
+                                     Href="@(page.Href)"
+                                     Target="@(page.Target)">
                             <MudText Typo="Typo.body1">
                                 <MudHighlighter HighlightedText="@_searchedKeyword" Text="@(page.DisplayText)" />
                             </MudText>

@@ -25,6 +25,13 @@ public class PageRoutesTests
         PageRoutes.Resolve("/pages/workspace/participants/P000000001").ShouldNotBeNull();
 
     [Test]
+    public void Constrained_guid_route_should_only_resolve_for_valid_guids()
+    {
+        PageRoutes.Resolve($"/pages/workspace/servicedesk/activities/escalation/{Guid.NewGuid()}").ShouldNotBeNull();
+        PageRoutes.Resolve("/pages/workspace/servicedesk/activities/escalation/not-a-guid").ShouldBeNull();
+    }
+
+    [Test]
     public void Unknown_route_should_not_resolve() =>
         PageRoutes.Resolve("/pages/not/a/real/page").ShouldBeNull();
 
