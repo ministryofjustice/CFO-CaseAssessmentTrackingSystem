@@ -6,6 +6,7 @@ using Cfo.Cats.Application.Features.Labels;
 using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Features.ManagementInformation.Providers;
 using Cfo.Cats.Application.Features.ParticipantLabels;
+using Cfo.Cats.Application.Features.Participants.Services;
 using Cfo.Cats.Application.Features.PerformanceManagement.Providers;
 using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.Pipeline.ValidationSpecifications;
@@ -76,6 +77,7 @@ public static class DependencyInjection
         services.AddScoped<ILabelCounter, LabelCounter>();
         services.AddScoped<IParticipantLabelsCounter, ParticipantLabelsCounter>();
         services.AddScoped<IHelpLinkCounter, HelpLinkCounter>();
+        services.AddScoped<IReturnedParticipantOwnerResolver, ReturnedParticipantOwnerResolver>();
 
         return services;
     }
