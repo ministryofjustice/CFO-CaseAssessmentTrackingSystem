@@ -10,11 +10,5 @@ public class ParticipantSearchResultDto
     public EnrolmentStatus? EnrolmentStatus { get; set; }
     public bool IsUnassigned { get; set; }
 
-    /// <summary>
-    /// Whether the current user can open the participant record. When false only
-    /// the summary fields on this DTO should be shown.
-    /// </summary>
-    public bool HasAccess { get; set; }
-
     public string FullName => string.Join(' ', new[] { FirstName, MiddleName, LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
 }

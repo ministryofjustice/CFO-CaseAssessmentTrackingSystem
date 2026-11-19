@@ -1,7 +1,6 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
-using Cfo.Cats.Application.Pipeline.ValidationSpecifications;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
@@ -24,7 +23,7 @@ public static class SearchParticipants
         public int MaxResults { get; set; } = 10;
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IEnumerable<AccessValidationSpecification> accessSpecifications)
+    public class Handler(IUnitOfWork unitOfWork)
         : IQueryHandler<Query, Result<List<ParticipantSearchResultDto>>>
     {
         public async Task<Result<List<ParticipantSearchResultDto>>> Handle(
@@ -70,16 +69,6 @@ public static class SearchParticipants
                     IsUnassigned = p.OwnerId == null
                 })
                 .ToListAsync(cancellationToken);
-
-            var grants = await ParticipantAccessEvaluator.EvaluateManyAsync(
-                accessSpecifications,
-                results.Select(r => r.Id).ToArray(),
-                cancellationToken);
-
-            foreach (var result in results)
-            {
-                result.HasAccess = grants.TryGetValue(result.Id, out var grant) && grant is AccessGrant.Granted;
-            }
 
             return Result<List<ParticipantSearchResultDto>>.Success(results);
         }
