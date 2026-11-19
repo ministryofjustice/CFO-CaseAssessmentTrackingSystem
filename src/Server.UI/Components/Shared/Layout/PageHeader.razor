@@ -1,16 +1,15 @@
-
-
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <CatsBreadcrumbs Items="@AllItems" />
     <HelpIcon />
 </MudStack>
 
-
 @using Cfo.Cats.Server.UI.Services.Navigation
 @inject IWorkspaceLinkProvider LinkProvider
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @code{
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public string Title { get; set; }
@@ -20,13 +19,13 @@
 
     private IReadOnlyList<BreadcrumbItem> _items = [];
 
-    private IReadOnlyList<BreadcrumbItem> AllItems => [new BreadcrumbItem("Home", "", false), .._items ];
+    private IReadOnlyList<BreadcrumbItem> AllItems => [new("Home", "", false), .._items ];
 
     protected override async Task OnParametersSetAsync()
     {
         _items = Items;
 
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var user = (await AuthState).User;
         var restricted = await LinkProvider.GetRestrictedPathsAsync(
             Items.Where(i => !string.IsNullOrEmpty(i.Href)).Select(i => PathOf(i.Href!)), user);
 
@@ -48,5 +47,4 @@
         var end = href.IndexOfAny(['?', '#']);
         return (end >= 0 ? href[..end] : href).TrimEnd('/');
     }
-
 }
