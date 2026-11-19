@@ -69,7 +69,7 @@ public class ReturnedParticipantOwnerResolverTests
     [Test]
     public async Task ReturnWithinWindow_RestoresPreviousOwner()
     {
-        await GivenLeftOriginalAt(Now.AddDays(-2));
+        await GivenLeftOriginalAt(Now - ReturnedParticipantOwnerResolver.ReturnWindow + TimeSpan.FromDays(1));
 
         var owner = await _resolver.GetOwnerToRestore(ParticipantId, _temporary, _original, CancellationToken.None);
 
@@ -79,7 +79,7 @@ public class ReturnedParticipantOwnerResolverTests
     [Test]
     public async Task ReturnOutsideWindow_DoesNotRestore()
     {
-        await GivenLeftOriginalAt(Now.AddDays(-4));
+        await GivenLeftOriginalAt(Now - ReturnedParticipantOwnerResolver.ReturnWindow - TimeSpan.FromDays(1));
 
         var owner = await _resolver.GetOwnerToRestore(ParticipantId, _temporary, _original, CancellationToken.None);
 
