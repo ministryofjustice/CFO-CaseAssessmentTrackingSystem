@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.Participants.Queries;
-using Cfo.Cats.Application.Pipeline.ValidationSpecifications;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -42,16 +41,16 @@ public class SearchParticipantsTests
     private static Participant Create(string id, string first, string last, string middle = null) =>
         Participant.CreateFrom(id, first, middle, last, null, DateTime.UtcNow.AddYears(-30), null, "Test", null, 1, null, null, null);
 
-    private SearchParticipants.Handler CreateHandler(AccessGrant grant)
+    private SearchParticipants.Handler CreateHandler()
     {
         var unitOfWork = new Mock<IUnitOfWork>();
         unitOfWork.SetupGet(u => u.DbContext).Returns(_db);
-        return new SearchParticipants.Handler(unitOfWork.Object, [new FixedSpecification(grant)]);
+        return new SearchParticipants.Handler(unitOfWork.Object);
     }
 
     private async Task<List<string>> SearchAsync(string keyword, int max = 10)
     {
-        var result = await CreateHandler(AccessGrant.Granted)
+        var result = await CreateHandler()
             .Handle(new SearchParticipants.Query { Keyword = keyword, MaxResults = max }, CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
@@ -76,7 +75,7 @@ public class SearchParticipantsTests
     [Test]
     public async Task Middle_name_should_be_included_in_full_name()
     {
-        var result = await CreateHandler(AccessGrant.Granted)
+        var result = await CreateHandler()
             .Handle(new SearchParticipants.Query { Keyword = "Elizabeth" }, CancellationToken.None);
 
         var found = result.Data!.ShouldHaveSingleItem();
@@ -110,25 +109,4 @@ public class SearchParticipantsTests
     [Test]
     public async Task Results_should_be_limited_to_max_results() =>
         (await SearchAsync("P00000000", max: 2)).Count.ShouldBe(2);
-
-    [TestCase(AccessGrant.Granted, true)]
-    [TestCase(AccessGrant.NotGranted, false)]
-    [TestCase(AccessGrant.Denied, false)]
-    public async Task Participants_should_be_found_regardless_of_access_and_flag_it(AccessGrant grant, bool expectedAccess)
-    {
-        var result = await CreateHandler(grant)
-            .Handle(new SearchParticipants.Query { Keyword = "Brown" }, CancellationToken.None);
-
-        var found = result.Data!.ShouldHaveSingleItem();
-        found.Id.ShouldBe("P000000003");
-        found.HasAccess.ShouldBe(expectedAccess);
-    }
-
-    private sealed class FixedSpecification(AccessGrant grant) : AccessValidationSpecification
-    {
-        public override int Order => 1;
-
-        protected override Task<AccessGrant> CheckAccessAsync(string identifier, CancellationToken cancellationToken)
-            => Task.FromResult(grant);
-    }
 }

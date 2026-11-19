@@ -78,14 +78,13 @@
                     case ParticipantResult participant:
                         var p = participant.Participant;
                         <MudListItem T="string"
-                                     Icon="@(!p.HasAccess ? Icons.Material.Filled.Lock : p.IsUnassigned ? Icons.Material.Filled.PersonSearch : Icons.Material.Filled.Person)"
-                                     Href="@(p.HasAccess ? $"/pages/workspace/participants/{p.Id}" : null)"
-                                     Disabled="@(!p.HasAccess)">
+                                     Icon="@(p.IsUnassigned ? Icons.Material.Filled.PersonSearch : Icons.Material.Filled.Person)"
+                                     Href="@($"/pages/workspace/participants/{p.Id}")">
                             <MudText Typo="Typo.body1">
                                 <MudHighlighter HighlightedText="@_searchedKeyword" Text="@p.FullName" />
                             </MudText>
                             <MudText Typo="Typo.caption">
-                                @p.Id@(string.IsNullOrWhiteSpace(p.CurrentLocation) ? "" : $" - {p.CurrentLocation}")@(p.EnrolmentStatus is null ? "" : $" - {p.EnrolmentStatus.Name}")@(p.IsUnassigned ? " \u2014 Unassigned" : "")@(p.HasAccess ? "" : " \u2014 On the programme, you don't have access to this record")
+                                @p.Id@(string.IsNullOrWhiteSpace(p.CurrentLocation) ? "" : $" - {p.CurrentLocation}")@(p.EnrolmentStatus is null ? "" : $" - {p.EnrolmentStatus.Name}")@(p.IsUnassigned ? " \u2014 Unassigned" : "")
                             </MudText>
                         </MudListItem>
                         break;
