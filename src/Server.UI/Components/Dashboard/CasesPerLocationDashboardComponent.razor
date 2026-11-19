@@ -41,7 +41,7 @@
                 <ApexPointSeries TItem="GetCasesPerLocation.LocationDetail"
 									Name="@status.Name"
 									Items="@chartData.Where(x => x.Status == status).ToList()"
-									XValue="@(x => x.LocationName)"
+									XValue="@(x => ChartLabel.Wrap(x.LocationName))"
 									YValue="@(x => x.Count)"
 									SeriesType="SeriesType.Bar"
 									ShowDataLabels

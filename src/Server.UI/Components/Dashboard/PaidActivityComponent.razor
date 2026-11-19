@@ -52,7 +52,7 @@
                                      Items="@GetSeriesDataForActivityType(activityType)"
                                      Name="@activityType.Name"
                                      SeriesType="SeriesType.Bar"
-                                     XValue="@(e => e.Location)"
+                                     XValue="@(e => ChartLabel.Wrap(e.Location))"
                                      YValue="@(e => e.Count)"
                                      OrderBy="e => e.X"
                                      Color="@activityType.Colour" />

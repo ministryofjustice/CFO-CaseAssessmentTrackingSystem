@@ -128,7 +128,7 @@ else
                     <ApexPointSeries TItem="EngagementLocationCategoryCountDto"
                                      Name="@category"
                                      Items="GetCategorySeriesItems(category)"
-                                     XValue="@(x => x.LocationName)"
+                                     XValue="@(x => ChartLabel.Wrap(x.LocationName))"
                                      YValue="@(x => x.Count)"
                                      SeriesType="SeriesType.Bar"
                                      Color="@EngagementLocationCategoryCountDto.GetCategoryColour(category)"

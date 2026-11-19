@@ -36,7 +36,7 @@
                         Items="@(series.Items)"
                         SeriesType="ApexCharts.SeriesType.Bar"
                         Name="@(series.Reason)"
-                        XValue="@(e => e.Tenant)"
+                        XValue="@(e => ChartLabel.Wrap(e.Tenant))"
                         YValue="@(e => e.Count)"
                         ShowDataLabels="true" />
                 }
