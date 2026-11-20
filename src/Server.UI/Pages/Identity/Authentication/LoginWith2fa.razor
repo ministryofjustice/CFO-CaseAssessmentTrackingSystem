@@ -37,10 +37,9 @@
                     <!--!-->
                 </div>
             </div>
-            
             @if (Input.UseSms == false)
-            {
-                  <div Class="d-flex justify-space-between align-center mb-1">
+            {            
+                <div Class="d-flex justify-space-between align-center mb-1">
                     <label class="form-label">
                         <InputCheckbox @bind-Value="Input.UseSms" class="form-check-input"/>
                         @L["Send SMS Instead"]
@@ -78,6 +77,30 @@
 
     private async Task OnValidSubmitAsync()
     {
+        // Validate on the server side
+        if (Input.UseSms == false)
+        {
+            if (string.IsNullOrEmpty(Input.TwoFactorCode))
+            {
+                message = L["Two factor code is required."];
+                return;
+            }
+            else if (Input.TwoFactorCode.Length is < 6 or > 7)
+            {
+                message = L["Invalid authenticator code."];
+                return;
+            }
+        }
+
+        if (Input.UseSms)
+        {
+            if (string.IsNullOrEmpty(Input.TwoFactorCode) == false)
+            {
+                message = L["Authenticator code should not be provided when asking for a text message."];
+                return;
+            }
+        }
+
         if (Input.UseSms)
         {
             var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
@@ -126,39 +149,14 @@
 
     }
 
-    private sealed class InputModel : IValidatableObject
+    private sealed class InputModel
     {
-        [Required]
         [Display(Name = "Use SMS Instead")]
         public bool UseSms { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Authenticator code")]
         public string? TwoFactorCode { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (UseSms == false)
-            {
-                if (string.IsNullOrEmpty(TwoFactorCode))
-                {
-                    yield return new ValidationResult("Two factor code is required.", [nameof(TwoFactorCode)]);
-                }
-                else if (TwoFactorCode.Length is > 7 or < 6)
-                {
-                    yield return new ValidationResult("Invalid authenticator code.", [nameof(TwoFactorCode)]);
-                }
-            }
-
-            if (UseSms)
-            {
-                if (string.IsNullOrEmpty(TwoFactorCode) == false)
-                {
-                    yield return new ValidationResult("Authenticator code should not be provided when asking for a text message.", [nameof(UseSms)]);
-                }
-            }
-
-        }
     }
 
 }
