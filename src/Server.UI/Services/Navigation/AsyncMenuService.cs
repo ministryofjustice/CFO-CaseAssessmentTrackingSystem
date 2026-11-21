@@ -31,7 +31,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             new NavigationMenuItemLinkModel("Delivery Management", "/pages/workspace/deliverymanagement", "Navigates to the root workspace for accessing delivery management information and functions"),
         ];
 
-        if(await PassesPolicy( principal, SecurityPolicies.ServiceDesk))
+        if(await PassesPolicy( principal, SecurityPolicies.Internal))
         {
             items.Add(new NavigationMenuItemLinkModel("Service Desk", "/pages/workspace/servicedesk", "Navigates to the root workspace for accessing service desk functions"));
         }
@@ -41,7 +41,7 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             items.Add(new NavigationMenuItemLinkModel("Performance Management", "/pages/workspace/performance", "Navigates to the root workspace for accessing performance function"));    
         }
 
-        if(await PassesPolicy(principal, SecurityPolicies.SystemFunctionsRead))
+        if(await PassesPolicy(principal, SecurityPolicies.Internal))
         {
             items.Add(new NavigationMenuItemLinkModel("Administration", "/pages/workspace/administration", "Navigates to the root workspace for CATS administrative function"));
         }
