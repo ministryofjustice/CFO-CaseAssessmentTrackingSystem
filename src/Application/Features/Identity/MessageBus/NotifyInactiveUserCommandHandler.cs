@@ -26,6 +26,7 @@ public class NotifyInactiveUserCommandHandler(
         {
             logger.LogError(e, "Failed to notify inactive user with email: {Email}", context.Email);
             await unitOfWork.RollbackTransactionAsync();
+            throw;
         }
            
             
