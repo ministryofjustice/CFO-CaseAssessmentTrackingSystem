@@ -11,6 +11,7 @@ public interface IHmppsExternalApiService
     /// Calls the API's versioned status endpoint. Useful for verifying that the mTLS handshake and
     /// API key are configured correctly end-to-end.
     /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<Result<string>> GetStatusAsync(CancellationToken cancellationToken);
 
     /// <summary>
@@ -18,17 +19,27 @@ public interface IHmppsExternalApiService
     /// in the last year. Does not serve LAO (Limited Access Offender) data.
     /// </summary>
     /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<Result<RisksDto>> GetSeriousHarmRiskAsync(string hmppsId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns the core person record for a person.
     /// </summary>
     /// <param name="hmppsId">HMPPS identifier for the person (e.g. NOMIS number).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<Result<PersonDto>> GetPersonAsync(string hmppsId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns the latest tier calculation for a person, including the Delius and OASys inputs used to calculate it.
     /// </summary>
     /// <param name="hmppsId">HMPPS identifier for the person (e.g. CRN).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<Result<TierDetailsDto>> GetTierDetailsAsync(string hmppsId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns the prison offender manager and community offender manager responsible for a person.
+    /// </summary>
+    /// <param name="hmppsId">HMPPS identifier for the person (e.g. CRN).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<Result<ResponsibleOfficerDto>> GetResponsibleOfficerAsync(string hmppsId, CancellationToken cancellationToken);
 }

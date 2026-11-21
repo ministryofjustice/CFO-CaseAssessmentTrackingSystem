@@ -1,4 +1,5 @@
-using Cfo.Cats.Application.Features.Delius.DTOs;
+using Cfo.Cats.Application.Common.Configuration;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
@@ -12,9 +13,14 @@ public partial class CaseSentenceInformation
     public required string ParticipantId { get; set; }
 
     [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; } = default!;
+    public bool ParticipantIsActive { get; set; }
 
-    public string? Crn { get; set; } = default!;
+    [CascadingParameter]
+    public UserProfile? CurrentUser { get; set; }
+
+    private bool _showOaSys;
+
+    public string? Crn { get; set; }
 
     public SentenceDetail? Model { get; private set; }
     public record SentenceDetail(
@@ -22,6 +28,8 @@ public partial class CaseSentenceInformation
         ParticipantSupervisorDto Supervisor);
     protected override async Task OnInitializedAsync()
     {
+        _showOaSys = Config.GetFeature(FeatureSections.ArnsRisk).IsEnabledForTenant(CurrentUser?.TenantId);
+
         if(IsDisposed)
         {
             return;
@@ -31,7 +39,7 @@ public partial class CaseSentenceInformation
         {
             var mediator = GetNewMediator();
 
-            var identifiers = await mediator.Send(new GetParticipantIdentifiers.Query()
+            var identifiers = await mediator.Send(new GetParticipantIdentifiers.Query
             {
                 ParticipantId = ParticipantId
             }, ComponentCancellationToken);
@@ -41,7 +49,7 @@ public partial class CaseSentenceInformation
                 return;
             }
 
-            var supervisor = await mediator.Send(new GetParticipantSupervisor.Query()
+            var supervisor = await mediator.Send(new GetParticipantSupervisor.Query
             {
                 ParticipantId = ParticipantId
             }, ComponentCancellationToken);
@@ -53,13 +61,12 @@ public partial class CaseSentenceInformation
 
             Model = new(
                 Identifiers: identifiers,
-                Supervisor: supervisor?.Data ?? new ParticipantSupervisorDto()
+                Supervisor: supervisor.Data ?? new ParticipantSupervisorDto()
             );
             Crn = identifiers.Data?.FirstOrDefault(i => i.Type == ExternalIdentifierType.Crn)?.Value;
         }
         catch(OperationCanceledException) when (ComponentCancellationToken.IsCancellationRequested)
         {
-            return;
         }
     }
 
@@ -68,7 +75,7 @@ public partial class CaseSentenceInformation
         // Show Dialog
         var parameters = new DialogParameters<EditSupervisorDialog>
         {
-            { x => x.Model, new AddOrUpdateSupervisor.Command() { ParticipantId = ParticipantId, Supervisor = Model!.Supervisor } }
+            { x => x.Model, new AddOrUpdateSupervisor.Command { ParticipantId = ParticipantId, Supervisor = Model!.Supervisor } }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };

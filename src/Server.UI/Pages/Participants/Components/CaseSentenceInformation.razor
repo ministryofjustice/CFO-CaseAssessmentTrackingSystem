@@ -1,9 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
-@using Cfo.Cats.Domain.Common.Enums
-
-@inherits CatsComponentBase
+﻿@inherits CatsComponentBase
 
 @if (Model is not null)
 {
@@ -71,7 +66,7 @@
                             @if (ParticipantIsActive)
                             {
                                 <MudTooltip Text="Edit">
-                                    <MudIconButton OnClick="Edit" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" />
+                                    <MudIconButton OnClick="@Edit" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" />
                                 </MudTooltip>
                             }
                         </CardHeaderActions>
@@ -105,6 +100,26 @@
                     </MudCardContent>
                 </MudCard>
             </MudItem>
+            @if (_showOaSys)
+            {
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.subtitle1">Offender Managers (OASys)</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Tertiary">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                                </MudAvatar>
+                            </CardHeaderAvatar>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <Cfo.Cats.Server.UI.Pages.Risk.RiskComponents.ArnsOffenderManagers ParticipantId="@ParticipantId" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
         </MudGrid>
     </MudForm>
 }

@@ -1,0 +1,43 @@
+@using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+
+@if (_loading)
+{
+    <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
+}
+else if (_error is not null)
+{
+    <MudAlert Class="mt-4" Severity="Severity.Error">@_error</MudAlert>
+}
+else if (_officers is not null)
+{
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" md="6">
+            @ManagerCard("Prison Offender Manager", _officers.PrisonOffenderManager)
+        </MudItem>
+        <MudItem xs="12" md="6">
+            @ManagerCard("Community Offender Manager", _officers.CommunityOffenderManager)
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    private RenderFragment ManagerCard(string title, OffenderManagerDto? manager) => @<MudCard Class="mt-2">
+        <MudCardContent>
+            <MudText Typo="Typo.h3" Class="mb-2">@title</MudText>
+            @if (manager is null)
+            {
+                <MudText>No information found.</MudText>
+            }
+            else
+            {
+                <MudTextField Label="Name" Value="@FullName(manager)" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+                <MudTextField Label="Email" Value="@manager.Email" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+                <MudTextField Label="Telephone number" Value="@manager.TelephoneNumber" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+                <MudTextField Label="Team" Value="@manager.Team?.Description" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+                <MudTextField Label="Team email" Value="@manager.Team?.Email" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+                <MudTextField Label="Team telephone number" Value="@manager.Team?.TelephoneNumber" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+                <MudTextField Label="Provider" Value="@manager.Team?.Provider?.Description" Placeholder="Not recorded" ReadOnly Class="mb-2" />
+            }
+        </MudCardContent>
+    </MudCard>;
+}
