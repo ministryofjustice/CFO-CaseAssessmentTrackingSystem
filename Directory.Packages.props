@@ -14,9 +14,9 @@
     <PackageVersion Include="Aspire.Hosting.Redis" Version="13.6.5" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.6.5" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.1.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.1.0" />
-    <PackageVersion Include="AWSSDK.SecurityToken" Version="4.1.0" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.1.0.2" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.1.1" />
+    <PackageVersion Include="AWSSDK.SecurityToken" Version="4.1.0.2" />
     <PackageVersion Include="Blazor-ApexCharts" Version="8.0.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
@@ -51,9 +51,9 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="11.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.15" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="11.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="10.0.15" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="11.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
@@ -80,9 +80,9 @@
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.2" />
     <PackageVersion Include="Rebus.ServiceProvider" Version="10.8.0" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
-    <PackageVersion Include="Sentry" Version="7.0.0" />
-    <PackageVersion Include="Sentry.AspNetCore" Version="7.0.0" />
-    <PackageVersion Include="Sentry.EntityFramework" Version="7.0.0" />
+    <PackageVersion Include="Sentry" Version="7.0.1" />
+    <PackageVersion Include="Sentry.AspNetCore" Version="7.0.1" />
+    <PackageVersion Include="Sentry.EntityFramework" Version="7.0.1" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.4" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.2.1" />
