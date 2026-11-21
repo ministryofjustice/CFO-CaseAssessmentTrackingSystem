@@ -218,6 +218,8 @@ public partial class UnassignedCasesDashboardComponent
             {
                 Rotate = -45,
                 RotateAlways = true,
+                Trim = false,
+                MaxHeight = 200,
                 OffsetY = 5
             }
         },
@@ -288,7 +290,7 @@ public partial class UnassignedCasesDashboardComponent
         }
     }
 
-    private async Task OnSearch(string text)
+    private async Task OnSearch(string? text)
     {
         Query.Keyword = text;
         await NotifyFiltersChanged();

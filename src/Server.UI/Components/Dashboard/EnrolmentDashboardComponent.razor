@@ -38,7 +38,7 @@
                 <ApexCharts.ApexPointSeries TItem="GetEnrolments.LocationDetail"
                                             Items="Data.Details"
                                             SeriesType="ApexCharts.SeriesType.Bar"
-                                            XValue="@(e => e.LocationName)"
+                                            XValue="@(e => ChartLabel.Wrap(e.LocationName))"
                                             YValue="@(e => e.Payable)"
                                             Name="Payable"
                                             ShowDataLabels="true">

@@ -157,6 +157,8 @@ public partial class ArchivedCasesByTenantAndReasonDashboardComponent
                 {
                     Rotate = -45,
                     RotateAlways = true,
+                    Trim = false,
+                    MaxHeight = 200,
                     OffsetY = 5
                 }
             },
