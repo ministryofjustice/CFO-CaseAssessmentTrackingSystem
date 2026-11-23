@@ -50,7 +50,7 @@ public partial class CaseDocuments
             MaxWidth = MaxWidth.ExtraExtraLarge,
             Position = DialogPosition.Center,
             FullWidth = true,
-            CloseButton = true,
+            CloseButton = false,
             CloseOnEscapeKey = true,
         });
 
