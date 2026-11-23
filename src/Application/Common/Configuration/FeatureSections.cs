@@ -10,9 +10,7 @@ public static class FeatureSections
 
     public const string HmppsExternalApi = $"{Root}:HmppsExternalApi";
 
-    public const string ArnsRisk = $"{Root}:ArnsRisk";
-    
-    public const string TierRisk = $"{Root}:TierRisk";
+    public const string HmppsRisk = $"{Root}:HmppsRisk";
 
     public const string IntegrationEventPublishing = $"{Root}:IntegrationEventPublishing";
 

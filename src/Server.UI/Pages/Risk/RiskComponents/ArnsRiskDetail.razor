@@ -1,28 +1,29 @@
 @using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
+@inherits CatsComponent<RisksDto>
 @using Humanizer
 
-@if (_loading)
+@if (Loading)
 {
     <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
 }
-else if (_riskError is not null)
+else if (ErrorMessage is not null)
 {
-    <MudAlert Class="mt-4" Severity="Severity.Error">@_riskError</MudAlert>
+    <MudAlert Class="mt-4" Severity="Severity.Error"><b>Risk of serious harm (ARNS):</b> @ErrorMessage</MudAlert>
 }
-else if (_risks is not null)
+else if (Data is not null)
 {
     <MudCard Class="mt-4">
         <MudCardContent>
             <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
                 <MudText Typo="Typo.h2">Risk of Serious Harm</MudText>
-                <MudChip T="string" Color="@RiskLevelColor(_risks.Summary?.OverallRiskLevel ?? "Unknown")">@(_risks.Summary?.OverallRiskLevel ?? "Unknown")</MudChip>
+                <MudChip T="string" Color="@RiskLevelColor(Data.Summary?.OverallRiskLevel ?? "Unknown")">@(Data.Summary?.OverallRiskLevel ?? "Unknown")</MudChip>
             </MudStack>
-            <MudTextField Label="Assessed on" Value="@(_risks.AssessedOn?.ToString("dd/MM/yyyy"))" Placeholder="Unknown" ReadOnly Class="mt-4" />
-            <MudTextField Label="Who is at risk" Value="@(_risks.Summary?.WhoIsAtRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-            <MudTextField Label="Nature of risk" Value="@(_risks.Summary?.NatureOfRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-            <MudTextField Label="Risk imminence" Value="@(_risks.Summary?.RiskImminence)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-            <MudTextField Label="Risk increase factors" Value="@(_risks.Summary?.RiskIncreaseFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-            <MudTextField Label="Risk mitigation factors" Value="@(_risks.Summary?.RiskMitigationFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+            <MudTextField Label="Assessed on" Value="@(Data.AssessedOn?.ToString("dd/MM/yyyy"))" Placeholder="Unknown" ReadOnly Class="mt-4" />
+            <MudTextField Label="Who is at risk" Value="@(Data.Summary?.WhoIsAtRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+            <MudTextField Label="Nature of risk" Value="@(Data.Summary?.NatureOfRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+            <MudTextField Label="Risk imminence" Value="@(Data.Summary?.RiskImminence)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+            <MudTextField Label="Risk increase factors" Value="@(Data.Summary?.RiskIncreaseFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+            <MudTextField Label="Risk mitigation factors" Value="@(Data.Summary?.RiskMitigationFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
 
             <MudText Typo="Typo.h3" Class="mt-4">Risk to self</MudText>
             <MudGrid Class="mt-1">
@@ -56,7 +57,7 @@ else if (_risks is not null)
                 }
             </MudStack>
 
-            @if (_risks.Summary?.RiskInCommunity is { Count: > 0 } || _risks.Summary?.RiskInCustody is { Count: > 0 })
+            @if (Data.Summary?.RiskInCommunity is { Count: > 0 } || Data.Summary?.RiskInCustody is { Count: > 0 })
             {
                 <MudText Typo="Typo.h3" Class="mt-4">Risk by category</MudText>
                 <MudSimpleTable Class="mt-1" Dense="true" Hover="true">
@@ -74,7 +75,7 @@ else if (_risks is not null)
                                 <td>@category.Humanize(LetterCasing.Title)</td>
                                 <td>
                                     @{
-                                        var communityLevel = GetRiskLevel(_risks.Summary?.RiskInCommunity, category);
+                                        var communityLevel = GetRiskLevel(Data.Summary?.RiskInCommunity, category);
                                     }
                                     @if (communityLevel is not null)
                                     {
@@ -83,7 +84,7 @@ else if (_risks is not null)
                                 </td>
                                 <td>
                                     @{
-                                        var custodyLevel = GetRiskLevel(_risks.Summary?.RiskInCustody, category);
+                                        var custodyLevel = GetRiskLevel(Data.Summary?.RiskInCustody, category);
                                     }
                                     @if (custodyLevel is not null)
                                     {
@@ -100,5 +101,5 @@ else if (_risks is not null)
 }
 else
 {
-    <MudAlert Class="mt-4" Severity="Severity.Info">No risk data found.</MudAlert>
+    <MudAlert Class="mt-4" Severity="Severity.Info"><b>Risk of serious harm (ARNS):</b> No data found.</MudAlert>
 }

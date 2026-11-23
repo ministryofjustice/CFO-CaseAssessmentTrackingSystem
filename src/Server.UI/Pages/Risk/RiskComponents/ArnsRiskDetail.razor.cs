@@ -1,59 +1,45 @@
-using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs;
+using Cfo.Cats.Application.Features.HmppsExternalApi.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Risk.RiskComponents;
 
-public partial class ArnsRiskDetail : ComponentBase
+public partial class ArnsRiskDetail : CatsComponent<RisksDto>
 {
     [Parameter]
     [EditorRequired]
-    public IHmppsExternalApiService Service { get; set; } = default!;
+    public string ParticipantId { get; set; } = default!;
 
     [Parameter]
     [EditorRequired]
-    public string HmppsId { get; set; } = default!;
+    public string Crn { get; set; } = default!;
 
-    private bool _loading = true;
-    private string? _riskError;
-    private RisksDto? _risks;
-
-    protected override async Task OnInitializedAsync()
+    protected override IQuery<Result<RisksDto>> CreateQuery() => new GetArnsRisk.Query
     {
-        var result = await Service.GetSeriousHarmRiskAsync(HmppsId, CancellationToken.None);
-
-        if (result.Succeeded)
-        {
-            _risks = result.Data;
-        }
-        else
-        {
-            _riskError = result.ErrorMessage is { Length: > 0 } ? result.ErrorMessage : "No risk data found.";
-        }
-
-        _loading = false;
-    }
+        ParticipantId = ParticipantId,
+        Crn = Crn
+    };
 
     private IEnumerable<(string Label, RiskDetailDto? Detail)> RiskToSelfItems => new (string, RiskDetailDto?)[]
     {
-        ("Suicide", _risks?.RiskToSelf?.Suicide),
-        ("Self harm", _risks?.RiskToSelf?.SelfHarm),
-        ("Custody", _risks?.RiskToSelf?.Custody),
-        ("Hostel setting", _risks?.RiskToSelf?.HostelSetting),
-        ("Vulnerability", _risks?.RiskToSelf?.Vulnerability),
+        ("Suicide", Data?.RiskToSelf?.Suicide),
+        ("Self harm", Data?.RiskToSelf?.SelfHarm),
+        ("Custody", Data?.RiskToSelf?.Custody),
+        ("Hostel setting", Data?.RiskToSelf?.HostelSetting),
+        ("Vulnerability", Data?.RiskToSelf?.Vulnerability),
     };
 
     private IEnumerable<(string Label, string? Value)> OtherRiskItems => new (string, string?)[]
     {
-        ("Escape or abscond", _risks?.OtherRisks?.EscapeOrAbscond),
-        ("Control issues / disruptive behaviour", _risks?.OtherRisks?.ControlIssuesDisruptiveBehaviour),
-        ("Breach of trust", _risks?.OtherRisks?.BreachOfTrust),
-        ("Risk to other prisoners", _risks?.OtherRisks?.RiskToOtherPrisoners),
+        ("Escape or abscond", Data?.OtherRisks?.EscapeOrAbscond),
+        ("Control issues / disruptive behaviour", Data?.OtherRisks?.ControlIssuesDisruptiveBehaviour),
+        ("Breach of trust", Data?.OtherRisks?.BreachOfTrust),
+        ("Risk to other prisoners", Data?.OtherRisks?.RiskToOtherPrisoners),
     };
 
     // Union of category keys across both dictionaries, so a category present in only one is still shown.
     private IEnumerable<string> RiskCategories =>
-        (_risks?.Summary?.RiskInCommunity?.Keys ?? Enumerable.Empty<string>())
-            .Concat(_risks?.Summary?.RiskInCustody?.Keys ?? Enumerable.Empty<string>())
+        (Data?.Summary?.RiskInCommunity?.Keys ?? Enumerable.Empty<string>())
+            .Concat(Data?.Summary?.RiskInCustody?.Keys ?? Enumerable.Empty<string>())
             .Distinct()
             .OrderBy(c => c);
 

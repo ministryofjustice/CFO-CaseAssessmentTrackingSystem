@@ -1,27 +1,28 @@
 @using System.Globalization
 @using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs
 @using Humanizer
+@inherits CatsComponent<TierDetailsDto>
 
-@if (_loading)
+@if (Loading)
 {
     <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
 }
-else if (_riskError is not null)
+else if (ErrorMessage is not null)
 {
-    <MudAlert Class="mt-4" Severity="Severity.Error">@_riskError</MudAlert>
+    <MudAlert Class="mt-4" Severity="Severity.Error"><b>Tier:</b> @ErrorMessage</MudAlert>
 }
-else if (_risks is not null)
+else if (Data is not null)
 {
     <MudCard Class="mt-4">
         <MudCardHeader>
             <MudStack Row="true">
-                @if(_risks?.Data?.OasysInputs?.Predictors?.Output?.CombinedSeriousReoffendingPredictor is {} csrp)
+                @if(Data?.Data?.OasysInputs?.Predictors?.Output?.CombinedSeriousReoffendingPredictor is {} csrp)
                 {
                     <MudAlert Severity="RiskLevelSeverity(csrp.Band)" Class="d-flex">
                         Combined serious reoffending predictor <b>@csrp.Band?.Humanize()</b>
                     </MudAlert>
                 }
-                @if(_risks?.Data?.DeliusInputs?.Registrations?.Rosh is {} rosh)
+                @if(Data?.Data?.DeliusInputs?.Registrations?.Rosh is {} rosh)
                 {
                     <MudAlert Severity="RiskLevelSeverity(rosh)" Class="d-flex">
                         Risk of serious harm <b>@rosh?.Humanize()</b>
@@ -31,7 +32,7 @@ else if (_risks is not null)
         </MudCardHeader>
         <MudCardContent>
             <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
-                <MudText Typo="Typo.h2">Summary</MudText>
+                <MudText Typo="Typo.h2">Tier</MudText>
                 @if (IsProvisional)
                 {
                     <MudChip T="string" Color="Color.Warning">Provisional</MudChip>
@@ -40,12 +41,12 @@ else if (_risks is not null)
             <MudText Class="mt-1">A <b>tier</b> reflects the level of risk and complexity involved in managing a probation case. It informs case allocation and supervision package decisions, as well as planning and resourcing at a strategic management level.</MudText>
             <MudText Class="mt-1">This participant has a tier of <strong>@(TierScore ?? "Unknown")</strong>, based on risk of serious harm.</MudText>
 
-            <MudText Class="mt-1" Typo="Typo.caption">Last calculated @_risks.CalculationDate?.Humanize().</MudText>
+            <MudText Class="mt-1" Typo="Typo.caption">Last calculated @Data.CalculationDate?.Humanize().</MudText>
 
             <MudDivider Class="my-4" />
 
             @{
-                var calculation = _risks.Data;
+                var calculation = Data.Data;
                 var delius = calculation?.DeliusInputs;
                 var registrations = delius?.Registrations;
                 var assessment = calculation?.AssessmentSummary?.Assessment;
@@ -232,6 +233,6 @@ else if (_risks is not null)
 }
 else
 {
-    <MudAlert Class="mt-4" Severity="Severity.Info">No risk data found.</MudAlert>
+    <MudAlert Class="mt-4" Severity="Severity.Info"><b>Tier:</b> No data found.</MudAlert>
 }
 

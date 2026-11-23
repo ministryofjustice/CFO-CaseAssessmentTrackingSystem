@@ -1,38 +1,25 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Cfo.Cats.Application.Features.HmppsExternalApi.DTOs;
+using Cfo.Cats.Application.Features.HmppsExternalApi.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Risk.RiskComponents;
 
-public partial class TierRiskDetail : ComponentBase
+public partial class TierRiskDetail : CatsComponent<TierDetailsDto>
 {
     [Parameter]
     [EditorRequired]
-    public IHmppsExternalApiService Service { get; set; } = default!;
+    public string ParticipantId { get; set; } = default!;
 
     [Parameter]
     [EditorRequired]
-    public string HmppsId { get; set; } = default!;
+    public string Crn { get; set; } = default!;
 
-    private bool _loading = true;
-    private string? _riskError;
-    private TierDetailsDto? _risks;
-
-    protected override async Task OnInitializedAsync()
+    protected override IQuery<Result<TierDetailsDto>> CreateQuery() => new GetTierDetails.Query
     {
-        var result = await Service.GetTierDetailsAsync(HmppsId, CancellationToken.None);
-
-        if (result.Succeeded)
-        {
-            _risks = result.Data;
-        }
-        else
-        {
-            _riskError = result.ErrorMessage is { Length: > 0 } ? result.ErrorMessage : "No risk data found.";
-        }
-
-        _loading = false;
-    }
+        ParticipantId = ParticipantId,
+        Crn = Crn
+    };
 
     private static Severity RiskLevelSeverity(string? level) => level switch
     {
@@ -41,18 +28,18 @@ public partial class TierRiskDetail : ComponentBase
         _ => Severity.Info,
     };
 
-    private string? TierScore => _risks?.TierScore ?? _risks?.Data?.Tier;
+    private string? TierScore => Data?.TierScore ?? Data?.Data?.Tier;
 
-    private bool IsProvisional => _risks?.Provisional == true || _risks?.Data?.Provisional == true;
+    private bool IsProvisional => Data?.Provisional == true || Data?.Data?.Provisional == true;
 
     private IEnumerable<(string Label, bool? Value)> RegistrationFlags => new (string, bool?)[]
     {
-        ("Lifer/IPP", _risks?.Data?.DeliusInputs?.Registrations?.HasLiferIpp),
-        ("Domestic abuse", _risks?.Data?.DeliusInputs?.Registrations?.HasDomesticAbuse),
-        ("Stalking", _risks?.Data?.DeliusInputs?.Registrations?.HasStalking),
-        ("Child protection", _risks?.Data?.DeliusInputs?.Registrations?.HasChildProtection),
-        ("IOM nominal", _risks?.Data?.DeliusInputs?.Registrations?.HasIomNominal),
-        ("Ever committed sexual offence", _risks?.Data?.OasysInputs?.EverCommittedSexualOffence),
+        ("Lifer/IPP", Data?.Data?.DeliusInputs?.Registrations?.HasLiferIpp),
+        ("Domestic abuse", Data?.Data?.DeliusInputs?.Registrations?.HasDomesticAbuse),
+        ("Stalking", Data?.Data?.DeliusInputs?.Registrations?.HasStalking),
+        ("Child protection", Data?.Data?.DeliusInputs?.Registrations?.HasChildProtection),
+        ("IOM nominal", Data?.Data?.DeliusInputs?.Registrations?.HasIomNominal),
+        ("Ever committed sexual offence", Data?.Data?.OasysInputs?.EverCommittedSexualOffence),
     };
 
     private static IEnumerable<(string Label, string Value)> DeliusItems(TierDeliusInputsDto delius) => new (string, string)[]
@@ -71,14 +58,14 @@ public partial class TierRiskDetail : ComponentBase
 
     private IEnumerable<(string Label, TierAssessmentSectionDto? Section)> AssessmentSections => new (string, TierAssessmentSectionDto?)[]
     {
-        ("Accommodation", _risks?.Data?.AssessmentSummary?.Accommodation),
-        ("Education, training and employability", _risks?.Data?.AssessmentSummary?.EducationTrainingEmployability),
-        ("Relationships", _risks?.Data?.AssessmentSummary?.Relationships),
-        ("Lifestyle and associates", _risks?.Data?.AssessmentSummary?.LifestyleAndAssociates),
-        ("Drug misuse", _risks?.Data?.AssessmentSummary?.DrugMisuse),
-        ("Alcohol misuse", _risks?.Data?.AssessmentSummary?.AlcoholMisuse),
-        ("Thinking and behaviour", _risks?.Data?.AssessmentSummary?.ThinkingAndBehaviour),
-        ("Attitudes", _risks?.Data?.AssessmentSummary?.Attitudes),
+        ("Accommodation", Data?.Data?.AssessmentSummary?.Accommodation),
+        ("Education, training and employability", Data?.Data?.AssessmentSummary?.EducationTrainingEmployability),
+        ("Relationships", Data?.Data?.AssessmentSummary?.Relationships),
+        ("Lifestyle and associates", Data?.Data?.AssessmentSummary?.LifestyleAndAssociates),
+        ("Drug misuse", Data?.Data?.AssessmentSummary?.DrugMisuse),
+        ("Alcohol misuse", Data?.Data?.AssessmentSummary?.AlcoholMisuse),
+        ("Thinking and behaviour", Data?.Data?.AssessmentSummary?.ThinkingAndBehaviour),
+        ("Attitudes", Data?.Data?.AssessmentSummary?.Attitudes),
     };
 
     // Question answers plus the section-specific extra fields, which are only populated on some sections.

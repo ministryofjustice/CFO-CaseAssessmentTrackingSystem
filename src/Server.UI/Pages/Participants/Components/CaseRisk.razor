@@ -7,16 +7,10 @@
     }
 </style>
 <MudTabs Outlined="true" Border="true" Class="mt-2" >
-    @if (_showArns)
+    @if (_showHmppsRisk)
     {
-        <MudTabPanel Text="ARNS">
-            <ArnsRisk ParticipantId="@ParticipantId" />
-        </MudTabPanel>
-    }
-    @if (_showTier)
-    {
-        <MudTabPanel Text="TIER">
-            <TierRisk ParticipantId="@ParticipantId" />
+        <MudTabPanel Text="HMPPS Risk">
+            <HmppsRisk @key="ParticipantId" ParticipantId="@ParticipantId" />
         </MudTabPanel>
     }
     <MudTabPanel Text="Latest">
