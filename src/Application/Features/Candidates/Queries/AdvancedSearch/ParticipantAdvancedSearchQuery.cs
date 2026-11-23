@@ -21,5 +21,10 @@ public class ParticipantAdvancedSearchQuery : IQuery<Result<ParticipantAdvancedS
     /// </summary>
     public DateTime? DateOfBirth { get; set; }
 
+    /// <summary>
+    /// Reason for performing the search (for audit purposes), e.g. a call reference.
+    /// </summary>
+    public string Justification { get; set; } = string.Empty;
+
     public required UserProfile CurrentUser { get; init; }
 }

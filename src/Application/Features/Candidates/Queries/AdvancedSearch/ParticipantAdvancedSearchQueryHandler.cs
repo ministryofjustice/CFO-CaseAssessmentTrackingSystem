@@ -1,4 +1,5 @@
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
@@ -10,6 +11,7 @@ public class ParticipantAdvancedSearchQueryHandler(
     ILogger<ParticipantAdvancedSearchQueryHandler> logger)
     : IQueryHandler<ParticipantAdvancedSearchQuery, Result<ParticipantAdvancedSearchResult>>
 {
+    private const int UsageEventContextMaxLength = 256;
     public const int MaximumResults = 10;
 
     public async Task<Result<ParticipantAdvancedSearchResult>> Handle(
@@ -26,16 +28,46 @@ public class ParticipantAdvancedSearchQueryHandler(
             .Include(p => p.CurrentLocation)
             .Include(p => p.ExternalIdentifiers);
 
-        var participants = await participantQuery
+        var participantMatches = await participantQuery
             .Where(p => p.Id == identifier || p.ExternalIdentifiers.Any(ei => ei.Value == identifier))
             .OrderBy(p => p.LastName)
             .ThenBy(p => p.FirstName)
-            .Take(MaximumResults)
+            .Take(MaximumResults + 1)
             .ToListAsync(cancellationToken);
+        var participants = participantMatches.Take(MaximumResults).ToList();
+        var truncated = participantMatches.Count > MaximumResults;
 
         var results = participants.Select(FromParticipant).ToList();
+        var accessedCatsParticipantIds = participants.Select(p => p.Id).ToHashSet();
+        var pendingAccessAuditParticipantIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var known = results.Select(r => r.Identifier).ToHashSet();
         var warnings = new List<string>();
+        var searchResultUpcis = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Searching across all participants and DMS is privileged, so record who searched for what.
+        // Name and date of birth are deliberately not logged.
+        var auditContext = BuildAuditContext(identifier, request.Justification);
+        var usageEvent = UsageEvent.Create(
+            area: "Search",
+            activity: "ParticipantAdvancedSearch",
+            userId: request.CurrentUser.UserId,
+            userName: request.CurrentUser.UserName,
+            tenantId: request.CurrentUser.TenantId,
+            context: auditContext,
+            occurredOn: DateTime.UtcNow);
+
+        unitOfWork.DbContext.UsageEvents.Add(usageEvent);
+        var userId = string.IsNullOrWhiteSpace(request.CurrentUser.UserId) ? Guid.Empty.ToString() : request.CurrentUser.UserId;
+        foreach (var participantId in accessedCatsParticipantIds)
+        {
+            unitOfWork.DbContext.AccessAuditTrails.Add(
+                ParticipantAccessAuditTrail.Create(
+                    nameof(ParticipantAdvancedSearchQuery),
+                    participantId,
+                    userId));
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // DMS search requires last name and date of birth; without them only CATS is searched.
         List<string> upcis = [];
@@ -61,13 +93,31 @@ public class ParticipantAdvancedSearchQueryHandler(
 
             if (search is { Succeeded: true, Data: not null })
             {
+                searchResultUpcis = search.Data
+                    .Select(x => x.Upci)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
                 upcis = ParticipantAdvancedSearchMerge.SelectDmsUpcis(
                     search.Data,
                     known,
                     identifier,
-                    MaximumResults);
+                    MaximumResults + 1);
+            }
+            else if (search is NotFoundResult<SearchResult[]>)
+            {
+                upcis = ParticipantAdvancedSearchMerge.SelectDmsUpcis(
+                    [],
+                    known,
+                    identifier,
+                    MaximumResults + 1);
             }
         }
+        
+        var fallbackUpcis = upcis
+            .Where(upci => string.Equals(upci, identifier, StringComparison.OrdinalIgnoreCase)
+                && !searchResultUpcis.Contains(upci))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var dmsParticipants = upcis.Count == 0
             ? new Dictionary<string, Participant>()
@@ -75,16 +125,23 @@ public class ParticipantAdvancedSearchQueryHandler(
                 .Where(p => upcis.Contains(p.Id))
                 .ToDictionaryAsync(p => p.Id, cancellationToken);
 
-        foreach (var upci in upcis)
+        for (var i = 0; i < upcis.Count; i++)
         {
-            if (results.Count >= MaximumResults)
-            {
-                break;
-            }
+            var upci = upcis[i];
 
             if (dmsParticipants.TryGetValue(upci, out var participant))
             {
+                if (results.Count >= MaximumResults)
+                {
+                    truncated = true;
+                    break;
+                }
+
                 results.Add(FromParticipant(participant));
+                if (accessedCatsParticipantIds.Add(participant.Id))
+                {
+                    pendingAccessAuditParticipantIds.Add(participant.Id);
+                }
                 continue;
             }
 
@@ -92,6 +149,18 @@ public class ParticipantAdvancedSearchQueryHandler(
 
             if (candidate is { Succeeded: true, Data: not null })
             {
+                if (fallbackUpcis.Contains(upci)
+                    && !MatchesSearchCriteria(candidate.Data, request.LastName, request.DateOfBirth))
+                {
+                    continue;
+                }
+
+                if (results.Count >= MaximumResults)
+                {
+                    truncated = true;
+                    break;
+                }
+
                 results.Add(ParticipantAdvancedSearchDto.From(candidate.Data));
             }
             else if (candidate is not NotFoundResult<CandidateDto>)
@@ -100,12 +169,25 @@ public class ParticipantAdvancedSearchQueryHandler(
             }
         }
 
-        // Searching across all participants and DMS is privileged, so record who searched for what.
-        // Name and date of birth are deliberately not logged.
+        foreach (var participantId in pendingAccessAuditParticipantIds)
+        {
+            unitOfWork.DbContext.AccessAuditTrails.Add(
+                ParticipantAccessAuditTrail.Create(
+                    nameof(ParticipantAdvancedSearchQuery),
+                    participantId,
+                    userId));
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        if (truncated)
+        {
+            warnings.Add($"Search returned more than {MaximumResults} results. Showing the first {MaximumResults}.");
+        }
+
         logger.LogInformation(
-            "Participant advanced search by {UserId} for {SearchIdentifier}. DMS searched: {DmsSearched}. Results: {ResultCount}. Warnings: {HasWarnings}",
+            "Participant advanced search by {UserId}. DMS searched: {DmsSearched}. Results: {ResultCount}. Warnings: {HasWarnings}",
             request.CurrentUser.UserId,
-            identifier,
             dmsSearched,
             results.Count,
             warnings.Count > 0);
@@ -118,7 +200,25 @@ public class ParticipantAdvancedSearchQueryHandler(
         };
     }
 
-    private static ParticipantAdvancedSearchDto FromParticipant(Participant p)
+    private static bool MatchesSearchCriteria(CandidateDto candidate, string? lastName, DateTime? dateOfBirth)
+    {
+        if (string.IsNullOrWhiteSpace(lastName) || dateOfBirth is null)
+        {
+            return true;
+        }
+
+        var dateMatches = candidate.DateOfBirth.Date == dateOfBirth.Value.Date;
+        var surnameMatches = string.Equals(
+            NormalizeSearchSurname(candidate.LastName),
+            NormalizeSearchSurname(lastName),
+            StringComparison.OrdinalIgnoreCase);
+        return dateMatches && surnameMatches;
+    }
+
+    private static string NormalizeSearchSurname(string? value)
+        => (value ?? string.Empty).Trim().Replace('’', '\'');
+
+    private ParticipantAdvancedSearchDto FromParticipant(Participant p)
     {
         string? Identifier(ExternalIdentifierType type)
             => p.ExternalIdentifiers.FirstOrDefault(i => i.Type == type)?.Value;
@@ -143,7 +243,7 @@ public class ParticipantAdvancedSearchQueryHandler(
             IsParticipant = true,
             EnrolmentStatus = p.EnrolmentStatus?.Name,
             IsUnassigned = p.OwnerId is null,
-            RegistrationDetails = ParseRegistrations(p.RegistrationDetailsJson),
+            RegistrationDetails = ParseRegistrations(p.Id, p.RegistrationDetailsJson),
             SupervisorName = p.Supervisor?.Name,
             SupervisorTelephoneNumber = p.Supervisor?.TelephoneNumber,
             SupervisorMobileNumber = p.Supervisor?.MobileNumber,
@@ -152,7 +252,7 @@ public class ParticipantAdvancedSearchQueryHandler(
         };
     }
 
-    private static string[] ParseRegistrations(string? json)
+    private string[] ParseRegistrations(string participantId, string? json)
     {
         if (string.IsNullOrWhiteSpace(json))
         {
@@ -163,9 +263,19 @@ public class ParticipantAdvancedSearchQueryHandler(
         {
             return JsonSerializer.Deserialize<string[]>(json) ?? [];
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
+            logger.LogWarning(ex, "Failed to parse registration details for participant {ParticipantId}", participantId);
             return [];
         }
+    }
+
+    private static string BuildAuditContext(string identifier, string? justification)
+    {
+        var safeJustification = justification?.Trim() ?? string.Empty;
+        var context = $"identifier={identifier} | justification={safeJustification}";
+        return context.Length <= UsageEventContextMaxLength
+            ? context
+            : context[..UsageEventContextMaxLength];
     }
 }

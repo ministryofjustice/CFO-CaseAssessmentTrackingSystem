@@ -1,5 +1,7 @@
-using Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch;
 using NUnit.Framework;
 using Shouldly;
 
@@ -7,28 +9,35 @@ namespace Cfo.Cats.Application.UnitTests.Candidates.AdvancedSearch;
 
 public class ParticipantAdvancedSearchTests
 {
-    [Test]
-    public void Validator_WithValidIdentifier_ShouldPass()
+    [TestCase("A1234BC")]
+    [TestCase("AB1234567")]
+    public void Validator_WithValidIdentifierLength_ShouldPass(string identifier)
     {
         var validator = new ParticipantAdvancedSearchQueryValidator();
-        var result = validator.Validate(new ParticipantAdvancedSearchQuery
-        {
-            Identifier = "AB1234567",
-            CurrentUser = null!
-        });
+        var result = validator.Validate(CreateValidQuery(identifier: identifier));
 
         result.IsValid.ShouldBeTrue();
+    }
+
+    [TestCase("A")]
+    [TestCase("AB123456")]
+    [TestCase("AB12345678")]
+    public void Validator_WithInvalidIdentifierLength_ShouldFail(string identifier)
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(identifier: identifier));
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(x =>
+            x.PropertyName == nameof(ParticipantAdvancedSearchQuery.Identifier)
+            && x.ErrorMessage == "Identifier must be a 7 character external identifier or a 9 character CATS Id");
     }
 
     [Test]
     public void Validator_WithWhitespaceIdentifier_ShouldFail()
     {
         var validator = new ParticipantAdvancedSearchQueryValidator();
-        var result = validator.Validate(new ParticipantAdvancedSearchQuery
-        {
-            Identifier = " AB1234567 ",
-            CurrentUser = null!
-        });
+        var result = validator.Validate(CreateValidQuery(identifier: " AB1234567 "));
 
         result.IsValid.ShouldBeFalse();
     }
@@ -38,25 +47,22 @@ public class ParticipantAdvancedSearchTests
     public void Validator_ShouldEnforceLastNameLimit(int length, bool isValid)
     {
         var validator = new ParticipantAdvancedSearchQueryValidator();
-        var result = validator.Validate(new ParticipantAdvancedSearchQuery
-        {
-            Identifier = "AB1234567",
-            LastName = new string('A', length),
-            CurrentUser = null!
-        });
+        var result = validator.Validate(CreateValidQuery(
+            lastName: new string('A', length),
+            dateOfBirth: DateTime.Today.AddYears(-20)));
 
         result.IsValid.ShouldBe(isValid);
         if (!isValid)
         {
-            var error = result.Errors.ShouldHaveSingleItem();
-            error.PropertyName.ShouldBe(nameof(ParticipantAdvancedSearchQuery.LastName));
-            error.ErrorMessage.ShouldBe("Last name must be 50 characters or fewer");
+            result.Errors.ShouldContain(x =>
+                x.PropertyName == nameof(ParticipantAdvancedSearchQuery.LastName)
+                && x.ErrorMessage == "Last name must be 50 characters or fewer");
         }
     }
 
-    [TestCase(null, true)]
-    [TestCase("", true)]
-    [TestCase("   ", true)]
+    [TestCase(null, false)]
+    [TestCase("", false)]
+    [TestCase("   ", false)]
     [TestCase("Smith", true)]
     [TestCase("O'Connor", true)]
     [TestCase("O’Connor", true)]
@@ -70,18 +76,98 @@ public class ParticipantAdvancedSearchTests
     public void Validator_ShouldEnforceDmsSurnameFormat(string lastName, bool isValid)
     {
         var validator = new ParticipantAdvancedSearchQueryValidator();
-        var result = validator.Validate(new ParticipantAdvancedSearchQuery
-        {
-            Identifier = "AB1234567",
-            LastName = lastName,
-            CurrentUser = null!
-        });
+        var result = validator.Validate(CreateValidQuery(
+            lastName: lastName,
+            dateOfBirth: DateTime.Today.AddYears(-20)));
 
         result.IsValid.ShouldBe(isValid);
         if (!isValid)
         {
-            result.Errors.ShouldHaveSingleItem().PropertyName.ShouldBe(nameof(ParticipantAdvancedSearchQuery.LastName));
+            result.Errors.ShouldContain(x => x.PropertyName == nameof(ParticipantAdvancedSearchQuery.LastName));
         }
+    }
+
+    [Test]
+    public void Validator_WhenDateOfBirthLessThan18YearsAgo_ShouldFail()
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(
+            lastName: "Smith",
+            dateOfBirth: DateTime.Today.AddYears(-18).AddDays(1)));
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(x =>
+            x.PropertyName == nameof(ParticipantAdvancedSearchQuery.DateOfBirth)
+            && x.ErrorMessage == "Must be at least 18 years");
+    }
+
+    [Test]
+    public void Validator_WhenDateOfBirthAt18YearsAgo_ShouldPass()
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(
+            lastName: "Smith",
+            dateOfBirth: DateTime.Today.AddYears(-18)));
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [TestCase(null, false)]
+    [TestCase("", false)]
+    [TestCase("   ", false)]
+    [TestCase("CallRef123", true)]
+    public void Validator_ShouldRequireJustification(string justification, bool isValid)
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(justification: justification));
+
+        result.IsValid.ShouldBe(isValid);
+        if (!isValid)
+        {
+            result.Errors.ShouldContain(x =>
+                x.PropertyName == nameof(ParticipantAdvancedSearchQuery.Justification)
+                && x.ErrorMessage == "Search justification is required");
+        }
+    }
+
+    [TestCase(ValidationConstants.PicklistTextLength, true)]
+    [TestCase(ValidationConstants.PicklistTextLength + 1, false)]
+    public void Validator_ShouldEnforceJustificationLength(int length, bool isValid)
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(justification: new string('A', length)));
+
+        result.IsValid.ShouldBe(isValid);
+        if (!isValid)
+        {
+            result.Errors.ShouldContain(x =>
+                x.PropertyName == nameof(ParticipantAdvancedSearchQuery.Justification)
+                && x.ErrorMessage == $"Search justification must be less than or equal to {ValidationConstants.PicklistTextLength} characters");
+        }
+    }
+
+    [Test]
+    public void Validator_WhenDateOfBirthProvidedWithoutLastName_ShouldFail()
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(lastName: "", dateOfBirth: DateTime.Today.AddYears(-20)));
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(x =>
+            x.PropertyName == nameof(ParticipantAdvancedSearchQuery.LastName)
+            && x.ErrorMessage == "Last name is required when date of birth is provided");
+    }
+
+    [Test]
+    public void Validator_WhenLastNameProvidedWithoutDateOfBirth_ShouldFail()
+    {
+        var validator = new ParticipantAdvancedSearchQueryValidator();
+        var result = validator.Validate(CreateValidQuery(lastName: "Smith", dateOfBirth: null));
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(x =>
+            x.PropertyName == nameof(ParticipantAdvancedSearchQuery.DateOfBirth)
+            && x.ErrorMessage == "Date of birth is required when last name is provided");
     }
 
     [Test]
@@ -124,4 +210,23 @@ public class ParticipantAdvancedSearchTests
         result.HasWarning.ShouldBeTrue();
         result.Warning.ShouldBe("DMS search could not be completed.");
     }
+
+    private static ParticipantAdvancedSearchQuery CreateValidQuery(
+        string identifier = "AB1234567",
+        string lastName = "",
+        DateTime? dateOfBirth = null,
+        string justification = "CallRef123")
+        => new()
+        {
+            Identifier = identifier,
+            LastName = lastName,
+            DateOfBirth = dateOfBirth,
+            Justification = justification,
+            CurrentUser = new UserProfile
+            {
+                UserName = "test.user",
+                Email = "test@example.com",
+                UserId = "test-user"
+            }
+        };
 }

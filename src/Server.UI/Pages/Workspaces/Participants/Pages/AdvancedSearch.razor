@@ -1,5 +1,6 @@
 @page "/pages/workspace/participants/advanced-search"
 
+@using System.Globalization
 @using Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Offloc
 
@@ -12,6 +13,10 @@
 <PageHeader Title="Participant Advanced Search" Items="@Breadcrumbs" />
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudAlert Severity="Severity.Info" Dense="true" Class="mb-4">
+        Searches are logged and must only be carried out for legitimate purposes.
+    </MudAlert>
+
     <MudPaper Class="pa-4 mb-4">
         <MudText Typo="Typo.subtitle1" Class="mb-2">
             Search by CATS Id, NOMIS number or NDelius CRN. Offenders do not need to be participants.
@@ -20,7 +25,8 @@
             <MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap" Spacing="4">
                 <div style="width: 280px">
                     <MudTextField T="string"
-                                  @bind-Value="_identifier"
+                                  Value="@_identifier"
+                                  ValueChanged="@IdentifierChanged"
                                   Label="Identifier"
                                   HelperText="CATS Id, NOMIS Id or NDelius CRN"
                                   Immediate="true"
@@ -29,8 +35,9 @@
                                   MaxLength="9"
                                   Required="true"
                                   RequiredError="Identifier is required"
-                                  Clearable="true"
-                                  OnKeyDown="@OnKeyDown" />
+                                  Error="@_showIdentifierError"
+                                  ErrorText="Identifier is required"
+                                  Clearable="true" />
                 </div>
                 <div style="width: 280px">
                     <MudTextField T="string"
@@ -41,23 +48,43 @@
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   MaxLength="50"
-                                  Clearable="true"
-                                  OnKeyDown="@OnKeyDown" />
+                                  Clearable="true" />
                 </div>
                 <div style="width: 280px">
                     <MudDatePicker @bind-Date="_dateOfBirth"
+                                   PickerMonth="@AdultDobCutoff"
                                    Label="Date of birth"
-                                   HelperText="Needed (with last name) to search DMS"
+                                   HelperText="Needed (with last name) to search DMS. Must be 18+"
                                    Variant="Variant.Outlined"
                                    Margin="Margin.Dense"
                                    Editable="true"
                                    Clearable="true"
-                                   MaxDate="@DateTime.Today" />
+                                   MaxDate="@AdultDobCutoff" />
+                </div>
+                <div style="width: 380px">
+                    <MudTextField T="string"
+                                  Value="@_justification"
+                                  ValueChanged="@JustificationChanged"
+                                  Label="Search justification / call reference"
+                                  HelperText="Required for each search"
+                                  Immediate="true"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Lines="3"
+                                  Sizing="InputSizing.Auto"
+                                  Counter="200"
+                                  MaxLength="200"
+                                  Required="true"
+                                  RequiredError="Search justification is required"
+                                  Error="@_showJustificationError"
+                                  ErrorText="Enter a search justification or call reference before searching."
+                                  Clearable="true" />
                 </div>
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            StartIcon="@Icons.Material.Filled.Search"
-                           Disabled="@Loading"
+                           ButtonType="ButtonType.Button"
+                           Disabled="@_searchInProgress"
                            OnClick="@SearchAsync"
                            Class="mt-2">
                     Search
@@ -130,7 +157,7 @@
                     <MudSimpleTable Dense="true" Elevation="0">
                         <tbody>
                         <tr><th>Name</th><td>@_selected.FullName</td></tr>
-                        <tr><th>Date of Birth</th><td>@_selected.DateOfBirth.ToString("dd/MM/yyyy")</td></tr>
+                        <tr><th>Date of Birth</th><td>@_selected.DateOfBirth.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)</td></tr>
                         <tr><th>Gender</th><td>@_selected.Gender</td></tr>
                         <tr><th>Status</th><td>@(_selected.IsActive ? "Active" : "Inactive")</td></tr>
                         <tr>
@@ -228,7 +255,11 @@
                     }
                     else
                     {
-                        <OffLocDetails @key="_selected.NomisNumber" NomisNumber="@_selected.NomisNumber" />
+                        <OffLocDetails
+                            @key="@($"{_selected.Identifier}:{_selected.NomisNumber}")"
+                            NomisNumber="@_selected.NomisNumber"
+                            RecordIdentifier="@_selected.Identifier"
+                            Justification="@_searchedJustification" />
                     }
                 </MudPaper>
             </MudItem>
