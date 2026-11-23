@@ -43,109 +43,115 @@ else if (Data is not null)
                     else
                     {
                         <MudText Typo="Typo.caption" Class="d-block mt-2">Completed on @Show(Data.AssessedOn)</MudText>
-                        <MudTextField Label="Who is at risk" Value="@(summary?.WhoIsAtRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-                        <MudTextField Label="Nature of risk" Value="@(summary?.NatureOfRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-                        <MudTextField Label="Risk imminence" Value="@(summary?.RiskImminence)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-                        <MudTextField Label="Risk increase factors" Value="@(summary?.RiskIncreaseFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
-                        <MudTextField Label="Risk mitigation factors" Value="@(summary?.RiskMitigationFactors)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
+                        <MudTextField Label="Who is at risk" Value="@(summary?.WhoIsAtRisk)" Placeholder="Not recorded" ReadOnly Lines="10" Class="mt-4" />
+                        <MudTextField Label="Nature of risk" Value="@(summary?.NatureOfRisk)" Placeholder="Not recorded" ReadOnly Lines="10" Class="mt-4" />
+                        <MudTextField Label="Risk imminence" Value="@(summary?.RiskImminence)" Placeholder="Not recorded" ReadOnly Lines="10" Class="mt-4" />
+                        <MudTextField Label="Risk increase factors" Value="@(summary?.RiskIncreaseFactors)" Placeholder="Not recorded" ReadOnly Lines="10" Class="mt-4" />
+                        <MudTextField Label="Risk mitigation factors" Value="@(summary?.RiskMitigationFactors)" Placeholder="Not recorded" ReadOnly Lines="10" Class="mt-4" />
                     }
-                </MudCardContent>
-            </MudCard>
-
-            <MudCard Outlined="true" Class="mb-3">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Risk of serious harm to themselves</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <MudSimpleTable Dense="true" Elevation="0">
-                        <tbody>
-                            @foreach (var concern in RiskToThemselves)
-                            {
-                                <tr>
-                                    <td style="width:30%">@concern.Label</td>
-                                    <td>
-                                        @if (concern.Notes.Count == 0)
-                                        {
-                                            <span>@concern.Summary</span>
-                                        }
-                                        else
-                                        {
-                                            <MudExpansionPanels Elevation="0" Dense="true">
-                                                <MudExpansionPanel Text="@concern.Summary" Gutters="false">
-                                                    @foreach (var (heading, text) in concern.Notes)
-                                                    {
-                                                        <MudText Typo="Typo.subtitle2" Class="mt-2">@heading</MudText>
-                                                        <MudText Typo="Typo.body2" Style="white-space: pre-line">@text</MudText>
-                                                    }
-                                                </MudExpansionPanel>
-                                            </MudExpansionPanels>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </MudSimpleTable>
-                </MudCardContent>
-            </MudCard>
-
-            <MudCard Outlined="true" Class="mb-3">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Other risks in custody</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <MudSimpleTable Dense="true" Elevation="0">
-                        <tbody>
-                            @foreach (var (label, value) in OtherRiskItems)
-                            {
-                                <tr>
-                                    <td style="width:30%">@label</td>
-                                    <td><MudChip T="string" Size="Size.Small" Color="@AnswerColor(value)" Disabled="@(value is null)">@AnswerText(value)</MudChip></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </MudSimpleTable>
                 </MudCardContent>
             </MudCard>
         </MudItem>
 
         <MudItem xs="12" md="4">
-            <MudPaper Outlined="true" Class="pa-4 mb-3" Style="@($"border: 2px solid {LevelCssColor(level)}")">
-                <MudText Typo="Typo.h6" Style="@($"color: {LevelCssColor(level)}")"><b>@(Upper(level) ?? "UNKNOWN")</b> ROSH</MudText>
-                <MudText Typo="Typo.body2">Risk of serious harm</MudText>
-                <MudText Typo="Typo.caption" Class="d-block mt-1">Last updated @Show(Data.AssessedOn)</MudText>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Outlined="true" Class="pa-4 mb-3" Style="@($"border: 2px solid {LevelCssColor(level)}")">
+                        <MudText Typo="Typo.h6" Style="@($"color: {LevelCssColor(level)}")"><b>@(Upper(level) ?? "UNKNOWN")</b> ROSH</MudText>
+                        <MudText Typo="Typo.body2">Risk of serious harm</MudText>
+                        <MudText Typo="Typo.caption" Class="d-block mt-1">Last updated @Show(Data.AssessedOn)</MudText>
 
-                @if (string.IsNullOrWhiteSpace(level))
-                {
-                    <MudText Typo="Typo.body2" Class="mt-2">A ROSH summary has not been completed for this individual. Check OASys for this person's current assessment status.</MudText>
-                }
+                        @if (string.IsNullOrWhiteSpace(level))
+                        {
+                            <MudText Typo="Typo.body2" Class="mt-2">A ROSH summary has not been completed for this individual. Check OASys for this person's current assessment status.</MudText>
+                        }
 
-                @if (RiskCategories.Any())
-                {
-                    <MudSimpleTable Dense="true" Elevation="0" Class="mt-3">
-                        <thead>
-                            <tr>
-                                <th>Risk to</th>
-                                <th>Community</th>
-                                <th>Custody</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var category in RiskCategories)
-                            {
-                                <tr>
-                                    <td>@Humanise(category)</td>
-                                    <td>@LevelCell(GetRiskLevel(summary?.RiskInCommunity, category), level)</td>
-                                    <td>@LevelCell(GetRiskLevel(summary?.RiskInCustody, category), level)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </MudSimpleTable>
-                }
-            </MudPaper>
+                        @if (RiskCategories.Any())
+                        {
+                            <MudSimpleTable Dense="true" Elevation="0" Class="mt-3">
+                                <thead>
+                                    <tr>
+                                        <th>Risk to</th>
+                                        <th>Community</th>
+                                        <th>Custody</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var category in RiskCategories)
+                                    {
+                                        <tr>
+                                            <td>@Humanise(category)</td>
+                                            <td>@LevelCell(GetRiskLevel(summary?.RiskInCommunity, category), level)</td>
+                                            <td>@LevelCell(GetRiskLevel(summary?.RiskInCustody, category), level)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudCard Outlined="true" Class="mb-3">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Risk of serious harm to themselves</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            <MudSimpleTable Dense="true" Elevation="0">
+                                <tbody>
+                                    @foreach (var concern in RiskToThemselves)
+                                    {
+                                        <tr>
+                                            <td style="width:30%">@concern.Label</td>
+                                            <td>
+                                                @if (concern.Notes.Count == 0)
+                                                {
+                                                    <span>@concern.Summary</span>
+                                                }
+                                                else
+                                                {
+                                                    <MudExpansionPanels Elevation="0" Dense="true">
+                                                        <MudExpansionPanel Text="@concern.Summary" Gutters="false">
+                                                            @foreach (var (heading, text) in concern.Notes)
+                                                            {
+                                                                <MudText Typo="Typo.subtitle2" Class="mt-2">@heading</MudText>
+                                                                <MudText Typo="Typo.body2" Style="white-space: pre-line">@text</MudText>
+                                                            }
+                                                        </MudExpansionPanel>
+                                                    </MudExpansionPanels>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudCard Outlined="true" Class="mb-3">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Other risks in custody</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            <MudSimpleTable Dense="true" Elevation="0">
+                                <tbody>
+                                    @foreach (var (label, value) in OtherRiskItems)
+                                    {
+                                        <tr>
+                                            <td style="width:30%">@label</td>
+                                            <td><MudChip T="string" Size="Size.Small" Color="@AnswerColor(value)" Disabled="@(value is null)">@AnswerText(value)</MudChip></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
         </MudItem>
     </MudGrid>
 }

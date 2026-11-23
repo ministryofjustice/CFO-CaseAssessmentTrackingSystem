@@ -72,6 +72,20 @@ public partial class TierRiskDetail : CatsComponent<TierDetailsDto>
         ("Indirect image contact sexual reoffending", output?.IndirectImageContactSexualReoffendingPredictor),
     ];
 
+    // One alert per predictor that has a band, as per the original Tier header alerts.
+    private IEnumerable<(string Label, string Band)> PredictorAlerts =>
+        PredictorItems(Data?.Data?.OasysInputs?.Predictors?.Output)
+            .Where(p => !string.IsNullOrWhiteSpace(p.Predictor?.Band))
+            .Select(p => (p.Label, p.Predictor!.Band!));
+
+    private static Severity BandSeverity(string? band) => band?.ToUpperInvariant() switch
+    {
+        "VERY_HIGH" or "HIGH" => Severity.Error,
+        "MEDIUM" => Severity.Warning,
+        "LOW" => Severity.Success,
+        _ => Severity.Info,
+    };
+
     private async Task ShowCalculation()
     {
         var parameters = new DialogParameters<TierCalculationDialog>

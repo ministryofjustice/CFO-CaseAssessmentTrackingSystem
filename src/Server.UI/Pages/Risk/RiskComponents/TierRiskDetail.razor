@@ -14,53 +14,9 @@ else if (ErrorMessage is not null)
 else if (Data is not null)
 {
     var registrations = Data.Data?.DeliusInputs?.Registrations;
-    var predictors = Data.Data?.OasysInputs?.Predictors;
 
     <MudGrid Class="mt-2" Spacing="3">
         <MudItem xs="12" md="8">
-            <MudCard Outlined="true" Class="mb-3">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Risk predictor scores</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" StartIcon="@Icons.Material.Filled.OpenInNew" OnClick="ShowCalculation">View tier calculation</MudButton>
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    @if (predictors?.Output is null)
-                    {
-                        <MudText Typo="Typo.body2">There are no OASys risk predictor scores.</MudText>
-                    }
-                    else
-                    {
-                        <MudSimpleTable Dense="true" Elevation="0">
-                            <tbody>
-                                @foreach (var (label, predictor) in PredictorItems(predictors.Output).Where(p => p.Predictor is not null))
-                                {
-                                    <tr>
-                                        <td>@label</td>
-                                        <td>
-                                            @if (!string.IsNullOrWhiteSpace(predictor!.Band))
-                                            {
-                                                <MudChip T="string" Size="Size.Small" Color="@LevelColor(predictor.Band)">@Upper(predictor.Band)</MudChip>
-                                            }
-                                            else
-                                            {
-                                                <span>@NotRecorded</span>
-                                            }
-                                        </td>
-                                        <td class="mud-text-secondary">@(predictor.Score is null ? null : $"Score {Show(predictor.Score)}")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </MudSimpleTable>
-                        <MudText Typo="Typo.caption" Class="d-block mt-2">OASys predictors completed on @Show(predictors.CompletedDate)</MudText>
-                    }
-                    <MudText Typo="Typo.caption" Class="d-block">Delius RSR score @Show(Data.Data?.DeliusInputs?.RsrScore), OGRS score @Show(Data.Data?.DeliusInputs?.OgrsScore)</MudText>
-                </MudCardContent>
-            </MudCard>
-
             <MudCard Outlined="true" Class="mb-3">
                 <MudCardHeader>
                     <CardHeaderContent>
@@ -121,6 +77,32 @@ else if (Data is not null)
                     @if (InactiveFlags.Any())
                     {
                         <MudText Typo="Typo.caption" Class="d-block mt-2">Not registered: @string.Join(", ", InactiveFlags)</MudText>
+                    }
+                </MudCardContent>
+            </MudCard>
+
+            <MudCard Outlined="true" Class="mb-3">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Risk predictor scores</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" StartIcon="@Icons.Material.Filled.OpenInNew" OnClick="ShowCalculation">View tier calculation</MudButton>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent Class="pt-0">
+                    @if (PredictorAlerts.Any())
+                    {
+                        <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2">
+                            @foreach (var (label, band) in PredictorAlerts)
+                            {
+                                <MudAlert Severity="@BandSeverity(band)" Dense="true">@label <b>@Humanise(band)</b></MudAlert>
+                            }
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2">There are no OASys risk predictor scores.</MudText>
                     }
                 </MudCardContent>
             </MudCard>
