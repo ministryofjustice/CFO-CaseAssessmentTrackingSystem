@@ -32,6 +32,9 @@ else
             @* Keyed by participant and CRN so a component instance is never reused for a different record. *@
             <MudTabPanel @key="@($"{ParticipantId}:{crn}")" Text="@($"CRN {crn}")">
                 <TierRiskDetail @key="@($"{ParticipantId}:{crn}:tier")" ParticipantId="@ParticipantId" Crn="@crn" />
+
+                <MudDivider Class="my-4" />
+
                 <ArnsRiskDetail @key="@($"{ParticipantId}:{crn}:arns")" ParticipantId="@ParticipantId" Crn="@crn" />
             </MudTabPanel>
         }
