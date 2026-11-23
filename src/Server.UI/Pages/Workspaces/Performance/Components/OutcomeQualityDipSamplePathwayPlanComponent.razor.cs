@@ -112,7 +112,7 @@ public partial class OutcomeQualityDipSamplePathwayPlanComponent
             MaxWidth = MaxWidth.ExtraExtraLarge,
             FullScreen = false,
             FullWidth = true,
-            CloseButton = true,
+            CloseButton = false,
         };
 
         var dialog = await DialogService.ShowAsync<ActivityDipDialog>("Activity Details", parameters, options);
