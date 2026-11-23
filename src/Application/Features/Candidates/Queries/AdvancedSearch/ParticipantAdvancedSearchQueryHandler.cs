@@ -1,5 +1,4 @@
 using Cfo.Cats.Domain.Entities.Participants;
-using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
@@ -8,10 +7,10 @@ namespace Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch;
 public class ParticipantAdvancedSearchQueryHandler(
     ICandidateService candidateService,
     IUnitOfWork unitOfWork,
+    IPrivilegedSearchAuditWriter privilegedSearchAuditWriter,
     ILogger<ParticipantAdvancedSearchQueryHandler> logger)
     : IQueryHandler<ParticipantAdvancedSearchQuery, Result<ParticipantAdvancedSearchResult>>
 {
-    private const int UsageEventContextMaxLength = 256;
     public const int MaximumResults = 10;
 
     public async Task<Result<ParticipantAdvancedSearchResult>> Handle(
@@ -44,30 +43,13 @@ public class ParticipantAdvancedSearchQueryHandler(
         var warnings = new List<string>();
         var searchResultUpcis = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        // Searching across all participants and DMS is privileged, so record who searched for what.
-        // Name and date of birth are deliberately not logged.
-        var auditContext = BuildAuditContext(identifier, request.Justification);
-        var usageEvent = UsageEvent.Create(
-            area: "Search",
-            activity: "ParticipantAdvancedSearch",
-            userId: request.CurrentUser.UserId,
-            userName: request.CurrentUser.UserName,
-            tenantId: request.CurrentUser.TenantId,
-            context: auditContext,
-            occurredOn: DateTime.UtcNow);
-
-        unitOfWork.DbContext.UsageEvents.Add(usageEvent);
+        await privilegedSearchAuditWriter.RecordAdvancedSearchAttemptAsync(
+            request.CurrentUser,
+            identifier,
+            request.Justification,
+            accessedCatsParticipantIds,
+            cancellationToken);
         var userId = string.IsNullOrWhiteSpace(request.CurrentUser.UserId) ? Guid.Empty.ToString() : request.CurrentUser.UserId;
-        foreach (var participantId in accessedCatsParticipantIds)
-        {
-            unitOfWork.DbContext.AccessAuditTrails.Add(
-                ParticipantAccessAuditTrail.Create(
-                    nameof(ParticipantAdvancedSearchQuery),
-                    participantId,
-                    userId));
-        }
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // DMS search requires last name and date of birth; without them only CATS is searched.
         List<string> upcis = [];
@@ -163,7 +145,14 @@ public class ParticipantAdvancedSearchQueryHandler(
 
                 results.Add(ParticipantAdvancedSearchDto.From(candidate.Data));
             }
-            else if (candidate is not NotFoundResult<CandidateDto>)
+            else if (candidate is NotFoundResult<CandidateDto>)
+            {
+                if (searchResultUpcis.Contains(upci))
+                {
+                    warnings.Add($"DMS returned a match for result {upci}, but detailed record data was unavailable.");
+                }
+            }
+            else
             {
                 warnings.Add($"DMS details could not be loaded for result {upci}: {candidate.ErrorMessage}");
             }
@@ -270,12 +259,4 @@ public class ParticipantAdvancedSearchQueryHandler(
         }
     }
 
-    private static string BuildAuditContext(string identifier, string? justification)
-    {
-        var safeJustification = justification?.Trim() ?? string.Empty;
-        var context = $"identifier={identifier} | justification={safeJustification}";
-        return context.Length <= UsageEventContextMaxLength
-            ? context
-            : context[..UsageEventContextMaxLength];
-    }
 }

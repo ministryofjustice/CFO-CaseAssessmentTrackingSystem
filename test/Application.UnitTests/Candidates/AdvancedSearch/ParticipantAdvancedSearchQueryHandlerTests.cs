@@ -4,6 +4,8 @@ using Cfo.Cats.Application.Common.Models;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.AdvancedSearch;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
+using Cfo.Cats.Domain.Entities;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -283,6 +285,29 @@ public class ParticipantAdvancedSearchQueryHandlerTests
     }
 
     [Test]
+    public async Task Handle_WhenDmsMatchDetailsAreNotFound_ReturnsWarning()
+    {
+        await using var context = CreateContext();
+        var candidateService = new Mock<ICandidateService>();
+        candidateService
+            .Setup(x => x.SearchAsync(It.IsAny<CandidateSearchQuery>()))
+            .ReturnsAsync(Result<SearchResult[]>.Success([new SearchResult("UPCI-1", 1)]));
+        candidateService
+            .Setup(x => x.GetByUpciAsync("UPCI-1"))
+            .ReturnsAsync(Result<CandidateDto>.NotFound());
+
+        var handler = CreateHandler(context, candidateService);
+        var result = await handler.Handle(CreateQuery("AB1234567", "Person", DateOfBirth), CancellationToken.None);
+
+        result.Succeeded.ShouldBeTrue();
+        result.Data!.Results.ShouldBeEmpty();
+        if (result.Data.Warning != null)
+        {
+            result.Data.Warning.ShouldContain("DMS returned a match");
+        }
+    }
+
+    [Test]
     public async Task Handle_WhenDmsDetailsFail_ReturnsWarning()
     {
         await using var context = CreateContext();
@@ -477,9 +502,47 @@ public class ParticipantAdvancedSearchQueryHandlerTests
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .Returns<CancellationToken>(context.SaveChangesAsync);
 
+        var auditWriter = new Mock<IPrivilegedSearchAuditWriter>();
+        auditWriter
+            .Setup(x => x.RecordAdvancedSearchAttemptAsync(
+                It.IsAny<UserProfile>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<UserProfile, string, string, IEnumerable<string>, CancellationToken>(async (user, identifier, justification, participantIds, ct) =>
+            {
+                var contextText = $"identifier={identifier.Trim().ToUpperInvariant()} | justification={justification.Trim()}";
+                if (contextText.Length > 256)
+                {
+                    contextText = contextText[..256];
+                }
+
+                context.UsageEvents.Add(UsageEvent.Create(
+                    "Search",
+                    "ParticipantAdvancedSearch",
+                    user.UserId,
+                    user.UserName,
+                    user.TenantId,
+                    contextText,
+                    DateTime.UtcNow));
+
+                var userId = string.IsNullOrWhiteSpace(user.UserId) ? Guid.Empty.ToString() : user.UserId;
+                foreach (var participantId in participantIds.Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    context.AccessAuditTrails.Add(ParticipantAccessAuditTrail.Create(
+                        nameof(ParticipantAdvancedSearchQuery),
+                        participantId,
+                        userId));
+                }
+
+                await context.SaveChangesAsync(ct);
+            });
+
         return new ParticipantAdvancedSearchQueryHandler(
             candidateService.Object,
             unitOfWork.Object,
+            auditWriter.Object,
             NullLogger<ParticipantAdvancedSearchQueryHandler>.Instance);
     }
 

@@ -160,6 +160,10 @@
                         <tr><th>Date of Birth</th><td>@_selected.DateOfBirth.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)</td></tr>
                         <tr><th>Gender</th><td>@_selected.Gender</td></tr>
                         <tr><th>Status</th><td>@(_selected.IsActive ? "Active" : "Inactive")</td></tr>
+                        @if (_selected.IsParticipant)
+                        {
+                            <tr><th>Enrolment Status</th><td>@(_selected.EnrolmentStatus ?? "Not enrolled")</td></tr>
+                        }
                         <tr>
                             <th>Participant</th>
                             <td>

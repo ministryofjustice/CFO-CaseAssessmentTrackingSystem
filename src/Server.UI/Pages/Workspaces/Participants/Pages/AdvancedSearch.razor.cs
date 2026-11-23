@@ -55,13 +55,19 @@ public partial class AdvancedSearch
         }
 
         _identifier = Identifier.Trim();
-
-        var cached = await SessionStorage.GetAsync<AdvancedSearchSessionData>();
-        if (cached is { Succeeded: true, Data: { } criteria }
-            && string.Equals(criteria.Identifier, _identifier, StringComparison.OrdinalIgnoreCase))
+        try
         {
-            _lastName = criteria.LastName;
-            _dateOfBirth = criteria.DateOfBirth;
+            var cached = await SessionStorage.GetAsync<AdvancedSearchSessionData>();
+            if (cached is { Succeeded: true, Data: { } criteria }
+                && string.Equals(criteria.Identifier, _identifier, StringComparison.OrdinalIgnoreCase))
+            {
+                _lastName = criteria.LastName;
+                _dateOfBirth = criteria.DateOfBirth;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to restore advanced search criteria from session storage.");
         }
 
         Loading = false;
@@ -121,12 +127,20 @@ public partial class AdvancedSearch
             _searchedIdentifier = _identifier.Trim();
             _searchedJustification = _justification.Trim();
 
-            await SessionStorage.SetAsync(new AdvancedSearchSessionData
+            var submittedCriteria = new AdvancedSearchSessionData
             {
                 Identifier = _searchedIdentifier,
                 LastName = _lastName?.Trim(),
                 DateOfBirth = _dateOfBirth
-            });
+            };
+            try
+            {
+                await SessionStorage.SetAsync(submittedCriteria);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to persist advanced search criteria in session storage.");
+            }
 
             if (await LoadDataAsync() && Data is not null)
             {

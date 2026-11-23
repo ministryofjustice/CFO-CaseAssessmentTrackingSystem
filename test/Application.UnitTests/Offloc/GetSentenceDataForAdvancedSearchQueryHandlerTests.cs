@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Models;
 using Cfo.Cats.Application.Features.Offloc.DTOs;
 using Cfo.Cats.Application.Features.Offloc.Queries.GetSentenceDataForAdvancedSearch;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -83,18 +84,36 @@ public class GetSentenceDataForAdvancedSearchQueryHandlerTests
         ApplicationDbContext context,
         Mock<IOfflocService> offlocService)
     {
-        var dbContext = new Mock<IApplicationDbContext>();
-        dbContext.SetupGet(x => x.UsageEvents).Returns(context.UsageEvents);
+        var auditWriter = new Mock<IPrivilegedSearchAuditWriter>();
+        auditWriter
+            .Setup(x => x.RecordAdvancedSearchSentenceLookupAttemptAsync(
+                It.IsAny<UserProfile>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<UserProfile, string, string, string, CancellationToken>(async (user, recordIdentifier, nomisNumber, justification, ct) =>
+            {
+                var contextText = $"record={recordIdentifier} | nomis={nomisNumber} | justification={justification}";
+                if (contextText.Length > 256)
+                {
+                    contextText = contextText[..256];
+                }
 
-        var unitOfWork = new Mock<IUnitOfWork>();
-        unitOfWork.SetupGet(x => x.DbContext).Returns(dbContext.Object);
-        unitOfWork
-            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .Returns<CancellationToken>(context.SaveChangesAsync);
+                context.UsageEvents.Add(UsageEvent.Create(
+                    "Search",
+                    "ParticipantAdvancedSearchSentenceLookup",
+                    user.UserId,
+                    user.UserName,
+                    user.TenantId,
+                    contextText,
+                    DateTime.UtcNow));
+                await context.SaveChangesAsync(ct);
+            });
 
         return new GetSentenceDataForAdvancedSearchQueryHandler(
             offlocService.Object,
-            unitOfWork.Object);
+            auditWriter.Object);
     }
 
     private static GetSentenceDataForAdvancedSearchQuery CreateQuery(string nomisNumber, string recordIdentifier, string justification) => new()
