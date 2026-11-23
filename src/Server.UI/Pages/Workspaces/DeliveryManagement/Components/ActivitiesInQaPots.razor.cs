@@ -9,11 +9,15 @@ public partial class ActivitiesInQaPots
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
+    [Parameter]
+    public string? ContractId { get; set; }
+
     protected override IQuery<Result<ActivitiesInQaPotsDto>> CreateQuery()
         => new GetActivitiesInQaPots.Query
         {
             CurrentUser = CurrentUser,
-            IncludeTeams = CurrentUser.AssignedRoles is { Length: > 0}
+            IncludeTeams = CurrentUser.AssignedRoles is { Length: > 0 },
+            ContractId = ContractId
         };
 
     private IEnumerable<QaPotPoint> ChartPoints => Data is null

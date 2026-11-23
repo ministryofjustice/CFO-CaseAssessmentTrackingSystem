@@ -5,5 +5,23 @@
 
 <DeliveryManagementPageHeader />
 
-<ActivitiesInQaPots />
+<MudStack Row="true" Class="my-4" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+    <MudMenu Size="Size.Small"
+             Variant="Variant.Text"
+             EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+             Label="@(SelectedContract?.Name ?? "All Contracts")">
+        @foreach (var contract in VisibleContracts)
+        {
+            <MudMenuItem Label="@contract.Name" OnClick="@(() => SelectedContract = contract)" />
+        }
+    </MudMenu>
+    <MudTooltip Text="Clear search parameters">
+        <MudIconButton Size="Size.Small"
+                       Icon="@Icons.Material.Filled.Clear"
+                       aria-label="Clear contract filter"
+                       OnClick="@(() => SelectedContract = null)" />
+    </MudTooltip>
+</MudStack>
+
+<ActivitiesInQaPots ContractId="@SelectedContract?.Id" @key="@SelectedContract?.Id" />
 
