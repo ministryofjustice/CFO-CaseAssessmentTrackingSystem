@@ -18,7 +18,8 @@ else if (Data is not null)
                 <MudText Typo="Typo.h2">Risk of Serious Harm</MudText>
                 <MudChip T="string" Color="@RiskLevelColor(Data.Summary?.OverallRiskLevel ?? "Unknown")">@(Data.Summary?.OverallRiskLevel ?? "Unknown")</MudChip>
             </MudStack>
-            <MudTextField Label="Assessed on" Value="@(Data.AssessedOn?.ToString("dd/MM/yyyy"))" Placeholder="Unknown" ReadOnly Class="mt-4" />
+            <MudText Class="mt-1" Typo="Typo.caption">Last updated @(Data.AssessedOn?.ToString("dd/MM/yyyy")).</MudText>
+
             <MudTextField Label="Who is at risk" Value="@(Data.Summary?.WhoIsAtRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
             <MudTextField Label="Nature of risk" Value="@(Data.Summary?.NatureOfRisk)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
             <MudTextField Label="Risk imminence" Value="@(Data.Summary?.RiskImminence)" Placeholder="Not recorded" ReadOnly Lines="5" Class="mt-4" />
@@ -63,9 +64,9 @@ else if (Data is not null)
                 <MudSimpleTable Class="mt-1" Dense="true" Hover="true">
                     <thead>
                         <tr>
-                            <th>Category</th>
-                            <th>In community</th>
-                            <th>In custody</th>
+                            <th>Risk to</th>
+                            <th>Community</th>
+                            <th>Custody</th>
                         </tr>
                     </thead>
                     <tbody>
