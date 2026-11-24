@@ -111,6 +111,10 @@ public partial class SupportAndReferralDashboardComponent
                 Title = new AxisTitle { Text = xAxisTitle },
                 Labels = new XAxisLabels { Rotate = -45, Trim = false, MaxHeight = 200 }
             },
+            Grid = new Grid
+            {
+                Padding = new Padding { Left = 60 }
+            },
             Yaxis =
             [
                 new YAxis
