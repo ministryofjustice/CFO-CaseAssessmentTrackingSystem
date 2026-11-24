@@ -218,7 +218,14 @@ public static class DependencyInjection
         {
             if (context.Response.Headers.IsReadOnly == false)
             {
-                context.Response.Headers.Append("Content-Security-Policy", csp);
+                var headers = context.Response.Headers;
+                headers.Append("Content-Security-Policy", csp);
+                headers.Append("X-Content-Type-Options", "nosniff");
+                headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+                headers.Append("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
+                headers.Append("Cross-Origin-Resource-Policy", "same-origin");
+                headers.Append("Cross-Origin-Opener-Policy", "same-origin");
+                headers.Append("Cross-Origin-Embedder-Policy", "require-corp");
             }
 
             await next();
