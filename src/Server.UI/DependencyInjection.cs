@@ -208,13 +208,16 @@ public static class DependencyInjection
             return next();
         });
 
+        var csp = app.Configuration["Content-Security-Policy"];
+        if (string.IsNullOrWhiteSpace(csp))
+        {
+            throw new InvalidOperationException("The 'Content-Security-Policy' setting must be configured.");
+        }
+
         app.Use(async (context, next) =>
         {
             if (context.Response.Headers.IsReadOnly == false)
             {
-                var csp = app.Configuration["Content-Security-Policy"] ??
-                          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'self' data:; frame-src 'self' data:;";
-
                 context.Response.Headers.Append("Content-Security-Policy", csp);
             }
 
