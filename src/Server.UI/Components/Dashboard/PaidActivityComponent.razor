@@ -1,7 +1,7 @@
-@inherits CatsComponent<GetPaidActivities.PaidActivitiesDto>
-
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using ApexCharts
+
+@inherits CatsComponent<GetPaidActivities.PaidActivitiesDto>
 
 @if (Loading)
 {
@@ -52,7 +52,7 @@
                                      Items="@GetSeriesDataForActivityType(activityType)"
                                      Name="@activityType.Name"
                                      SeriesType="SeriesType.Bar"
-                                     XValue="@(e => ChartLabel.Wrap(e.Location))"
+                                     XValue="@(e => e.Location)"
                                      YValue="@(e => e.Count)"
                                      OrderBy="e => e.X"
                                      Color="@activityType.Colour" />
@@ -76,7 +76,7 @@
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetPaidActivities.LocationDetail, object>(x => x.LocationType.Name)">
+                    <MudTableSortLabel SortBy="new Func<GetPaidActivities.LocationDetail, object>(x => x.ActivityType.Name)">
                         Activity Type
                     </MudTableSortLabel>
                 </MudTh>
