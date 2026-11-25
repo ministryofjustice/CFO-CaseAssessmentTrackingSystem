@@ -11,6 +11,10 @@ else if (_loading)
 {
     <MudProgressCircular Class="mt-4" Indeterminate="true" Size="Size.Small" />
 }
+else if (_failed)
+{
+    <MudAlert Severity="Severity.Error" Class="mt-2">Unable to load the prison and probation records for this participant. Please try again later.</MudAlert>
+}
 else if (_records.Length == 0)
 {
     <MudAlert Severity="Severity.Info" Class="mt-2">No prison or probation records are linked to this participant.</MudAlert>

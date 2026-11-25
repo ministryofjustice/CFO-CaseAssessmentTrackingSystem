@@ -12,6 +12,7 @@ public partial class HmppsRecords
     private IHmppsExternalApiService? _service;
     private (ExternalIdentifierType Type, string Value)[] _records = [];
     private bool _loading = true;
+    private bool _failed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -23,18 +24,27 @@ public partial class HmppsRecords
             return;
         }
 
-        var identifiers = await Service.Send(new GetExternalIdentifiers.Query
+        try
         {
-            ParticipantId = ParticipantId
-        });
+            var identifiers = await Service.Send(new GetExternalIdentifiers.Query
+            {
+                ParticipantId = ParticipantId
+            });
 
-        _records = identifiers
-            .Select(i => ExternalIdentifierType.TryFromName(i.Type, out var type) ? (Type: type, i.Value) : default)
-            .Where(r => r.Type == ExternalIdentifierType.NomisNumber || r.Type == ExternalIdentifierType.Crn)
-            .OrderBy(r => r.Type.DisplayOrderPriority)
-            .ThenBy(r => r.Value)
-            .ToArray();
-
-        _loading = false;
+            _records = identifiers
+                .Select(i => ExternalIdentifierType.TryFromName(i.Type, out var type) ? (Type: type, i.Value) : default)
+                .Where(r => r.Type == ExternalIdentifierType.NomisNumber || r.Type == ExternalIdentifierType.Crn)
+                .OrderBy(r => r.Type.DisplayOrderPriority)
+                .ThenBy(r => r.Value)
+                .ToArray();
+        }
+        catch (Exception)
+        {
+            _failed = true;
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 }
