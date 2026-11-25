@@ -21,10 +21,10 @@ public partial class PrisonRecord
 
     protected override async Task OnInitializedAsync()
     {
-        var keyDates = Service.GetLatestSentenceKeyDatesAsync(NomisNumber, CancellationToken.None);
-        var officer = Service.GetPersonResponsibleOfficerAsync(NomisNumber, CancellationToken.None);
-        var offences = Service.GetOffencesAsync(NomisNumber, CancellationToken.None);
-        var sentences = Service.GetSentencesAsync(NomisNumber, CancellationToken.None);
+        var keyDates = Service.GetLatestSentenceKeyDatesAsync(NomisNumber, ComponentCancellationToken);
+        var officer = Service.GetPersonResponsibleOfficerAsync(NomisNumber, ComponentCancellationToken);
+        var offences = Service.GetOffencesAsync(NomisNumber, ComponentCancellationToken);
+        var sentences = Service.GetSentencesAsync(NomisNumber, ComponentCancellationToken);
 
         await Task.WhenAll(keyDates, officer, offences, sentences);
 

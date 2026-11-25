@@ -19,10 +19,10 @@ public partial class ProbationRecord
 
     protected override async Task OnInitializedAsync()
     {
-        var officer = Service.GetPersonResponsibleOfficerAsync(Crn, CancellationToken.None);
-        var licences = Service.GetLicenceConditionsAsync(Crn, CancellationToken.None);
-        var offences = Service.GetOffencesAsync(Crn, CancellationToken.None);
-        var sentences = Service.GetSentencesAsync(Crn, CancellationToken.None);
+        var officer = Service.GetPersonResponsibleOfficerAsync(Crn, ComponentCancellationToken);
+        var licences = Service.GetLicenceConditionsAsync(Crn, ComponentCancellationToken);
+        var offences = Service.GetOffencesAsync(Crn, ComponentCancellationToken);
+        var sentences = Service.GetSentencesAsync(Crn, ComponentCancellationToken);
 
         await Task.WhenAll(officer, licences, offences, sentences);
 
