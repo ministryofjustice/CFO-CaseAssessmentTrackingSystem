@@ -1,10 +1,13 @@
 ﻿using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Application.Features.Participants.Services;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantMovedDomainEvent>
+public class QueueTransferOnMovement(
+    IUnitOfWork unitOfWork,
+    IReturnedParticipantOwnerResolver ownerResolver) : INotificationHandler<ParticipantMovedDomainEvent>
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {        
@@ -48,7 +51,9 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
             await PublishOutgoingTransfer(participantId, notification.ParticipantOwnerIdPreMovement, from, to, cancellationToken);
         }
 
-        await PublishIncomingTransfer(participantId, from, to, cancellationToken);
+        var restoredOwner = await ownerResolver.GetOwnerToRestore(participantId, from, to, cancellationToken);
+
+        await PublishIncomingTransfer(participantId, from, to, restoredOwner is not null, cancellationToken);
     }
 
     private async Task PublishOutgoingTransfer(string participantId, string? participantOwnerIdPreMovement, Location from, Location to, CancellationToken cancellationToken)
@@ -77,7 +82,7 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
         }
     }
 
-    private async Task PublishIncomingTransfer(string participantId, Location from, Location to, CancellationToken cancellationToken)
+    private async Task PublishIncomingTransfer(string participantId, Location from, Location to, bool autoComplete, CancellationToken cancellationToken)
     {
         // Only publish incoming transfer if (destination/target) contract exists
         if (to.Contract is not null)
@@ -89,6 +94,11 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
                 from.Contract,
                 to.Contract,
                 DateTime.UtcNow);
+
+            if (autoComplete)
+            {
+                incomingTransfer.Complete();
+            }
 
             await unitOfWork.DbContext.ParticipantIncomingTransferQueue.AddAsync(incomingTransfer, cancellationToken);
         }

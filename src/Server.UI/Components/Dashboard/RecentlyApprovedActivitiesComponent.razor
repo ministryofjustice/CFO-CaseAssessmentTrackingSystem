@@ -33,13 +33,14 @@
     
     @if (VisualMode)
     {
+        // Wrap long labels onto multiple lines so rotated text isn't cropped by the chart edges
         <div style="overflow: visible; margin-bottom: 120px;">
             <ApexCharts.ApexChart TItem="GetRecentlyApprovedActivities.ActivityDetail" Options="Options" Height="650" Width="@("100%")">
                 <ApexCharts.ApexPointSeries TItem="GetRecentlyApprovedActivities.ActivityDetail"
                                             Items="Data.Details"
                                             Name="@($"Approved Activities ({Data.Details.Length})")"
                                             SeriesType="ApexCharts.SeriesType.Bar"
-                                            XValue="@(e => e.TookPlaceAtLocation)"
+                                            XValue="@(e => ChartLabel.Wrap(e.TookPlaceAtLocation))"
                                             YAggregate="@(e => e.Count())"
                                             ShowDataLabels="true">
                 </ApexCharts.ApexPointSeries>

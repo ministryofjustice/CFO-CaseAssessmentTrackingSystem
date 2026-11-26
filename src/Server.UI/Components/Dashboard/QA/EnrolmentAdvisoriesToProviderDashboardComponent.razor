@@ -1,5 +1,5 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Domain.Common.Enums
+
 @inherits CatsComponent<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesToProviderDto>
 
 @if(Loading)
@@ -27,7 +27,7 @@
                                         Items="Data.ChartData"
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         Name='@(IncludeInternalColumns ? "Escalation" : "Advisories")'
-                                        XValue="@(e => e.ContractName)"
+                                        XValue="@(e => ChartLabel.Wrap(e.ContractName))"
                                         YValue="@(e => IncludeInternalColumns ? e.EscalationQueue : e.Total)"
                                         ShowDataLabels="true" />
 
@@ -37,7 +37,7 @@
                                             Items="Data.ChartData"
                                             SeriesType="ApexCharts.SeriesType.Bar"
                                             Name="QA2"
-                                            XValue="@(e => e.ContractName)"
+                                            XValue="@(e => ChartLabel.Wrap(e.ContractName))"
                                             YValue="@(e => e.QA2Queue)"
                                             ShowDataLabels="true" />
             }
@@ -120,13 +120,12 @@
 				<MudTd DataLabel="Message">@context.Message</MudTd>
 			</RowTemplate>
 			<PagerContent>
-				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+				<MudTablePager PageSizeOptions="[10, 20]" />
 			</PagerContent>
 		</MudTable>
 	}
-
 }
 else
 {
-    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">No data available</MudText>
 }

@@ -14,6 +14,8 @@ public static class FeatureSections
     
     public const string TierRisk = $"{Root}:TierRisk";
 
+    public const string HmppsSentenceInformation = $"{Root}:HmppsSentenceInformation";
+
     public const string IntegrationEventPublishing = $"{Root}:IntegrationEventPublishing";
 
     public const string UseDmsHardLinkApi = $"{Root}:UseDmsHardLinkApi";

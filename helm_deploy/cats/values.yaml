@@ -56,9 +56,20 @@ generic-service:
       nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
       nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
       nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+      # Per-client-IP rate limiting at the ingress (CFO-38).
+      # limit-rps: sustained requests per second allowed from one IP.
+      # limit-burst-multiplier: short-term allowance above that rate (burst = rps x multiplier).
+      nginx.ingress.kubernetes.io/limit-rps: "60"
+      nginx.ingress.kubernetes.io/limit-burst-multiplier: "3"
+      # Maximum concurrent connections per IP (Blazor holds one WebSocket per user).
+      nginx.ingress.kubernetes.io/limit-connections: "100"
+      # Rate-limited requests return 429 (set in the server-snippet below) so they can be
+      # alerted on separately from genuine 503s.
       # The ingress path is "/", which would otherwise expose /metrics (Prometheus scrape
       # endpoint, see generic-service.custommetrics) to the public internet.
       nginx.ingress.kubernetes.io/server-snippet: |
+        limit_req_status 429;
+        limit_conn_status 429;
         location = /metrics {
           deny all;
           return 404;

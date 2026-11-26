@@ -1,6 +1,7 @@
 @using ApexCharts
 @using Cfo.Cats.Application.Features.Dashboard.DTOs
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+
 @inherits CatsComponent<ActivitiesInQaPotsDto>
 
 @if (Loading)
@@ -67,14 +68,14 @@ else if (Data is not null)
                                 Items="ChartPoints"
                                 SeriesType="SeriesType.Bar"
                                 Name="Provider QA"
-                                XValue="@(p => p.Category)"
+                                XValue="@(p => ChartLabel.Wrap(p.Category))"
                                 YValue="@(p => p.ProviderQa)"
                                 ShowDataLabels="true" />
                 <ApexPointSeries TItem="QaPotPoint"
                                 Items="ChartPoints"
                                 SeriesType="SeriesType.Bar"
                                 Name="CFO QA"
-                                XValue="@(p => p.Category)"
+                                XValue="@(p => ChartLabel.Wrap(p.Category))"
                                 YValue="@(p => p.CfoQa)"
                                 ShowDataLabels="true" />
             </ApexChart>

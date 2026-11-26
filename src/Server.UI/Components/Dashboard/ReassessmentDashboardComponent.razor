@@ -39,7 +39,7 @@
                                             Items="@Data.Details"
                                             Name="@($"Payable ({(Data.Community + Data.Custody)})")"
                                             SeriesType="ApexCharts.SeriesType.Bar"
-                                            XValue="@(e => e.LocationName)"
+                                            XValue="@(e => ChartLabel.Wrap(e.LocationName))"
                                             YValue="@(e => e.Payable)"
                                             ShowDataLabels="true">
                 </ApexCharts.ApexPointSeries>

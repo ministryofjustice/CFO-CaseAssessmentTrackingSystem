@@ -1,7 +1,7 @@
-@inherits CatsComponentBase
-
 @using ApexCharts
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+
+@inherits CatsComponentBase
 
 @if (_loading)
 {
@@ -92,14 +92,14 @@ else
                                      Items="_enrolmentData"
                                      Name="Enrolment"
                                      SeriesType="SeriesType.Bar"
-                                     XValue="@(e => e.Stage)"
+                                     XValue="@(e => ChartLabel.Wrap(e.Stage))"
                                      YValue="@(e => e.Count)" />
 
                     <ApexPointSeries TItem="QueueData"
                                      Items="_activityData"
                                      Name="Activity"
                                      SeriesType="SeriesType.Bar"
-                                     XValue="@(e => e.Stage)"
+                                     XValue="@(e => ChartLabel.Wrap(e.Stage))"
                                      YValue="@(e => e.Count)" />
                 </ApexChart>
             </MudCardContent>

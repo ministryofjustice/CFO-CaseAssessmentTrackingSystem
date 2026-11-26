@@ -410,7 +410,7 @@ public partial class Activities
         {
             MaxWidth = MaxWidth.Large,
             FullWidth = true,
-            CloseButton = true
+            CloseButton = false
         });
     }
 

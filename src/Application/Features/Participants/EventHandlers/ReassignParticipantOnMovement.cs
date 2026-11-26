@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Features.Participants.Services;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
 
@@ -6,7 +7,8 @@ namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
 public class ReassignParticipantOnMovement(
     IUnitOfWork unitOfWork,
-    ILocationService locationService) : INotificationHandler<ParticipantMovedDomainEvent>
+    ILocationService locationService,
+    IReturnedParticipantOwnerResolver ownerResolver) : INotificationHandler<ParticipantMovedDomainEvent>
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
@@ -32,6 +34,12 @@ public class ReassignParticipantOnMovement(
         if (await AssigneeHasAccessToNewLocation(newAssignee, notification.To) is false)
         {
             newAssignee = null;
+        }
+
+        if (newAssignee is null)
+        {
+            newAssignee = await ownerResolver.GetOwnerToRestore(
+                notification.Item.Id, notification.From, notification.To, cancellationToken);
         }
 
         return newAssignee;

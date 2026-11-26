@@ -49,7 +49,7 @@
                                                 Items="ChartData"
                                                 Name="@($"Reviewed ({TotalReviewed})")"
                                                 SeriesType="ApexCharts.SeriesType.Bar"
-                                                XValue="@(e => e.LocationName)"
+                                                XValue="@(e => ChartLabel.Wrap(e.LocationName))"
                                                 YValue="@(e => e.TotalCount - e.OverdueCount)"
                                                 ShowDataLabels="true"
                                                 Color="#5cb85c">
@@ -60,7 +60,7 @@
                                             Items="FilteredChartData"
                                             Name="@($"Reviewed 3+ months ago ({TotalOverdueCount})")"
                                             SeriesType="ApexCharts.SeriesType.Bar"
-                                            XValue="@(e => e.LocationName)"
+                                            XValue="@(e => ChartLabel.Wrap(e.LocationName))"
                                             YValue="@(e => e.OverdueCount)"
                                             ShowDataLabels="true"
                                             Color="#d9534f">

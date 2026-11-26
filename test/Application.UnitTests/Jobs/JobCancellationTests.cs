@@ -43,7 +43,7 @@ public class JobCancellationTests
                 NullLogger<MonitorSuspiciousLoginActivityJob>.Instance, unitOfWork.Object,
                 Mock.Of<ICommunicationsService>(), Options.Create(new SuspiciousLoginMonitoringOptions())),
             nameof(NotifyAccountDeactivationJob) => new NotifyAccountDeactivationJob(
-                NullLogger<NotifyAccountDeactivationJob>.Instance, unitOfWork.Object, Mock.Of<IBus>()),
+                NullLogger<NotifyAccountDeactivationJob>.Instance, unitOfWork.Object),
             nameof(PublishOutboxMessagesJob) => new PublishOutboxMessagesJob(
                 unitOfWork.Object, NullLogger<PublishOutboxMessagesJob>.Instance, Mock.Of<IBus>()),
             nameof(SyncParticipantsJob) => new SyncParticipantsJob(
