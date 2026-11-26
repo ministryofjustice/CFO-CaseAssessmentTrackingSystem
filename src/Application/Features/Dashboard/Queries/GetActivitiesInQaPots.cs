@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -11,9 +12,10 @@ public static class GetActivitiesInQaPots
     {
         public required UserProfile CurrentUser { get; set; }
         public required bool IncludeTeams { get; set; }
+        public string? ContractId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IQueryHandler<Query, Result<ActivitiesInQaPotsDto>>
+    public class Handler(IUnitOfWork unitOfWork, IContractService contractService) : IQueryHandler<Query, Result<ActivitiesInQaPotsDto>>
     {
         public async Task<Result<ActivitiesInQaPotsDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -22,6 +24,20 @@ public static class GetActivitiesInQaPots
             var dto = new ActivitiesInQaPotsDto();
 
             var activities = context.Activities.AsNoTracking();
+
+            if (request.ContractId is not null)
+            {
+                var contract = request.CurrentUser.TenantId is { Length: > 0 } tenantId
+                    ? contractService.GetVisibleContracts(tenantId).SingleOrDefault(c => c.Id == request.ContractId)
+                    : null;
+
+                if (contract is null)
+                {
+                    return Result<ActivitiesInQaPotsDto>.Failure("The selected contract is not available.");
+                }
+
+                activities = activities.Where(a => a.TenantId.StartsWith(contract.TenantId));
+            }
 
             if (request.IncludeTeams)
             {
