@@ -1,0 +1,50 @@
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@inherits CatsComponent<ParticipantIdentifierDto[]>
+
+@if (_integrationEnabled is false)
+{
+    <MudAlert Severity="Severity.Info" Class="mt-2">
+        The HMPPS External API integration is experimental and currently disabled. Enable it via the
+        "Features:HmppsExternalApi:Enabled" configuration flag.
+    </MudAlert>
+}
+else if (Loading)
+{
+    <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-7" />
+}
+else if (ErrorMessage is not null)
+{
+    <MudAlert Severity="Severity.Error" Class="mt-2">@ErrorMessage</MudAlert>
+}
+else if (_crns.Length == 0)
+{
+    <MudAlert Severity="Severity.Info" Class="mt-2">No Delius CRNs are recorded for this participant.</MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Warning" Class="mt-2">
+        The risk information below has been obtained from other HMPPS systems. All information should be validated with the supervising officer / offender manager prior to use.
+    </MudAlert>
+
+    <MudTabs Outlined="true" Border="true" Class="mt-2" KeepPanelsAlive="true">
+        @foreach (var crn in _crns)
+        {
+            var isPrison = false;
+            @* Keyed by participant and CRN so a component instance is never reused for a different record. *@
+            <MudTabPanel @key="@($"{ParticipantId}:{crn}")">
+                <TabContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+                                 Color="@(isPrison ? Color.Primary : Color.Secondary)">@(isPrison ? "Prison" : "Probation")</MudChip>
+                        <MudText Typo="Typo.body2">@crn</MudText>
+                    </MudStack>
+                </TabContent>
+                <ChildContent>
+                    <TierRiskDetail @key="@($"{ParticipantId}:{crn}:tier")" ParticipantId="@ParticipantId" Crn="@crn" />
+                    <MudDivider Class="my-4" />
+                    <ArnsRiskDetail @key="@($"{ParticipantId}:{crn}:arns")" ParticipantId="@ParticipantId" Crn="@crn" />
+                </ChildContent>
+            </MudTabPanel>
+        }
+    </MudTabs>
+}

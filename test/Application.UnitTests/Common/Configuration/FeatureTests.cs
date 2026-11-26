@@ -143,16 +143,16 @@ public class FeatureTests
     [TestCase("1.1.2.", false)]
     [TestCase("1.2.", false)]
     [TestCase("2.", false)]
-    public void ArnsRisk_IsAvailableOnlyToConfiguredTenants(string tenantId, bool expected)
+    public void HmppsRisk_IsAvailableOnlyToConfiguredTenants(string tenantId, bool expected)
     {
         var configuration = Build(new()
         {
-            ["Features:ArnsRisk:Enabled"] = "true",
-            ["Features:ArnsRisk:Tenants:0"] = "1.",
-            ["Features:ArnsRisk:Tenants:1"] = "1.1.",
+            ["Features:HmppsRisk:Enabled"] = "true",
+            ["Features:HmppsRisk:Tenants:0"] = "1.",
+            ["Features:HmppsRisk:Tenants:1"] = "1.1.",
         });
 
-        configuration.GetFeature(FeatureSections.ArnsRisk)
+        configuration.GetFeature(FeatureSections.HmppsRisk)
             .IsEnabledForTenant(tenantId)
             .ShouldBe(expected);
     }

@@ -11,12 +11,8 @@ public partial class CaseRisk
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = default!;
 
-    private bool _showArns;
-    private bool _showTier;
+    private bool _showHmppsRisk;
 
     protected override void OnInitialized()
-    {
-        _showArns = Config.GetFeature(FeatureSections.ArnsRisk).IsEnabledForTenant(CurrentUser?.TenantId);
-        _showTier = Config.GetFeature(FeatureSections.TierRisk).IsEnabledForTenant(CurrentUser?.TenantId);
-    }
+        => _showHmppsRisk = Config.GetFeature(FeatureSections.HmppsRisk).IsEnabledForTenant(CurrentUser?.TenantId);
 }
