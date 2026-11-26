@@ -33,6 +33,13 @@ public static class ValidationConstants
     public const string KeywordMessage = "{0} must contain only alphanumeric, underscores, hyphen, brackets, spaces and common punctuation.";
 
     /// <summary>
+    /// As <see cref="Keyword"/>, but also allows forward slashes, ampersands, and colons which occur in
+    /// external identifiers and page titles (e.g. "Support &amp; Referral", "Incorrect / Missing Paperwork").
+    /// </summary>
+    public const string SearchKeyword = @"^[a-zA-Z0-9_ \-\(\)@.,'’/&:]*$";
+    public const string SearchKeywordMessage = "{0} must contain only alphanumeric, underscores, hyphen, brackets, spaces, slashes, ampersands and common punctuation.";
+
+    /// <summary>
     /// As <see cref="Keyword"/>, but also allows semicolons and forward slashes, which occur in picklist text
     /// (e.g. "Water supply; sewerage, waste management...", "Incorrect / Missing Paperwork").
     /// </summary>

@@ -1,4 +1,4 @@
-@using Cfo.Cats.Server.UI.Pages.Workspaces.MyArea.Services
+@using Cfo.Cats.Server.UI.Services.Navigation
 
 @inject IStringLocalizer<MyAreaPageHeader> L
 
@@ -8,29 +8,12 @@
 
     private IReadOnlyList<BreadcrumbItem> _breadcrumbs = [];
 
-    protected override void OnParametersSet() =>
-        _breadcrumbs = BuildBreadcrumbs();
-
-    private IReadOnlyList<BreadcrumbItem> BuildBreadcrumbs()
+    protected override void OnParametersSet()
     {
-        var home = MyAreaLinks.Home.AsMudBreadcrumb();
-
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var homeUrl = MyAreaLinks.Home.Href;
-
-        var segment = uri.AbsolutePath.Length > homeUrl.Length
-            ? uri.AbsolutePath[homeUrl.Length..].Trim('/')
-            : string.Empty;
-
-        var normalizedSegment = segment.ToLowerInvariant();
-
-        return normalizedSegment switch {
-            "" => [home],
-            "profile" => [MyAreaLinks.EditProfile.AsMudBreadcrumb()],
-            "passwordreset" => [MyAreaLinks.EditProfile.AsMudBreadcrumb(), MyAreaLinks.PasswordReset.AsMudBreadcrumb()],
-            "notifications" => [MyAreaLinks.Notifications.AsMudBreadcrumb()],
-            "my-documents" => [MyAreaLinks.MyDocuments.AsMudBreadcrumb()],
-            _ => throw new NotImplementedException("Unable to workout where we are in the My Area page tree")
-        };
+        _breadcrumbs = WorkspaceRegistry.TrailFor(Workspace.MyArea, uri.AbsolutePath)
+            .Items
+            .Select(link => link.AsMudBreadcrumb())
+            .ToList();
     }
 }

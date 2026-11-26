@@ -11,16 +11,11 @@ public static class SearchParticipants
     public class Query : IQuery<Result<List<ParticipantSearchResultDto>>>
     {
         /// <summary>
-        /// The text to search for. Matches against first name, last name,
-        /// participant id and external identifiers.
+        /// The text to search for. Matches against first name, middle name, last name,
+        /// participant id and external identifiers. Searches every participant on the
+        /// programme, regardless of whether the user can open the record.
         /// </summary>
         public string Keyword { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The currently logged in user. Used to scope results to the
-        /// user's tenant.
-        /// </summary>
-        public UserProfile? CurrentUser { get; set; }
 
         /// <summary>
         /// The maximum number of results to return.
@@ -42,29 +37,20 @@ public static class SearchParticipants
                 return Result<List<ParticipantSearchResultDto>>.Success([]);
             }
 
-            var context = unitOfWork.DbContext;
-            var tenantId = request.CurrentUser!.TenantId!;
-            var isInternal = request.CurrentUser.HasInternalRole();
+            var query = unitOfWork.DbContext.Participants.AsQueryable();
 
-            var query = isInternal
-                ? from p in context.Participants
-                  where p.Owner!.TenantId!.StartsWith(tenantId)
-                        || p.OwnerId == null
-                  select p
-                : from p in context.Participants
-                  where p.Owner!.TenantId!.StartsWith(tenantId)
-                  select p;
+            var tokens = keyword.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            if (keyword.Split(" ") is { Length: 2 } segments)
+            // Every word must match the first name, middle name, last name, id or an external identifier,
+            // so compound names and extra whitespace behave the same as single words
+            foreach (var token in tokens)
             {
-                query = query.Where(p => p.FirstName.Contains(segments[0]) && p.LastName.Contains(segments[1]));
-            }
-            else
-            {
-                query = query.Where(p => p.FirstName.Contains(keyword)
-                    || p.LastName!.Contains(keyword)
-                    || p.Id.Contains(keyword)
-                    || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(keyword)));
+                var t = token;
+                query = query.Where(p => p.FirstName.Contains(t)
+                    || (p.MiddleName != null && p.MiddleName.Contains(t))
+                    || p.LastName!.Contains(t)
+                    || p.Id.Contains(t)
+                    || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(t)));
             }
 
             var results = await query
@@ -76,8 +62,10 @@ public static class SearchParticipants
                 {
                     Id = p.Id,
                     FirstName = p.FirstName,
+                    MiddleName = p.MiddleName,
                     LastName = p.LastName,
                     CurrentLocation = p.CurrentLocation.Name,
+                    EnrolmentStatus = p.EnrolmentStatus,
                     IsUnassigned = p.OwnerId == null
                 })
                 .ToListAsync(cancellationToken);
@@ -91,11 +79,10 @@ public static class SearchParticipants
         public Validator()
         {
             RuleFor(r => r.Keyword)
-                .Matches(ValidationConstants.Keyword)
-                .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
+                .Matches(ValidationConstants.SearchKeyword)
+                .WithMessage(string.Format(ValidationConstants.SearchKeywordMessage, "Search Keyword"));
 
-            RuleFor(r => r.CurrentUser)
-                .NotNull();
+            RuleFor(r => r.MaxResults).InclusiveBetween(1, 100);
         }
     }
 }

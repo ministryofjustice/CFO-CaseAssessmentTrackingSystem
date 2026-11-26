@@ -1,12 +1,15 @@
-
-
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <CatsBreadcrumbs Items="@AllItems" />
     <HelpIcon />
 </MudStack>
 
+@using Cfo.Cats.Server.UI.Services.Navigation
+@inject IWorkspaceLinkProvider LinkProvider
 
 @code{
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public string Title { get; set; }
@@ -14,6 +17,34 @@
     [Parameter, EditorRequired]
     public IReadOnlyList<BreadcrumbItem> Items { get;set; }
 
-    private IReadOnlyList<BreadcrumbItem> AllItems => [new BreadcrumbItem("Home", "", false), ..Items ];
+    private IReadOnlyList<BreadcrumbItem> _items = [];
 
+    private IReadOnlyList<BreadcrumbItem> AllItems => [new("Home", "", false), .._items ];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _items = Items;
+
+        var user = (await AuthState).User;
+        var restricted = await LinkProvider.GetRestrictedPathsAsync(
+            Items.Where(i => !string.IsNullOrEmpty(i.Href)).Select(i => PathOf(i.Href!)), user);
+
+        if (restricted.Count == 0)
+        {
+            return;
+        }
+
+        // Ancestors the user cannot open are shown but not clickable, matching what workspace pages and search expose
+        _items = Items
+            .Select(i => !string.IsNullOrEmpty(i.Href) && restricted.Contains(PathOf(i.Href!))
+                ? new BreadcrumbItem(i.Text, null, disabled: true)
+                : i)
+            .ToList();
+    }
+
+    private static string PathOf(string href)
+    {
+        var end = href.IndexOfAny(['?', '#']);
+        return (end >= 0 ? href[..end] : href).TrimEnd('/');
+    }
 }
