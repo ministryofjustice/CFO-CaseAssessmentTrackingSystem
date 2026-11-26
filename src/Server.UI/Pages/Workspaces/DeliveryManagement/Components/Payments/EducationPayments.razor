@@ -1,7 +1,7 @@
-﻿@inherits CatsComponentBase
-
-@using Cfo.Cats.Application.Features.Payments.DTOs
+﻿@using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
+
+@inherits CatsComponentBase
 
 <style>
     .centered {
@@ -156,7 +156,7 @@
                                          Items="_summaryData"
                                          Name="Educations"
                                          SeriesType="SeriesType.Bar"
-                                         XValue="e => e.Contract"
+                                         XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                          YValue="e => e.EducationsPercentage"
                                          ShowDataLabels="true" />
                     }

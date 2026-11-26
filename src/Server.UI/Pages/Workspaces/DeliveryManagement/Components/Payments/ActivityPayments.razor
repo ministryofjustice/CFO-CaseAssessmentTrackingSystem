@@ -1,7 +1,7 @@
-﻿@inherits CatsComponentBase
-
-@using Cfo.Cats.Application.Features.Payments.DTOs
+﻿@using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
+
+@inherits CatsComponentBase
 
 <style>
 
@@ -138,7 +138,6 @@
                             </MudTooltip>
                         }
 
-
                     </MudTd>
                 </RowTemplate>
                 <PagerContent>
@@ -234,7 +233,7 @@
                                             Items="_summaryData"
                                             Name="@ActivityType.SupportWork.Name"
                                             SeriesType="SeriesType.Bar"
-                                            XValue="e => e.Contract"
+                                            XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                             YValue="e => e.SupportWorkPercentage"
                                             ShowDataLabels="true" />
                     }
@@ -244,7 +243,7 @@
                                             Items="_summaryData"
                                             Name="@ActivityType.HumanCitizenship.Name"
                                             SeriesType="SeriesType.Bar"
-                                            XValue="e => e.Contract"
+                                            XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                             YValue="e => e.HumanCitizenshipPercentage"
                                             ShowDataLabels="true" />
                     }
@@ -254,7 +253,7 @@
                                             Items="_summaryData"
                                             Name="@ActivityType.CommunityAndSocial.Name"
                                             SeriesType="SeriesType.Bar"
-                                            XValue="e => e.Contract"
+                                            XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                             YValue="e => e.CommunityAndSocialPercentage"
                                             ShowDataLabels="true" />
                     }
@@ -264,7 +263,7 @@
                                             Items="_summaryData"
                                             Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
                                             SeriesType="SeriesType.Bar"
-                                            XValue="e => e.Contract"
+                                            XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                             YValue="e => e.ISWSupportPercentage"
                                             ShowDataLabels="true" />
                     }

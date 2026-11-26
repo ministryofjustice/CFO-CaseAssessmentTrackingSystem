@@ -110,7 +110,7 @@ else
                 <ApexPointSeries TItem="LocationEngagementSummaryDto"
                                  Name="Last 3 months"
                                  Items="_data.Records"
-                                 XValue="@(x => x.LocationName)"
+                                 XValue="@(x => ChartLabel.Wrap(x.LocationName))"
                                  YValue="@(x => x.RecentCount)"
                                  SeriesType="SeriesType.Bar"
                                  ShowDataLabels
@@ -118,7 +118,7 @@ else
                 <ApexPointSeries TItem="LocationEngagementSummaryDto"
                                  Name="3+ Month Inactive"
                                  Items="_data.Records"
-                                 XValue="@(x => x.LocationName)"
+                                 XValue="@(x => ChartLabel.Wrap(x.LocationName))"
                                  YValue="@(x => x.InactiveCount)"
                                  SeriesType="SeriesType.Bar"
                                  ShowDataLabels

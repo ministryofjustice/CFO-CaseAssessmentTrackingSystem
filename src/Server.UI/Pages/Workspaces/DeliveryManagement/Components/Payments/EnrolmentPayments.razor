@@ -1,7 +1,7 @@
-﻿@inherits CatsComponentBase
-
-@using Cfo.Cats.Application.Features.Payments.DTOs
+﻿@using Cfo.Cats.Application.Features.Payments.DTOs
 @using Size = MudBlazor.Size
+
+@inherits CatsComponentBase
 
 <style>
 
@@ -122,7 +122,7 @@
                                          Items="_summaryData"
                                          Name="Custody"
                                          SeriesType="SeriesType.Bar"
-                                         XValue="e => e.Contract"
+                                         XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                          YValue="e => e.CustodyPercentage"
                                          ShowDataLabels="true" />
                     }
@@ -133,7 +133,7 @@
                                          Items="_summaryData"
                                          Name="Community"
                                          SeriesType="SeriesType.Bar"
-                                         XValue="e => e.Contract"
+                                         XValue="@(e => ChartLabel.Wrap(e.Contract))"
                                          YValue="e => e.CommunityPercentage"
                                          ShowDataLabels="true" />
                     }
