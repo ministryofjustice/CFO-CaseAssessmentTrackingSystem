@@ -2,21 +2,15 @@ using System.Security.Cryptography.X509Certificates;
 using Amazon.Runtime;
 using Amazon.S3;
 using Cfo.Cats.Application.Common.Configuration;
-using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Interfaces.Initiatives;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
-using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.MessageBus;
-using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
-using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
-using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Domain.ParticipantLabels;
@@ -24,7 +18,6 @@ using Cfo.Cats.Domain.HelpLinks;
 using Cfo.Cats.Domain.Announcements;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Infrastructure.Configurations;
-using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Converters;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
@@ -47,12 +40,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
-using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using Quartz.AspNetCore;
-using Rebus;
 using Rebus.Activation;
 using Rebus.Bus;
 using Rebus.Config;
@@ -649,6 +637,7 @@ public static class DependencyInjection
     private static IServiceCollection AddQuartzJobsAndTriggers(this IServiceCollection services, IConfiguration configuration)
     {
         var options = configuration.GetRequiredSection("Quartz");
+        var quartzTimeZone = ResolveQuartzTimeZone(options);
 
         services.Configure<QuartzOptions>(options);
 
@@ -670,7 +659,7 @@ public static class DependencyInjection
                    quartz.AddTrigger(opts => opts
                        .ForJob(SyncParticipantsJob.Key)
                        .WithDescription(schedule.Description)
-                       .WithCronSchedule(schedule.Chron));
+                       .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                }
 
             }
@@ -688,7 +677,7 @@ public static class DependencyInjection
                     quartz.AddTrigger(opts => opts
                         .ForJob(PublishOutboxMessagesJob.Key)
                         .WithDescription(schedule.Description)
-                        .WithCronSchedule(schedule.Chron));
+                        .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                 }
 
             }
@@ -706,7 +695,7 @@ public static class DependencyInjection
                     quartz.AddTrigger(opts => opts
                         .ForJob(DisableDormantAccountsJob.Key)
                         .WithDescription(schedule.Description)
-                        .WithCronSchedule(schedule.Chron));
+                        .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                 }
 
             }
@@ -724,7 +713,7 @@ public static class DependencyInjection
                     quartz.AddTrigger(opts => opts
                         .ForJob(NotifyAccountDeactivationJob.Key)
                         .WithDescription(schedule.Description)
-                        .WithCronSchedule(schedule.Chron));
+                        .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                 }
 
             }
@@ -742,7 +731,7 @@ public static class DependencyInjection
                     quartz.AddTrigger(opts => opts
                         .ForJob(GenerateOutcomeQualityDipSamplesJob.Key)
                         .WithDescription(schedule.Description)
-                        .WithCronSchedule(schedule.Chron));
+                        .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                 }
             }
 
@@ -759,7 +748,7 @@ public static class DependencyInjection
                     quartz.AddTrigger(opts => opts
                         .ForJob(ArchiveParticipantsJob.Key)
                         .WithDescription(schedule.Description)
-                        .WithCronSchedule(schedule.Chron));
+                        .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                 }
             }
 
@@ -776,7 +765,7 @@ public static class DependencyInjection
                     quartz.AddTrigger(opts => opts
                         .ForJob(MonitorSuspiciousLoginActivityJob.Key)
                         .WithDescription(schedule.Description)
-                        .WithCronSchedule(schedule.Chron));
+                        .WithCronSchedule(schedule.Chron, cron => ApplyQuartzTimeZone(cron, quartzTimeZone)));
                 }
             }
         });
@@ -787,6 +776,36 @@ public static class DependencyInjection
         });
 
         return services;
+    }
+
+    private static TimeZoneInfo? ResolveQuartzTimeZone(IConfiguration options)
+    {
+        var timeZoneId = options["TimeZoneId"];
+        if (string.IsNullOrWhiteSpace(timeZoneId))
+        {
+            return null;
+        }
+
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+        }
+        catch (TimeZoneNotFoundException ex)
+        {
+            throw new InvalidOperationException($"Quartz:TimeZoneId '{timeZoneId}' was not found on this host.", ex);
+        }
+        catch (InvalidTimeZoneException ex)
+        {
+            throw new InvalidOperationException($"Quartz:TimeZoneId '{timeZoneId}' is invalid on this host.", ex);
+        }
+    }
+
+    private static void ApplyQuartzTimeZone(CronScheduleBuilder cron, TimeZoneInfo? quartzTimeZone)
+    {
+        if (quartzTimeZone is not null)
+        {
+            cron.InTimeZone(quartzTimeZone);
+        }
     }
 
     public static T GetRequiredSection<T>(this IConfiguration configuration, string name) =>
