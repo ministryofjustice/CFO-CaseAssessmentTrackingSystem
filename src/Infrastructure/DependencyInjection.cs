@@ -540,6 +540,7 @@ public static class DependencyInjection
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddSingleton<IUsageTracker, UsageTracker>()
+            .AddScoped<IPrivilegedSearchAuditWriter, PrivilegedSearchAuditWriter>()
             .AddScoped<ITenantProvider, TenantProvider>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IDateTime, DateTimeService>()

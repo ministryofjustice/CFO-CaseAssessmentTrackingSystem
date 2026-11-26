@@ -1,104 +1,97 @@
 ﻿@using Cfo.Cats.Application.Features.Offloc.DTOs
+@inherits CatsComponent<SentenceDataDto>
 
-
-@if (SentenceData is not null)
+@if (Loading)
 {
-
-    @if (SentenceData is NotFoundResult<SentenceDataDto>)
-    {
-        <MudAlert Severity="Severity.Warning">
-            No details found
-        </MudAlert>
-    }
-    else if (SentenceData is { Succeeded: false })
-    {
-        <MudAlert Severity="Severity.Warning">
-            @SentenceData.ErrorMessage
-        </MudAlert>
-    }
-    else if (SentenceData is { Data: not null })
-    {
-        <MudGrid>
-            <MudItem xs="12">
-                <MudTable Dense="true" Hover="true" T="SentenceInformationDto" Items="SentenceData.Data.SentenceInformation" Striped="true">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.subtitle1">
-                            Sentence Information
-                        </MudText>
-                    </ToolBarContent>
-                    <HeaderContent>
-                        <MudTh>First Sentenced</MudTh>
-                        <MudTh>Years</MudTh>
-                        <MudTh>Months</MudTh>
-                        <MudTh>Days</MudTh>
-                        <MudTh>Earliest Possible Release Date</MudTh>
-                        <MudTh>Date Of Release</MudTh>
-                        <MudTh>Sed</MudTh>
-                        <MudTh>Hdced</MudTh>
-                        <MudTh>Hdcad</MudTh>
-                        <MudTh>Ped</MudTh>
-                        <MudTh>Crd</MudTh>
-                        <MudTh>Npd</MudTh>
-                        <MudTh>Led</MudTh>
-                        <MudTh>Tused</MudTh>
-                        <MudTh>Active</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="First Sentenced">@context.FirstSentenced</MudTd>
-                        <MudTd DataLabel="Years">@context.SentenceYears</MudTd>
-                        <MudTd DataLabel="Months">@context.SentenceMonths</MudTd>
-                        <MudTd DataLabel="Days">@context.SentenceDays</MudTd>
-                        <MudTd DataLabel="Earliest Possible Release Date">@context.EarliestPossibleReleaseDate</MudTd>
-                        <MudTd DataLabel="Date Of Release">@context.DateOfRelease</MudTd>
-                        <MudTd DataLabel="Sed">@context.Sed</MudTd>
-                        <MudTd DataLabel="Hdced">@context.Hdced</MudTd>
-                        <MudTd DataLabel="Hdcad">@context.Hdcad</MudTd>
-                        <MudTd DataLabel="Ped">@context.Ped</MudTd>
-                        <MudTd DataLabel="Crd">@context.Crd</MudTd>
-                        <MudTd DataLabel="Npd">@context.Npd</MudTd>
-                        <MudTd DataLabel="Led">@context.Led</MudTd>
-                        <MudTd DataLabel="Tused">@context.Tused</MudTd>
-                        <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudItem>
-            <MudItem xs="12" md="6">
-                <MudTable Dense="true" Hover="true" T="MainOffenceDto" Items="SentenceData.Data.MainOffence" Striped="true">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.subtitle1">
-                            Main Offence
-                        </MudText>
-                    </ToolBarContent>
-                    <HeaderContent>
-                        <MudTh>Main Offence</MudTh>
-                        <MudTh>Date First Conviction</MudTh>
-                        <MudTh>Active</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="First Sentenced">@context.MainOffence</MudTd>
-                        <MudTd DataLabel="Years">@context.DateFirstConviction</MudTd>
-                        <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudItem>
-            <MudItem xs="12" md="6">
-                <MudTable Dense="true" Hover="true" T="OtherOffenceDto" Items="SentenceData.Data.OtherOffences" Striped="true">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.subtitle1">
-                            Other Offences
-                        </MudText>
-                    </ToolBarContent>
-                    <HeaderContent>
-                        <MudTh>Details</MudTh>
-                        <MudTh>Active</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="First Sentenced">@context.Details</MudTd>
-                        <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudItem>
-        </MudGrid>
-    }
+    <MudLoading Text="Loading sentence information" />
 }
-
+else if (ErrorMessage is not null)
+{
+    <MudAlert Severity="Severity.Warning">
+        @ErrorMessage
+    </MudAlert>
+}
+else if (Data is not null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTable Dense="true" Hover="true" T="SentenceInformationDto" Items="Data.SentenceInformation" Striped="true">
+                <ToolBarContent>
+                    <MudText Typo="Typo.subtitle1">
+                        Sentence Information
+                    </MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>First Sentenced</MudTh>
+                    <MudTh>Years</MudTh>
+                    <MudTh>Months</MudTh>
+                    <MudTh>Days</MudTh>
+                    <MudTh>Earliest Possible Release Date</MudTh>
+                    <MudTh>Date Of Release</MudTh>
+                    <MudTh>Sed</MudTh>
+                    <MudTh>Hdced</MudTh>
+                    <MudTh>Hdcad</MudTh>
+                    <MudTh>Ped</MudTh>
+                    <MudTh>Crd</MudTh>
+                    <MudTh>Npd</MudTh>
+                    <MudTh>Led</MudTh>
+                    <MudTh>Tused</MudTh>
+                    <MudTh>Active</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="First Sentenced">@context.FirstSentenced</MudTd>
+                    <MudTd DataLabel="Years">@context.SentenceYears</MudTd>
+                    <MudTd DataLabel="Months">@context.SentenceMonths</MudTd>
+                    <MudTd DataLabel="Days">@context.SentenceDays</MudTd>
+                    <MudTd DataLabel="Earliest Possible Release Date">@context.EarliestPossibleReleaseDate</MudTd>
+                    <MudTd DataLabel="Date Of Release">@context.DateOfRelease</MudTd>
+                    <MudTd DataLabel="Sed">@context.Sed</MudTd>
+                    <MudTd DataLabel="Hdced">@context.Hdced</MudTd>
+                    <MudTd DataLabel="Hdcad">@context.Hdcad</MudTd>
+                    <MudTd DataLabel="Ped">@context.Ped</MudTd>
+                    <MudTd DataLabel="Crd">@context.Crd</MudTd>
+                    <MudTd DataLabel="Npd">@context.Npd</MudTd>
+                    <MudTd DataLabel="Led">@context.Led</MudTd>
+                    <MudTd DataLabel="Tused">@context.Tused</MudTd>
+                    <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTable Dense="true" Hover="true" T="MainOffenceDto" Items="Data.MainOffence" Striped="true">
+                <ToolBarContent>
+                    <MudText Typo="Typo.subtitle1">
+                        Main Offence
+                    </MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Main Offence</MudTh>
+                    <MudTh>Date First Conviction</MudTh>
+                    <MudTh>Active</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="First Sentenced">@context.MainOffence</MudTd>
+                    <MudTd DataLabel="Years">@context.DateFirstConviction</MudTd>
+                    <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTable Dense="true" Hover="true" T="OtherOffenceDto" Items="Data.OtherOffences" Striped="true">
+                <ToolBarContent>
+                    <MudText Typo="Typo.subtitle1">
+                        Other Offences
+                    </MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Details</MudTh>
+                    <MudTh>Active</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="First Sentenced">@context.Details</MudTd>
+                    <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+    </MudGrid>
+}

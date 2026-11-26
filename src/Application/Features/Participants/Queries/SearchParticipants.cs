@@ -17,7 +17,7 @@ public static class SearchParticipants
         public string Keyword { get; set; } = string.Empty;
 
         /// <summary>
-        /// The currently logged in user. Used to scope results to the
+        /// The currently logged-in user. Used to scope results to the
         /// user's tenant.
         /// </summary>
         public UserProfile? CurrentUser { get; set; }
@@ -62,7 +62,7 @@ public static class SearchParticipants
             else
             {
                 query = query.Where(p => p.FirstName.Contains(keyword)
-                    || p.LastName!.Contains(keyword)
+                    || p.LastName.Contains(keyword)
                     || p.Id.Contains(keyword)
                     || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(keyword)));
             }
