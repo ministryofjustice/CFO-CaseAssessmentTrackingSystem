@@ -79,6 +79,13 @@ internal static class PolicyExtensions
                 RoleNames.CPM, RoleNames.CMPSM);
         });
 
+        options.AddPolicy(SecurityPolicies.ArchiveRecurrences, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.ArchiveRecurrences);
+        });
+
         options.AddPolicy(SecurityPolicies.SeniorInternal, policy => {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");

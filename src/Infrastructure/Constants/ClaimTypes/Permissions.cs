@@ -9,6 +9,8 @@ public static class Permissions
 
     public const string Initiatives = nameof(Initiatives);
 
+    public const string ArchiveRecurrences = nameof(ArchiveRecurrences);
+
     public const string ManageInitiatives = "Manage Initiatives";
 
     public const string QA1 = nameof(QA1);
