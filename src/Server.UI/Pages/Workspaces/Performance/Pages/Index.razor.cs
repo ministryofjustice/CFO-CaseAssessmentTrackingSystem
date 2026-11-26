@@ -18,6 +18,7 @@ public partial class Index
     
     private bool _showOutcomeQualityDipChecks;
     private bool _showInitiatives;
+    private bool _showArchiveRecurrences;
     
     protected override async Task OnInitializedAsync()
     {
@@ -25,9 +26,11 @@ public partial class Index
         
         var isOutcomeQualityDipChecks = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.OutcomeQualityDipChecks)).Succeeded;
         var isInitiatives = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.Initiatives)).Succeeded;
+        var isArchiveRecurrences = (await AuthorizationService.AuthorizeAsync(authState.User, SecurityPolicies.ArchiveRecurrences)).Succeeded;
       
         _showOutcomeQualityDipChecks = isOutcomeQualityDipChecks;
         _showInitiatives = isInitiatives;
+        _showArchiveRecurrences = isArchiveRecurrences;
         
         List<BreadcrumbLinkModel> links = [];
 
@@ -39,6 +42,11 @@ public partial class Index
         if (_showInitiatives)
         {
             links.Add(PerformanceLinks.Initiatives);
+        }
+
+        if (_showArchiveRecurrences)
+        {
+            links.Add(PerformanceLinks.ArchiveRecurrences);
         }
         
         Links = links.ToArray();

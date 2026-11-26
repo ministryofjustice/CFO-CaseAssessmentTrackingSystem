@@ -41,6 +41,8 @@ public static class SecurityPolicies
     public const string UserHasAdditionalRoles = nameof(UserHasAdditionalRoles);
 
     public const string SystemSupportFunctions = nameof(SystemSupportFunctions);
+
+    public const string ArchiveRecurrences = nameof(ArchiveRecurrences);
     
     /// <summary>
     /// Used to allow users to view the outcome quality dip checks

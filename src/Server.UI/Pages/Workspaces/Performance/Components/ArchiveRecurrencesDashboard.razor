@@ -1,0 +1,240 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@inherits CatsComponent<ArchiveRecurrencesDto>
+
+<MudStack Spacing="3">
+    <MudStack Row="true"
+              Justify="Justify.FlexEnd"
+              AlignItems="AlignItems.Center"
+              Spacing="2">
+        <div style="width: 320px;">
+            <MudDateRangePicker @ref="_picker"
+                                DateFormat="dd MMM yyyy"
+                                TitleDateFormat="MMMM dd"
+                                DateRange="_dateRange"
+                                DateRangeChanged="OnDateRangeChanged"
+                                MaxDate="DateTime.Today"
+                                MinDate="@(new DateTime(2025, 1, 1))"
+                                Disabled="@(Loading || _applyingFilters)"
+                                Margin="Margin.Dense">
+                <PickerActions>
+                    <MudButton Color="Color.Secondary"
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Cancel"
+                               OnClick="@(() => _picker.CloseAsync(false))">
+                        Cancel
+                    </MudButton>
+                    <MudButton Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.CheckCircle"
+                               OnClick="@(() => _picker.CloseAsync())">
+                        OK
+                    </MudButton>
+                </PickerActions>
+            </MudDateRangePicker>
+        </div>
+        <MudMenu Size="Size.Medium"
+                 Variant="Variant.Text"
+                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                 Disabled="@(Loading || _applyingFilters)"
+                 Label="@GetSelectedContractLabel()">
+            <MudMenuItem OnClick="@(() => OnContractChanged(null))">
+                All current contracts
+            </MudMenuItem>
+            @foreach (var contract in ContractService
+                                  .GetVisibleContracts(CurrentUser.TenantId!)
+                                  .OrderBy(x => x.Name))
+            {
+                <MudMenuItem OnClick="@(() => OnContractChanged(contract.Id))">
+                    @contract.Name
+                </MudMenuItem>
+            }
+        </MudMenu>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0">
+            <MudText Typo="Typo.body2">Episode Threshold:</MudText>
+            <MudText Typo="Typo.body2" Class="mx-1"><b>@_threshold</b></MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp"
+                           Size="Size.Small"
+                           Disabled="@(Loading || _applyingFilters || _threshold >= 20)"
+                           OnClick="@IncreaseThreshold" />
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowDown"
+                           Size="Size.Small"
+                           Disabled="@(Loading || _applyingFilters || _threshold <= 1)"
+                           OnClick="@DecreaseThreshold" />
+        </MudStack>
+    </MudStack>
+
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+        Episode = one continuous period from archive to unarchive. An episode with no unarchive date is currently open.
+        The dashboard counts episodes whose archive start date falls within the selected period. Contract filtering and breakdown use the participant's current contract; episode details show the contract at the time of archiving.
+    </MudAlert>
+
+    @if (Loading)
+    {
+        <MudProgressCircular Indeterminate="true" />
+    }
+    else if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+    }
+    else if (Data is not null)
+    {
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.caption">Total participants</MudText>
+                    <MudText Typo="Typo.h5">@Data.Participants.Length</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.caption">Participants with episodes across contracts</MudText>
+                    <MudText Typo="Typo.h5">@Data.Participants.Count(x => x.CrossContract)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.caption">Total archive episodes</MudText>
+                    <MudText Typo="Typo.h5">@Data.Participants.Sum(x => x.EpisodeCount)</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudText Typo="Typo.h6">Contract breakdown</MudText>
+        <MudTable Items="@Data.ContractBreakdown"
+                  Dense="true"
+                  Hover="true"
+                  Striped="true">
+            <HeaderContent>
+                <MudTh>Current contract</MudTh>
+                <MudTh>Participants</MudTh>
+                <MudTh>Total Episodes</MudTh>
+                <MudTh>Open episodes</MudTh>
+                <MudTh>Cross-contract episodes</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ContractName</MudTd>
+                <MudTd>@context.ParticipantCount</MudTd>
+                <MudTd>@context.EpisodeCount</MudTd>
+                <MudTd>@context.OpenEpisodeCount</MudTd>
+                <MudTd>@context.CrossContractEpisodeCount</MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudText Typo="Typo.h6">Participant recurrences</MudText>
+        <MudTable Items="@Data.Participants"
+                  Dense="true"
+                  Hover="true"
+                  Striped="true"
+                  SortLabel="Sort By"
+                  RowsPerPage="20">
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ArchiveRecurrenceParticipantDto, object>(x => x.ParticipantName)">Participant</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ArchiveRecurrenceParticipantDto, object>(x => x.EpisodeCount)">Episodes</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ArchiveRecurrenceParticipantDto, object>(x => x.CompletedEpisodeCount)">Completed</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ArchiveRecurrenceParticipantDto, object>(x => x.OpenEpisodeCount)">Open</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ArchiveRecurrenceParticipantDto, object>(x => x.ContractScope)">Scope</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy='new Func<ArchiveRecurrenceParticipantDto, object>(x => string.Join(", ", x.ContractNames))'>Contracts</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy='new Func<ArchiveRecurrenceParticipantDto, object>(x => string.Join(", ", x.LocationNames))'>Locations</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ArchiveRecurrenceParticipantDto, object>(x => x.TotalArchivedDays)">Total archived days</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@(IsParticipantExpanded(context.ParticipantId)
+                                       ? Icons.Material.Filled.KeyboardArrowUp
+                                       : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@(() => ToggleParticipantExpanded(context.ParticipantId))" />
+                </MudTd>
+                <MudTd>
+                    <MudStack Spacing="0">
+                        <MudLink Href="@($"/pages/workspace/participants/{context.ParticipantId}?from=archive-recurrences")">
+                            @context.ParticipantName
+                        </MudLink>
+                        <MudText Typo="Typo.caption">@context.ParticipantId</MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd>@context.EpisodeCount</MudTd>
+                <MudTd>@context.CompletedEpisodeCount</MudTd>
+                <MudTd>@context.OpenEpisodeCount</MudTd>
+                <MudTd>@context.ContractScope</MudTd>
+                <MudTd>@string.Join(", ", context.ContractNames)</MudTd>
+                <MudTd>@string.Join(", ", context.LocationNames)</MudTd>
+                <MudTd>@context.TotalArchivedDays</MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if (IsParticipantExpanded(context.ParticipantId))
+                {
+                    <MudTr>
+                        <td colspan="10" class="pa-0">
+                            <MudPaper Elevation="0" Class="pa-3">
+                                <MudText Typo="Typo.subtitle2" Class="mb-2">Archive episodes</MudText>
+                                <MudTable Items="@context.Episodes"
+                                          Dense="true"
+                                          Hover="true"
+                                          Striped="true">
+                                    <HeaderContent>
+                                        <MudTh>Archived</MudTh>
+                                        <MudTh>Unarchived</MudTh>
+                                        <MudTh>Duration</MudTh>
+                                        <MudTh>Contract</MudTh>
+                                        <MudTh>Location</MudTh>
+                                        <MudTh>Archive reason</MudTh>
+                                        <MudTh>Unarchive reason</MudTh>
+                                        <MudTh>Created by</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate Context="episode">
+                                        <MudTd>@episode.From.ToString("dd MMM yyyy")</MudTd>
+                                        <MudTd>
+                                            @(episode.To?.ToString("dd MMM yyyy") ?? "Currently open")
+                                        </MudTd>
+                                        <MudTd>@GetEpisodeDuration(episode)</MudTd>
+                                        <MudTd>
+                                            @(episode.ContractName ?? "Contract unknown")
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudStack Spacing="0">
+                                                <MudText Typo="Typo.body2">@episode.LocationName</MudText>
+                                                <MudText Typo="Typo.caption">@episode.LocationType</MudText>
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudStack Spacing="0">
+                                                <MudText Typo="Typo.body2">@episode.ArchiveReason</MudText>
+                                                @if (!string.IsNullOrWhiteSpace(episode.ArchiveAdditionalInfo))
+                                                {
+                                                    <MudText Typo="Typo.caption">@episode.ArchiveAdditionalInfo</MudText>
+                                                }
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            @if (episode.UnarchiveReason is not null)
+                                            {
+                                                <MudStack Spacing="0">
+                                                    <MudText Typo="Typo.body2">@episode.UnarchiveReason</MudText>
+                                                    @if (!string.IsNullOrWhiteSpace(episode.UnarchiveAdditionalInfo))
+                                                    {
+                                                        <MudText Typo="Typo.caption">@episode.UnarchiveAdditionalInfo</MudText>
+                                                    }
+                                                </MudStack>
+                                            }
+                                            else
+                                            {
+                                                <MudText Typo="Typo.body2" Class="mud-text-secondary">—</MudText>
+                                            }
+                                        </MudTd>
+                                        <MudTd>@(episode.CreatedBy ?? "Unknown")</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudPaper>
+                        </td>
+                    </MudTr>
+                }
+            </ChildRowContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="[10, 20, 50]" />
+            </PagerContent>
+        </MudTable>
+    }
+</MudStack>

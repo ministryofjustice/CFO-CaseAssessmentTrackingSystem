@@ -13,4 +13,6 @@ public static class PerformanceLinks
     public static BreadcrumbLinkModel OutcomeQualityDipSampleParticipant(Guid sampleId, string participantId) => new(participantId, "Link for specific participant" , $"{OutcomeQualityDipSamples.Href}/{sampleId}/{participantId}");
 
     public static BreadcrumbLinkModel Initiatives = new("Initiatives", "Manage initiatives (innovation funds etc)", $"{Home.Href}/initiatives");
+
+    public static BreadcrumbLinkModel ArchiveRecurrences = new("Archive Recurrences", "View repeated participant archive episodes at contract and location level", $"{Home.Href}/archive-recurrences");
 }
