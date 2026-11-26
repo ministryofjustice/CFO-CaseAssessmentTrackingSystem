@@ -64,7 +64,7 @@
         </MudStack>
     }
 
-    @if (ShowNationality)
+    @if (ShowNationality && Participant.ConsentStatus == ConsentStatus.GrantedStatus)
     {
         <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
             <MudText Typo="Typo.body1"><strong>Nationality</strong></MudText>

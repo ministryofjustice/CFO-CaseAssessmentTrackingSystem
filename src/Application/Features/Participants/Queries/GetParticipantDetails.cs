@@ -25,7 +25,7 @@ public static class GetParticipantDetails
                 {
                     FullName = p.FirstName + " " + p.LastName,
                     EnrolmentStatus = p.EnrolmentStatus!,
-                    DateOfBirth = granted.Contains(p.ConsentStatus!) ? p.DateOfBirth : null,
+                    DateOfBirth = p.DateOfBirth,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
                     EnrolmentJustification = p.EnrolmentLocationJustification,
                     AssessmentJustification = p.AssessmentJustification,

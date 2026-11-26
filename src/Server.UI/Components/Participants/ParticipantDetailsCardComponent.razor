@@ -31,7 +31,7 @@
             <DataList>
                 <ChildContent>
                     <DataListItem Label="Date Of Birth" HelperText="@(Data.DateOfBirth is { } dob ? $"Age {dob.CalculateAge()}" : null)">
-                        @(Data.DateOfBirth?.ToShortDateString() ?? "Hidden until consent is approved")
+                        @(Data.DateOfBirth?.ToShortDateString() ?? "Not Set")
                     </DataListItem>
                     <DataListItem Label="Enrolled at">
                         <LabelActions>
