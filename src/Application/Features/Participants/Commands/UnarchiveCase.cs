@@ -34,7 +34,7 @@ public static class UnarchiveCase
                 throw new Exception("The participant does not have enough history to unarchive.");
             }
 
-            participant!.TransitionTo(previousStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
+            participant.TransitionTo(previousStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
@@ -50,9 +50,14 @@ public static class UnarchiveCase
                 RuleFor(c => c.AdditionalInformation)
                     .NotEmpty()
                     .When(c => c.UnarchiveReason.RequiresFurtherInformation)
-                    .WithMessage("You must provide additional information for the selected unarchive reason")
+                    .WithMessage("You must provide additional information for the selected unarchive reason");
+
+                RuleFor(c => c.AdditionalInformation)
                     .Matches(ValidationConstants.Notes)
-                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"))
+                    .MaximumLength(ValidationConstants.NotesLength)
+                    .WithMessage($"Maximum length of additional information is {ValidationConstants.NotesLength}")
+                    .When(c => string.IsNullOrWhiteSpace(c.AdditionalInformation) is false);
             });
 
             RuleSet(ValidationConstants.RuleSet.Mediator, () =>

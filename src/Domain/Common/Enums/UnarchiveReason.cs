@@ -9,7 +9,7 @@ public sealed class UnarchiveReason : SmartEnum<UnarchiveReason>
     public static readonly UnarchiveReason MovedBackCatchmentArea = new("Participant moved back into provider catchment area", 2, true);
     public static readonly UnarchiveReason MovedCFOLocation = new("Participant moved back to CFO location", 3, true);
     public static readonly UnarchiveReason RequestedFurtherSupport = new("Participant requested further support", 4, true);
-    public static readonly UnarchiveReason RTWDocumentatonAvailable = new("RTW documentation now available", 5, true);
+    public static readonly UnarchiveReason RTWDocumentationAvailable = new("RTW documentation now available", 5, true);
     public static readonly UnarchiveReason ReestablishSupport = new("Participant would like to re-establish support", 6, true);
     public static readonly UnarchiveReason Reengaged = new("Participant has re-engaged", 7, true);
     public static readonly UnarchiveReason ChangePersonalCircumstances = new("Change in participants personal circumstances", 8, true);

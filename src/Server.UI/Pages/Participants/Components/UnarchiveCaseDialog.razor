@@ -1,11 +1,11 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
-@using Cfo.Cats.Domain.Common.Enums
+﻿@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Participants.Commands
 
 @inject IValidationService Validator
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudSelect @bind-Value="Model.UnarchiveReason" 
                        Label="@Model.GetMemberDescription(x => x.UnarchiveReason)"
                        For="@(() => Model.UnarchiveReason)">
@@ -14,7 +14,7 @@
                 <MudSelectItem Value="UnarchiveReason.MovedBackCatchmentArea">@UnarchiveReason.MovedBackCatchmentArea.Name</MudSelectItem>
                 <MudSelectItem Value="UnarchiveReason.MovedCFOLocation">@UnarchiveReason.MovedCFOLocation.Name</MudSelectItem>
                 <MudSelectItem Value="UnarchiveReason.RequestedFurtherSupport">@UnarchiveReason.RequestedFurtherSupport.Name</MudSelectItem>
-                <MudSelectItem Value="UnarchiveReason.RTWDocumentatonAvailable">@UnarchiveReason.RTWDocumentatonAvailable.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.RTWDocumentationAvailable">@UnarchiveReason.RTWDocumentationAvailable.Name</MudSelectItem>
                 <MudSelectItem Value="UnarchiveReason.ReestablishSupport">@UnarchiveReason.ReestablishSupport.Name</MudSelectItem>
                 <MudSelectItem Value="UnarchiveReason.Reengaged">@UnarchiveReason.Reengaged.Name</MudSelectItem>
                 <MudSelectItem Value="UnarchiveReason.ChangePersonalCircumstances">@UnarchiveReason.ChangePersonalCircumstances.Name</MudSelectItem>
@@ -25,20 +25,23 @@
                           Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
                           For="@(() => Model.AdditionalInformation)"
                           Lines="5" 
+                          MaxLength="@ValidationConstants.NotesLength"
+                          Counter="@ValidationConstants.NotesLength"
+                          Immediate="true"
                           Class="mt-4" />
         </MudForm>
     </DialogContent>
     <DialogActions>        
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="saving" OnClick="Submit">@ConstantString.Unarchive</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="@Submit">@ConstantString.Unarchive</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    bool saving = false;
-    MudForm? form;
+    bool _saving;
+    MudForm? _form;
 
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public required UnarchiveCase.Command Model { get; set; }
@@ -52,24 +55,24 @@
     {
         try
         {
-            saving = true;
+            _saving = true;
 
-            if(form is null)
+            if(_form is null)
             {
-                saving = false;
+                _saving = false;
                 return;
             }
 
-            await form.ValidateAsync();
+            await _form.ValidateAsync();
 
-            if(form.IsValid)
+            if(_form.IsValid)
             {
                 MudDialog.Close(DialogResult.Ok(true));
             }
         }
         finally
         {
-            saving = false;
+            _saving = false;
         }
     }
 }
