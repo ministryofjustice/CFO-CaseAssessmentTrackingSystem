@@ -8,32 +8,35 @@
 else
 {
     <MudDataGrid Hover="true" Dense="true" Items="@ParticipantEnrolmentHistory" Striped="true">
-        <Columns> 
+        <Columns>
+                <HierarchyColumn T="ParticipantEnrolmentHistoryDto" ButtonDisabledFunc="@(x => string.IsNullOrWhiteSpace(x.AdditionalInformation))" />
                 <PropertyColumn Property="x => x.From.ToShortDateString()" SortBy="x => x.From" Title="Date"
                         CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Status" Title="Status"
-                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                HeaderStyle="width: 90px;"
+                                CellStyle="width: 90px; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Event" Title="Event"
                                 CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Reason" Title="Reason"
-                                CellStyle="width: 40px; white-space: wrap; overflow: hidden; text-overflow: ellipsis;">
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.AdditionalInformation" Title="Additional Info"
-                                CellStyle="width: 40px; white-space: wrap; overflow: hidden; text-overflow: ellipsis;">
+                                CellStyle="white-space: normal; overflow-wrap: anywhere;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.LocationName" Title="Location"
-                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                CellStyle="min-width: 200px; white-space: nowrap;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.SupportWorker" Title="Performed By"
-                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                CellStyle="min-width: 200px; white-space: nowrap;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.DaysSincePrevious" Title="Days"
                                 CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
         </Columns>
+        <ChildRowContent>
+            <MudText Typo="Typo.subtitle2">@(context.Item.Status == "Archived" ? "Justification" : "Additional Information")</MudText>
+            <MudText Style="white-space: pre-wrap; overflow-wrap: anywhere;">@context.Item.AdditionalInformation</MudText>
+        </ChildRowContent>
         <PagerContent>
             <MudDataGridPager T="ParticipantEnrolmentHistoryDto" />
         </PagerContent>

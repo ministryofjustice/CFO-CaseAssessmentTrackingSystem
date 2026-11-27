@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -85,9 +84,14 @@ public static class ArchiveCase
             RuleFor(c => c.Justification)
                 .NotEmpty()
                 .When(c => c.ArchiveReason.RequiresJustification)
-                .WithMessage("You must provide a justification for the selected Archive reason")
+                .WithMessage("You must provide a justification for the selected Archive reason");
+
+            RuleFor(c => c.Justification)
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"))
+                .MaximumLength(ValidationConstants.NotesLength)
+                .WithMessage($"Maximum length of justification is {ValidationConstants.NotesLength}")
+                .When(c => string.IsNullOrWhiteSpace(c.Justification) is false);
       
             RuleFor(c => c.ArchiveReason)
                 .Must(x => x != ArchiveReason.None)

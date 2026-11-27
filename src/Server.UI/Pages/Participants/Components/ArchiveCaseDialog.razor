@@ -1,5 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
-@using Cfo.Cats.Domain.Common.Enums
+﻿@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Participants.Commands
 
 @inject IValidationService Validator
 
@@ -32,12 +32,15 @@
                           Label="@Model.GetMemberDescription(x => x.Justification)"
                           For="@(() => Model.Justification)"
                           Lines="5" 
+                          MaxLength="@ValidationConstants.NotesLength"
+                          Counter="@ValidationConstants.NotesLength"
+                          Immediate="true"
                           Class="mt-4" />
         </MudForm>
     </DialogContent>
     <DialogActions>        
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton StartIcon="@Icons.Material.Filled.Archive" Loading="_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">@ConstantString.Archive</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.Archive" Loading="_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="@Submit">@ConstantString.Archive</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
@@ -45,7 +48,7 @@
     bool _saving;
     MudForm? _form;
 
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public required ArchiveCase.Command Model { get; set; }
